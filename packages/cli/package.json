@@ -1,0 +1,23 @@
+{
+  "name": "@zetapush/cli",
+  "version": "0.0.0",
+  "description": "Zeta Push Next",
+  "main": "./bin/cli.js",
+  "bin": {
+    "zetapush-cli": "./bin/cli.js"
+  },
+  "repository": "https://github.com/zetapush/zetapush",
+  "author": "ci@zetapush.com",
+  "license": "MIT",
+  "scripts": {},
+  "dependencies": {
+    "@zetapush/cometd": "0.0.0",
+    "minimist": "^1.2.0",
+    "read-pkg": "^3.0.0",
+    "resolve-cwd": "^2.0.0",
+    "resolve-pkg": "^1.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

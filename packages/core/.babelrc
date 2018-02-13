@@ -1,0 +1,51 @@
+{
+  "env": {
+    "umd": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "modules": false
+          }
+        ]
+      ],
+      "plugins": [
+        "@babel/plugin-external-helpers",
+        "@babel/plugin-proposal-object-rest-spread"
+      ]
+    },
+    "commonjs": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "modules": false,
+            "targets": {
+              "node": "current"
+            }
+          }
+        ]
+      ],
+      "plugins": [
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-transform-modules-commonjs"
+      ]
+    },
+    "es": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "modules": false,
+            "targets": {
+              "node": "current"
+            }
+          }
+        ]
+      ],
+      "plugins": [
+        "@babel/plugin-proposal-object-rest-spread"
+      ]
+    }
+  }
+}

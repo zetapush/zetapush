@@ -1,0 +1,27 @@
+{
+  "name": "@zetapush/core",
+  "version": "0.0.0",
+  "description": "Zeta Push Next",
+  "browser": "dist/zetapush.js",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "jsnext:main": "es/index.js",
+  "repository": "https://github.com/zetapush/zetapush",
+  "author": "ci@zetapush.com",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf lib dist es .deploy .esdoc",
+    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
+    "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
+    "build:umd": "cross-env BABEL_ENV=umd NODE_ENV=development rollup -c -i src/index.js -o dist/zetapush.js",
+    "build:umd:min": "cross-env BABEL_ENV=umd NODE_ENV=production rollup -c -i src/index.js -o dist/zetapush.min.js",
+    "build": "yarn run build:commonjs && yarn run build:es && yarn run build:umd && yarn run build:umd:min",
+    "prepublish": "yarn run clean && yarn run build"
+  },
+  "dependencies": {
+    "@zetapush/cometd": "0.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
