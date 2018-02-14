@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Zeta Push Next",
   "main": "./bin/cli.js",
+  "files": ["bin/"],
   "bin": {
     "zetapush-cli": "./bin/cli.js"
   },
