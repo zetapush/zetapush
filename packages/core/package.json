@@ -19,7 +19,7 @@
     "prepublish": "yarn run clean && yarn run build"
   },
   "dependencies": {
-    "@zetapush/cometd": "0.0.0"
+    "@zetapush/cometd": "^0.0.0"
   },
   "publishConfig": {
     "access": "public"

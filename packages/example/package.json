@@ -10,8 +10,8 @@
     "worker:stop": "pm2 stop all"
   },
   "dependencies": {
-    "@zetapush/cli": "0.0.0",
-    "@zetapush/core": "0.0.0",
+    "@zetapush/cli": "^0.0.0",
+    "@zetapush/core": "^0.0.0",
     "node": "8"
   },
   "zetapush": {
