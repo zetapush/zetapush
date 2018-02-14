@@ -292,7 +292,6 @@ export class ClientHelper {
         // Send handshake fields
         this.cometd.handshake(this.getHandshakeFields());
       } else {
-        this.cometd._error('ClientHelper::connect', { servers });
         // No servers available
         this.noServerUrlAvailable();
       }
@@ -702,6 +701,7 @@ export class ClientHelper {
    * Notify listeners when a message is lost
    */
   messageLost(channel, data) {
+    this.cometd._debug('ClientHelper::messageLost', channel, data);
     this.connectionListeners
       .filter(({ enabled }) => enabled)
       .forEach(({ listener }) => {
@@ -713,6 +713,7 @@ export class ClientHelper {
    * @param {error} error
    */
   negotiationFailed(error) {
+    this.cometd._debug('ClientHelper::negotiationFailed', error);
     this.connectionListeners
       .filter(({ enabled }) => enabled)
       .forEach(({ listener }) => {
@@ -723,6 +724,7 @@ export class ClientHelper {
    * Notify listeners when no server url available
    */
   noServerUrlAvailable() {
+    this.cometd._debug('ClientHelper::noServerUrlAvailable');
     this.connectionListeners
       .filter(({ enabled }) => enabled)
       .forEach(({ listener }) => {

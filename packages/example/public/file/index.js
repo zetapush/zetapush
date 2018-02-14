@@ -115,23 +115,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const files = Array.from(event.target.files);
     console.log('.js-selectFile', 'change', files);
     const $id = uuid();
-    files.forEach(async (file) => {
-      const request = await trace(`requestFileUpload--${$id}`, () => api.requestFileUpload({
+    const promises = files.map((file) => trace(`requestFileUpload--${$id}`, () => api.requestFileUpload({
         contentType: file.type,
         folder: '/'
-      }));
-      const success = await doUpload({
+      })).then((request) => doUpload({
         file,
         ...request
-      });
-      console.log('doUpload', success);
-      await trace(`confirmFileUpload--${$id}`, () => api.confirmFileUpload({
+      })).then((request) => trace(`confirmFileUpload--${$id}`, () => api.confirmFileUpload({
         guid: request.guid,
         actions: [],
         metadata: {},
         tags: []
-      }));
-      await getFileEntryList();
-    })
+      })))
+    );
+    Promise.all(promises).then((requests) => getFileEntryList());
   });
 });

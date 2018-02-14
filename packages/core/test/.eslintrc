@@ -1,0 +1,10 @@
+{
+  "extends": "../.eslintrc",
+  "globals": {
+    "ZetaPush": true
+  },
+  "env": {
+    "browser": true,
+    "jasmine": true
+  }
+}
