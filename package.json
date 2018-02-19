@@ -8,6 +8,7 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "cz-lerna-changelog": "^1.2.1",
     "husky": "^0.14.3",
     "lerna": "^2.8.0",
     "lint-staged": "^6.1.0",
@@ -23,5 +24,10 @@
       "prettier --write",
       "git add"
     ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-lerna-changelog"
+    }
   }
 }
