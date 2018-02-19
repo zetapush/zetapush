@@ -1,7 +1,7 @@
 {
   "name": "@zetapush/example",
   "version": "0.0.1",
-  "main": "server/file.js",
+  "main": "server/user.js",
   "private": true,
   "scripts": {
     "start": "zetapush-cli",
