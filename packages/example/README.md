@@ -46,7 +46,7 @@ This code expose an API called **hello** which returns a string "Hello World fro
 You can use injected platform services with to following.
 
 ```js
-const { Stack } = require('@zetapush/core/mapping/services')
+const { Stack } = require('@zetapush/platform')
 module.exports = class Api {
   static get injected() {
     return [Stack]
@@ -67,7 +67,7 @@ To consume an API in your front-end application you have to create a **mapped** 
 #### Define your API mapping class
 
 ```js
-class Api extends ZetaPush.services.Queue {
+class Api extends ZetaPushPlatform.Queue {
   hello() {
     return this.$publish('hello');
   }
