@@ -3,7 +3,10 @@
   "version": "0.1.1-1",
   "description": "Zeta Push Next",
   "main": "index.js",
-  "repository": "https://github.com/zetapush/zetapush",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:zetapush/zetapush.git"
+  },
   "author": "ci@zetapush.com",
   "license": "MIT",
   "private": true,

@@ -1,1 +1,2 @@
-export { ServerClient } from './client/server';
+export { ServerClient } from './client/server.js';
+export * from './decorators/index.js';
