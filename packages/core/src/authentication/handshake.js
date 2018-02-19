@@ -1,4 +1,4 @@
-import { Delegating, Simple, Weak } from '@zetapush/plateform';
+import { Delegating, Simple, Weak } from '@zetapush/platform';
 
 /**
  * ZetaPush deployables names

@@ -1,8 +1,8 @@
-const services = require('./services');
+const { Stack, Userdir, Simple } = require('@zetapush/platform');
 
 module.exports = class Api {
   static get injected() {
-    return [services.Stack, services.UserDirectory, services.SimpleAuthentication];
+    return [Stack, Userdir, SimpleAuthentication];
   }
   constructor(stack, directory, auth) {
     console.log('Api:constructor', stack, directory, auth)

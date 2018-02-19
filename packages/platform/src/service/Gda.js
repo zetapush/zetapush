@@ -1,3 +1,5 @@
+import { Service } from '../core/index.js';
+
 /**
  * Generic Data Access
  *

@@ -3,26 +3,9 @@
 const { _ } = require('minimist')(process.argv.slice(2));
 const cwd = require('resolve-cwd');
 const read = require('read-pkg');
-const { ServerClient } = require('@zetapush/core');
+const { uuid } = require('@zetapush/core');
+const { ServerClient } = require('@zetapush/server');
 const transports = require('@zetapush/cometd/lib/node/Transports');
-
-/**
- * Alpha numeric dictionary
- */
-const DICTIONARY = 'abcdefghijklmnopqrstuvwxyz0123456789';
-
-/**
- * Get random id
- * @return {string}
- */
-const uuid = (entropy = 7, dictionary = DICTIONARY) => {
-  const next = () =>
-    dictionary.charAt(Math.floor(Math.random() * dictionary.length));
-  return Array.from(Array(entropy)).reduce(
-    (previous) => `${previous}${next()}`,
-    '',
-  );
-};
 
 /**
  * Resolve and inject dependencies

@@ -1,4 +1,4 @@
-const services = require('./services');
+const { Zpfs_hdfs } = require('@zetapush/platform');
 
 class FileEntry {
   constructor(exists, entry) {
@@ -38,7 +38,7 @@ class FileUploadRequest {
   }
 }
 
-class Hdfs extends services.Zpfs_hdfs {
+class Hdfs extends Zpfs_hdfs {
   static get DEFAULT_DEPLOYMENT_ID() {
     return `cr_fl_hdfs`;
   }

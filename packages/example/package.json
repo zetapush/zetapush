@@ -1,7 +1,7 @@
 {
   "name": "@zetapush/example",
   "version": "0.0.1",
-  "main": "server/user.js",
+  "main": "server/file.js",
   "private": true,
   "scripts": {
     "start": "zetapush-cli",
@@ -12,6 +12,7 @@
   "dependencies": {
     "@zetapush/cli": "^0.0.0",
     "@zetapush/core": "^0.0.0",
+    "@zetapush/platform": "^0.0.0",
     "node": "8"
   },
   "zetapush": {

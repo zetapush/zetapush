@@ -8,24 +8,13 @@ const HTTP_PATTERN = /^http:\/\/|^\/\//;
  * Http protocol
  * @type {string}
  */
-const HTTP_PROTOCOL = 'http:';
+export const HTTP_PROTOCOL = 'http:';
 
 /**
  * Https protocol
  * @type {string}
  */
-const HTTPS_PROTOCOL = 'https:';
-
-/**
- * @access private
- * @param {string} apiUrl
- * @return {string}
- */
-const normalizeApiUrl = (apiUrl) => {
-  const last = apiUrl.charAt(apiUrl.length - 1);
-  const SLASH = '/';
-  return last === SLASH ? apiUrl : apiUrl + SLASH;
-};
+export const HTTPS_PROTOCOL = 'https:';
 
 /**
  * Default ZetaPush API URL

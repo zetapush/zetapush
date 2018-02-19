@@ -20,7 +20,7 @@ const config = {
     json(),
   ],
   output: {
-    name: 'ZetaPush',
+    name: 'ZetaPushPlatform',
     format: 'umd',
     sourcemap: true,
   },

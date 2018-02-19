@@ -1,3 +1,16 @@
+import { getSecureUrl, HTTPS_PROTOCOL, HTTP_PROTOCOL } from './http.js';
+
+/**
+ * @access private
+ * @param {string} apiUrl
+ * @return {string}
+ */
+const normalizeApiUrl = (apiUrl) => {
+  const last = apiUrl.charAt(apiUrl.length - 1);
+  const SLASH = '/';
+  return last === SLASH ? apiUrl : apiUrl + SLASH;
+};
+
 /**
  * @access private
  * @param {{apiUrl: string, sandboxId: string, forceHttps: boolean, transports: Transports}} parameters

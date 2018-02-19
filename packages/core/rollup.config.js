@@ -12,7 +12,7 @@ const config = {
       main: true,
     }),
     commonjs({
-      include: ['node_modules/**', '../cometd/**'],
+      include: ['node_modules/**', '../cometd/**', '../platform/**'],
     }),
     babel({
       exclude: 'node_modules/**',
@@ -20,8 +20,11 @@ const config = {
     json(),
   ],
   output: {
-    name: 'ZetaPush',
     format: 'umd',
+    globals: {
+      '@zetapush/platform': 'ZetaPushPlatform'
+    },
+    name: 'ZetaPush',
     sourcemap: true,
   },
 };

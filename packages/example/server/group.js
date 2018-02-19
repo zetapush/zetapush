@@ -1,4 +1,4 @@
-const services = require('./services');
+const { Gda, GroupManagement } = require('@zetapush/platform');
 
 const getDeploymentIdByService = (service) => Object.getPrototypeOf(service).constructor.DEFAULT_DEPLOYMENT_ID
 
@@ -31,13 +31,13 @@ class GroupMembership {
   }
 }
 
-class Gda extends services.Gda {
+class Gda extends Gda {
   static get DEFAULT_DEPLOYMENT_ID() {
     return 'cr_grp_gda';
   }
 }
 
-class GroupManagement extends services.GroupManagement {
+class GroupManagement extends GroupManagement {
   static get DEFAULT_DEPLOYMENT_ID() {
     return 'cr_grp_groups';
   }

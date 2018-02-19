@@ -1,4 +1,4 @@
-const services = require('./services');
+const { Userdir, Simple } = require('@zetapush/platform');
 
 class LoginAvailability {
   constructor(available, login, user) {
@@ -19,7 +19,7 @@ class User {
 
 module.exports = class Api {
   static get injected() {
-    return [services.UserDirectory, services.SimpleAuthentication];
+    return [Userdir, Simple];
   }
   constructor(zpServiceUserDirectory, zpServiceSimpleAuth) {
     console.log('Api:constructor', zpServiceUserDirectory);

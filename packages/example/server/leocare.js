@@ -1,8 +1,8 @@
-const services = require('./services');
+const { Trigger } = require('@zetapush/platform');
 
 module.exports = class Api {
   static get injected() {
-    return [services.Trigger];
+    return [Trigger];
   }
   constructor(triggers) {
     console.log('Api:constructor', stack);

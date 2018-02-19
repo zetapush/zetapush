@@ -1,4 +1,4 @@
-const services = require('./services');
+const { Gda: BaseGda } = require('@zetapush/platform');
 
 const COLUMN_STORED_OBJECT_VALUE = 'Value';
 const COLUMN_STORED_OBJECT_REVISION = 'Revision';
@@ -52,7 +52,7 @@ class Targets extends Storable {
   }
 }
 
-class Gda extends services.Gda {
+class Gda extends BaseGda {
   static get DEFAULT_DEPLOYMENT_ID() {
     return 'cr_tls_gda';
   }

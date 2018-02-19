@@ -40,6 +40,13 @@ export class Weak extends Service {
     return this.$publish('getToken', {});
   }
   /**
+   * Provisions an arbitrary number of accounts.
+   * The maximum number of accounts that you can create in one single call is configured per server.
+   * */
+  provision({ n }) {
+    return this.$publish('provision', { n });
+  }
+  /**
    * Releases a session
    *
    * Releases control of a weak user session, identified by the given public token.
