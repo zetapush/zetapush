@@ -38,7 +38,7 @@ class FileUploadRequest {
   }
 }
 
-class Hdfs extends ZetaPush.services.Zpfs_hdfs {
+class Hdfs extends ZetaPushPlatform.Zpfs_hdfs {
   static get DEFAULT_DEPLOYMENT_ID() {
     return `cr_fl_hdfs`;
   }

@@ -29,7 +29,7 @@ class GroupMembership {
   }
 }
 
-class Gda extends ZetaPush.services.Gda {
+class Gda extends ZetaPushPlatform.Gda {
   static get DEFAULT_DEPLOYMENT_ID() {
     return 'cr_grp_gda';
   }
