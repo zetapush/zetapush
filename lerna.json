@@ -3,7 +3,12 @@
   "version": "0.0.0",
   "commands": {
     "publish": {
-      "ignore": "@zetapush/example",
+      "ignore": [
+        "@zetapush/example",
+        "*.md",
+        "test/**"
+      ],
+      "conventional-commits": true,
       "message": "chore(release): publish %s"
     }
   },
