@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/platform",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-platform.js",
   "main": "lib/index.js",
@@ -25,7 +25,6 @@
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "prepublish": "npm run clean && npm run build"
   },
-  "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.40",
     "@babel/core": "^7.0.0-beta.40",
