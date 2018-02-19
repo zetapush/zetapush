@@ -5,7 +5,12 @@
         [
           "@babel/preset-env",
           {
-            "modules": false
+            "modules": false,
+            "targets": {
+              "chrome": 64,
+              "edge": 16,
+              "firefox": 58
+            }
           }
         ]
       ],
