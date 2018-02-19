@@ -1,4 +1,4 @@
-import { Delegating, Simple, Weak } from '../mapping/authentications';
+import { Delegating, Simple, Weak } from '@zetapush/plateform';
 
 /**
  * ZetaPush deployables names

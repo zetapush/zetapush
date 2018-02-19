@@ -1,7 +1,7 @@
 import { CometD, Transports } from '@zetapush/cometd';
-import { ConnectionStatusListener } from '../connection/connection-status';
-import { Macro } from '../mapping/services';
-import { getServers, isDerivedOf, shuffle, uuid } from '../utils/index';
+import { Macro } from '@zetapush/platform';
+import { ConnectionStatusListener } from '../connection/connection-status.js';
+import { getServers, isDerivedOf, shuffle, uuid } from '../utils/index.js';
 
 class ApiError extends Error {
   constructor(message, code) {

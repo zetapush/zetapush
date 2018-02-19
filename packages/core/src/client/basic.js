@@ -1,6 +1,6 @@
-import { ClientHelper } from './helper';
-import { API_URL, FORCE_HTTPS } from '../utils/index';
-import { ConnectionStatusListener } from '../connection/connection-status';
+import { ClientHelper } from './helper.js';
+import { API_URL, FORCE_HTTPS } from '../utils/http.js';
+import { ConnectionStatusListener } from '../connection/connection-status.js';
 
 /**
  * Client config object.

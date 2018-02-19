@@ -1,6 +1,6 @@
-import { Client } from './basic';
-import { Authentication } from '../authentication/handshake';
-import { SessionPersistenceStrategy } from '../utils/session-persistence';
+import { Client } from './basic.js';
+import { Authentication } from '../authentication/handshake.js';
+import { SessionPersistenceStrategy } from '../utils/session-persistence.js';
 
 /**
  * WeakClient config object.
