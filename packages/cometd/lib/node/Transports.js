@@ -7,7 +7,7 @@ var WebSocketTransport = require('../WebSocketTransport');
 module.exports.fetch = FetchLongPollingTransport.fetch = require('node-fetch');
 
 // Use node-websocket implementation
-module.exports.WebSocket = WebSocketTransport.WebSocket = require('websocket/lib/W3CWebSocket');
+module.exports.WebSocket = WebSocketTransport.WebSocket = require('ws/lib/websocket');
 
 /**
  * Long polling transport layer
