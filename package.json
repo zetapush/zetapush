@@ -20,6 +20,7 @@
   },
   "scripts": {
     "precommit": "lint-staged",
+    "commit": "git-cz",
     "prettify": "prettier --write 'packages/*/{bin,src}/**/*.{js,ts}'"
   },
   "lint-staged": {
