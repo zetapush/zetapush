@@ -11,6 +11,9 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "conventional-changelog-angular": "^1.6.5",
+    "conventional-changelog-core": "^2.0.4",
+    "conventional-recommended-bump": "^2.0.5",
     "cz-lerna-changelog": "^1.2.1",
     "husky": "^0.14.3",
     "lerna": "^2.8.0",
