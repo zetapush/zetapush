@@ -13,7 +13,7 @@ import { Service } from '../core/index.js';
  *
  * @access public
  * */
-export class Httpclient extends Service {
+export class HttpClient extends Service {
   /**
    * Get default deployment id associated to Httpclient service
    * @return {string}

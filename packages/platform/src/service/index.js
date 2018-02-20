@@ -2,7 +2,7 @@ export { Aggreg } from './Aggreg.js';
 export { Cron } from './Cron.js';
 export { Gda } from './Gda.js';
 export { GroupManagement } from './GroupManagement.js';
-export { Httpclient } from './Httpclient.js';
+export { HttpClient } from './HttpClient.js';
 export { Macro } from './Macro.js';
 export { Messaging } from './Messaging.js';
 export { Notif } from './Notif.js';
