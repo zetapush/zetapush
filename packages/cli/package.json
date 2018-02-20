@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/cli",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Zeta Push Next",
   "main": "./bin/cli.js",
   "files": [
@@ -14,9 +14,9 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "@zetapush/cometd": "^0.2.2",
-    "@zetapush/core": "^0.2.2",
-    "@zetapush/server": "^0.3.0",
+    "@zetapush/cometd": "^0.3.1",
+    "@zetapush/core": "^0.3.1",
+    "@zetapush/server": "^0.3.1",
     "minimist": "^1.2.0",
     "read-pkg": "^3.0.0",
     "resolve-cwd": "^2.0.0",
