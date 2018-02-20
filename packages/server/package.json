@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/server",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-server.js",
   "main": "lib/index.js",
@@ -26,7 +26,7 @@
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@zetapush/core": "^0.2.0",
+    "@zetapush/core": "^0.2.1",
     "@zetapush/platform": "^0.2.0",
     "reflect-metadata": "^0.1.12"
   },
