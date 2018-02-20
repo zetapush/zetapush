@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/example",
-  "version": "0.1.0",
+  "version": "0.3.1",
   "main": "server/index.js",
   "private": true,
   "scripts": {
@@ -10,9 +10,9 @@
     "worker:stop": "pm2 stop all"
   },
   "dependencies": {
-    "@zetapush/cli": "^0.2.2",
-    "@zetapush/platform": "^0.2.2",
-    "@zetapush/server": "^0.2.2",
+    "@zetapush/cli": "^0.3.1",
+    "@zetapush/platform": "^0.3.1",
+    "@zetapush/server": "^0.3.1",
     "node": "8"
   },
   "zetapush": {
