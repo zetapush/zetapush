@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/zetapush/zetapush/compare/v0.2.2...v0.3.0) (2018-02-20)
+
+
+### Features
+
+* **server:** add timeout for api method ([7f3473e](https://github.com/zetapush/zetapush/commit/7f3473e))
+
+
+
+
 <a name="0.2.2"></a>
 ## [0.2.2](https://github.com/zetapush/zetapush/compare/v0.2.1...v0.2.2) (2018-02-20)
 
