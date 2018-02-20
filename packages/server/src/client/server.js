@@ -1,8 +1,18 @@
 import { Authentication, Client, uuid } from '@zetapush/core';
 import { Queue } from '@zetapush/platform';
 
+import { timeoutify } from '../utils/async';
+
 export class ServerClient extends Client {
-  constructor({ apiUrl, sandboxId, forceHttps, transports, login, password }) {
+  constructor({
+    apiUrl,
+    sandboxId,
+    forceHttps,
+    transports,
+    login,
+    password,
+    timeout = 5000,
+  }) {
     const authentication = () =>
       Authentication.developer({
         login,
@@ -20,6 +30,11 @@ export class ServerClient extends Client {
       resource,
       transports,
     });
+    /**
+     * @access private
+     * @type {number}
+     */
+    this.timeout = timeout;
   }
   disconnect() {
     return new Promise((resolve, reject) => {
@@ -77,7 +92,7 @@ export class ServerClient extends Client {
     const queue = this.createService({
       deploymentId,
       listener: {
-        async dispatch({ data: { request, taskId } }) {
+        dispatch: async ({ data: { request, taskId } }) => {
           console.log('dispatch', { request, taskId });
           const { data, requestId } = request;
           const { name, namespace, parameters } = data;
@@ -89,7 +104,10 @@ export class ServerClient extends Client {
             taskId,
           });
           try {
-            const result = await Worker[name](parameters);
+            const result = await timeoutify(
+              () => Worker[name](parameters),
+              this.timeout,
+            );
             console.log('result', result);
             queue.done({
               result,

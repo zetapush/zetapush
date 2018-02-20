@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZetaPush SDK Examples - Worker</title>
+  <style>
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    body::before {
+      display: block;
+      content: "Open Your Console";
+      background: #000;
+      color: #FFF;
+      position: fixed;
+      transform: rotate(45deg) translate(60px, 0px);
+      right: 0;
+      top: 0;
+      height: 25px;
+      padding: 5px 30px;
+      line-height: 25px;
+      font-family: Calibri, Helvetica, Arial;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+    }
+
+    button,
+    label {
+      margin: 0.5rem 1rem;
+      height: 5vh;
+      font-size: calc(5vh / 2);
+      background: linear-gradient(rgb(216, 216, 216), rgb(186, 186, 186));
+      border-color: rgb(117, 117, 117) rgb(107, 107, 107) rgb(97, 97, 97);
+      border-style: solid;
+      border-width: 1px;
+      padding: 1px 7px 2px;
+      text-align: center;
+      cursor: pointer;
+      box-sizing: border-box;
+      align-items: flex-start;
+    }
+
+    button::after,
+    label::after {
+      content: "(" attr(data-count) ")";
+      display: inline-block;
+    }
+
+    button[disabled],
+    label[disabled] {
+      opacity: 0.9;
+      pointer-events: none;
+      cursor: not-allowed;
+      color: graytext;
+    }
+
+    input[type="file"] {
+      position: absolute;
+      overflow: hidden;
+      height: 0;
+      width: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <nav>
+    <button disabled class="js-Hello">hello</button>
+    <button disabled class="js-Reduce">reduce</button>
+    <button disabled class="js-Push">push</button>
+    <button disabled class="js-List">list</button>
+    <button disabled class="js-CreateUser">createUser</button>
+    <button disabled class="js-FindUsers">findUsers</button>
+    <button disabled class="js-Wait">wait</button>
+  </nav>
+  <main>
+    <ul></ul>
+  </main>
+  <script src="https://unpkg.com/@zetapush/core"></script>
+  <script src="https://unpkg.com/@zetapush/platform"></script>
+  <script src="./index.js"></script>
+</body>
+
+</html>
