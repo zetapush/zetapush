@@ -16,7 +16,12 @@ const normalizeApiUrl = (apiUrl) => {
  * @param {{apiUrl: string, sandboxId: string, forceHttps: boolean, transports: Transports}} parameters
  * @return {Promise}
  */
-export const getServers = ({ apiUrl, sandboxId, forceHttps, transports }) => {
+export const getSandboxConfig = ({
+  apiUrl,
+  sandboxId,
+  forceHttps,
+  transports,
+}) => {
   const normalizedSecuresApiUrl = normalizeApiUrl(
     getSecureUrl(apiUrl, forceHttps),
   );
@@ -27,8 +32,9 @@ export const getServers = ({ apiUrl, sandboxId, forceHttps, transports }) => {
       .fetch(url, options)
       .then((response) => response.json())
       // TODO: Replace by a server side implementation when available
-      .then(({ servers }) =>
-        servers.map((server) => getSecureUrl(server, forceHttps)),
-      )
+      .then(({ servers, businessId = sandboxId }) => ({
+        sandboxId: businessId,
+        servers: servers.map((server) => getSecureUrl(server, forceHttps)),
+      }))
   );
 };

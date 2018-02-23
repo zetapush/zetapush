@@ -1,7 +1,12 @@
 import { CometD, Transports } from '@zetapush/cometd';
 import { Macro } from '@zetapush/platform';
 import { ConnectionStatusListener } from '../connection/connection-status.js';
-import { getServers, isDerivedOf, shuffle, uuid } from '../utils/index.js';
+import {
+  getSandboxConfig,
+  isDerivedOf,
+  shuffle,
+  uuid,
+} from '../utils/index.js';
 
 class ApiError extends Error {
   constructor(message, code) {
@@ -102,7 +107,7 @@ export class ClientHelper {
      * @access private
      * @type {Promise}
      */
-    this.servers = getServers({
+    this.config = getSandboxConfig({
       apiUrl,
       sandboxId,
       forceHttps,
@@ -110,8 +115,11 @@ export class ClientHelper {
     }).catch((error) => {
       // Notify error in connection to server step
       this.connectionToServerFail(error);
-      // Return empty list
-      return [];
+      // Return empty config
+      return {
+        sandboxId,
+        servers: [],
+      };
     });
     /**
      * @access private
@@ -148,6 +156,12 @@ export class ClientHelper {
      * @type {CometD}
      */
     this.cometd = new CometD();
+
+    // Resolve sandbox alias from server-side config
+    this.config.then((config) => {
+      // Resolve
+      this.sandboxId = config.sandboxId;
+    });
 
     // Register transports layers
     transports.ALL.forEach(({ type, Transport }) => {
@@ -278,7 +292,7 @@ export class ClientHelper {
    * Connect client using CometD Transport
    */
   connect() {
-    this.servers.then((servers) => {
+    this.getServers().then((servers) => {
       if (servers.length > 0) {
         // Get a random server url
         this.serverUrl = shuffle(servers);
@@ -360,7 +374,7 @@ export class ClientHelper {
     Type,
     deploymentId = Type.DEFAULT_DEPLOYMENT_ID,
   }) {
-    const prefix = `/service/${this.getSandboxId()}/${deploymentId}`;
+    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
     const $publish = this.getAsyncServicePublisher(prefix);
     // Create service by publisher
     return this.createServiceByPublisher({
@@ -380,7 +394,7 @@ export class ClientHelper {
     Type,
     deploymentId = Type.DEFAULT_DEPLOYMENT_ID,
   }) {
-    const prefix = `/service/${this.getSandboxId()}/${deploymentId}`;
+    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
     const $publish = this.getAsyncMacroPublisher(prefix);
     // Create service by publisher
     return this.createServiceByPublisher({
@@ -397,7 +411,7 @@ export class ClientHelper {
    * @return {Object} service
    */
   createAsyncTaskService({ Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID }) {
-    const prefix = `/service/${this.getSandboxId()}/${deploymentId}`;
+    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
     const $publish = this.getAsyncTaskPublisher(prefix);
     // Create service by publisher
     return this.createServiceByPublisher({
@@ -414,7 +428,7 @@ export class ClientHelper {
    */
   createService({ listener, Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID }) {
     const isMacroType = isDerivedOf(Type, Macro);
-    const prefix = `/service/${this.getSandboxId()}/${deploymentId}`;
+    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
     const $publish = isMacroType
       ? this.getMacroPublisher(prefix)
       : this.getServicePublisher(prefix);
@@ -427,7 +441,7 @@ export class ClientHelper {
     });
   }
   /**
-   * @param {{listener: Object, prefix: string, Type: class, $publish: Function}} parameters
+   * @param {{listener: Object, prefix: () => string, Type: class, $publish: Function}} parameters
    * @return {Object} service
    */
   createServiceByPublisher({ listener, prefix, Type, $publish }) {
@@ -446,12 +460,12 @@ export class ClientHelper {
   }
   /**
    * Get a publisher for a macro service that return a promise
-   * @param {string} prefix - Channel prefix
+   * @param {() => string} prefix - Channel prefix
    * @return {Function} publisher
    */
   getAsyncMacroPublisher(prefix) {
     return (name, parameters, hardFail = false, debug = 1) => {
-      const channel = `${prefix}/call`;
+      const channel = `${prefix()}/call`;
       const uniqRequestId = this.getUniqRequestId();
       const subscriptions = {};
       return new Promise((resolve, reject) => {
@@ -487,12 +501,12 @@ export class ClientHelper {
   }
   /**
    * Get a publisher for a service
-   * @param {string} prefix - Channel prefix
+   * @param {() => string} prefix - Channel prefix
    * @return {Function} publisher
    */
   getAsyncServicePublisher(prefix) {
     return (method, parameters) => {
-      const channel = `${prefix}/${method}`;
+      const channel = `${prefix()}/${method}`;
       const uniqRequestId = this.getUniqRequestId();
       const subscriptions = {};
       return new Promise((resolve, reject) => {
@@ -528,12 +542,12 @@ export class ClientHelper {
   /**
    * Get a publisher for a task service that return a promise
    * @experimental
-   * @param {string} prefix - Channel prefix
+   * @param {() => string} prefix - Channel prefix
    * @return {Function} publisher
    */
   getAsyncTaskPublisher(prefix) {
     return (name, namespace = '', parameters = null) => {
-      const channel = `${prefix}/${DEFAULT_TASK_CHANNEL}`;
+      const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
       const uniqRequestId = this.getUniqRequestId();
       const subscriptions = {};
       return new Promise((resolve, reject) => {
@@ -587,12 +601,12 @@ export class ClientHelper {
   }
   /**
    * Get a publisher for a macro service
-   * @param {string} prefix - Channel prefix
+   * @param {() => string} prefix - Channel prefix
    * @return {Function} publisher
    */
   getMacroPublisher(prefix) {
     return (name, parameters, hardFail = false, debug = 1) => {
-      const channel = `${prefix}/call`;
+      const channel = `${prefix()}/call`;
       const requestId = this.getUniqRequestId();
       return this.publish(channel, {
         debug,
@@ -635,16 +649,16 @@ export class ClientHelper {
    * @return {Promise} servers
    */
   getServers() {
-    return this.servers;
+    return this.config.then(({ servers }) => servers);
   }
   /**
    * Get a publisher for a service
-   * @param {string} prefix - Channel prefix
+   * @param {() => string} prefix - Channel prefix
    * @return {Function} publisher
    */
   getServicePublisher(prefix) {
     return (method, parameters) => {
-      const channel = `${prefix}/${method}`;
+      const channel = `${prefix()}/${method}`;
       return this.publish(channel, parameters);
     };
   }
@@ -771,7 +785,7 @@ export class ClientHelper {
   }
   /**
    * Subsribe all methods defined in the listener for the given prefixed channel
-   * @param {string} prefix - Channel prefix
+   * @param {() => string} prefix - Channel prefix
    * @param {Object} listener
    * @param {Object} subscriptions
    * @return {Object} subscriptions
@@ -791,7 +805,7 @@ export class ClientHelper {
       for (let method in listener) {
         if (listener.hasOwnProperty(method)) {
           if (subscriptions[method] === void 0) {
-            const channel = `${prefix}/${method}`;
+            const channel = `${prefix()}/${method}`;
             subscriptions[method] = this.cometd.subscribe(
               channel,
               listener[method],
@@ -806,7 +820,7 @@ export class ClientHelper {
    * Remove current server url from the server list and shuffle for another one
    */
   updateServerUrl() {
-    this.servers.then((servers) => {
+    this.getServers().then((servers) => {
       const index = servers.indexOf(this.serverUrl);
       if (index > -1) {
         servers.splice(index, 1);

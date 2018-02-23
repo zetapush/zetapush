@@ -13,19 +13,19 @@ describe('Macro', () => {
 
   it('Should correctly create a service Macro object', () => {
     const service = this.client.createService({
-      Type: ZetaPush.services.Macro,
+      Type: ZetaPushPlatform.Macro,
       listener: {}
     })
     expect(typeof service).toBe('object')
     expect(typeof service.call).toBe('function')
-    expect(service instanceof ZetaPush.services.Macro).toBeTruthy()
+    expect(service instanceof ZetaPushPlatform.Macro).toBeTruthy()
   })
 
   it('Should correctly respond when call hello macro', (done) => {
     const name = 'World'
     const client = this.client
     const service = client.createService({
-      Type: ZetaPush.services.Macro,
+      Type: ZetaPushPlatform.Macro,
       listener: {
         hello: function (message) {
           expect(message.data.result.message).toBe('Hello ' + name + ' !!!')
@@ -44,6 +44,6 @@ describe('Macro', () => {
     client.connect()
     expect(typeof service).toBe('object')
     expect(typeof service.call).toBe('function')
-    expect(service instanceof ZetaPush.services.Macro).toBeTruthy()
+    expect(service instanceof ZetaPushPlatform.Macro).toBeTruthy()
   })
 })
