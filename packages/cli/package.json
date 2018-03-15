@@ -7,7 +7,7 @@
     "bin/"
   ],
   "bin": {
-    "zetapush-cli": "./bin/cli.js"
+    "zeta": "./bin/cli.js"
   },
   "repository": "https://github.com/zetapush/zetapush",
   "author": "ci@zetapush.com",
