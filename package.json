@@ -1,6 +1,5 @@
 {
   "name": "zetapush",
-  "version": "0.2.0-2",
   "description": "Zeta Push Next",
   "main": "index.js",
   "repository": {
