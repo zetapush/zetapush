@@ -10,4 +10,4 @@ export { uuid } from './utils/random.js';
  * SDK Version
  * @type {string}
  */
-export const VERSION = '0.0.0';
+export const VERSION = '0.4.0';
