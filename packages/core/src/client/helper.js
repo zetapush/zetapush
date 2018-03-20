@@ -421,6 +421,112 @@ export class ClientHelper {
       $publish,
     });
   }
+
+  /**
+   * Create a generic proxified macro service
+   * @param {string} deploymentId
+   * @return {Proxy} proxy
+   * @throws {Error} Throw error if Proxy class is not defined
+   */
+  createProxyMacroService(deploymentId = Macro.DEFAULT_DEPLOYMENT_ID) {
+    if (typeof Proxy === 'undefined') {
+      throw new Error('`Proxy` is not support in your environment');
+    }
+    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
+    return new Proxy(
+      {},
+      {
+        get: (target, method) => {
+          return (parameters) => {
+            const channel = `${prefix()}/call`;
+            const uniqRequestId = this.getUniqRequestId();
+            const subscriptions = {};
+            return new Promise((resolve, reject) => {
+              const handler = ({ data = {} }) => {
+                const { result = {}, errors = [], requestId } = data;
+                if (requestId === uniqRequestId) {
+                  // Handle errors
+                  if (errors.length > 0) {
+                    reject(errors);
+                  } else {
+                    resolve(result);
+                  }
+                  this.unsubscribe(subscriptions);
+                }
+              };
+              // Create dynamic listener method
+              const listener = {
+                [method]: handler,
+                [DEFAULT_MACRO_CHANNEL]: handler,
+              };
+              // Ad-Hoc subscription
+              this.subscribe(prefix, listener, subscriptions);
+              // Publish message on channel
+              this.publish(channel, {
+                debug: 1,
+                hardFail: false,
+                name: method,
+                parameters,
+                requestId: uniqRequestId,
+              });
+            });
+          };
+        },
+      },
+    );
+  }
+  /**
+   * Create a generic proxified service
+   * @param {string} deploymentId
+   * @return {Proxy} proxy
+   * @throws {Error} Throw error if Proxy class is not defined
+   */
+  createProxyService(deploymentId) {
+    if (typeof Proxy === 'undefined') {
+      throw new Error('`Proxy` is not support in your environment');
+    }
+    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
+    return new Proxy(
+      {},
+      {
+        get: (target, method) => {
+          return (parameters) => {
+            const channel = `${prefix()}/${method}`;
+            const uniqRequestId = this.getUniqRequestId();
+            const subscriptions = {};
+            return new Promise((resolve, reject) => {
+              const onError = ({ data = {} }) => {
+                const { requestId, code, message } = data;
+                if (requestId === uniqRequestId) {
+                  reject(new ApiError(message, code));
+                  this.unsubscribe(subscriptions);
+                }
+              };
+              const onSuccess = ({ data = {} }) => {
+                const { requestId, ...result } = data;
+                if (requestId === uniqRequestId) {
+                  resolve(result);
+                  this.unsubscribe(subscriptions);
+                }
+              };
+              // Create dynamic listener method
+              const listener = {
+                [method]: onSuccess,
+                [DEFAULT_ERROR_CHANNEL]: onError,
+              };
+              // Ad-Hoc subscription
+              this.subscribe(prefix, listener, subscriptions);
+              // Publish message on channel
+              this.publish(channel, {
+                ...parameters,
+                requestId: uniqRequestId,
+              });
+            });
+          };
+        },
+      },
+    );
+  }
   /**
    * Create a publish/subscribe service
    * @param {{listener: Object, Type: class, deploymentId: string}} parameters
