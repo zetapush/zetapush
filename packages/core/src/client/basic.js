@@ -127,7 +127,7 @@ export class Client {
   }
   /**
    * Create a promise based service instance
-   * @param {{listener: Object, Type: class, deploymentId: string}} parameters
+   * @param {{deploymentId: string, listener: Object, Type: class}} parameters
    * @return {Object} service
    * @example
    * const stack = client.createAsyncService({
@@ -148,7 +148,7 @@ export class Client {
   }
   /**
    * Create a promise based macro service instance
-   * @param {{listener: Object, Type: class, deploymentId: string}} parameters
+   * @param {{deploymentId: string, listener: Object, Type: class}} parameters
    * @return {Object} service
    * @example
    * const api = client.createAsyncMacroService({
@@ -169,7 +169,7 @@ export class Client {
   }
   /**
    * Create a promise based task service instance
-   * @param {{listener: Object, Type: class, deploymentId: string}} parameters
+   * @param {{deploymentId: string, Type: class}} parameters
    * @return {Object} service
    * @example
    * const api = client.createAsyncMacroService({

@@ -86,6 +86,11 @@ interface ServiceDeclaration {
   Type: Service;
 }
 
+interface TaskServiceDeclaration {
+  deploymentId?: string;
+  Type: Service;
+}
+
 interface Token {
   token: string;
 }
@@ -107,6 +112,10 @@ interface SmartClientDeployment {
 }
 
 type ConnectionStatusHandler = number;
+
+type ProxyService = {
+  [method: string]: <Input, Output>(parameters: Input) => Output;
+}
 
 export interface ClientOptions extends Options {
   authentication(): AbstractHandshake;
@@ -146,10 +155,14 @@ export class Client {
   helper: ClientHelper;
   constructor(options: ClientOptions);
   addConnectionStatusListener(listener: ConnectionStatusListener): ConnectionStatusHandler;
-  connect(): void;
+  connect(): Promise<void>;
   createService(declaration: ServiceDeclaration): Service;
   createAsyncMacroService(declaration: ServiceDeclaration): services.Macro;
-  disconnect(): void;
+  createAsyncTaskService(declaration: TaskServiceDeclaration): Service;
+  createAsyncService(declaration: ServiceDeclaration): Service;
+  createProxyMacroService(deploymentId?: string): ProxyService;
+  createProxyService(deploymentId: string): ProxyService;
+  disconnect(): Promise<void>;
   isConnected(): boolean;
   getSandboxId(): string;
   getResource(): string;
