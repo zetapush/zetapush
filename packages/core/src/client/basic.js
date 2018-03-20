@@ -172,6 +172,40 @@ export class Client {
     });
   }
   /**
+   * Create a generic proxified macro service
+   * Each property of the proxified service wrap a publish/subscribe
+   * Publish parameters on channel --> /service/${sandboxId}/${deploymentId}/call
+   * Subscribe success on channel --> /service/${sandboxId}/${deploymentId}/${method}
+   * Subscribe error on channel --> /service/${sandboxId}/${deploymentId}/error
+   * If remote method publish response on a specific channel, generic proxy will not raise success
+   * @example
+   * const service = client.createProxyMacroService();
+   * service.myMethod({ key: 'value' }).then((response) => console.log('myMethod', response))
+   * @param {string} deploymentId
+   * @return {Proxy} proxy
+   * @throws {Error} Throw error if Proxy class is not defined
+   */
+  createProxyMacroService(deploymentId) {
+    return this.helper.createProxyMacroService(deploymentId);
+  }
+  /**
+   * Create a generic proxified service
+   * Each property of the proxified service wrap a publish/subscribe
+   * Publish parameters on channel --> /service/${sandboxId}/${deploymentId}/${method}
+   * Subscribe success on channel --> /service/${sandboxId}/${deploymentId}/${method}
+   * Subscribe error on channel --> /service/${sandboxId}/${deploymentId}/error
+   * If remote method publish response on a specific channel, generic proxy will not raise success
+   * @example
+   * const service = client.createProxyService('');
+   * service.myMethod({ key: 'value' }).then((response) => console.log('myMethod', response))
+   * @param {string} deploymentId
+   * @return {Proxy} proxy
+   * @throws {Error} Throw error if Proxy class is not defined
+   */
+  createProxyService(deploymentId) {
+    return this.helper.createProxyService(deploymentId);
+  }
+  /**
    * Create a publish/subscribe for a service type
    * @param {{listener: Object, Type: class, deploymentId: string}} parameters
    * @return {Object} service
