@@ -32,14 +32,11 @@ describe('Proxy Macro Service API', () => {
       apiUrl, sandboxId
     })
     const service = client.createProxyMacroService()
-    client.onConnectionEstablished(() => {
-      service.hello({
-        name: 'createProxyMacroService'
-      }).then((response) => {
-        expect(typeof response).toBe('object')
-        done()
-      })
-    })
     client.connect()
+      .then(() => service.hello({
+        name: 'createProxyMacroService'
+      }))
+      .then((response) => expect(typeof response).toBe('object'))
+      .then(() => done())
   })
 })

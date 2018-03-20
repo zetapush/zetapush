@@ -16,12 +16,10 @@ describe('Client', () => {
       }
     })
     it('Should connect', (done) => {
-      client.onConnectionEstablished(() => {
-        expect(client.isConnected()).toBeTruthy()
-        done()
-      })
       expect(client.isConnected()).toBeFalsy()
       client.connect()
+        .then(() => expect(client.isConnected()).toBeTruthy())
+        .then(() => done())
     })
   })
 
@@ -37,12 +35,10 @@ describe('Client', () => {
       }
     })
     it('Should connect', (done) => {
-      client.onConnectionEstablished(() => {
-        expect(client.isConnected()).toBeTruthy()
-        done()
-      })
       expect(client.isConnected()).toBeFalsy()
       client.connect()
+        .then(() => expect(client.isConnected()).toBeTruthy())
+        .then(() => done())
     })
   })
 })

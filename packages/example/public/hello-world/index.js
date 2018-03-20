@@ -46,13 +46,9 @@ const api = client.createAsyncTaskService({
   Type: Api,
 });
 
-client.onConnectionEstablished(async () => {
-  console.debug('onConnectionEstablished');
-  [...document.querySelectorAll('button')].forEach((node) =>
-    node.removeAttribute('disabled'),
-  );
-});
-client.connect();
+client.connect().then(() => [...document.querySelectorAll('button')].forEach((node) =>
+  node.removeAttribute('disabled'),
+));
 
 const uuid = ((id = 0) => () => ++id)();
 

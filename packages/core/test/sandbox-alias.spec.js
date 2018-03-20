@@ -13,16 +13,15 @@ describe('WeakClient', () => {
   describe('Connection with sandbox alias', () => {
     it('Should connect', (done) => {
       const client = this.client
-      client.onConnectionEstablished(() => {
-        expect(client.isConnected()).toBeTruthy()
-        done()
-      })
       client.connect()
+        .then(() => expect(client.isConnected()).toBeTruthy())
+        .then(() => done())
     })
   })
   describe('Call service created before connection', () => {
     it('Should connect', (done) => {
-      const service = this.client.createService({
+      const client = this.client
+      const service = client.createService({
         Type: ZetaPushPlatform.Macro,
         listener: {
           welcome(message) {
@@ -31,16 +30,13 @@ describe('WeakClient', () => {
           }
         }
       })
-      const client = this.client
-      client.onConnectionEstablished(() => {
-        service.call({
+      client.connect()
+        .then(() => service.call({
           name: 'welcome',
           parameters: {
             message: 'CI'
           }
-        })
-      })
-      client.connect()
+        }))
     })
   })
 })

@@ -36,57 +36,6 @@ export class ServerClient extends Client {
      */
     this.timeout = timeout;
   }
-  disconnect() {
-    return new Promise((resolve, reject) => {
-      const handlers = [];
-      if (this.isConnected()) {
-        const onConnectionClosed = () => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
-          // Resolve disconnection
-          resolve();
-        };
-        handlers.push(this.onConnectionClosed(onConnectionClosed));
-        // Disconnect client
-        super.disconnect();
-      } else {
-        // Resolve disconnection
-        resolve();
-      }
-    });
-  }
-  connect() {
-    return new Promise((resolve, reject) => {
-      const handlers = [];
-      this.disconnect().then(() => {
-        const onFailedHandshake = (error) => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
-          // Reconnect client via weak auth
-          super.connect();
-          // Reject connection
-          reject(error);
-        };
-        const onConnectionEstablished = () => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
-          // Resolve connection success
-          resolve();
-        };
-        // Handle connection success and fail
-        handlers.push(this.onConnectionEstablished(onConnectionEstablished));
-        handlers.push(this.onFailedHandshake(onFailedHandshake));
-        // Connect client to ZetaPush backend
-        super.connect();
-      });
-    });
-  }
   subscribeTaskServer(Worker, deploymentId = Queue.DEFAULT_DEPLOYMENT_ID) {
     console.log('subscribeTaskServer', Worker, deploymentId);
     const queue = this.createService({

@@ -32,17 +32,15 @@ describe('AsyncMacro', () => {
     const client = this.client
     const service = this.service
 
-    client.onConnectionEstablished(() => {
-      service.hello({
-        name: name
-      }).then(function (result) {
-        expect(result.message).toBe('Hello ' + name + ' !!!')
-        done()
-      })
-    })
-    client.connect()
     expect(typeof service).toBe('object')
     expect(typeof service.call).toBe('function')
     expect(service instanceof ZetaPushPlatform.Macro).toBeTruthy()
+
+    client.connect()
+      .then(() => service.hello({
+        name: name
+      }))
+      .then((result) => expect(result.message).toBe('Hello ' + name + ' !!!'))
+      .then(() => done())
   })
 })

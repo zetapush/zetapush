@@ -33,28 +33,20 @@ describe('WeakClient', () => {
   describe('Connection', () => {
     it('Should connect', (done) => {
       const client = this.client
-      client.onConnectionEstablished(() => {
-        expect(client.isConnected()).toBeTruthy()
-        done()
-      })
       client.connect()
+        .then(() => expect(client.isConnected()).toBeTruthy())
+        .then(() => done())
     })
   })
 
   describe('WeakClient deconnection', () => {
     it('Should connect and disconnect', (done) => {
       const client = this.client
-      client.addConnectionStatusListener({
-        onConnectionEstablished: () => {
-          expect(client.isConnected()).toBeTruthy()
-          client.disconnect()
-        },
-        onConnectionClosed: () => {
-          expect(client.isConnected()).toBeFalsy()
-          done()
-        }
-      })
       client.connect()
+        .then(() => expect(client.isConnected()).toBeTruthy())
+        .then(() => client.disconnect())
+        .then(() => expect(client.isConnected()).toBeFalsy())
+        .then(() => done())
     })
   })
 
