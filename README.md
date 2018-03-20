@@ -1,5 +1,3 @@
-
-
 <p align="center">
   <a href="https://zetapush.com/">
     <img alt="zetapush" src="https://zetapush.com/assets/img/zt_logo@2x.png" width="500">
@@ -11,7 +9,6 @@
 </p>
 
 [![NPM version][npm-version-image]][npm-url]
-[![Document][doc-version-image]][doc-url]
 [![Build Status][build-status-image]][build-status-url]
 
 # ZetaPush JavaScript SDK
@@ -73,9 +70,6 @@ client.connect()
 
 [npm-version-image]: http://img.shields.io/npm/v/@zetapush/core.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/@zetapush/core
-
-[doc-version-image]: http://zetapush.github.io/zetapush-js/badge.svg?t=0
-[doc-url]: http://zetapush.github.io/zetapush-js/
 
 [build-status-image]: http://img.shields.io/travis/zetapush/zetapush-js.svg?style=flat
 [build-status-url]: http://travis-ci.org/zetapush/zetapush-js
