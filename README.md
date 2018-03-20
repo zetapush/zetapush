@@ -71,5 +71,5 @@ client.connect()
 [npm-version-image]: http://img.shields.io/npm/v/@zetapush/core.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/@zetapush/core
 
-[build-status-image]: http://img.shields.io/travis/zetapush/zetapush-js.svg?style=flat
-[build-status-url]: http://travis-ci.org/zetapush/zetapush-js
+[build-status-image]: http://img.shields.io/travis/zetapush/zetapush.svg?style=flat
+[build-status-url]: http://travis-ci.org/zetapush/zetapush
