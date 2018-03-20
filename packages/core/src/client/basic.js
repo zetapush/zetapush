@@ -95,19 +95,35 @@ export class Client {
   }
   /**
    * Safely connect client to ZetaPush
+   * @return {Promise}
    */
   connect() {
-    if (this.isConnected()) {
-      const handler = this.addConnectionStatusListener({
-        onConnectionClosed: () => {
-          this.removeConnectionStatusListener(handler);
-          this.helper.connect();
-        },
+    return new Promise((resolve, reject) => {
+      const handlers = [];
+      this.disconnect().then(() => {
+        const onFailedHandshake = (error) => {
+          // Remove connection status listener
+          handlers.forEach((handler) => {
+            this.removeConnectionStatusListener(handler);
+          });
+          // Reject connection
+          reject();
+        };
+        const onConnectionEstablished = () => {
+          // Remove connection status listener
+          handlers.forEach((handler) => {
+            this.removeConnectionStatusListener(handler);
+          });
+          // Resolve connection success
+          resolve();
+        };
+        // Handle connection success and fail
+        handlers.push(this.onConnectionEstablished(onConnectionEstablished));
+        handlers.push(this.onFailedHandshake(onFailedHandshake));
+        // Connect client to ZetaPush backend
+        this.helper.connect();
       });
-      this.disconnect();
-    } else {
-      this.helper.connect();
-    }
+    });
   }
   /**
    * Create a promise based service instance
@@ -251,12 +267,29 @@ export class Client {
     });
   }
   /**
-   * Disonnect client from ZetaPush
+   * Disconnect client from ZetaPush
+   * @return {Promise}
    */
   disconnect() {
-    if (this.isConnected()) {
-      this.helper.disconnect();
-    }
+    return new Promise((resolve, reject) => {
+      const handlers = [];
+      if (this.isConnected()) {
+        const onConnectionClosed = () => {
+          // Remove connection status listener
+          handlers.forEach((handler) => {
+            this.removeConnectionStatusListener(handler);
+          });
+          // Resolve disconnection
+          resolve();
+        };
+        handlers.push(this.onConnectionClosed(onConnectionClosed));
+        // Disconnect client
+        this.helper.disconnect();
+      } else {
+        // Resolve disconnection
+        resolve();
+      }
+    });
   }
   /**
    * Is client connected to ZetaPush
@@ -305,13 +338,11 @@ export class Client {
    *     password: '<YOUR-USER-PASSWORD>'
    *   })
    * })
-   * // Add connection establised listener
-   * client.onConnectionEstablished(() => {
-   *   console.log('onConnectionEstablished')
+   * client.connect().then(() => {
+   *   console.log('connected')
    *   const profile = client.getUserInfo()
    *   console.log('Your profile', profile)
    * })
-   * client.connect()
    */
   getUserInfo() {
     return this.helper.getUserInfo();

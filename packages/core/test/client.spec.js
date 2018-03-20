@@ -43,32 +43,26 @@ describe('Client', () => {
   describe('Connection', () => {
     it('Should be connected', (done) => {
       const client = this.client
-      client.onConnectionEstablished(() => {
-        expect(client.isConnected()).toBeTruthy()
-        done()
-      })
       expect(client.isConnected()).toBeFalsy()
       client.connect()
+        .then(() => expect(client.isConnected()).toBeTruthy())
+        .then(() => done())
     })
 
     it('Should have a valid userId', (done) => {
       const client = this.client
-      client.onConnectionEstablished(() => {
-        expect(client.getUserId()).toBeTruthy()
-        done()
-      })
       expect(client.getUserId()).toBeNull()
       client.connect()
+        .then(() => expect(client.getUserId()).toBeTruthy())
+        .then(() => done())
     })
 
     it('Should have a valid userInfo', (done) => {
       const client = this.client
-      client.onConnectionEstablished(() => {
-        expect(client.getUserInfo()).not.toBeUndefined()
-        done()
-      })
       expect(client.getUserInfo()).toBeNull()
       client.connect()
+        .then(() => expect(client.getUserInfo()).not.toBeUndefined())
+        .then(() => done())
     })
   })
 })

@@ -32,21 +32,7 @@ describe('Proxy Service API', () => {
       apiUrl, sandboxId
     })
     const service = client.createProxyService(ZetaPushPlatform.Macro.DEFAULT_DEPLOYMENT_ID)
-    client.onConnectionEstablished(() => {
-      /*
-      service.call({
-        name: 'hello',
-        parameters: {
-          name: 'createProxyService'
-        }
-      }).then((response) => {
-        expect(typeof response).toBe('object')
-      }).finally(() => {
-        done();
-      });
-      */
-      done();
-    })
     client.connect()
+      .then(() => done())
   })
 })

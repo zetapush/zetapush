@@ -117,12 +117,6 @@ export class SmartClient extends Client {
     */
   }
   /**
-   * Disconnect client from ZetaPush backend
-   */
-  disconnect() {
-    super.disconnect();
-  }
-  /**
    * @return {Object}
    */
   getCredentials() {

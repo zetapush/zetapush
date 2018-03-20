@@ -33,15 +33,13 @@ describe('Macro', () => {
         }
       }
     })
-    client.onConnectionEstablished(() => {
-      service.call({
+    client.connect()
+      .then(() => service.call({
         name: 'hello',
         parameters: {
           name: name
         }
-      })
-    })
-    client.connect()
+      }))
     expect(typeof service).toBe('object')
     expect(typeof service.call).toBe('function')
     expect(service instanceof ZetaPushPlatform.Macro).toBeTruthy()
