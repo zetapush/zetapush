@@ -52,15 +52,13 @@ const service = client.createService({
     }
   }
 })
-// Add connection listener
-client.onConnectionEstablished(() => {
+// Connect client to ZetaPush BaaS
+client.connect().then(() => {
   // Call service methods
   service.list({
     stack: '<YOUR-STACK-ID>'
   })
 })
-// Connect client to ZetaPush BaaS
-client.connect()
 ```
 
 ## Any questions?
