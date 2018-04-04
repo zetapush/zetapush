@@ -24,11 +24,12 @@ yarn add @zetapush/core
 From npm
 
 ```console
-npm install @zetapush/core --save
+npm install @zetapush/{core,platform} --save
 ```
 
 ```js
 import { Client, Authentication } from '@zetapush/core'
+import { Stack } from '@zetapush/platform'
 ```
 
 ## Usage
@@ -45,7 +46,7 @@ const client = new Client({
 })
 // Create a Stack service
 const service = client.createService({
-  Type: services.Stack,
+  Type: Stack,
   listener: {
     list(message) {
       console.log('list callback', message)
