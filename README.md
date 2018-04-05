@@ -13,6 +13,8 @@
 
 # ZetaPush JavaScript SDK
 
+> This project is a monorep containing all source of @zetapush/* ecosytem
+
 ## Install
 
 From yarn
