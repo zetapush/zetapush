@@ -1,10 +1,31 @@
 #!/usr/bin/env node
 
-const { _ } = require('minimist')(process.argv.slice(2));
+const program = require('commander');
 
+const { version } = require('../package.json');
+
+const push = require('./commands/push');
 const run = require('./commands/run');
 const bootstrap = require('./utils/bootstrap');
 
-const path = _.length === 1 ? `./${_[0]}` : '.';
+program
+  .version(version)
+  .option('-l, --login <login>', 'account login')
+  .option('-p, --password <password>', 'account password')
+  .option('-p, --sandbox <sandbox>', 'sandbox id');
 
-bootstrap(path).then(({ zetapush, Api }) => run(Api, zetapush));
+program
+  .command('run <path>')
+  .description('Run your code')
+  .action((path) =>
+    bootstrap(path).then(({ Api, zetapush }) => run(Api, zetapush)),
+  );
+
+program
+  .command('push <path>')
+  .description('push your code on remote cloud')
+  .action((path) =>
+    bootstrap(path).then(({ zetapush }) => push(path, zetapush)),
+  );
+
+program.parse(process.argv);
