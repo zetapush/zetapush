@@ -9,6 +9,34 @@ const { URL } = require('url');
 
 const { log, error } = require('../utils/log');
 
+const progression = {};
+
+const getProgress = (config, recipeId) =>
+  new Promise((resolve, reject) => {
+    log('getProgress', config, recipeId);
+    const url = new URL(config.apiUrl);
+    const options = {
+      headers: {
+        'X-Authorization': JSON.stringify({
+          username: config.login,
+          password: config.password,
+        }),
+      },
+      method: 'GET',
+      url: `${url.protocol}//${url.hostname}:${
+        url.port
+      }/zbo/orga/recipe/status/${config.sandboxId}/${recipeId}`,
+    };
+    request(options, (err, response, body) => {
+      if (err) {
+        reject(err);
+        return error('Get Progress failed:', err);
+      }
+      log('Progress successful', body);
+      resolve(JSON.parse(body));
+    });
+  });
+
 const run = (target, config) => {
   target = path.isAbsolute(target)
     ? target
@@ -45,7 +73,20 @@ const run = (target, config) => {
       if (err) {
         return error('Upload failed:', err);
       }
+      if (response.statusCode !== 200) {
+        return error('Upload failed:', response.statusCode, body);
+      }
       log('Upload successful', body);
+      const { recipeId } = JSON.parse(body);
+      (async function check() {
+        const { checks, deploys, success, finished } = await getProgress(
+          config,
+          recipeId,
+        );
+        if (!finished) {
+          setTimeout(check, 1000);
+        }
+      })();
     });
   });
 };
