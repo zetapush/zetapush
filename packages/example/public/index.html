@@ -9,7 +9,6 @@
     body {
       font-family: Arial, Helvetica, sans-serif;
     }
-
     body::before {
       display: block;
       content: "Open Your Console";
@@ -25,12 +24,10 @@
       font-family: Calibri, Helvetica, Arial;
       font-weight: bold;
     }
-
     nav {
       display: flex;
       flex-direction: column;
     }
-
     button,
     label {
       margin: 0.5rem 1rem;
@@ -46,13 +43,11 @@
       box-sizing: border-box;
       align-items: flex-start;
     }
-
     button::after,
     label::after {
       content: "(" attr(data-count) ")";
       display: inline-block;
     }
-
     button[disabled],
     label[disabled] {
       opacity: 0.9;
@@ -60,7 +55,6 @@
       cursor: not-allowed;
       color: graytext;
     }
-
     input[type="file"] {
       position: absolute;
       overflow: hidden;
@@ -72,15 +66,15 @@
 
 <body>
   <nav>
-    <button disabled class="js-createGroup">createGroup</button>
-    <button disabled class="js-deleteGroup">deleteGroup</button>
-    <button disabled class="js-getGroup">getGroup</button>
-    <button disabled class="js-getGroupList">getGroupList</button>
+    <button disabled class="js-Hello">hello</button>
+    <button disabled class="js-Reduce">reduce</button>
+    <button disabled class="js-Wait">wait</button>
   </nav>
   <main>
     <ul></ul>
   </main>
   <script src="https://unpkg.com/@zetapush/core"></script>
+  <script src="https://unpkg.com/@zetapush/platform"></script>
   <script src="./index.js"></script>
 </body>
 
