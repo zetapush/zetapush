@@ -6,6 +6,8 @@ const di = require('../utils/di');
 const { log, error, todo, warn } = require('../utils/log');
 
 const run = (Api, config) => {
+  log(`Execute command <run> ${target}`);
+
   const resource = `node_js_worker_${uuid()}`;
 
   config = {

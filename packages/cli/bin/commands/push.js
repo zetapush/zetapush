@@ -1,21 +1,41 @@
-const request = require('request');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
-const zip = require('zip-dir');
+const request = require('request');
 const FormData = require('form-data');
-const concat = require('concat-stream');
 const { URL } = require('url');
 const ProgressBar = require('ascii-progress');
 
 const { log, error } = require('../utils/log');
+const compress = require('../utils/compress');
 
-const progression = {};
+/**
+ * Common blacklisted pattern
+ * @type {String[]}
+ */
+const BLACKLIST = ['node_modules', '.DS_Store', '.gitignore'];
 
+/**
+ * Get a blacklist based filter function
+ * @param {String[]} blacklist
+ */
+const filter = (blacklist) => (filepath, stat) =>
+  blacklist.reduce(
+    (filtered, check) => filtered && !filepath.includes(check),
+    true,
+  );
+
+/**
+ * Get deployment progression for a given recipe id (aka deployment token)
+ * @param {Object} config
+ * @param {String} recipeId
+ */
 const getProgress = (config, recipeId) =>
   new Promise((resolve, reject) => {
-    log('getProgress', config, recipeId);
-    const url = new URL(config.apiUrl);
+    const { protocol, hostname, port } = new URL(config.apiUrl);
+    const url = `${protocol}//${hostname}:${port}/zbo/orga/recipe/status/${
+      config.sandboxId
+    }/${recipeId}`;
     const options = {
       headers: {
         'X-Authorization': JSON.stringify({
@@ -24,44 +44,108 @@ const getProgress = (config, recipeId) =>
         }),
       },
       method: 'GET',
-      url: `${url.protocol}//${url.hostname}:${
-        url.port
-      }/zbo/orga/recipe/status/${config.sandboxId}/${recipeId}`,
+      url,
     };
-    request(options, (err, response, body) => {
-      if (err) {
-        reject(err);
-        return error('Get Progress failed:', err);
+    log('Get progresssion', url);
+    request(options, (failure, response, body) => {
+      if (failure) {
+        reject(failure);
+        return error('Get progresssion failed', failure);
       }
       if (response.statusCode !== 200) {
         reject(response.statusCode);
-        return error('Upload failed:', response.statusCode, body);
+        return error('Get progresssion failed', response.statusCode, body);
       }
-      log('Progress successful', body);
+      log('Get progresssion successful', body);
       resolve(JSON.parse(body));
     });
   });
 
-const run = (target, config) => {
+/**
+ * Generate a normalized file use by ZBO to provision ZetaPush Services
+ * @param {String} filepath
+ * @param {Object} config
+ */
+const provisionning = (filepath, config) =>
+  new Promise((resolve, reject) => {
+    const items = ['weak'];
+    const provision = JSON.stringify({
+      businessId: config.sandboxId,
+      items: items.map((type) => ({
+        name: type,
+        item: {
+          itemId: type,
+          businessId: config.sandboxId,
+          deploymentId: `${type}_0`,
+          description: `${type}(${type}:${type}_0)`,
+          options: {},
+          forbiddenVerbs: [],
+          enabled: true,
+        },
+      })),
+      calls: [],
+    });
+    fs.writeFile(filepath, provision, (failure) => {
+      if (failure) {
+        reject(failure);
+        return error('provisionning', failure);
+      }
+      resolve({ filepath, provision });
+    });
+  });
+
+/**
+ * Generate an archive (.zip file) used by upload process
+ * @param {String} target
+ * @param {Object} config
+ */
+const archive = (target, config) => {
   target = path.isAbsolute(target)
     ? target
     : path.resolve(process.cwd(), target);
-  log(`Push your code`, target, config);
-  const saveToFilePath = path.join(os.tmpdir(), `${config.sandboxId}.zip`);
+
+  const ts = Date.now();
+  const root = path.join(os.tmpdir(), String(ts));
+  const app = path.join(root, 'app');
+  const rootArchive = `${root}.zip`;
+  const workerArchive = path.join(root, `worker-${config.sandboxId}.zip`);
+
   const options = {
-    each: (path) => log('Zip Element', path),
-    filter: (path, stat) => !path.includes('node_modules'),
-    saveTo: saveToFilePath,
+    each: (filepath) => log('Zipping', filepath),
+    filter: filter(BLACKLIST),
   };
-  const progress = new ProgressBar({
-    width: 20,
-  });
-  zip(target, options, (err, buffer) => {
-    log(`Zip your code`, saveToFilePath);
-    if (err) {
-      return error('zip', err);
-    }
-    const url = new URL(config.apiUrl);
+
+  const mkdir = () =>
+    new Promise((resolve, reject) => {
+      fs.mkdir(root, (failure) => {
+        if (failure) {
+          return reject(failure);
+        }
+        resolve(root);
+      });
+    });
+
+  return mkdir()
+    .then(() =>
+      compress(target, Object.assign({}, options, { saveTo: workerArchive })),
+    )
+    .then(() => provisionning(app, config))
+    .then(() =>
+      compress(root, Object.assign({}, options, { saveTo: rootArchive })),
+    )
+    .then(() => rootArchive);
+};
+
+/**
+ * Upload user code archive on ZetaPush platform
+ * @param {String} archived
+ * @param {Object} config
+ */
+const upload = (archived, config) =>
+  new Promise((resolve, reject) => {
+    log(`Uploading`, archived);
+    const { protocol, hostname, port } = new URL(config.apiUrl);
+    const url = `${protocol}//${hostname}:${port}/zbo/orga/recipe/cook`;
     const options = {
       headers: {
         'X-Authorization': JSON.stringify({
@@ -70,37 +154,60 @@ const run = (target, config) => {
         }),
       },
       method: 'POST',
-      url: `${url.protocol}//${url.hostname}:${url.port}/zbo/orga/recipe/cook`,
+      url,
       formData: {
         businessId: config.sandboxId,
         description: `Deploy on sandbox ${config.sandboxId}`,
-        file: fs.createReadStream(saveToFilePath),
+        file: fs.createReadStream(archived),
       },
     };
-    request(options, (err, response, body) => {
-      if (err) {
-        return error('Upload failed:', err);
+    log('Upload archive', url);
+    request(options, (failure, response, body) => {
+      if (failure) {
+        error('Upload failed:', failure);
+        return reject(failure);
       }
       if (response.statusCode !== 200) {
-        return error('Upload failed:', response.statusCode, body);
+        error('Upload failed:', response.statusCode, body);
+        return reject({ body, statusCode: response.statusCode });
       }
-      log('Upload successful', body);
-      const { recipeId } = JSON.parse(body);
-      if (recipeId === void 0) {
-        return error('Missing recipeId', body);
-      }
-      (async function check() {
-        const { checks, deploys, success, finished } = await getProgress(
-          config,
-          recipeId,
-        );
-        progress.tick(1);
-        if (!finished) {
-          setTimeout(check, 1000);
-        }
-      })();
+      resolve(JSON.parse(body));
     });
   });
+
+/**
+ * Bundle and upload user code on ZetaPush platform
+ * @param {String} target
+ * @param {Object} config
+ */
+const push = (target, config) => {
+  log(`Execute command <push> ${target}`);
+  target = path.isAbsolute(target)
+    ? target
+    : path.resolve(process.cwd(), target);
+  archive(target, config)
+    .then((archived) => upload(archived, config))
+    .then((recipe) => {
+      log('Uploaded', recipe);
+      const { recipeId } = recipe;
+      if (recipeId === void 0) {
+        return error('Missing recipeId', recipe);
+      }
+      (async function check() {
+        try {
+          const { checks, deploys, success, finished } = await getProgress(
+            config,
+            recipeId,
+          );
+          if (!finished) {
+            setTimeout(check, 1000);
+          }
+        } catch (ex) {
+          error('Progression', ex);
+        }
+      })();
+    })
+    .catch((failure) => error('Push failed', failure));
 };
 
-module.exports = run;
+module.exports = push;

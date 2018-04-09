@@ -20,11 +20,9 @@
     "ascii-progress": "^1.0.5",
     "chalk": "^2.3.2",
     "commander": "^2.15.1",
-    "concat-stream": "^1.6.2",
     "form-data": "^2.3.2",
     "read-pkg": "^3.0.0",
     "resolve-cwd": "^2.0.0",
-    "resolve-pkg": "^1.0.0",
     "request": "^2.85.0",
     "zip-dir": "^1.0.2"
   },
