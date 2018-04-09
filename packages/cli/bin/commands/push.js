@@ -42,7 +42,7 @@ const run = (target, config) => {
   target = path.isAbsolute(target)
     ? target
     : path.resolve(process.cwd(), target);
-  log(`Push your code`, target);
+  log(`Push your code`, target, config);
   const saveToFilePath = path.join(os.tmpdir(), `${config.sandboxId}.zip`);
   const options = {
     each: (path) => log('Zip Element', path),
@@ -69,7 +69,7 @@ const run = (target, config) => {
       url: `${url.protocol}//${url.hostname}:${url.port}/zbo/orga/recipe/cook`,
       formData: {
         businessId: config.sandboxId,
-        description: config.sandboxId,
+        description: `Deploy on sandbox ${config.sandboxId}`,
         file: fs.createReadStream(saveToFilePath),
       },
     };
@@ -82,6 +82,9 @@ const run = (target, config) => {
       }
       log('Upload successful', body);
       const { recipeId } = JSON.parse(body);
+      if (recipeId === void 0) {
+        return error('Missing recipeId', body);
+      }
       (async function check() {
         const { checks, deploys, success, finished } = await getProgress(
           config,
