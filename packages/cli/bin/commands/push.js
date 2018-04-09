@@ -6,6 +6,7 @@ const zip = require('zip-dir');
 const FormData = require('form-data');
 const concat = require('concat-stream');
 const { URL } = require('url');
+const ProgressBar = require('ascii-progress');
 
 const { log, error } = require('../utils/log');
 
@@ -48,6 +49,9 @@ const run = (target, config) => {
     filter: (path, stat) => !path.includes('node_modules'),
     saveTo: saveToFilePath,
   };
+  const progress = new ProgressBar({
+    width: 20,
+  });
   zip(target, options, (err, buffer) => {
     log(`Zip your code`, saveToFilePath);
     if (err) {
@@ -83,6 +87,7 @@ const run = (target, config) => {
           config,
           recipeId,
         );
+        progress.tick(1);
         if (!finished) {
           setTimeout(check, 1000);
         }

@@ -17,6 +17,7 @@
     "@zetapush/cometd": "^0.5.0",
     "@zetapush/core": "^0.5.0",
     "@zetapush/server": "^0.5.0",
+    "ascii-progress": "^1.0.5",
     "chalk": "^2.3.2",
     "commander": "^2.15.1",
     "concat-stream": "^1.6.2",
