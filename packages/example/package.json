@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/example",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "main": "server/index.js",
   "private": true,
   "scripts": {
@@ -8,15 +8,15 @@
     "serve": "serve public/"
   },
   "dependencies": {
-    "@zetapush/cli": "^0.5.0",
-    "@zetapush/platform": "^0.5.0",
+    "@zetapush/cli": "^0.6.0",
+    "@zetapush/platform": "^0.6.0",
     "node": "8"
   },
   "zetapush": {
-    "apiUrl": "http://pinte-silver-2:8080/zbo/pub/business",
-    "sandboxId": "7peuprsv",
-    "login": "gregory",
-    "password": "password"
+    "apiUrl": "http://hq.zpush.io:9080/zbo/pub/business",
+    "sandboxId": "vMPONvQj",
+    "login": "gregory.houllier@zetapush.com",
+    "password": "zp.2015"
   },
   "devDependencies": {
     "serve": "^6.4.9"
