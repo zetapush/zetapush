@@ -33,6 +33,10 @@ const getProgress = (config, recipeId) =>
         reject(err);
         return error('Get Progress failed:', err);
       }
+      if (response.statusCode !== 200) {
+        reject(response.statusCode);
+        return error('Upload failed:', response.statusCode, body);
+      }
       log('Progress successful', body);
       resolve(JSON.parse(body));
     });
