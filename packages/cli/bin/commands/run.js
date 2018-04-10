@@ -5,7 +5,7 @@ const transports = require('@zetapush/cometd/lib/node/Transports');
 const di = require('../utils/di');
 const { log, error, todo, warn } = require('../utils/log');
 
-const run = (Api, config) => {
+const run = (config, Api) => {
   log(`Execute command <run> ${target}`);
 
   const resource = `node_js_worker_${uuid()}`;

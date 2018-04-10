@@ -13,11 +13,18 @@ import { Service } from '../core/index.js';
  * */
 export class Zpfs_hdfs extends Service {
   /**
+   * Get deployment type associated to Zpfs_hdfs service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'zpfs_hdfs';
+  }
+  /**
    * Get default deployment id associated to Zpfs_hdfs service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'zpfs_hdfs_0';
+    return `${Zpfs_hdfs.DEPLOYMENT_TYPE}_0`;
   }
   /**
    * Copies a file

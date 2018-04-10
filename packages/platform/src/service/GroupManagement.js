@@ -10,11 +10,18 @@ import { Service } from '../core/index.js';
  * */
 export class GroupManagement extends Service {
   /**
+   * Get deployment type associated to GroupManagement service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'groups';
+  }
+  /**
    * Get default deployment id associated to GroupManagement service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'groups_0';
+    return `${GroupManagement.DEPLOYMENT_TYPE}_0`;
   }
   /**
    * Adds me to a group

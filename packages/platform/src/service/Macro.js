@@ -11,11 +11,18 @@ import { Service } from '../core/index.js';
  * */
 export class Macro extends Service {
   /**
+   * Get deployment type associated to Macro service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'macro';
+  }
+  /**
    * Get default deployment id associated to Macro service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'macro_0';
+    return `${Macro.DEPLOYMENT_TYPE}_0`;
   }
   /**
    * Plays a previously recorded macro

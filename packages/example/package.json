@@ -4,21 +4,16 @@
   "main": "server/index.js",
   "private": true,
   "scripts": {
-    "start": "zeta push .",
-    "serve": "serve public/"
+    "start": "zeta push ."
   },
   "dependencies": {
     "@zetapush/cli": "^0.6.0",
-    "@zetapush/platform": "^0.6.0",
-    "node": "8"
+    "@zetapush/platform": "^0.6.0"
   },
   "zetapush": {
     "apiUrl": "http://hq.zpush.io:9080/zbo/pub/business",
     "sandboxId": "vMPONvQj",
     "login": "gregory.houllier@zetapush.com",
     "password": "zp.2015"
-  },
-  "devDependencies": {
-    "serve": "^6.4.9"
   }
 }

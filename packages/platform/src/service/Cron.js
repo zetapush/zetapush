@@ -16,11 +16,18 @@ import { Service } from '../core/index.js';
  * */
 export class Cron extends Service {
   /**
+   * Get deployment type associated to Cron service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'cron';
+  }
+  /**
    * Get default deployment id associated to Cron service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'cron_0';
+    return `${Cron.DEPLOYMENT_TYPE}_0`;
   }
   /**
    * List the configured tasks

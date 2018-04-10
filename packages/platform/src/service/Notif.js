@@ -17,10 +17,17 @@ import { Service } from '../core/index.js';
  * */
 export class Notif extends Service {
   /**
+   * Get deployment type associated to Notif service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'notif';
+  }
+  /**
    * Get default deployment id associated to Notif service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'notif_0';
+    return `${Notif.DEPLOYMENT_TYPE}_0`;
   }
 }

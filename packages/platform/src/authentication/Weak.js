@@ -14,11 +14,18 @@ import { Service } from '../core/index.js';
  * */
 export class Weak extends Service {
   /**
+   * Get deployment type associated to Weak service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'weak';
+  }
+  /**
    * Get default deployment id associated to Weak service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'weak_0';
+    return `${Weak.DEPLOYMENT_TYPE}_0`;
   }
   /**
    * Controls a session

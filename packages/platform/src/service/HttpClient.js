@@ -15,11 +15,18 @@ import { Service } from '../core/index.js';
  * */
 export class HttpClient extends Service {
   /**
+   * Get deployment type associated to Httpclient service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'httpclient';
+  }
+  /**
    * Get default deployment id associated to Httpclient service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'httpclient_0';
+    return `${HttpClient.DEPLOYMENT_TYPE}_0`;
   }
   /**
    * Makes a predefined request

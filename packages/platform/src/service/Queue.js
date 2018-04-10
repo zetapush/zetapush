@@ -17,11 +17,18 @@ import { Service } from '../core/index.js';
  * */
 export class Queue extends Service {
   /**
+   * Get deployment type associated to Queue service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'queue';
+  }
+  /**
    * Get default deployment id associated to Queue service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'queue_0';
+    return `${Queue.DEPLOYMENT_TYPE}_0`;
   }
   /**
    * Submits a task

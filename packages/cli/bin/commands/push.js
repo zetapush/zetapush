@@ -66,9 +66,11 @@ const getProgress = (config, recipeId) =>
  * @param {String} filepath
  * @param {Object} config
  */
-const provisionning = (filepath, config) =>
+const provisionning = (filepath, config, Api) =>
   new Promise((resolve, reject) => {
-    const items = ['weak'];
+    const { injected = [] } = Api;
+    const items = [...injected.map((Service) => Service.DEPLOYMENT_TYPE)];
+    log(`Provisionning`, ...items);
     const provision = JSON.stringify({
       businessId: config.sandboxId,
       items: items.map((type) => ({
@@ -98,8 +100,9 @@ const provisionning = (filepath, config) =>
  * Generate an archive (.zip file) used by upload process
  * @param {String} target
  * @param {Object} config
+ * @param {Function} Api
  */
-const archive = (target, config) => {
+const archive = (target, config, Api) => {
   target = path.isAbsolute(target)
     ? target
     : path.resolve(process.cwd(), target);
@@ -129,7 +132,7 @@ const archive = (target, config) => {
     .then(() =>
       compress(target, Object.assign({}, options, { saveTo: workerArchive })),
     )
-    .then(() => provisionning(app, config))
+    .then(() => provisionning(app, config, Api))
     .then(() =>
       compress(root, Object.assign({}, options, { saveTo: rootArchive })),
     )
@@ -179,13 +182,14 @@ const upload = (archived, config) =>
  * Bundle and upload user code on ZetaPush platform
  * @param {String} target
  * @param {Object} config
+ * @param {Function} Api
  */
-const push = (target, config) => {
+const push = (target, config, Api) => {
   log(`Execute command <push> ${target}`);
   target = path.isAbsolute(target)
     ? target
     : path.resolve(process.cwd(), target);
-  archive(target, config)
+  archive(target, config, Api)
     .then((archived) => upload(archived, config))
     .then((recipe) => {
       log('Uploaded', recipe);

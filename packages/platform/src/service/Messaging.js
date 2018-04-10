@@ -13,11 +13,18 @@ import { Service } from '../core/index.js';
  * */
 export class Messaging extends Service {
   /**
+   * Get deployment type associated to Messaging service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'messaging';
+  }
+  /**
    * Get default deployment id associated to Messaging service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'messaging_0';
+    return `${Messaging.DEPLOYMENT_TYPE}_0`;
   }
   /**
    * Sends a message to a target

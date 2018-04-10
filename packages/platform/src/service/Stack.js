@@ -16,11 +16,18 @@ import { Service } from '../core/index.js';
  * */
 export class Stack extends Service {
   /**
+   * Get deployment type associated to Stack service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'stack';
+  }
+  /**
    * Get default deployment id associated to Stack service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'stack_0';
+    return `${Stack.DEPLOYMENT_TYPE}_0`;
   }
   /**
    * Lists the listeners

@@ -18,11 +18,18 @@ import { Service } from '../core/index.js';
  * */
 export class Aggreg extends Service {
   /**
+   * Get deployment type associated to Aggreg service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'aggreg';
+  }
+  /**
    * Get default deployment id associated to Aggreg service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'aggreg_0';
+    return `${Aggreg.SERVICE_TYPE}_0`;
   }
   /**
    * Pushes some data

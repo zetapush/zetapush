@@ -18,11 +18,18 @@ import { Service } from '../core/index.js';
  * */
 export class Template extends Service {
   /**
+   * Get deployment type associated to Template service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'template';
+  }
+  /**
    * Get default deployment id associated to Template service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'template_0';
+    return `${Template.DEPLOYMENT_TYPE}_0`;
   }
   /**
    * Evaluates a template

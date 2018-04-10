@@ -3,14 +3,25 @@
 ## Installation
 
 ```console
-yarn install
+npm install
 ```
 
-## Getting started
+## Deployment
+
+Push your code on ZetaPush platform
 
 ```console
-yarn start
+npx @angular/cli push
 ```
+
+## Development
+
+Run your code on your local platform
+
+```console
+npx @angular/cli start
+```
+
 
 ## Project structure
 

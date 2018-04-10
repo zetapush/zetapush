@@ -12,11 +12,18 @@ import { Service } from '../core/index.js';
  * */
 export class Userdir extends Service {
   /**
+   * Get deployment type associated to Userdir service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'userdir';
+  }
+  /**
    * Get default deployment id associated to Userdir service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'userdir_0';
+    return `${Userdir.DEPLOYMENT_TYPE}_0`;
   }
   /**Searches for users matching the request*/
   search({ requestId, query, page }) {

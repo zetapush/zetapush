@@ -18,10 +18,27 @@ class Api extends ZetaPushPlatform.Queue {
    */
   reduce(list) { return this.$publish('reduce', '', list); }
   /**
-   * Wait before api response
-   * @param {{ value: any, delay: number}} parameters
-   * @returns {number}
+   * Add arbitrary item in a stack based storage
+   * @returns {Object}
    */
+  push(item) { return this.$publish('push', '', { item }); }
+  /**
+   * List stacked items
+   * @returns {Object}
+   */
+  list() { return this.$publish('list', ''); }
+  /**
+   * Create a user via Simple Authentication platform service
+   * @param {Object} profile
+   */
+  createUser(profile = {}) { return this.$publish('createUser', '', profile); }
+  /**
+   * Find users via User Directory platform service
+   * @param {Object} parameters
+   * @returns {Object}
+   */
+  findUsers(parameters = {}) { return this.$publish('findUsers', '', parameters); }
+
   wait({ value, delay = 1000 } ) { return this.$publish('wait', '', { value, delay }); }
 }
 
@@ -29,9 +46,13 @@ const api = client.createAsyncTaskService({
   Type: Api,
 });
 
-client.connect().then(() => [...document.querySelectorAll('button')].forEach((node) =>
-  node.removeAttribute('disabled'),
-));
+client.onConnectionEstablished(async () => {
+  console.debug('onConnectionEstablished');
+  [...document.querySelectorAll('button')].forEach((node) =>
+    node.removeAttribute('disabled'),
+  );
+});
+client.connect();
 
 const uuid = ((id = 0) => () => ++id)();
 
@@ -74,6 +95,61 @@ document.addEventListener('DOMContentLoaded', () => {
       (parseInt(event.target.dataset.count, 10) || 0) + 1;
     const id = uuid();
     trace(`reduce--${id}`, () => api.reduce([10, 20, 30, 40]));
+  });
+  on('.js-Push', 'click', async (event) => {
+    event.target.dataset.count =
+      (parseInt(event.target.dataset.count, 10) || 0) + 1;
+    const id = uuid();
+    const item = parse(prompt('Item?'));
+    trace(`push--${id}`, () => api.push(item));
+  });
+  on('.js-List', 'click', async (event) => {
+    event.target.dataset.count =
+      (parseInt(event.target.dataset.count, 10) || 0) + 1;
+    const id = uuid();
+    const { result: { content: list } } = await trace(`list--${id}`, () => api.list());
+    const ul = document.querySelector('ul');
+    const fragment = document.createDocumentFragment();
+    while (ul.firstChild) {
+      ul.removeChild(ul.firstChild);
+    }
+    list.forEach((item) => {
+      const li = document.createElement('li');
+      li.textContent = JSON.stringify(item);
+      fragment.appendChild(li);
+    });
+    ul.appendChild(fragment);
+  });
+  on('.js-CreateUser', 'click', async (event) => {
+    event.target.dataset.count =
+      (parseInt(event.target.dataset.count, 10) || 0) + 1;
+    const id = uuid();
+    trace(`createUser--${id}`, () => api.createUser({
+      login: prompt('Login'),
+      password: prompt('Password')
+    }));
+  });
+  on('.js-FindUsers', 'click', async (event) => {
+    event.target.dataset.count =
+      (parseInt(event.target.dataset.count, 10) || 0) + 1;
+    const id = uuid();
+    const { users } = await trace(`findUsers--${id}`, () => api.findUsers({
+      query: {
+        match_all: {}
+      }
+    }));
+    const list = Object.values(users);
+    const ul = document.querySelector('ul');
+    const fragment = document.createDocumentFragment();
+    while (ul.firstChild) {
+      ul.removeChild(ul.firstChild);
+    }
+    list.forEach((item) => {
+      const li = document.createElement('li');
+      li.textContent = JSON.stringify(item);
+      fragment.appendChild(li);
+    });
+    ul.appendChild(fragment);
   });
   on('.js-Wait', 'click', async (event) => {
     event.target.dataset.count =

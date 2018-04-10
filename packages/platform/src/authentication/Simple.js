@@ -15,11 +15,18 @@ import { Service } from '../core/index.js';
  * */
 export class Simple extends Service {
   /**
+   * Get deployment type associated to Simple service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'simple';
+  }
+  /**
    * Get default deployment id associated to Simple service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'simple_0';
+    return `${Simple.DEPLOYMENT_TYPE}_0`;
   }
   changePassword({ token, key, password } = {}) {
     return this.$publish('changePassword', { token, key, password });

@@ -14,10 +14,17 @@ import { Service } from '../core/index.js';
  * */
 export class Trigger extends Service {
   /**
+   * Get deployment type associated to Trigger service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'trigger';
+  }
+  /**
    * Get default deployment id associated to Trigger service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'trigger_0';
+    return `${Trigger.DEPLOYMENT_TYPE}_0`;
   }
 }

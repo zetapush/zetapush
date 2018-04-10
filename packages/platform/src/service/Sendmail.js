@@ -14,10 +14,17 @@ import { Service } from '../core/index.js';
  * */
 export class Sendmail extends Service {
   /**
+   * Get deployment type associated to Sendmail service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'sendmail';
+  }
+  /**
    * Get default deployment id associated to Sendmail service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'sendmail_0';
+    return `${Sendmail.DEPLOYMENT_TYPE}_0`;
   }
 }

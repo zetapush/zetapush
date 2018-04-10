@@ -15,11 +15,18 @@ import { Service } from '../core/index.js';
  * */
 export class Gda extends Service {
   /**
+   * Get deployment type associated to Gda service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'gda';
+  }
+  /**
    * Get default deployment id associated to Gda service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'gda_0';
+    return `${Gda.DEPLOYMENT_TYPE}_0`;
   }
   /**
    * Asks for a data row

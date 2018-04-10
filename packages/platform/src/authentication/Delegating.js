@@ -17,10 +17,17 @@ import { Service } from '../core/index.js';
  * */
 export class Delegating extends Service {
   /**
+   * Get deployment type associated to Delegating service
+   * @return {string}
+   */
+  static get DEPLOYMENT_TYPE() {
+    return 'delegating';
+  }
+  /**
    * Get default deployment id associated to Delegating service
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'delegating_0';
+    return `${Delegating.DEPLOYMENT_TYPE}_0`;
   }
 }

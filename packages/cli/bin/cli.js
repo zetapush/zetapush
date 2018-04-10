@@ -18,14 +18,14 @@ program
   .command('run <path>')
   .description('Run your code')
   .action((path) =>
-    bootstrap(path).then(({ Api, zetapush }) => run(Api, zetapush)),
+    bootstrap(path).then(({ Api, zetapush }) => run(zetapush, Api)),
   );
 
 program
   .command('push <path>')
   .description('push your code on remote cloud')
   .action((path) =>
-    bootstrap(path).then(({ zetapush }) => push(path, zetapush)),
+    bootstrap(path).then(({ Api, zetapush }) => push(path, zetapush, Api)),
   );
 
 program.parse(process.argv);
