@@ -1,4 +1,4 @@
-const { Stack, Userdir, Simple } = require('@zetapush/platform');
+const { Stack, Userdir, Simple, Macro } = require('@zetapush/platform');
 
 module.exports = class Api {
   /**
@@ -69,7 +69,6 @@ module.exports = class Api {
   async reduce(list) {
     return list.reduce((cumulator, value) => cumulator + value, 0);
   }
-
   wait({ value, delay = 1000 }) {
     return new Promise((resolve, reject) => setTimeout(() => resolve(value), delay));
   }

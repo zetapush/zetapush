@@ -10,22 +10,25 @@ const bootstrap = require('./utils/bootstrap');
 
 program
   .version(version)
-  .option('-l, --login <login>', 'account login')
-  .option('-p, --password <password>', 'account password')
-  .option('-p, --sandbox <sandbox>', 'sandbox id');
+  .option('-a, --api-url <api-url>', 'Api url')
+  .option('-l, --login <login>', 'Account login')
+  .option('-p, --password <password>', 'Account password')
+  .option('-s, --sandbox-id <sandbox-id>', 'Sandbox id');
 
 program
   .command('run <path>')
   .description('Run your code')
-  .action((path) =>
-    bootstrap(path).then(({ Api, zetapush }) => run(zetapush, Api)),
+  .action((path, command) =>
+    bootstrap(path, command).then(({ Api, zetapush }) => run(zetapush, Api)),
   );
 
 program
   .command('push <path>')
   .description('push your code on remote cloud')
-  .action((path) =>
-    bootstrap(path).then(({ Api, zetapush }) => push(path, zetapush, Api)),
+  .action((path, command) =>
+    bootstrap(path, command).then(({ Api, zetapush }) =>
+      push(path, zetapush, Api),
+    ),
   );
 
 program.parse(process.argv);

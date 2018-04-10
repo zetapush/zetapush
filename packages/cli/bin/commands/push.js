@@ -46,7 +46,7 @@ const getProgress = (config, recipeId) =>
       method: 'GET',
       url,
     };
-    log('Get progresssion', url);
+    // log('Get progresssion', url);
     request(options, (failure, response, body) => {
       if (failure) {
         reject(failure);
@@ -56,7 +56,7 @@ const getProgress = (config, recipeId) =>
         reject(response.statusCode);
         return error('Get progresssion failed', response.statusCode, body);
       }
-      log('Get progresssion successful', body);
+      // log('Get progresssion successful', body);
       resolve(JSON.parse(body));
     });
   });
@@ -192,17 +192,27 @@ const push = (target, config, Api) => {
   archive(target, config, Api)
     .then((archived) => upload(archived, config))
     .then((recipe) => {
-      log('Uploaded', recipe);
+      log('Uploaded', recipe.recipeId);
       const { recipeId } = recipe;
       if (recipeId === void 0) {
         return error('Missing recipeId', recipe);
       }
+      const progress = {};
       (async function check() {
         try {
-          const { checks, deploys, success, finished } = await getProgress(
-            config,
-            recipeId,
-          );
+          const { progressDetail } = await getProgress(config, recipeId);
+          const { steps, finished } = progressDetail;
+          steps.forEach((step) => {
+            if (!progress[step.id]) {
+              progress[step.id] = new ProgressBar({
+                total: 100,
+                schema: `[:bar] :current/:total :percent :elapseds ${
+                  step.name
+                }`,
+              });
+            }
+            progress[step.id].tick(step.progress);
+          });
           if (!finished) {
             setTimeout(check, 1000);
           }
