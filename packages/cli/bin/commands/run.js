@@ -44,16 +44,8 @@ const run = (target, config, Api) => {
       return di(client, Api);
     })
     .then((declaration) => {
-      const DEPLOYMENT_IDS = Api.injected.map(
-        (Type) => Type.DEFAULT_DEPLOYMENT_ID,
-      );
-      todo(`Auto Provisionning`, DEPLOYMENT_IDS);
-      return declaration;
-    })
-    .then((declaration) => {
-      const DEPLOYMENT_IDS = Api.injected.map(
-        (Type) => Type.DEFAULT_DEPLOYMENT_ID,
-      );
+      const { injected = [] } = Api;
+      const DEPLOYMENT_IDS = injected.map((Type) => Type.DEFAULT_DEPLOYMENT_ID);
       todo(`Check Service Provisionning`, DEPLOYMENT_IDS);
       return declaration;
     })
