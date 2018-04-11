@@ -19,7 +19,9 @@ program
   .command('run <path>')
   .description('Run your code')
   .action((path, command) =>
-    bootstrap(path, command).then(({ Api, zetapush }) => run(zetapush, Api)),
+    bootstrap(path, command).then(({ Api, zetapush }) =>
+      run(path, zetapush, Api),
+    ),
   );
 
 program

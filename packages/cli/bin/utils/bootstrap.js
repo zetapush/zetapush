@@ -50,10 +50,10 @@ const loadFromEnv = (inherited) =>
   Promise.resolve(
     merge(
       {
-        apiUrl: process.env.ZETAPUSH_API_URL,
-        sandboxId: process.env.ZETAPUSH_SANDBOX_ID,
-        login: process.env.ZETAPUSH_LOGIN,
-        password: process.env.ZETAPUSH_PASSWORD,
+        apiUrl: process.env.ZP_ZBO_URL,
+        sandboxId: process.env.ZP_SANDBOX_ID,
+        login: process.env.ZP_USERNAME,
+        password: process.env.ZP_PASSWORD,
       },
       inherited,
     ),

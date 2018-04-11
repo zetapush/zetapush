@@ -5,7 +5,7 @@ const transports = require('@zetapush/cometd/lib/node/Transports');
 const di = require('../utils/di');
 const { log, error, todo, warn } = require('../utils/log');
 
-const run = (config, Api) => {
+const run = (target, config, Api) => {
   log(`Execute command <run> ${target}`);
 
   const resource = `node_js_worker_${uuid()}`;
@@ -33,6 +33,7 @@ const run = (config, Api) => {
     });
   });
 
+  log(`Connect worker`);
   client
     .connect()
     .then(() => {

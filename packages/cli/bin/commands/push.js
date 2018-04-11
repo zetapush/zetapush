@@ -69,7 +69,9 @@ const getProgress = (config, recipeId) =>
 const provisionning = (filepath, config, Api) =>
   new Promise((resolve, reject) => {
     const { injected = [] } = Api;
-    const items = [...injected.map((Service) => Service.DEPLOYMENT_TYPE)];
+    const items = Array.from(
+      new Set(['weak', ...injected.map((Service) => Service.DEPLOYMENT_TYPE)]),
+    );
     log(`Provisionning`, ...items);
     const provision = JSON.stringify({
       businessId: config.sandboxId,
@@ -197,6 +199,7 @@ const push = (target, config, Api) => {
       if (recipeId === void 0) {
         return error('Missing recipeId', recipe);
       }
+      log('Progression');
       const progress = {};
       (async function check() {
         try {
@@ -214,7 +217,7 @@ const push = (target, config, Api) => {
             progress[step.id].tick(step.progress);
           });
           if (!finished) {
-            setTimeout(check, 1000);
+            setTimeout(check, 2500);
           }
         } catch (ex) {
           error('Progression', ex);

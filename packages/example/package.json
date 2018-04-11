@@ -11,9 +11,9 @@
     "@zetapush/platform": "^0.6.0"
   },
   "zetapush": {
-    "apiUrl": "http://hq.zpush.io:9080/zbo/pub/business",
-    "sandboxId": "plZO_u3u",
-    "login": "gregory.houllier@zetapush.com",
-    "password": "zp.2015"
+    "apiUrl": "http://pinte-silver-2:8080/zbo/pub/business",
+    "sandboxId": "6hO7oA7_",
+    "login": "gregory",
+    "password": "password"
   }
 }
