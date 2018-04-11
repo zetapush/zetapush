@@ -1,9 +1,9 @@
 // Create new ZetaPush Client
 const client = new ZetaPush.WeakClient({
-  apiUrl: 'http://hq.zpush.io:9080/zbo/pub/business',
-  sandboxId: '6hO7oA7_',
+  apiUrl: 'http://pinte-silver-2:8080/zbo/pub/business',
+  sandboxId: 'uq2lcAGX',
 });
-client.helper.servers = Promise.resolve(['http://hq.zpush.io:9082/str']);
+client.helper.servers = Promise.resolve(['http://pinte-silver-2-vm-0:8080/str']);
 
 class Api extends ZetaPushPlatform.Queue {
   /**

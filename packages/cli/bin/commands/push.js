@@ -70,7 +70,11 @@ const provisionning = (filepath, config, Api) =>
   new Promise((resolve, reject) => {
     const { injected = [] } = Api;
     const items = Array.from(
-      new Set(['weak', ...injected.map((Service) => Service.DEPLOYMENT_TYPE)]),
+      new Set([
+        'queue',
+        'weak',
+        ...injected.map((Service) => Service.DEPLOYMENT_TYPE),
+      ]),
     );
     log(`Provisionning`, ...items);
     const provision = JSON.stringify({
