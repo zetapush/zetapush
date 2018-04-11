@@ -18,7 +18,8 @@ const di = (client, Api) => {
           .get(Type);
     return service;
   };
-  const parameters = Api.injected.map((Type) => factory(Type));
+  const { injected = [] } = Api;
+  const parameters = injected.map((Type) => factory(Type));
   const instance = new Api(...parameters);
   return instance;
 };
