@@ -218,7 +218,7 @@ const push = (target, config, Api) => {
                 }`,
               });
             }
-            progress[step.id].tick(step.progress);
+            progress[step.id].update(step.progress);
           });
           if (!finished) {
             setTimeout(check, 2500);
