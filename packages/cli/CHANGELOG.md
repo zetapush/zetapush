@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.8.3"></a>
+## [0.8.3](https://github.com/zetapush/zetapush/compare/v0.8.2...v0.8.3) (2018-04-12)
+
+
+### Bug Fixes
+
+* **cli/push:** update progress update ([3dd6d52](https://github.com/zetapush/zetapush/commit/3dd6d52))
+
+
+
+
 <a name="0.8.2"></a>
 ## [0.8.2](https://github.com/zetapush/zetapush/compare/v0.8.1...v0.8.2) (2018-04-11)
 
