@@ -6,6 +6,7 @@ const { version } = require('../package.json');
 
 const push = require('./commands/push');
 const run = require('./commands/run');
+const init = require('./commands/init');
 const bootstrap = require('./utils/bootstrap');
 
 program
@@ -13,6 +14,7 @@ program
   .option('-a, --api-url <api-url>', 'Api url')
   .option('-l, --login <login>', 'Account login')
   .option('-p, --password <password>', 'Account password')
+  .option('-f, --front-only', 'Only front code')
   .option('-s, --sandbox-id <sandbox-id>', 'Sandbox id');
 
 program
@@ -30,6 +32,15 @@ program
   .action((path, command) =>
     bootstrap(path, command).then(({ Api, zetapush }) =>
       push(path, zetapush, Api),
+    ),
+  );
+
+program
+  .command('init <app>')
+  .description('Create your application')
+  .action((app, command) =>
+    bootstrap(app, command).then(({ Api, zetapush }) =>
+      init(app, zetapush, Api),
     ),
   );
 

@@ -21,9 +21,12 @@
     "chalk": "^2.3.2",
     "commander": "^2.15.1",
     "form-data": "^2.3.2",
+    "jsonfile": "^4.0.0",
+    "prompt": "^1.0.0",
     "read-pkg": "^3.0.0",
     "request": "^2.85.0",
     "resolve-cwd": "^2.0.0",
+    "shelljs": "^0.8.1",
     "zip-dir": "^1.0.2"
   },
   "publishConfig": {

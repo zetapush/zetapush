@@ -4,16 +4,20 @@
   "main": "server/index.js",
   "private": true,
   "scripts": {
-    "start": "zeta run ."
+    "start": "zeta run .",
+    "push": "zeta push ."
   },
   "dependencies": {
     "@zetapush/cli": "^0.7.0",
     "@zetapush/platform": "^0.7.0"
   },
   "zetapush": {
-    "apiUrl": "http://hq.zpush.io:9880/zbo/pub/business",
-    "sandboxId": "uq2lcAGX",
-    "login": "synth_root_for_uq2lcAGX",
-    "password": "G8Tkjd5fxdaONlW55wO7zA"
+    "apiUrl": "http://hq.zpush.io:9080/zbo/pub/business",
+    "sandboxId": "-elGrZz1",
+    "login": "damien.le-dantec@zetapush.com",
+    "password": "flueca+-"
+  },
+  "devDependencies": {
+    "@angular/cli": "^1.7.4"
   }
 }

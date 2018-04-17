@@ -1,5 +1,6 @@
 const cwd = require('resolve-cwd');
 const read = require('read-pkg');
+const fs = require('fs');
 
 const { log, error } = require('./log');
 
@@ -38,8 +39,12 @@ const merge = (target, inherited) =>
  * @param {ZetaPushConfig} config
  * @return {boolean}
  */
-const isValidConfig = (config = {}) =>
-  config.apiUrl && config.sandboxId && config.login && config.password;
+const isValidConfig = (config = {}, command) => {
+  return (
+    command == 'init' ||
+    (config.apiUrl && config.sandboxId && config.login && config.password)
+  );
+};
 
 /**
  * Load ZetaPush config from env variables
@@ -71,6 +76,7 @@ const loadFromCli = (inherited, command) =>
         sandboxId: command.parent.sandboxId,
         login: command.parent.login,
         password: command.parent.password,
+        frontOnly: command.parent.frontOnly,
       },
       inherited,
     ),
@@ -80,8 +86,11 @@ const loadFromCli = (inherited, command) =>
  * Load ZetaPush config from package.json
  * @return {Promise<ZetaPushConfig>}
  */
-const loadFromPackage = (inherited, path) =>
-  read(path).then(({ zetapush }) => merge(zetapush, inherited));
+const loadFromPackage = (inherited, path) => {
+  if (fs.existsSync(path + 'package.json')) {
+    read(path).then(({ zetapush }) => merge(zetapush, inherited));
+  }
+};
 
 /**
  * Notify ZetaPush config loaded from a given source
@@ -109,24 +118,30 @@ const notifyInvalidConfig = () => {
  * @return {Promise<{ Api: Function, zetapush: ZetaPushConfig}>}
  */
 const bootstrap = (path, command) => {
-  const id = cwd(path);
-  const Api = require(id);
+  let id;
+  let Api;
+
+  if (fs.existsSync(path + 'package.json')) {
+    id = cwd(path);
+    Api = require(id);
+  }
+
   return loadFromCli({}, command)
     .then(
       (config) =>
-        isValidConfig(config)
+        isValidConfig(config, command.name())
           ? notifyLoadedConfig(config, 'process.argv')
           : loadFromEnv(config),
     )
     .then(
       (config) =>
-        isValidConfig(config)
+        isValidConfig(config, command.name())
           ? notifyLoadedConfig(config, 'process.env')
           : loadFromPackage(config, path),
     )
     .then(
       (config) =>
-        isValidConfig(config)
+        isValidConfig(config, command.name()) || command.name() == 'init'
           ? notifyLoadedConfig(config, 'package.json')
           : notifyInvalidConfig(config),
     )
