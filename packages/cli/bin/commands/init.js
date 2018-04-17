@@ -73,6 +73,14 @@ const init = (app, config = {}, Api) => {
         displayWelcomeMessage();
       },
     );
+  } else {
+    log('No ZetaPush account exists');
+
+    console.log(`
+    ----------------
+    TODO: Create an account with the CLI
+    ---------------
+    `);
   }
 };
 module.exports = init;
