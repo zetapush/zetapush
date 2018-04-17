@@ -31,3 +31,9 @@ To create a project, only to use the existing Cloud Services, you type :
 ```console
 $ zeta new myApp --front-only
 ```
+
+We can specify the path for the front part or the back part :
+
+```console
+$ zeta new myApp --front path-to-front --back path-to-back
+```

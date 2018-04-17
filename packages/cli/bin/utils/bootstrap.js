@@ -77,6 +77,8 @@ const loadFromCli = (inherited, command) =>
         login: command.parent.login,
         password: command.parent.password,
         frontOnly: command.parent.frontOnly,
+        front: command.parent.front,
+        back: command.parent.back,
       },
       inherited,
     ),

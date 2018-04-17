@@ -14,7 +14,9 @@ program
   .option('-a, --api-url <api-url>', 'Api url')
   .option('-l, --login <login>', 'Account login')
   .option('-p, --password <password>', 'Account password')
-  .option('-f, --front-only', 'Only front code')
+  .option('-F, --front-only', 'Only front code')
+  .option('-f, --front <front>', 'Path of the front part')
+  .option('-b, --back <back>', 'Path of the back part')
   .option('-s, --sandbox-id <sandbox-id>', 'Sandbox id');
 
 program

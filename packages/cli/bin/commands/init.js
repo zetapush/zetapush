@@ -8,6 +8,9 @@ const shell = require('shelljs');
 const PROD_MODE = false;
 let FRONT_ONLY_MODE = false;
 let APP_NAME = null;
+let FRONT_DIRECTORY = 'front';
+let BACK_DIRECTORY = 'server';
+let ROOT_FOLDER = shell.pwd().stdout;
 
 /**
  * Main function to launch the init of the ZetaPush application
@@ -20,6 +23,20 @@ const init = (app, config = {}, Api) => {
 
   APP_NAME = app;
   if (config.frontOnly) FRONT_ONLY_MODE = true;
+
+  // Check if a path was specified for the front part
+  if (config.front)
+    FRONT_DIRECTORY = config.front
+      .replace(/\./g, '')
+      .replace(/^(\/)/, '')
+      .replace(/\/$/, '');
+
+  // Check if a path was specified for the front part
+  if (config.back)
+    BACK_DIRECTORY = config.back
+      .replace(/\./g, '')
+      .replace(/^(\/)/, '')
+      .replace(/\/$/, '');
 
   // Get password if there is a ZetaPush account
   if (config.login) {
@@ -36,46 +53,33 @@ const init = (app, config = {}, Api) => {
         },
       ],
       function(err, result) {
-        // Create the folder of our app
+        // Create the folder of our application
+        shell.cd(ROOT_FOLDER);
         fs.mkdirSync(APP_NAME);
 
         // Create the file .gitignore
-        fs.writeFileSync(APP_NAME + '/.gitignore', '.zetarc\n');
+        shell.cd(ROOT_FOLDER);
+        shell.cd(APP_NAME);
+        fs.writeFileSync('.gitignore', '.zetarc\n');
 
         // Create the file .zetarc
+        shell.cd(ROOT_FOLDER);
+        shell.cd(APP_NAME);
         fs.writeFileSync(
-          APP_NAME + '/.zetarc',
+          '.zetarc',
           `zeta_user = ${config.login} \nzeta_password = ${result.password}`,
         );
 
         // Create the folder front
-        fs.mkdirSync(APP_NAME + '/front');
-
-        // Create the html file of the hello world example
-        fs.writeFileSync(
-          APP_NAME + '/front/index.html',
-          generateHtmlHelloWorldExample(),
-        );
-
-        // Create the js file of the hello world example
-        fs.writeFileSync(
-          APP_NAME + '/front/index.js',
-          generateJsHelloWorldExample(),
-        );
+        createFrontDirectory(FRONT_DIRECTORY);
 
         // Create the folder server
-        if (!FRONT_ONLY_MODE) fs.mkdirSync(APP_NAME + '/server');
-
-        // Create the index file for hello world custom cloud service
-        if (!FRONT_ONLY_MODE) {
-          fs.writeFileSync(
-            APP_NAME + '/server/index.js',
-            generateJsHelloWorldExampleCustomCloudService(),
-          );
-        }
+        if (!FRONT_ONLY_MODE) createBackDirectory(BACK_DIRECTORY);
 
         // Create the README.md
-        fs.writeFileSync(APP_NAME + '/README.md', generateReadMe());
+        shell.cd(ROOT_FOLDER);
+        shell.cd(APP_NAME);
+        fs.writeFileSync('README.md', generateReadMe());
 
         // Create the package.json
         generateJsonPackage(config.login);
@@ -221,7 +225,9 @@ $ zeta push
  * Generate and return the json package
  */
 function generateJsonPackage(user) {
-  const file = APP_NAME + '/package.json';
+  shell.cd(ROOT_FOLDER);
+  shell.cd(APP_NAME);
+
   const data = {
     name: APP_NAME,
     version: '0.0.1',
@@ -232,13 +238,14 @@ function generateJsonPackage(user) {
     author: user,
   };
 
-  jsonfile.writeFileSync(file, data, { spaces: 2, EOL: '\r\n' });
+  jsonfile.writeFileSync('package.json', data, { spaces: 2, EOL: '\r\n' });
 }
 
 /**
  * Install necessary dependencies
  */
 function installDependencies() {
+  shell.cd(ROOT_FOLDER);
   shell.cd(APP_NAME);
 
   // Install the dependency of @zetapush/front
@@ -271,4 +278,40 @@ To deploy your application you can use the command "zeta push".
 You have already an existing use of Cloud Services in "front/index.js", deploy and test it !
    
   `);
+}
+
+/**
+ * Create the directory to store the front part
+ * @param {string} name : Path
+ */
+function createFrontDirectory(path) {
+  // Move to correct folder
+  shell.cd(ROOT_FOLDER);
+  shell.cd(APP_NAME);
+
+  // Create the folder front
+  shell.mkdir('-p', path);
+  shell.cd(path);
+
+  // Create the html file of the hello world example
+  fs.writeFileSync('index.html', generateHtmlHelloWorldExample());
+
+  // Create the js file of the hello world example
+  fs.writeFileSync('index.js', generateJsHelloWorldExample());
+}
+
+/**
+ * Create the directory to store the back part
+ * @param {string} name : Path
+ */
+function createBackDirectory(path) {
+  // Move to correct folder
+  shell.cd(ROOT_FOLDER);
+  shell.cd(APP_NAME);
+
+  // Create the folder front
+  shell.mkdir('-p', path);
+  shell.cd(path);
+
+  fs.writeFileSync('index.js', generateJsHelloWorldExampleCustomCloudService());
 }
