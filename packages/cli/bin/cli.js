@@ -36,7 +36,7 @@ program
   );
 
 program
-  .command('init <app>')
+  .command('new <app>')
   .description('Create your application')
   .action((app, command) =>
     bootstrap(app, command).then(({ Api, zetapush }) =>

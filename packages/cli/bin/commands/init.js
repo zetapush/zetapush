@@ -6,6 +6,7 @@ const jsonfile = require('jsonfile');
 const shell = require('shelljs');
 
 const PROD_MODE = false;
+let FRONT_ONLY_MODE = false;
 let APP_NAME = null;
 
 /**
@@ -15,8 +16,10 @@ let APP_NAME = null;
  * @param {object} Api
  */
 const init = (app, config = {}, Api) => {
+  log(`Execute command <init> ${app}`);
+
   APP_NAME = app;
-  log(`Execute command <init> ${APP_NAME}`);
+  if (config.frontOnly) FRONT_ONLY_MODE = true;
 
   // Get password if there is a ZetaPush account
   if (config.login) {
@@ -59,6 +62,17 @@ const init = (app, config = {}, Api) => {
           APP_NAME + '/front/index.js',
           generateJsHelloWorldExample(),
         );
+
+        // Create the folder server
+        if (!FRONT_ONLY_MODE) fs.mkdirSync(APP_NAME + '/server');
+
+        // Create the index file for hello world custom cloud service
+        if (!FRONT_ONLY_MODE) {
+          fs.writeFileSync(
+            APP_NAME + '/server/index.js',
+            generateJsHelloWorldExampleCustomCloudService(),
+          );
+        }
 
         // Create the README.md
         fs.writeFileSync(APP_NAME + '/README.md', generateReadMe());
@@ -155,6 +169,24 @@ function sayHelloByName() {
 }
 
 /**
+ * Return the example of custom cloud service
+ */
+function generateJsHelloWorldExampleCustomCloudService() {
+  return `
+export class HelloWorldCustomService {
+
+  /**
+   *  Cloud function to say "Hello" to a specific name
+   *  This cloud function return promise to be asynchrone
+   */
+  function helloByName(name) {
+      return \`Hello \${name} !\`;
+  };
+}
+`;
+}
+
+/**
  * Return the first README.md
  */
 function generateReadMe() {
@@ -213,6 +245,11 @@ function installDependencies() {
   if (PROD_MODE) {
     log(`Install @zetapush/front dependency...`);
     shell.exec('npm install --save @zetapush/front');
+
+    if (!FRONT_ONLY_MODE) {
+      log(`Install @zetapush/server dependency...`);
+      shell.exec('npm install --save @zetapush/server');
+    }
   }
 }
 

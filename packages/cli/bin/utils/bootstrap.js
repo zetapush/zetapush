@@ -41,7 +41,7 @@ const merge = (target, inherited) =>
  */
 const isValidConfig = (config = {}, command) => {
   return (
-    command == 'init' ||
+    command == 'new' ||
     (config.apiUrl && config.sandboxId && config.login && config.password)
   );
 };
@@ -141,7 +141,7 @@ const bootstrap = (path, command) => {
     )
     .then(
       (config) =>
-        isValidConfig(config, command.name()) || command.name() == 'init'
+        isValidConfig(config, command.name()) || command.name() == 'new'
           ? notifyLoadedConfig(config, 'package.json')
           : notifyInvalidConfig(config),
     )
