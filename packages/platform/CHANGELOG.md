@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.9.0"></a>
+# [0.9.0](https://github.com/zetapush/zetapush/compare/v0.8.5...v0.9.0) (2018-04-23)
+
+
+
+
+**Note:** Version bump only for package @zetapush/platform
+
 <a name="0.8.5"></a>
 ## [0.8.5](https://github.com/zetapush/zetapush/compare/v0.8.4...v0.8.5) (2018-04-23)
 
