@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.10.2"></a>
+## [0.10.2](https://github.com/zetapush/zetapush/compare/v0.10.1...v0.10.2) (2018-04-23)
+
+
+### Bug Fixes
+
+* **cli/push:** add .git to ignored filepath pattern ([4cf7da6](https://github.com/zetapush/zetapush/commit/4cf7da6))
+
+
+
+
 <a name="0.10.1"></a>
 ## [0.10.1](https://github.com/zetapush/zetapush/compare/v0.10.0...v0.10.1) (2018-04-23)
 
