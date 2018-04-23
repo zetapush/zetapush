@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.9.1"></a>
+## [0.9.1](https://github.com/zetapush/zetapush/compare/v0.9.0...v0.9.1) (2018-04-23)
+
+
+### Bug Fixes
+
+* **client:** update dynamic method invocation variable name ([7e37442](https://github.com/zetapush/zetapush/commit/7e37442))
+
+
+
+
 <a name="0.9.0"></a>
 # [0.9.0](https://github.com/zetapush/zetapush/compare/v0.8.5...v0.9.0) (2018-04-23)
 
