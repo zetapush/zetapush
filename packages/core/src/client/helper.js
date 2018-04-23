@@ -520,7 +520,7 @@ export class ClientHelper {
               // Publish message on channel
               this.publish(channel, {
                 data: {
-                  name,
+                  name: method,
                   namespace,
                   parameters,
                 },
