@@ -205,6 +205,23 @@ export class Client {
     return this.helper.createProxyMacroService(deploymentId);
   }
   /**
+   * Create a generic proxified task service
+   * Each property of the proxified service wrap a publish/subscribe
+   * Publish parameters on channel --> /service/${sandboxId}/${deploymentId}/call
+   * Subscribe success on channel --> /service/${sandboxId}/${deploymentId}/${method}
+   * Subscribe error on channel --> /service/${sandboxId}/${deploymentId}/error
+   * If remote method publish response on a specific channel, generic proxy will not raise success
+   * @example
+   * const service = client.createProxyTaskService();
+   * service.myMethod({ key: 'value' }).then((response) => console.log('myMethod', response))
+   * @param {string} deploymentId
+   * @return {Proxy} proxy
+   * @throws {Error} Throw error if Proxy class is not defined
+   */
+  createProxyTaskService(deploymentId) {
+    return this.helper.createProxyTaskService(deploymentId);
+  }
+  /**
    * Create a generic proxified service
    * Each property of the proxified service wrap a publish/subscribe
    * Publish parameters on channel --> /service/${sandboxId}/${deploymentId}/${method}

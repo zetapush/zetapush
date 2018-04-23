@@ -1,5 +1,5 @@
 import { CometD, Transports } from '@zetapush/cometd';
-import { Macro } from '@zetapush/platform';
+import { Macro, Queue } from '@zetapush/platform';
 import { ConnectionStatusListener } from '../connection/connection-status.js';
 import {
   getSandboxConfig,
@@ -475,6 +475,64 @@ export class ClientHelper {
       },
     );
   }
+
+  /**
+   * Create a generic proxified task service
+   * @param {string} deploymentId
+   * @return {Proxy} proxy
+   * @throws {Error} Throw error if Proxy class is not defined
+   */
+  createProxyTaskService(deploymentId = Queue.DEFAULT_DEPLOYMENT_ID) {
+    if (typeof Proxy === 'undefined') {
+      throw new Error('`Proxy` is not support in your environment');
+    }
+    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
+    return new Proxy(
+      {},
+      {
+        get: (target, method) => {
+          return (parameters = null, namespace = '') => {
+            const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
+            const uniqRequestId = this.getUniqRequestId();
+            const subscriptions = {};
+            return new Promise((resolve, reject) => {
+              const onError = ({ data = {} }) => {
+                const { requestId, code, message } = data;
+                if (requestId === uniqRequestId) {
+                  reject(new ApiError(message, code));
+                  this.unsubscribe(subscriptions);
+                }
+              };
+              const onSuccess = ({ data = {} }) => {
+                const { result = {}, requestId } = data;
+                if (requestId === uniqRequestId) {
+                  resolve(result);
+                  this.unsubscribe(subscriptions);
+                }
+              };
+              // Create dynamic listener method
+              const listener = {
+                [DEFAULT_TASK_CHANNEL]: onSuccess,
+                [DEFAULT_ERROR_CHANNEL]: onError,
+              };
+              // Ad-Hoc subscription
+              this.subscribe(prefix, listener, subscriptions);
+              // Publish message on channel
+              this.publish(channel, {
+                data: {
+                  name,
+                  namespace,
+                  parameters,
+                },
+                requestId: uniqRequestId,
+              });
+            });
+          };
+        },
+      },
+    );
+  }
+
   /**
    * Create a generic proxified service
    * @param {string} deploymentId
@@ -652,7 +710,7 @@ export class ClientHelper {
    * @return {Function} publisher
    */
   getAsyncTaskPublisher(prefix) {
-    return (name, namespace = '', parameters = null) => {
+    return (name, parameters = null, namespace = '') => {
       const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
       const uniqRequestId = this.getUniqRequestId();
       const subscriptions = {};
