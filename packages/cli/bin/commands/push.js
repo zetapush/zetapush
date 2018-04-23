@@ -218,7 +218,8 @@ const push = (target, config, Api) => {
                 }`,
               });
             }
-            progress[step.id].update(step.progress / 100);
+            const delta = progress[step.id].current - step.progress;
+            progress[step.id].tick(delta / 100);
           });
           if (!finished) {
             setTimeout(check, 2500);
