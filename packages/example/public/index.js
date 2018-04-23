@@ -1,58 +1,28 @@
-// Create new ZetaPush Client
-const client = new ZetaPush.WeakClient({
-  apiUrl: 'http://pinte-silver-2:8080/zbo/pub/business',
-  sandboxId: 'uq2lcAGX',
-});
-client.helper.servers = Promise.resolve(['http://pinte-silver-2-vm-0:8080/str']);
-
-class Api extends ZetaPushPlatform.Queue {
-  /**
-   * Get an Hello World string with server side timestamp value
-   * @returns {string}
-   */
-  hello() { return this.$publish('hello', ''); }
-  /**
-   * Get the sum of number given list
-   * @param {number[]} list
-   * @returns {number}
-   */
-  reduce(list) { return this.$publish('reduce', '', list); }
-  /**
-   * Add arbitrary item in a stack based storage
-   * @returns {Object}
-   */
-  push(item) { return this.$publish('push', '', { item }); }
-  /**
-   * List stacked items
-   * @returns {Object}
-   */
-  list() { return this.$publish('list', ''); }
-  /**
-   * Create a user via Simple Authentication platform service
-   * @param {Object} profile
-   */
-  createUser(profile = {}) { return this.$publish('createUser', '', profile); }
-  /**
-   * Find users via User Directory platform service
-   * @param {Object} parameters
-   * @returns {Object}
-   */
-  findUsers(parameters = {}) { return this.$publish('findUsers', '', parameters); }
-
-  wait({ value, delay = 1000 } ) { return this.$publish('wait', '', { value, delay }); }
+const getSandboxId = () => {
+  const PATTERN = /^#\/sandbox\/(.+)/;
+  const [hash, sandboxId] = PATTERN.exec(location.hash) || [];
+  if (sandboxId) {
+    return sandboxId;
+  } else {
+    location.href = `#/sandbox/${prompt('sandbox')}`;
+    location.reload();
+  }
 }
 
-const api = client.createAsyncTaskService({
-  Type: Api,
+// Create new ZetaPush Client
+const client = new ZetaPush.WeakClient({
+  apiUrl: 'http://hq.zpush.io:9080/zbo/pub/business',
+  sandboxId: getSandboxId(),
 });
 
-client.onConnectionEstablished(async () => {
-  console.debug('onConnectionEstablished');
+const api = client.createProxyTaskService();
+
+client.connect().then(() => (
+  console.debug('onConnectionEstablished'),
   [...document.querySelectorAll('button')].forEach((node) =>
     node.removeAttribute('disabled'),
-  );
-});
-client.connect();
+  )
+));
 
 const uuid = ((id = 0) => () => ++id)();
 

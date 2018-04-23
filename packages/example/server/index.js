@@ -1,4 +1,4 @@
-const { Stack, Userdir, Simple, Macro } = require('@zetapush/platform');
+const { Stack, Userdir, Simple } = require('@zetapush/platform');
 
 module.exports = class Api {
   /**
