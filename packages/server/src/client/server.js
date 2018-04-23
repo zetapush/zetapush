@@ -43,7 +43,7 @@ export class ServerClient extends Client {
       listener: {
         dispatch: async ({ data: { request, taskId } }) => {
           console.log('dispatch', { request, taskId });
-          const { data, requestId } = request;
+          const { data, requestId, owner } = request;
           const { name, namespace, parameters } = data;
           console.log('Queue::dispatch', {
             name,
@@ -53,8 +53,12 @@ export class ServerClient extends Client {
             taskId,
           });
           try {
+            // Wrap request context
+            const context = {
+              owner,
+            };
             const result = await timeoutify(
-              () => Worker[name](parameters),
+              () => Worker[name](parameters, context),
               this.timeout,
             );
             console.log('result', result);
