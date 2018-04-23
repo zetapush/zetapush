@@ -13,7 +13,7 @@ const compress = require('../utils/compress');
  * Common blacklisted pattern
  * @type {String[]}
  */
-const BLACKLIST = ['node_modules', '.DS_Store', '.gitignore'];
+const BLACKLIST = ['node_modules', '.DS_Store', '.git'];
 
 /**
  * Get a blacklist based filter function
