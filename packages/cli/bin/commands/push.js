@@ -177,10 +177,20 @@ const upload = (archived, config) =>
         return reject(failure);
       }
       if (response.statusCode !== 200) {
+        try {
+          const { code, context } = JSON.parse(body);
+          if (code === 'ALREADY_DEPLOYING' && typeof context === 'object') {
+            log(`Uploading`, archived);
+            context.recipeId = context.progressToken;
+            return resolve(context);
+          }
+        } catch (exception) {
+          error('Upload body parsing:', exception);
+        }
         error('Upload failed:', response.statusCode, body);
         return reject({ body, statusCode: response.statusCode });
       }
-      resolve(JSON.parse(body));
+      return resolve(JSON.parse(body));
     });
   });
 
