@@ -4,6 +4,7 @@ const transports = require('@zetapush/cometd/lib/node/Transports');
 
 const di = require('../utils/di');
 const { log, error, todo, warn } = require('../utils/log');
+const { mapInjectedToProvision } = require('../utils/provisionning');
 
 const run = (target, config, Api) => {
   log(`Execute command <run> ${target}`);
@@ -39,15 +40,15 @@ const run = (target, config, Api) => {
     .then(() => {
       log(`Connected`);
     })
+    .then((declaration) => {
+      const { injected = [] } = Api;
+      const { items } = mapInjectedToProvision(config, injected);
+      todo(`Check Service Provisionning`, items);
+      return declaration;
+    })
     .then(() => {
       log(`Resolve Dependency Injection`);
       return di(client, Api);
-    })
-    .then((declaration) => {
-      const { injected = [] } = Api;
-      const DEPLOYMENT_IDS = injected.map((Type) => Type.DEFAULT_DEPLOYMENT_ID);
-      todo(`Check Service Provisionning`, DEPLOYMENT_IDS);
-      return declaration;
     })
     .then((declaration) => {
       log(`Register Server Task`);

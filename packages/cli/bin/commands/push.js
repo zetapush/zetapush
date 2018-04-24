@@ -8,6 +8,7 @@ const ProgressBar = require('ascii-progress');
 
 const { log, error } = require('../utils/log');
 const compress = require('../utils/compress');
+const { mapInjectedToProvision } = require('../utils/provisionning');
 
 /**
  * Common blacklisted pattern
@@ -69,31 +70,9 @@ const getProgress = (config, recipeId) =>
 const provisionning = (filepath, config, Api) =>
   new Promise((resolve, reject) => {
     const { injected = [] } = Api;
-    const items = Array.from(
-      new Set([
-        'queue',
-        'weak',
-        ...injected.map((Service) => Service.DEPLOYMENT_TYPE),
-      ]),
-    );
-    log(`Provisionning`, ...items);
-    const provision = JSON.stringify({
-      businessId: config.sandboxId,
-      items: items.map((type) => ({
-        name: type,
-        item: {
-          itemId: type,
-          businessId: config.sandboxId,
-          deploymentId: `${type}_0`,
-          description: `${type}(${type}:${type}_0)`,
-          options: {},
-          forbiddenVerbs: [],
-          enabled: true,
-        },
-      })),
-      calls: [],
-    });
-    fs.writeFile(filepath, provision, (failure) => {
+    const provision = mapInjectedToProvision(config, injected);
+    const json = JSON.stringify(provision);
+    fs.writeFile(filepath, json, (failure) => {
       if (failure) {
         reject(failure);
         return error('provisionning', failure);
