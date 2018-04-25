@@ -52,7 +52,7 @@ const run = (target, config, Api) => {
     })
     .then((declaration) => {
       log(`Register Server Task`);
-      return client.subscribeTaskServer(declaration);
+      return client.subscribeTaskServer(declaration, config.workerServiceId);
     })
     .catch((failure) => error('ZetaPush V3 Error', failure));
 };

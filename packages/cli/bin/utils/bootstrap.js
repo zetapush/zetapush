@@ -9,6 +9,7 @@ const { log, error } = require('./log');
  * @property {String} sandboxId
  * @property {String} login
  * @property {String} password
+ * @property {String} workerServiceId
  */
 
 /**
@@ -54,6 +55,7 @@ const loadFromEnv = (inherited) =>
         sandboxId: process.env.ZP_SANDBOX_ID,
         login: process.env.ZP_USERNAME,
         password: process.env.ZP_PASSWORD,
+        workerServiceId: process.env.ZP_WORKER_SERVICE_ID,
       },
       inherited,
     ),
@@ -71,6 +73,7 @@ const loadFromCli = (inherited, command) =>
         sandboxId: command.parent.sandboxId,
         login: command.parent.login,
         password: command.parent.password,
+        workerServiceId: command.parent.ZP_WORKER_SERVICE_ID,
       },
       inherited,
     ),
