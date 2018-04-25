@@ -1,8 +1,8 @@
-describe("Client", () => {
+describe('Client', () => {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 25000;
 
-  const apiUrl = "http://api.zpush.io/";
-  const sandboxId = "NotAvailableSandboxId";
+  const apiUrl = 'http://api.zpush.io/';
+  const sandboxId = 'NotAvailableSandboxId';
 
   beforeEach(() => {
     this.client = new ZetaPush.Client({
@@ -10,15 +10,15 @@ describe("Client", () => {
       sandboxId: sandboxId,
       authentication: () => {
         return ZetaPush.Authentication.simple({
-          login: "root",
-          password: "root"
+          login: 'root',
+          password: 'root',
         });
-      }
+      },
     });
   });
 
-  describe("Connection failure", () => {
-    it("Should handle connection failure", done => {
+  describe('Connection failure', () => {
+    it('Should handle connection failure', (done) => {
       const client = this.client;
       client.onConnectionToServerFail(() => {
         expect(client.isConnected()).toBeFalsy();
@@ -28,8 +28,8 @@ describe("Client", () => {
     });
   });
 
-  describe("Connection failure", () => {
-    it("Should handle no server available", done => {
+  describe('Connection failure', () => {
+    it('Should handle no server available', (done) => {
       const client = this.client;
       client.onNoServerUrlAvailable(() => {
         expect(client.isConnected()).toBeFalsy();

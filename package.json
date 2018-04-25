@@ -23,7 +23,7 @@
   "scripts": {
     "precommit": "lint-staged",
     "commit": "git-cz",
-    "prettify": "prettier --write 'packages/*/{bin,src}/**/*.{js,ts}'",
+    "prettify": "prettier --write 'packages/*/{bin,src,test}/**/*.{js,ts}' 'packages/*/*.{js,ts}'",
     "lerna:bootstrap": "lerna bootstrap",
     "lerna:build": "lerna run build",
     "lerna:publish":
@@ -33,7 +33,8 @@
     "lerna:test": "lerna run test:ci"
   },
   "lint-staged": {
-    "packages/*/{bin,src}/**/*.{js,ts}": ["prettier --write", "git add"]
+    "packages/*/{bin,src,test}/**/*.{js,ts}": ["prettier --write", "git add"],
+    "packages/*/*.{js,ts}": ["prettier --write", "git add"]
   },
   "config": {
     "commitizen": {
