@@ -26,15 +26,14 @@
     "prettify": "prettier --write 'packages/*/{bin,src}/**/*.{js,ts}'",
     "lerna:bootstrap": "lerna bootstrap",
     "lerna:build": "lerna run build",
-    "lerna:publish": "lerna publish --conventional-commits --changelog-preset angular --force-publish=*",
-    "lerna:publish:canary": "lerna publish --canary --conventional-commits --changelog-preset angular --force-publish=*",
+    "lerna:publish":
+      "lerna publish --conventional-commits --changelog-preset angular --force-publish=*",
+    "lerna:publish:canary":
+      "lerna publish --canary --conventional-commits --changelog-preset angular --force-publish=*",
     "lerna:test": "lerna run test:ci"
   },
   "lint-staged": {
-    "packages/*/{bin,src}/**/*.{js,ts}": [
-      "prettier --write",
-      "git add"
-    ]
+    "packages/*/{bin,src}/**/*.{js,ts}": ["prettier --write", "git add"]
   },
   "config": {
     "commitizen": {

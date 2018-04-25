@@ -1,4 +1,4 @@
-import { ClientHelper } from './helper.js';
+import { ClientHelper } from './helper/client-helper.js';
 import { API_URL, FORCE_HTTPS } from '../utils/http.js';
 import { ConnectionStatusListener } from '../connection/connection-status.js';
 

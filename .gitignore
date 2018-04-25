@@ -8,3 +8,4 @@
 /lerna-*.log
 /npm-*.log
 /yarn-*.log
+.vscode/
