@@ -20,7 +20,7 @@
 From yarn
 
 ```console
-yarn add @zetapush/core
+yarn add @zetapush/{core,platform}
 ```
 
 From npm
@@ -30,7 +30,7 @@ npm install @zetapush/{core,platform} --save
 ```
 
 ```js
-import { Client, Authentication } from '@zetapush/core'
+import { WeakClient, Authentication } from '@zetapush/core'
 import { Stack } from '@zetapush/platform'
 ```
 
@@ -38,13 +38,8 @@ import { Stack } from '@zetapush/platform'
 
 ```js
 // Create new ZetaPush Client
-const client = new Client({
-  sandboxId: '<YOUR-SANDBOX-ID>',
-  authentication() {
-    return Authentication.weak({
-      token: null
-    })
-  }
+const client = new WeakClient({
+  sandboxId: '<YOUR-SANDBOX-ID>'
 })
 // Create a Stack service
 const service = client.createService({
@@ -72,5 +67,5 @@ client.connect().then(() => {
 [npm-version-image]: http://img.shields.io/npm/v/@zetapush/core.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/@zetapush/core
 
-[build-status-image]: http://img.shields.io/travis/zetapush/zetapush.svg?style=flat
+[build-status-image]: http://img.shields.io/travis/zetapush/zetapush.svg?style=flat-square
 [build-status-url]: http://travis-ci.org/zetapush/zetapush
