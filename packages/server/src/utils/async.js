@@ -22,9 +22,11 @@ export const timeoutify = (task, timeout = 1000) =>
           (...failed) => (clearInterval(timer), reject(...failed)),
         );
       } else {
+        clearInterval(timer);
         return Promise.resolve(response);
       }
     } catch (error) {
+      clearInterval(timer);
       return Promise.reject(error);
     }
   });
