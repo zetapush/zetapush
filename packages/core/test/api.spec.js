@@ -1,20 +1,20 @@
 describe('Public API', () => {
   it('Should define a ZetaPush global object', () => {
-    expect(typeof ZetaPush).toBe('object')
-  })
+    expect(typeof ZetaPush).toBe('object');
+  });
   it('Should define a ZetaPush.Client class', () => {
-    expect(typeof ZetaPush.Client).toBe('function')
-  })
+    expect(typeof ZetaPush.Client).toBe('function');
+  });
   it('Should define a ZetaPush.SmartClient class', () => {
-    expect(typeof ZetaPush.SmartClient).toBe('function')
-  })
+    expect(typeof ZetaPush.SmartClient).toBe('function');
+  });
   it('Should define a ZetaPush.WeakClient class', () => {
-    expect(typeof ZetaPush.WeakClient).toBe('function')
-  })
+    expect(typeof ZetaPush.WeakClient).toBe('function');
+  });
   it('Should define a ZetaPushPlatform object', () => {
-    expect(typeof ZetaPushPlatform).toBe('object')
-  })
+    expect(typeof ZetaPushPlatform).toBe('object');
+  });
   it('Should define a ZetaPush.Authentication class', () => {
-    expect(typeof ZetaPush.Authentication).toBe('function')
-  })
-})
+    expect(typeof ZetaPush.Authentication).toBe('function');
+  });
+});

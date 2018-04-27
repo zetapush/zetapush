@@ -58,9 +58,19 @@ interface TokenHandshake extends AbstractHandshake {
 
 type AuthenticationCallback = () => AbstractHandshake;
 
-type AsyncMacroServicePublisher = (method: string, parameters?: PublishParameters, hardFail?: boolean, debug?: number) => Promise<any>;
+type AsyncMacroServicePublisher = (
+  method: string,
+  parameters?: PublishParameters,
+  hardFail?: boolean,
+  debug?: number,
+) => Promise<any>;
 
-type MacroServicePublisher = (method: string, parameters?: PublishParameters, hardFail?: boolean, debug?: number) => void;
+type MacroServicePublisher = (
+  method: string,
+  parameters?: PublishParameters,
+  hardFail?: boolean,
+  debug?: number,
+) => void;
 
 type ServicePublisher = (method: string, parameters: any) => void;
 
@@ -115,7 +125,7 @@ type ConnectionStatusHandler = number;
 
 type ProxyService = {
   [method: string]: <Input, Output>(parameters: Input) => Output;
-}
+};
 
 export interface ClientOptions extends Options {
   authentication(): AbstractHandshake;
@@ -126,7 +136,7 @@ export interface WeakClientOptions extends Options {
 }
 
 export interface SmartClientOptions extends Options {
-  deployment?: SmartClientDeployment
+  deployment?: SmartClientDeployment;
 }
 
 export class Authentication {
@@ -134,7 +144,7 @@ export class Authentication {
   static simple(authData: CredentialsAuthData): CredentialsHandshake;
   static weak(authData: TokenAuthData): TokenHandshake;
   static create(
-    authData: AbstractAuthData
+    authData: AbstractAuthData,
   ): CredentialsHandshake | TokenHandshake;
 }
 
@@ -154,7 +164,9 @@ export interface ConnectionStatusListener {
 export class Client {
   helper: ClientHelper;
   constructor(options: ClientOptions);
-  addConnectionStatusListener(listener: ConnectionStatusListener): ConnectionStatusHandler;
+  addConnectionStatusListener(
+    listener: ConnectionStatusListener,
+  ): ConnectionStatusHandler;
   connect(): Promise<void>;
   createService(declaration: ServiceDeclaration): Service;
   createAsyncMacroService(declaration: ServiceDeclaration): services.Macro;
@@ -176,17 +188,21 @@ export class Client {
   onConnectionBroken(handler: () => void): ConnectionStatusHandler;
   onConnectionClosed(handler: () => void): ConnectionStatusHandler;
   onConnectionEstablished(handler: () => void): ConnectionStatusHandler;
-  onConnectionToServerFail(handler: (failure: any) => void): ConnectionStatusHandler;
+  onConnectionToServerFail(
+    handler: (failure: any) => void,
+  ): ConnectionStatusHandler;
   onConnectionWillClose(handler: () => void): ConnectionStatusHandler;
   onFailedHandshake(handler: (failure: any) => void): ConnectionStatusHandler;
   onMessageLost(handler: () => void): ConnectionStatusHandler;
   onNegotiationFailed(handler: (failure: any) => void): ConnectionStatusHandler;
   onNoServerUrlAvailable(handler: () => void): ConnectionStatusHandler;
-  onSuccessfulHandshake(handler: (authentication: any) => void): ConnectionStatusHandler;
+  onSuccessfulHandshake(
+    handler: (authentication: any) => void,
+  ): ConnectionStatusHandler;
 }
 
 export class SmartClient extends Client {
-  constructor(options: SmartClientOptions)
+  constructor(options: SmartClientOptions);
   getCredentials(): any;
   getSession(): any;
   hasCredentials(): boolean;
