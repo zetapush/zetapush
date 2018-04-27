@@ -14,8 +14,17 @@ export const timeoutify = (task, timeout = 1000) =>
         ),
       timeout,
     );
-    return task().then(
-      (...success) => (clearInterval(timer), resolve(...success)),
-      (...failed) => (clearInterval(timer), reject(...failed)),
-    );
+    try {
+      const response = task();
+      if (Object.getPrototypeOf(response) === Promise.prototype) {
+        return response.then(
+          (...success) => (clearInterval(timer), resolve(...success)),
+          (...failed) => (clearInterval(timer), reject(...failed)),
+        );
+      } else {
+        return Promise.resolve(response);
+      }
+    } catch (error) {
+      return Promise.reject(error);
+    }
   });
