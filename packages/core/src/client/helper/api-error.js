@@ -8,7 +8,7 @@ export const DEFAULT_ERROR_CHANNEL = 'error';
  * Provide utilities and abstraction to handle errors
  * @access private
  */
-export class ErrorHelper extends Error {
+export class ApiError extends Error {
   constructor(message, code) {
     super(message);
     this.code = code;

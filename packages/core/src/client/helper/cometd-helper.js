@@ -1,4 +1,3 @@
-import { UtilsHelper } from './utils-helper.js';
 import { shuffle } from '../../utils/index.js';
 
 /**
@@ -40,7 +39,6 @@ export class CometDHelper {
    */
   constructor(clientHelper) {
     this.clientHelper = clientHelper;
-    this.utilsHelper = new UtilsHelper(this.clientHelper);
   }
 
   /**
@@ -75,7 +73,7 @@ export class CometDHelper {
       }
       if (servers.length === 0) {
         // No more server available
-        this.utilsHelper.noServerUrlAvailable();
+        this.clientHelper.noServerUrlAvailable();
       } else {
         this.clientHelper.serverUrl = shuffle(servers);
         this.clientHelper.cometd.configure({

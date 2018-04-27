@@ -21,7 +21,6 @@ import {
   PROXY_TASK_SERVICE,
 } from './proxy-events';
 import { Macro, Queue } from '@zetapush/platform';
-import { UtilsHelper } from './utils-helper';
 
 /**
  * Provide utilities and abstraction on ZetaPush Client
@@ -39,11 +38,6 @@ export class ClientHelper {
     resource = null,
     transports = Transports,
   }) {
-    /**
-     * @access private
-     * @type {Class}
-     */
-    this.utilsHelper = new UtilsHelper(this);
     /**
      * @access private
      * @type {Class}
@@ -466,7 +460,7 @@ export class ClientHelper {
   getMacroPublisher(prefix) {
     return (name, parameters, hardFail = false, debug = 1) => {
       const channel = `${prefix()}/call`;
-      const requestId = this.cometdHelper.getUniqRequestId();
+      const requestId = this.getUniqRequestId();
       return this.publish(channel, {
         debug,
         hardFail,
@@ -487,5 +481,25 @@ export class ClientHelper {
       const channel = `${prefix()}/${method}`;
       return this.publish(channel, parameters);
     };
+  }
+
+  /**
+   * Notify listeners when no server url available
+   */
+  noServerUrlAvailable() {
+    this.cometd._debug('ClientHelper::noServerUrlAvailable');
+    this.connectionListeners
+      .filter(({ enabled }) => enabled)
+      .forEach(({ listener }) => {
+        listener.onNoServerUrlAvailable();
+      });
+  }
+
+  /**
+   * Get uniq request id
+   * @return {string}
+   */
+  getUniqRequestId() {
+    return `${this.getClientId()}:${this.uniqId}:${++this.requestId}`;
   }
 }

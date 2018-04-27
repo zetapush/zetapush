@@ -1,5 +1,4 @@
-import { ErrorHelper, DEFAULT_ERROR_CHANNEL } from './error-helper';
-import { UtilsHelper } from './utils-helper';
+import { ApiError, DEFAULT_ERROR_CHANNEL } from './api-error';
 import {
   DEFAULT_MACRO_CHANNEL,
   DEFAULT_TASK_CHANNEL,
@@ -16,7 +15,6 @@ export const ASYNC_TASK_SERVICE = 'async_task_service';
 export class AsyncHelper {
   constructor(clientHelper) {
     this.clientHelper = clientHelper;
-    this.utilsHelper = new UtilsHelper(this.clientHelper);
   }
 
   /**
@@ -40,7 +38,6 @@ export class AsyncHelper {
         break;
       case ASYNC_TASK_SERVICE:
         $publish = this.getAsyncTaskPublisher(prefix);
-        listener = {};
         break;
     }
 
@@ -61,7 +58,7 @@ export class AsyncHelper {
   getAsyncMacroPublisher(prefix) {
     return (name, parameters, hardFail = false, debug = 1) => {
       const channel = `${prefix()}/call`;
-      const uniqRequestId = this.utilsHelper.getUniqRequestId();
+      const uniqRequestId = this.clientHelper.getUniqRequestId();
       const subscriptions = {};
       return new Promise((resolve, reject) => {
         const handler = ({ data = {} }) => {
@@ -103,13 +100,13 @@ export class AsyncHelper {
   getAsyncServicePublisher(prefix) {
     return (method, parameters) => {
       const channel = `${prefix()}/${method}`;
-      const uniqRequestId = this.utilsHelper.getUniqRequestId();
+      const uniqRequestId = this.clientHelper.getUniqRequestId();
       const subscriptions = {};
       return new Promise((resolve, reject) => {
         const onError = ({ data = {} }) => {
           const { requestId, code, message } = data;
           if (requestId === uniqRequestId) {
-            reject(new ErrorHelper(message, code));
+            reject(new ApiError(message, code));
             this.clientHelper.unsubscribe(subscriptions);
           }
         };
@@ -145,13 +142,13 @@ export class AsyncHelper {
   getAsyncTaskPublisher(prefix) {
     return (name, parameters = null, namespace = '') => {
       const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
-      const uniqRequestId = this.utilsHelper.getUniqRequestId();
+      const uniqRequestId = this.clientHelper.getUniqRequestId();
       const subscriptions = {};
       return new Promise((resolve, reject) => {
         const onError = ({ data = {} }) => {
           const { requestId, code, message } = data;
           if (requestId === uniqRequestId) {
-            reject(new ErrorHelper(message, code));
+            reject(new ApiError(message, code));
             this.clientHelper.unsubscribe(subscriptions);
           }
         };

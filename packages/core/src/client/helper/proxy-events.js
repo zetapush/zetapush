@@ -2,8 +2,7 @@ import {
   DEFAULT_MACRO_CHANNEL,
   DEFAULT_TASK_CHANNEL,
 } from './cometd-helper.js';
-import { ErrorHelper, DEFAULT_ERROR_CHANNEL } from './error-helper.js';
-import { UtilsHelper } from './utils-helper';
+import { ApiError, DEFAULT_ERROR_CHANNEL } from './api-error.js';
 
 export const PROXY_SERVICE = 'proxy_service';
 export const PROXY_MACRO_SERVICE = 'proxy_macro_service';
@@ -16,7 +15,6 @@ export const PROXY_TASK_SERVICE = 'proxy_task_service';
 export class ProxyHelper {
   constructor(clientHelper) {
     this.clientHelper = clientHelper;
-    this.utilsHelper = new UtilsHelper(this.clientHelper);
   }
 
   /**
@@ -37,15 +35,15 @@ export class ProxyHelper {
           switch (type) {
             case PROXY_MACRO_SERVICE:
               return (parameters) =>
-                this.getFunctionMacroCase(parameters, prefix, method);
+                this.createProxyServiceMacroCase(parameters, prefix, method);
               break;
             case PROXY_SERVICE:
               return (parameters) =>
-                this.getFunctionServiceCase(parameters, prefix, method);
+                this.createProxyServiceCase(parameters, prefix, method);
               break;
             case PROXY_TASK_SERVICE:
               return (parameters) =>
-                this.getFunctionTaskCase(null, '', prefix, method);
+                this.getProxyTaskCase(parameters, '', prefix, method);
               break;
           }
         },
@@ -53,9 +51,9 @@ export class ProxyHelper {
     );
   }
 
-  getFunctionMacroCase(parameters, prefix, method) {
+  createProxyServiceMacroCase(parameters, prefix, method) {
     const channel = `${prefix()}/call`;
-    const uniqRequestId = this.utilsHelper.getUniqRequestId();
+    const uniqRequestId = this.clientHelper.getUniqRequestId();
     const subscriptions = {};
     return new Promise((resolve, reject) => {
       const handler = ({ data = {} }) => {
@@ -88,15 +86,15 @@ export class ProxyHelper {
     });
   }
 
-  getFunctionTaskCase(parameters = null, namespace = '', prefix, method) {
+  getProxyTaskCase(parameters = null, namespace = '', prefix, method) {
     const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
-    const uniqRequestId = this.utilsHelper.getUniqRequestId();
+    const uniqRequestId = this.clientHelper.getUniqRequestId();
     const subscriptions = {};
     return new Promise((resolve, reject) => {
       const onError = ({ data = {} }) => {
         const { requestId, code, message } = data;
         if (requestId === uniqRequestId) {
-          reject(new ErrorHelper(message, code));
+          reject(new ApiError(message, code));
           this.clientHelper.unsubscribe(subscriptions);
         }
       };
@@ -126,15 +124,15 @@ export class ProxyHelper {
     });
   }
 
-  getFunctionServiceCase(parameters, prefix, method) {
+  createProxyServiceCase(parameters, prefix, method) {
     const channel = `${prefix()}/${method}`;
-    const uniqRequestId = this.utilsHelper.getUniqRequestId();
+    const uniqRequestId = this.clientHelper.getUniqRequestId();
     const subscriptions = {};
     return new Promise((resolve, reject) => {
       const onError = ({ data = {} }) => {
         const { requestId, code, message } = data;
         if (requestId === uniqRequestId) {
-          reject(new ErrorHelper(message, code));
+          reject(new ApiError(message, code));
           this.clientHelper.unsubscribe(subscriptions);
         }
       };

@@ -1,5 +1,4 @@
 import { ConnectionStatusListener } from '../../connection/connection-status.js';
-import { UtilsHelper } from './utils-helper.js';
 import { shuffle } from '../../utils/index.js';
 
 /**
@@ -13,7 +12,6 @@ export class LifeCycleHelper {
    */
   constructor(clientHelper) {
     this.clientHelper = clientHelper;
-    this.utilsHelper = new UtilsHelper(this.clientHelper);
   }
 
   /**
@@ -61,7 +59,7 @@ export class LifeCycleHelper {
         );
       } else {
         // No servers available
-        this.utilsHelper.noServerUrlAvailable();
+        this.clientHelper.noServerUrlAvailable();
       }
     });
   }
