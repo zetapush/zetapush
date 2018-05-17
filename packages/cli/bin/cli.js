@@ -27,12 +27,17 @@ program
 
 program
   .command("push")
-  .arguments("<path>")
-  .description("push your code on remote cloud")
+  .arguments("[path]")
+  .description("Push your application on ZetaPush platform")
   .action((path, command) =>
     bootstrap(path, command).then(({ Api, zetapush }) =>
       push(path, zetapush, Api)
     )
   );
+
+program
+  .command("register")
+  .description("Register your account")
+  .action(command => console.log("[WIP] zeta register", commande));
 
 program.parse(process.argv);
