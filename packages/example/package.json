@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/example",
-  "version": "0.9.1",
+  "version": "0.10.2",
   "main": "server/index.js",
   "private": true,
   "scripts": {
@@ -8,8 +8,8 @@
     "start": "zeta run ."
   },
   "dependencies": {
-    "@zetapush/cli": "^0.9.1",
-    "@zetapush/platform": "^0.9.1"
+    "@zetapush/cli": "^0.10.2",
+    "@zetapush/platform": "^0.10.2"
   },
   "zetapush": {
     "apiUrl": "http://hq.zpush.io:9080/zbo/pub/business",
