@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "deploy": "time zeta push .",
-    "start": "zeta run ."
+    "start": "zeta run worker ."
   },
   "dependencies": {
     "@zetapush/cli": "^0.10.2",
