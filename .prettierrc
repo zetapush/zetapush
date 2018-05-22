@@ -1,5 +1,5 @@
 {
-  "arrow-parens": "always",
-  "single-quote": true,
-  "trailing-comma": "all"
+  "arrowParens": "always",
+  "singleQuote": true,
+  "trailingComma": "all"
 }

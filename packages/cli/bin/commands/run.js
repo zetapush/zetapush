@@ -1,10 +1,10 @@
-const { uuid } = require("@zetapush/core");
-const { ServerClient } = require("@zetapush/server");
-const transports = require("@zetapush/cometd/lib/node/Transports");
+const { uuid } = require('@zetapush/core');
+const { ServerClient } = require('@zetapush/server');
+const transports = require('@zetapush/cometd/lib/node/Transports');
 
-const di = require("../utils/di");
-const { log, error, todo, warn } = require("../utils/log");
-const { mapInjectedToProvision } = require("../utils/provisionning");
+const di = require('../utils/di');
+const { log, error, todo, warn } = require('../utils/log');
+const { mapInjectedToProvision } = require('../utils/provisionning');
 
 const run = (type, target, config, Api) => {
   log(`Execute command <run> ${type} ${target}`);
@@ -14,12 +14,12 @@ const run = (type, target, config, Api) => {
   config = {
     ...config,
     transports,
-    resource
+    resource,
   };
 
   const client = new ServerClient(config);
 
-  const onTerminalSignal = signal => {
+  const onTerminalSignal = (signal) => {
     warn(`Properly disconnect client`);
     client.disconnect().then(() => {
       warn(`Client properly disconnected`);
@@ -27,8 +27,8 @@ const run = (type, target, config, Api) => {
     });
   };
 
-  const TERMINATE_SIGNALS = ["SIGINT", "SIGTERM", "SIGQUIT"];
-  TERMINATE_SIGNALS.forEach(signal => {
+  const TERMINATE_SIGNALS = ['SIGINT', 'SIGTERM', 'SIGQUIT'];
+  TERMINATE_SIGNALS.forEach((signal) => {
     process.on(signal, () => {
       onTerminalSignal(signal);
     });
@@ -40,7 +40,7 @@ const run = (type, target, config, Api) => {
     .then(() => {
       log(`Connected`);
     })
-    .then(declaration => {
+    .then((declaration) => {
       const { injected = [] } = Api;
       const { items } = mapInjectedToProvision(config, injected);
       todo(`Check Service Provisionning`, items);
@@ -50,11 +50,11 @@ const run = (type, target, config, Api) => {
       log(`Resolve Dependency Injection`);
       return di(client, Api);
     })
-    .then(declaration => {
+    .then((declaration) => {
       log(`Register Server Task`);
       return client.subscribeTaskServer(declaration, config.workerServiceId);
     })
-    .catch(failure => error("ZetaPush V3 Error", failure));
+    .catch((failure) => error('ZetaPush V3 Error', failure));
 };
 
 module.exports = run;
