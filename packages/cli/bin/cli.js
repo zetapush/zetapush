@@ -4,32 +4,43 @@ const program = require('commander');
 
 const { version } = require('../package.json');
 
+const DEFAULTS = require('./utils/defaults');
+
 const push = require('./commands/push');
 const run = require('./commands/run');
+const register = require('./commands/register');
 const bootstrap = require('./utils/bootstrap');
 
 program
   .version(version)
-  .option('-a, --api-url <api-url>', 'Api url')
-  .option('-l, --login <login>', 'Account login')
-  .option('-p, --password <password>', 'Account password')
-  .option('-s, --sandbox-id <sandbox-id>', 'Sandbox id');
+  .option(
+    '-u, --platform-url <platform-url>',
+    'Platform URL',
+    DEFAULTS.PLATFORM_URL,
+  )
+  .option('-l, --developer-login <developer-login>', 'Developer login')
+  .option('-p, --developer-password <developer-password>', 'Developer password')
+  .option('-a, --app-name <app-name>', 'Application name')
+  .option('-e, --env-name <env-name>', 'Environement name');
 
 program
   .command('run')
-  .arguments('<type> [path]')
+  .option('-w, --worker', 'Run worker on local platform')
+  .arguments('[path]')
   .description('Run your code')
-  .action((type = 'worker', path = '.', command) =>
+  .action((path = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
     bootstrap(path, command).then(({ Api, zetapush }) =>
-      run(type, path, zetapush, Api),
+      run(path, zetapush, Api),
     ),
   );
 
 program
   .command('push')
+  .option('-f, --front', 'Push front on cloud platform')
+  .option('-w, --worker', 'Push worker on cloud platform')
   .arguments('[path]')
   .description('Push your application on ZetaPush platform')
-  .action((path, command) =>
+  .action((path = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
     bootstrap(path, command).then(({ Api, zetapush }) =>
       push(path, zetapush, Api),
     ),
@@ -37,7 +48,10 @@ program
 
 program
   .command('register')
+  .arguments('[path]')
   .description('Register your account')
-  .action((command) => console.log('[WIP] zeta register', commande));
+  .action((path = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
+    register(path, command),
+  );
 
 program.parse(process.argv);
