@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.11.0"></a>
+# [0.11.0](https://github.com/zetapush/zetapush/compare/v0.10.2...v0.11.0) (2018-05-22)
+
+
+### Bug Fixes
+
+* **server:** add clearInterval for synchronous server methods ([8ab1d17](https://github.com/zetapush/zetapush/commit/8ab1d17))
+
+
+### Features
+
+* **server:** improve error management ([bd01a40](https://github.com/zetapush/zetapush/commit/bd01a40))
+
+
+
+
 <a name="0.10.2"></a>
 ## [0.10.2](https://github.com/zetapush/zetapush/compare/v0.10.1...v0.10.2) (2018-04-23)
 

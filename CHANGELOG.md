@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.11.0"></a>
+# [0.11.0](https://github.com/zetapush/zetapush/compare/v0.10.2...v0.11.0) (2018-05-22)
+
+
+### Bug Fixes
+
+* **server:** add clearInterval for synchronous server methods ([8ab1d17](https://github.com/zetapush/zetapush/commit/8ab1d17))
+
+
+### Features
+
+* **cli-register:** add push and run options ([97d4c16](https://github.com/zetapush/zetapush/commit/97d4c16))
+* **cli-register:** implements register command, rename args ([c970c59](https://github.com/zetapush/zetapush/commit/c970c59))
+* **cli/push:** support allready deploying error code for push command ([85de8ee](https://github.com/zetapush/zetapush/commit/85de8ee))
+* **cli/run:** add run <type> argument to future proof ([0c01096](https://github.com/zetapush/zetapush/commit/0c01096))
+* **cli/run:** add workerServiceId config entry ([e8ca007](https://github.com/zetapush/zetapush/commit/e8ca007))
+* **server:** improve error management ([bd01a40](https://github.com/zetapush/zetapush/commit/bd01a40))
+
+
+### BREAKING CHANGES
+
+* **cli-register:** Rename top level options
+
+
+
+
 <a name="0.10.2"></a>
 ## [0.10.2](https://github.com/zetapush/zetapush/compare/v0.10.1...v0.10.2) (2018-04-23)
 
