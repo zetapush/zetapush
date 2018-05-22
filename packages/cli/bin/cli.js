@@ -25,6 +25,7 @@ program
 
 program
   .command('run')
+  .option('-w, --worker', 'Run worker on local platform')
   .arguments('[path]')
   .description('Run your code')
   .action((path = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
@@ -35,6 +36,8 @@ program
 
 program
   .command('push')
+  .option('-f, --front', 'Push front on cloud platform')
+  .option('-w, --worker', 'Push worker on cloud platform')
   .arguments('[path]')
   .description('Push your application on ZetaPush platform')
   .action((path = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
