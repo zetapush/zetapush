@@ -6,18 +6,21 @@ const di = require('../utils/di');
 const { log, error, todo, warn } = require('../utils/log');
 const { mapInjectedToProvision } = require('../utils/provisionning');
 
-const run = (type, target, config, Api) => {
-  log(`Execute command <run> ${type} ${target}`);
+const run = (target, config, Api) => {
+  log(`Execute command <run> ${target}`);
 
   const resource = `node_js_worker_${uuid()}`;
 
-  config = {
-    ...config,
+  const clientConfig = {
+    apiUrl: config.platformUrl,
+    login: config.developerLogin,
+    password: config.developerPassword,
+    sandboxId: config.appName,
     transports,
     resource,
   };
 
-  const client = new ServerClient(config);
+  const client = new ServerClient(clientConfig);
 
   const onTerminalSignal = (signal) => {
     warn(`Properly disconnect client`);
@@ -34,7 +37,7 @@ const run = (type, target, config, Api) => {
     });
   });
 
-  log(`Connect worker`);
+  log(`Connect to worker with config`, clientConfig);
   client
     .connect()
     .then(() => {
@@ -54,7 +57,7 @@ const run = (type, target, config, Api) => {
       log(`Register Server Task`);
       return client.subscribeTaskServer(declaration, config.workerServiceId);
     })
-    .catch((failure) => error('ZetaPush V3 Error', failure));
+    .catch((failure) => error('ZetaPush Celtia Error', failure));
 };
 
 module.exports = run;

@@ -33,15 +33,14 @@ const filter = (blacklist) => (filepath, stat) =>
  */
 const getProgress = (config, recipeId) =>
   new Promise((resolve, reject) => {
-    const { protocol, hostname, port } = new URL(config.apiUrl);
-    const url = `${protocol}//${hostname}:${port}/zbo/orga/recipe/status/${
-      config.sandboxId
-    }/${recipeId}`;
+    const { developerLogin, developerPassword, platformUrl, appName } = config;
+    const { protocol, hostname, port } = new URL(platformUrl);
+    const url = `${protocol}//${hostname}:${port}/zbo/orga/recipe/status/${appName}/${recipeId}`;
     const options = {
       headers: {
         'X-Authorization': JSON.stringify({
-          username: config.login,
-          password: config.password,
+          username: developerLogin,
+          password: developerPassword,
         }),
       },
       method: 'GET',
@@ -88,15 +87,19 @@ const provisionning = (filepath, config, Api) =>
  * @param {Function} Api
  */
 const archive = (target, config, Api) => {
-  target = path.isAbsolute(target)
-    ? target
-    : path.resolve(process.cwd(), target);
-
   const ts = Date.now();
   const root = path.join(os.tmpdir(), String(ts));
   const app = path.join(root, 'app');
   const rootArchive = `${root}.zip`;
-  const workerArchive = path.join(root, `worker-${config.sandboxId}.zip`);
+  const workerArchive = path.join(root, `worker-${config.appName}.zip`);
+  const frontArchive = path.join(root, `front-${config.appName}.zip`);
+
+  const frontSource = path.isAbsolute(target)
+    ? path.join(target, 'public')
+    : path.resolve(process.cwd(), target, 'public');
+  const workerSource = path.isAbsolute(target)
+    ? target
+    : path.resolve(process.cwd(), target);
 
   const options = {
     each: (filepath) => log('Zipping', filepath),
@@ -115,7 +118,16 @@ const archive = (target, config, Api) => {
 
   return mkdir()
     .then(() =>
-      compress(target, Object.assign({}, options, { saveTo: workerArchive })),
+      compress(
+        frontSource,
+        Object.assign({}, options, { saveTo: frontArchive }),
+      ),
+    )
+    .then(() =>
+      compress(
+        workerSource,
+        Object.assign({}, options, { saveTo: workerArchive }),
+      ),
     )
     .then(() => provisionning(app, config, Api))
     .then(() =>
@@ -132,20 +144,21 @@ const archive = (target, config, Api) => {
 const upload = (archived, config) =>
   new Promise((resolve, reject) => {
     log(`Uploading`, archived);
-    const { protocol, hostname, port } = new URL(config.apiUrl);
+    const { developerLogin, developerPassword, platformUrl, appName } = config;
+    const { protocol, hostname, port } = new URL(platformUrl);
     const url = `${protocol}//${hostname}:${port}/zbo/orga/recipe/cook`;
     const options = {
       headers: {
         'X-Authorization': JSON.stringify({
-          username: config.login,
-          password: config.password,
+          username: developerLogin,
+          password: developerPassword,
         }),
       },
       method: 'POST',
       url,
       formData: {
-        businessId: config.sandboxId,
-        description: `Deploy on sandbox ${config.sandboxId}`,
+        businessId: appName,
+        description: `Deploy on application ${appName}`,
         file: fs.createReadStream(archived),
       },
     };

@@ -1,14 +1,15 @@
+const path = require('path');
 const cwd = require('resolve-cwd');
 const read = require('read-pkg');
 
+const { loadZetaPushConfigFile } = require('./config');
 const { log, error } = require('./log');
-
 /**
  * @typedef ZetaPushConfig
- * @property {String} apiUrl
- * @property {String} sandboxId
- * @property {String} login
- * @property {String} password
+ * @property {String} platformUrl
+ * @property {String} appName
+ * @property {String} developerLogin
+ * @property {String} developerPassword
  * @property {String} workerServiceId
  */
 
@@ -40,7 +41,10 @@ const merge = (target, inherited) =>
  * @return {boolean}
  */
 const isValidConfig = (config = {}) =>
-  config.apiUrl && config.sandboxId && config.login && config.password;
+  config.platformUrl &&
+  config.appName &&
+  config.developerLogin &&
+  config.developerPassword;
 
 /**
  * Load ZetaPush config from env variables
@@ -51,10 +55,10 @@ const loadFromEnv = (inherited) =>
   Promise.resolve(
     merge(
       {
-        apiUrl: process.env.ZP_ZBO_URL,
-        sandboxId: process.env.ZP_SANDBOX_ID,
-        login: process.env.ZP_USERNAME,
-        password: process.env.ZP_PASSWORD,
+        platformUrl: process.env.ZP_ZBO_URL,
+        appName: process.env.ZP_SANDBOX_ID,
+        developerLogin: process.env.ZP_USERNAME,
+        developerPassword: process.env.ZP_PASSWORD,
         workerServiceId: process.env.ZP_WORKER_SERVICE_ID,
       },
       inherited,
@@ -69,10 +73,10 @@ const loadFromCli = (inherited, command) =>
   Promise.resolve(
     merge(
       {
-        apiUrl: command.parent.apiUrl,
-        sandboxId: command.parent.sandboxId,
-        login: command.parent.login,
-        password: command.parent.password,
+        platformUrl: command.parent.apiUrl,
+        appName: command.parent.appName,
+        developerLogin: command.parent.developerLogin,
+        developerPassword: command.parent.developerPassword,
         workerServiceId: command.parent.ZP_WORKER_SERVICE_ID,
       },
       inherited,
@@ -80,11 +84,19 @@ const loadFromCli = (inherited, command) =>
   );
 
 /**
+ *
+ * @param {String} folder
+ * @return {Promise<ZetaPushConfig>}
+ */
+const loadFromConfigFile = (folder) =>
+  loadZetaPushConfigFile(path.join(folder, '.zetarc'));
+
+/**
  * Load ZetaPush config from package.json
  * @return {Promise<ZetaPushConfig>}
  */
-const loadFromPackage = (inherited, path) =>
-  read(path).then(({ zetapush }) => merge(zetapush, inherited));
+const loadFromPackage = (inherited, folder) =>
+  read(folder).then(({ zetapush }) => merge(zetapush, inherited));
 
 /**
  * Notify ZetaPush config loaded from a given source
@@ -107,12 +119,12 @@ const notifyInvalidConfig = () => {
 
 /**
  * Load worker config from filepath
- * @param {String} id
+ * @param {String} folder
  * @param {Object} command
  * @return {Promise<{ Api: Function, zetapush: ZetaPushConfig}>}
  */
-const bootstrap = (path, command) => {
-  const id = cwd(path);
+const bootstrap = (folder, command) => {
+  const id = cwd(folder);
   const Api = require(id);
   return loadFromCli({}, command)
     .then(
@@ -125,7 +137,13 @@ const bootstrap = (path, command) => {
       (config) =>
         isValidConfig(config)
           ? notifyLoadedConfig(config, 'process.env')
-          : loadFromPackage(config, path),
+          : loadFromConfigFile(folder),
+    )
+    .then(
+      (config) =>
+        isValidConfig(config)
+          ? notifyLoadedConfig(config, '.zetarc')
+          : loadFromPackage(config, folder),
     )
     .then(
       (config) =>

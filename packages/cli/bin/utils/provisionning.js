@@ -15,12 +15,12 @@ const mapInjectedToProvision = (config, injected = []) => {
   );
   log(`Provisionning`, ...items);
   return {
-    businessId: config.sandboxId,
+    businessId: config.appName,
     items: items.map((type) => ({
       name: type,
       item: {
         itemId: type,
-        businessId: config.sandboxId,
+        businessId: config.appName,
         deploymentId: `${type}_0`,
         description: `${type}(${type}:${type}_0)`,
         options: {},
