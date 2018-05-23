@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.11.1"></a>
+## [0.11.1](https://github.com/zetapush/zetapush/compare/v0.11.0...v0.11.1) (2018-05-23)
+
+
+### Features
+
+* **cli:** improve error message ([564d02c](https://github.com/zetapush/zetapush/commit/564d02c))
+
+
+
+
 <a name="0.11.0"></a>
 # [0.11.0](https://github.com/zetapush/zetapush/compare/v0.10.2...v0.11.0) (2018-05-22)
 
