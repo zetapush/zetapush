@@ -10,15 +10,13 @@ const loadZetaPushConfigFile = (pathToConfigFile) =>
   new Promise((resolve, reject) => {
     fs.readFile(pathToConfigFile, 'utf8', (failure, content) => {
       if (failure) {
-        reject(failure);
-        return error('Load ZetaPush config file', failure);
+        return reject(failure);
       }
       try {
         const config = JSON.parse(content);
-        resolve(config);
+        return resolve(config);
       } catch (failure) {
-        reject(failure);
-        return error('Invalid ZetaPush config file', failure);
+        return reject(failure);
       }
     });
   });
@@ -35,10 +33,9 @@ const saveZetaPushConfigFile = (pathToConfigFile, content) =>
       JSON.stringify(content, null, 2),
       (failure) => {
         if (failure) {
-          reject(failure);
-          return error('Persist ZetaPush config file', failure);
+          return reject(failure);
         }
-        resolve(content);
+        return resolve(content);
       },
     );
   });

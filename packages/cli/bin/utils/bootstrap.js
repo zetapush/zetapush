@@ -41,10 +41,7 @@ const merge = (target, inherited) =>
  * @return {boolean}
  */
 const isValidConfig = (config = {}) =>
-  config.platformUrl &&
-  config.appName &&
-  config.developerLogin &&
-  config.developerPassword;
+  config.appName && config.developerLogin && config.developerPassword;
 
 /**
  * Load ZetaPush config from env variables
@@ -84,11 +81,11 @@ const loadFromCli = (inherited, command) =>
   );
 
 /**
- *
+ * @param {ZetaPushConfig} inherited
  * @param {String} folder
  * @return {Promise<ZetaPushConfig>}
  */
-const loadFromConfigFile = (folder) =>
+const loadFromConfigFile = (inherited, folder) =>
   loadZetaPushConfigFile(path.join(folder, '.zetarc'));
 
 /**
@@ -137,7 +134,7 @@ const bootstrap = (folder, command) => {
       (config) =>
         isValidConfig(config)
           ? notifyLoadedConfig(config, 'process.env')
-          : loadFromConfigFile(folder),
+          : loadFromConfigFile(config, folder),
     )
     .then(
       (config) =>
