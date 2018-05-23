@@ -1,4 +1,4 @@
-# ZetaPush V3 Example
+# ZetaPush Celtia Example
 
 ## Installation
 
@@ -6,12 +6,22 @@
 npm install
 ```
 
+## Register
+
+Register an anonymous account on ZetaPush platform
+
+> Create a .zetarc file which contains developer credentials
+
+```console
+npm run register
+```
+
 ## Deployment
 
 Push your code on ZetaPush platform
 
 ```console
-npx @zetapush/cli push --developer-login user --developer-password passwd --app-name MyAppName
+npm run deploy
 ```
 
 ## Development
@@ -19,9 +29,8 @@ npx @zetapush/cli push --developer-login user --developer-password passwd --app-
 Run your code on your local platform
 
 ```console
-npx @zetapush/cli start
+npm run start
 ```
-
 
 ## Project structure
 
