@@ -1,20 +1,15 @@
 {
   "name": "@zetapush/example",
-  "version": "0.10.2",
+  "version": "0.11.0",
   "main": "server/index.js",
   "private": true,
   "scripts": {
-    "deploy": "time zeta push .",
-    "start": "zeta run worker ."
+    "deploy": "time zeta push",
+    "register": "time zeta register",
+    "start": "zeta run"
   },
   "dependencies": {
-    "@zetapush/cli": "^0.10.2",
-    "@zetapush/platform": "^0.10.2"
-  },
-  "zetapush": {
-    "apiUrl": "http://hq.zpush.io:9080/zbo/pub/business",
-    "sandboxId": "b5E8S7Y4",
-    "login": "gregory.houllier@zetapush.com",
-    "password": "zp.2015"
+    "@zetapush/cli": "^0.11.0",
+    "@zetapush/platform": "^0.11.0"
   }
 }

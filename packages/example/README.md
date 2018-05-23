@@ -11,7 +11,7 @@ npm install
 Push your code on ZetaPush platform
 
 ```console
-npx @angular/cli push --login user --password passwd --api-url http://hq.zpush.io:9080/zbo/pub/business --sandbox-id MySaNdBoXiD
+npx @zetapush/cli push --developer-login user --developer-password passwd --app-name MyAppName
 ```
 
 ## Development
@@ -19,7 +19,7 @@ npx @angular/cli push --login user --password passwd --api-url http://hq.zpush.i
 Run your code on your local platform
 
 ```console
-npx @angular/cli start
+npx @zetapush/cli start
 ```
 
 
