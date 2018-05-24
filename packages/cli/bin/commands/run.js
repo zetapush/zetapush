@@ -6,9 +6,14 @@ const di = require('../utils/di');
 const { log, error, todo, warn } = require('../utils/log');
 const { mapInjectedToProvision } = require('../utils/provisionning');
 
-const run = (target, config, Api) => {
-  log(`Execute command <run> ${target}`);
-
+/**
+ * Run Worker instance
+ * @param {Object} args
+ * @param {String} basepath
+ * @param {Object} config
+ * @param {Function} Worker
+ */
+const run = (args, basepath, config, Worker) => {
   const resource = `node_js_worker_${uuid()}`;
 
   const clientConfig = {
@@ -44,14 +49,14 @@ const run = (target, config, Api) => {
       log(`Connected`);
     })
     .then((declaration) => {
-      const { injected = [] } = Api;
+      const { injected = [] } = Worker;
       const { items } = mapInjectedToProvision(config, injected);
       todo(`Check Service Provisionning`, items);
       return declaration;
     })
     .then(() => {
       log(`Resolve Dependency Injection`);
-      return di(client, Api);
+      return di(client, Worker);
     })
     .then((declaration) => {
       log(`Register Server Task`);
