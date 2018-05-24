@@ -9,7 +9,8 @@ const DEFAULTS = require('./utils/defaults');
 const push = require('./commands/push');
 const run = require('./commands/run');
 const register = require('./commands/register');
-const bootstrap = require('./utils/bootstrap');
+
+const { load } = require('./loader/worker');
 
 program
   .version(version)
@@ -26,32 +27,36 @@ program
 program
   .command('run')
   .option('-w, --worker', 'Run worker on local platform')
-  .arguments('[path]')
+  .arguments('[basepath]')
   .description('Run your code')
-  .action((path = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
-    bootstrap(path, command).then(({ Api, zetapush }) =>
-      run(path, zetapush, Api),
-    ),
+  .action((basepath = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
+    register(basepath, command)
+      .then((config) => Promise.all([config, load(basepath)]))
+      .then(([config, Worker]) =>
+        run(command.parent, basepath, config, Worker),
+      ),
   );
 
 program
   .command('push')
   .option('-f, --front', 'Push front on cloud platform')
   .option('-w, --worker', 'Push worker on cloud platform')
-  .arguments('[path]')
+  .arguments('[basepath]')
   .description('Push your application on ZetaPush platform')
-  .action((path = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
-    bootstrap(path, command).then(({ Api, zetapush }) =>
-      push(path, zetapush, Api),
-    ),
+  .action((basepath = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
+    register(basepath, command)
+      .then((config) => Promise.all([config, load(basepath)]))
+      .then(([config, Worker]) =>
+        push(command.parent, basepath, config, Worker),
+      ),
   );
 
 program
   .command('register')
-  .arguments('[path]')
+  .arguments('[basepath]')
   .description('Register your account')
-  .action((path = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
-    register(path, command),
+  .action((basepath = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
+    register(basepath, command),
   );
 
 program.parse(process.argv);

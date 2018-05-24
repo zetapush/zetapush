@@ -134,11 +134,11 @@ const provisionning = (filepath, config, Api) =>
 
 /**
  * Generate an archive (.zip file) used by upload process
- * @param {String} target
+ * @param {String} basepath
  * @param {Object} config
  * @param {Function} Api
  */
-const archive = (target, config, Api) => {
+const archive = (basepath, config, Api) => {
   const ts = Date.now();
   const root = path.join(os.tmpdir(), String(ts));
   const app = path.join(root, 'app');
@@ -146,12 +146,12 @@ const archive = (target, config, Api) => {
   const workerArchive = path.join(root, `worker.zip`);
   const frontArchive = path.join(root, `front.zip`);
 
-  const frontSource = path.isAbsolute(target)
-    ? path.join(target, 'public')
-    : path.resolve(process.cwd(), target, 'public');
-  const workerSource = path.isAbsolute(target)
-    ? target
-    : path.resolve(process.cwd(), target);
+  const frontSource = path.isAbsolute(basepath)
+    ? path.join(basepath, 'public')
+    : path.resolve(process.cwd(), basepath, 'public');
+  const workerSource = path.isAbsolute(basepath)
+    ? basepath
+    : path.resolve(process.cwd(), basepath);
 
   const options = {
     each: (filepath) => log('Zipping', filepath),
@@ -240,16 +240,17 @@ const upload = (archived, config) =>
 
 /**
  * Bundle and upload user code on ZetaPush platform
- * @param {String} target
+ * @param {Object} args
+ * @param {String} basepath
  * @param {Object} config
- * @param {Function} Api
+ * @param {Function} Worker
  */
-const push = (target, config, Api) => {
-  log(`Execute command <push> ${target}`);
-  target = path.isAbsolute(target)
-    ? target
-    : path.resolve(process.cwd(), target);
-  archive(target, config, Api)
+const push = (args, basepath, config, Api) => {
+  log(`Execute command <push> ${basepath}`);
+  basepath = path.isAbsolute(basepath)
+    ? basepath
+    : path.resolve(process.cwd(), basepath);
+  archive(basepath, config, Api)
     .then((archived) => upload(archived, config))
     .then((recipe) => {
       log('Uploaded', recipe.recipeId);

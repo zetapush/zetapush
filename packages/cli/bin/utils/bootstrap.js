@@ -13,6 +13,18 @@ const { log, error } = require('./log');
  * @property {String} workerServiceId
  */
 
+const validated = Symbol('validated');
+
+/**
+ * Validate object config
+ */
+const validateConfig = (config) => {
+  if (isValidConfig(config)) {
+    config[validated] = true;
+  }
+  return config;
+};
+
 /**
  * Remove falsy value from give map
  * @param {Object} map
@@ -66,7 +78,7 @@ const loadFromEnv = (inherited) =>
  * Load ZetaPush config from cli arguments
  * @return {Promise<ZetaPushConfig>}
  */
-const loadFromCli = (inherited, command) =>
+const loadFromCliArgs = (inherited, command) =>
   Promise.resolve(
     merge(
       {
@@ -123,7 +135,7 @@ const notifyInvalidConfig = () => {
 const bootstrap = (folder, command) => {
   const id = cwd(folder);
   const Api = require(id);
-  return loadFromCli({}, command)
+  return loadFromCliArgs({}, command)
     .then(
       (config) =>
         isValidConfig(config)

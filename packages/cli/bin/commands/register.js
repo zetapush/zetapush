@@ -1,12 +1,8 @@
-const path = require('path');
 const request = require('request');
 const { URL } = require('url');
 
-const { log, error, warn } = require('../utils/log');
-const {
-  loadZetaPushConfigFile,
-  saveZetaPushConfigFile,
-} = require('../utils/config');
+const { load, save } = require('../loader/config');
+const { log } = require('../utils/log');
 
 /**
  * Register an account on ZetaPush platform
@@ -14,6 +10,7 @@ const {
  */
 const registerAccount = (config) =>
   new Promise((resolve, reject) => {
+    log('Register developer account');
     const { platformUrl } = config;
     const { protocol, hostname, port } = new URL(platformUrl);
     const url = `${protocol}//${hostname}:${port}/zbo/adm/organization/anonymous`;
@@ -49,28 +46,13 @@ const registerAccount = (config) =>
 
 /**
  * Register an acount on ZetaPush Platform
- * @param {String} target
- * @param {Object} config
+ * @param {String} basepath
+ * @param {Object} command
+ *
  */
-const register = (target, config) => {
-  log(`Execute command <register>`);
-
-  const pathToConfigFile = path.join(target, '.zetarc');
-
-  loadZetaPushConfigFile(pathToConfigFile)
-    .catch(() => {
-      warn(`ZetaPush config file not found`);
-      return registerAccount(config.parent)
-        .then((account) => saveZetaPushConfigFile(pathToConfigFile, account))
-        .catch((failure) => {
-          error('Register account fail', failure);
-          return {
-            from: pathToConfigFile,
-            content: null,
-          };
-        });
-    })
-    .then((loaded) => log(`Config loaded from config file`, loaded));
-};
+const register = (basepath, command) =>
+  load(basepath, command).catch(() =>
+    registerAccount(command.parent).then((account) => save(basepath, account)),
+  );
 
 module.exports = register;
