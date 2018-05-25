@@ -164,8 +164,8 @@ export class ClientHelper {
     });
 
     // Register transports layers
-    transports.ALL.forEach(({ type, Transport }) => {
-      this.cometd.registerTransport(type, new Transport());
+    transports.ALL.forEach(({ type, Transport, parameters }) => {
+      this.cometd.registerTransport(type, new Transport(parameters));
     });
 
     // Handle transport exception
