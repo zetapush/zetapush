@@ -1,19 +1,8 @@
-const getSandboxId = () => {
-  const PATTERN = /^#\/sandbox\/(.+)/;
-  const [hash, sandboxId] = PATTERN.exec(location.hash) || [];
-  if (sandboxId) {
-    return sandboxId;
-  } else {
-    location.href = `#/sandbox/${prompt('sandbox')}`;
-    location.reload();
-  }
-}
-
 const getWeakClientOptions = () => {
   const { zpSandboxid, zpPlatformUrl } =  document.documentElement.dataset;
   return {
-    apiUrl: zpPlatformUrl || 'http://hq.zpush.io:9080/zbo/pub/business',
-    sandboxId: zpSandboxid || getSandboxId()
+    apiUrl: zpPlatformUrl,
+    sandboxId: zpSandboxid
   }
 }
 
@@ -37,7 +26,7 @@ const on = (cssClass, eventType, handler) =>
 const trace = async (section, behavior) => {
   const begin = Date.now();
   let output = null;
-  let method = 'debug';
+  let method = 'log';
   try {
     output = await behavior();
   } catch (error) {
@@ -94,45 +83,5 @@ document.addEventListener('DOMContentLoaded', () => {
       fragment.appendChild(li);
     });
     ul.appendChild(fragment);
-  });
-  on('.js-CreateUser', 'click', async (event) => {
-    event.target.dataset.count =
-      (parseInt(event.target.dataset.count, 10) || 0) + 1;
-    const id = uuid();
-    trace(`createUser--${id}`, () => api.createUser({
-      login: prompt('Login'),
-      password: prompt('Password')
-    }));
-  });
-  on('.js-FindUsers', 'click', async (event) => {
-    event.target.dataset.count =
-      (parseInt(event.target.dataset.count, 10) || 0) + 1;
-    const id = uuid();
-    const { users } = await trace(`findUsers--${id}`, () => api.findUsers({
-      query: {
-        match_all: {}
-      }
-    }));
-    const list = Object.values(users);
-    const ul = document.querySelector('ul');
-    const fragment = document.createDocumentFragment();
-    while (ul.firstChild) {
-      ul.removeChild(ul.firstChild);
-    }
-    list.forEach((item) => {
-      const li = document.createElement('li');
-      li.textContent = JSON.stringify(item);
-      fragment.appendChild(li);
-    });
-    ul.appendChild(fragment);
-  });
-  on('.js-Wait', 'click', async (event) => {
-    event.target.dataset.count =
-      (parseInt(event.target.dataset.count, 10) || 0) + 1;
-    const id = uuid();
-    trace(`wait--${id}`, () => api.wait({
-      value: prompt('Value'),
-      delay: parseInt(prompt('delay', 1000), 10)
-    }));
   });
 });
