@@ -1,7 +1,7 @@
 const { ReflectiveInjector } = require('@zetapush/platform');
 
 const DEFAULTS = require('./defaults');
-const { error } = require('./log');
+const { error, warn } = require('./log');
 
 class ScanOutput {
   constructor() {
@@ -11,11 +11,11 @@ class ScanOutput {
 }
 
 const scan = (CustomCloudService, output = new ScanOutput()) => {
-  if (typeof CustomCloudService === Function.name.toLowerCase()) {
+  if (isFunction(CustomCloudService)) {
     const { parameters } = CustomCloudService;
     if (Array.isArray(parameters)) {
       parameters.forEach((injected) => {
-        if (typeof injected.token === Function.name.toLowerCase()) {
+        if (isFunction(injected.token)) {
           if (Array.isArray(injected.token.parameters)) {
             // CustomCloudService with DI
             scan(injected.token, services);
@@ -42,12 +42,8 @@ const scan = (CustomCloudService, output = new ScanOutput()) => {
  * @return {ScanOutput}
  */
 const analyse = (declaration) => {
-  const { exposed = {}, internal = {} } = declaration;
   const output = new ScanOutput();
-  Object.values(exposed).map((CustomCloudService) =>
-    scan(CustomCloudService, output),
-  );
-  Object.values(internal).map((CustomCloudService) =>
+  Object.values(declaration).map((CustomCloudService) =>
     scan(CustomCloudService, output),
   );
   // Unicity
@@ -76,50 +72,50 @@ const resolve = (client, output) => [
 ];
 
 /**
+ * Test if the value parameter in a function
+ * @param {Object} value
+ * @returns {Boolean}
+ */
+const isFunction = (value) => typeof value === Function.name.toLowerCase();
+
+/**
+ * Return a cleaned WorkerDecleration
+ * @param {WorkerDeclaration} declaration
+ */
+const clean = (declaration) =>
+  Object.entries(declaration)
+    .filter(([namespace, CustomCloudService]) => isFunction(CustomCloudService))
+    .reduce(
+      (cleaned, [namespace, CustomCloudService]) => ({
+        ...cleaned,
+        [namespace]: CustomCloudService,
+      }),
+      {},
+    );
+
+/**
  * Normalize worker declaration
  * @param {Object} declaration
  * @return {WorkerDeclaration}
  */
 const normalize = (declaration) => {
-  if (typeof declaration === Function.name.toLowerCase()) {
+  if (isFunction(declaration)) {
     return {
-      exposed: {
-        [DEFAULTS.DEFAULT_NAMESPACE]: declaration,
-      },
-      internal: {},
+      [DEFAULTS.DEFAULT_NAMESPACE]: declaration,
     };
   } else if (typeof declaration === Object.name.toLowerCase()) {
     if (declaration.__esModule === true) {
-      error(`ES Modules are not yet supported`);
+      warn(`ES Modules are not yet fully supported`);
       // Support ES Module
-      if (typeof declaration.default === Function.name.toLowerCase()) {
+      if (isFunction(declaration.default)) {
         return {
-          exposed: {
-            [DEFAULTS.DEFAULT_NAMESPACE]: declaration,
-          },
-          internal: {},
+          [DEFAULTS.DEFAULT_NAMESPACE]: declaration,
         };
       } else if (typeof declaration.default === Object.name.toLowerCase()) {
-        if (!declaration.default.exposed) {
-          error(`Missing 'exposed' property in your Worker declaration`);
-          throw new Error(
-            `Missing 'exposed' property in your Worker declaration`,
-          );
-        }
+        return declaration.default;
       }
     } else {
-      if (!declaration.exposed) {
-        error(`Missing 'exposed' property in your Worker declaration`);
-        throw new Error(
-          `Missing 'exposed' property in your Worker declaration`,
-        );
-      }
-      if (!declaration.internal) {
-        return {
-          exposed: declaration.exposed,
-          internal: {},
-        };
-      }
+      return declaration;
     }
   } else {
     error(`Unsupported Worker declaration`);
@@ -134,11 +130,11 @@ const normalize = (declaration) => {
  */
 const instanciate = (client, declaration) => {
   const normalized = normalize(declaration);
-  const output = analyse(normalized);
+  const cleaned = clean(normalized);
+  const output = analyse(cleaned);
   const providers = resolve(client, output);
-  console.log(providers);
   const injector = ReflectiveInjector.resolveAndCreate(providers);
-  return Object.entries(normalized.exposed).reduce(
+  return Object.entries(normalized).reduce(
     (instance, [namespace, CustomCloudService]) => {
       instance[namespace] = injector.get(CustomCloudService);
       return instance;
