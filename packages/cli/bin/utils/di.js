@@ -130,10 +130,11 @@ const normalize = (declaration) => {
  * @param {WorkerDeclaration} declaration
  */
 const instanciate = (client, declaration) => {
-  const output = analyse(cleaned);
+  const cleaned = clean(declaration);
+  const output = analyze(cleaned);
   const providers = resolve(client, output);
   const injector = ReflectiveInjector.resolveAndCreate(providers);
-  return Object.entries(normalized).reduce(
+  return Object.entries(cleaned).reduce(
     (instance, [namespace, CustomCloudService]) => {
       instance[namespace] = injector.get(CustomCloudService);
       return instance;
