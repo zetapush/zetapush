@@ -4,30 +4,32 @@ var FetchLongPollingTransport = require('../FetchLongPollingTransport');
 var WebSocketTransport = require('../WebSocketTransport');
 
 // Use node-fetch implementation
-module.exports.fetch = FetchLongPollingTransport.fetch = function() {
+exports.fetch = function() {
   return fetch.apply(window, arguments);
 };
 
 // Use node-websocket implementation
-module.exports.WebSocket = WebSocketTransport.WebSocket = typeof WebSocket === 'undefined' ? null : WebSocket;
+exports.WebSocket = typeof WebSocket === 'undefined' ? null : WebSocket;
 
 /**
  * Long polling transport layer
  */
 var WEBSOCKET_TRANSPORT = {
   type: TRANSPORT_TYPES.WEBSOCKET,
-  Transport: WebSocketTransport
+  Transport: WebSocketTransport,
+  parameters: exports.WebSocket
 };
-module.exports.WEBSOCKET_TRANSPORT = WEBSOCKET_TRANSPORT;
+exports.WEBSOCKET_TRANSPORT = WEBSOCKET_TRANSPORT;
 
 /**
  * Long polling transport layer
  */
 var LONG_POLLING_TRANSPORT = {
   type: TRANSPORT_TYPES.LONG_POLLING,
-  Transport: FetchLongPollingTransport
+  Transport: FetchLongPollingTransport,
+  parameters: exports.fetch
 };
-module.exports.LONG_POLLING_TRANSPORT = LONG_POLLING_TRANSPORT;
+exports.LONG_POLLING_TRANSPORT = LONG_POLLING_TRANSPORT;
 
 /**
  * CometD Transports Layers map
@@ -36,4 +38,4 @@ var ALL = [
   WEBSOCKET_TRANSPORT,
   LONG_POLLING_TRANSPORT
 ];
-module.exports.ALL = ALL;
+exports.ALL = ALL;

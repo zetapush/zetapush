@@ -2,11 +2,12 @@ var Transport = require('./Transport')
 var LongPollingTransport = require('./LongPollingTransport')
 
 /**
- * Implements LongPollingTransport using borwser fetch() API
+ * Implements LongPollingTransport using fetch() API
  * @access private
+ * @param {Function} fetch
  * @return {FetchLongPollingTransport}
  */
-function FetchLongPollingTransport() {
+function FetchLongPollingTransport(fetch) {
   var _super = new LongPollingTransport()
   var that = Transport.derive(_super)
 
@@ -15,7 +16,7 @@ function FetchLongPollingTransport() {
    * @param {Object} packet
    */
   that.xhrSend = function (packet) {
-    FetchLongPollingTransport.fetch(packet.url, {
+    fetch(packet.url, {
       method: 'post',
       body: packet.body,
       headers: Object.assign(packet.headers, {
@@ -31,9 +32,6 @@ function FetchLongPollingTransport() {
 
   return that
 }
-
-// Reference global WebSocket 
-FetchLongPollingTransport.fetch = 'Abstract'
 
 // Export FetchLongPollingTransport
 module.exports = FetchLongPollingTransport;

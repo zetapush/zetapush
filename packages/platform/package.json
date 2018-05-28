@@ -25,6 +25,9 @@
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "prepublish": "npm run clean && npm run build"
   },
+  "dependencies": {
+    "injection-js": "^2.2.1"
+  },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.46",
     "@babel/core": "^7.0.0-beta.46",

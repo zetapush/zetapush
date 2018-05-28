@@ -65,11 +65,16 @@ This code expose an API called **hello** which returns a string "Hello World fro
 
 You can use injected platform services with to following.
 
+> Dependency injection use [injection-js](https://github.com/mgechev/injection-js)
+
 ```js
-const { Stack } = require('@zetapush/platform')
+const { Inject, Stack } = require('@zetapush/platform');
+
 module.exports = class Api {
-  static get injected() {
-    return [Stack]
+  static get parameters() {
+    return [
+      new Inject(Stack)
+    ];
   }
   constructor(stack) {
     this.stack = stack;
@@ -84,25 +89,13 @@ To consume an API in your front-end application you have to create a **mapped** 
 
 > Client side
 
-#### Define your API mapping class
-
-```js
-class Api extends ZetaPushPlatform.Queue {
-  hello() {
-    return this.$publish('hello');
-  }
-}
-```
-
 #### Register your API mapping class
 
 ```js
-const api = client.createAsyncTaskService({
-  Type: Api,
-});
+const api = client.createProxyTaskService();
 ```
 
-#### Invoke your API mapping class
+#### Invoke your remote API method
 
 ```js
 const message = await api.hello();
