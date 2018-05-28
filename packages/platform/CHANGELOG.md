@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.13.0"></a>
+# [0.13.0](https://github.com/zetapush/zetapush/compare/v0.12.0...v0.13.0) (2018-05-28)
+
+
+### Bug Fixes
+
+* **di:** rename Injectable decorator to Exposed ([3a6733f](https://github.com/zetapush/zetapush/commit/3a6733f))
+
+
+### Features
+
+* **custom-cloud-services:** update di mechanism with injection-js ([55532b6](https://github.com/zetapush/zetapush/commit/55532b6))
+
+
+
+
 <a name="0.13.0-alpha.3a6733f2"></a>
 # [0.13.0-alpha.3a6733f2](https://github.com/zetapush/zetapush/compare/v0.12.0...v0.13.0-alpha.3a6733f2) (2018-05-28)
 
