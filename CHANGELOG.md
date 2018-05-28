@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+**Note:** Version bump only for package zetapush
+
 <a name="0.12.0"></a>
 # [0.12.0](https://github.com/zetapush/zetapush/compare/v0.11.1...v0.12.0) (2018-05-24)
 

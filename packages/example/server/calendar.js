@@ -1,6 +1,8 @@
 class Calendar {
   getNow() {
-    return Date.now();
+    // return (new Date()).toLocaleTimeString();
+    // return (new Date()).toLocaleString();
+    return (new Date()).toLocaleDateString();
   }
 }
 
