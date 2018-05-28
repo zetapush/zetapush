@@ -2,13 +2,12 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const request = require('request');
-const FormData = require('form-data');
 const { URL } = require('url');
 const ProgressBar = require('ascii-progress');
 
 const { log, error } = require('../utils/log');
 const compress = require('../utils/compress');
-const { mapInjectedToProvision } = require('../utils/provisionning');
+const { mapDeclarationToProvision } = require('../utils/provisionning');
 
 /**
  * Common blacklisted pattern
@@ -117,11 +116,11 @@ const getProgress = (config, recipeId) =>
  * Generate a normalized file use by ZBO to provision ZetaPush Services
  * @param {String} filepath
  * @param {Object} config
+ * @param {WorkerDeclaration} declaration
  */
-const provisionning = (filepath, config, Api) =>
+const provisionning = (filepath, config, declaration) =>
   new Promise((resolve, reject) => {
-    const { injected = [] } = Api;
-    const provision = mapInjectedToProvision(config, injected);
+    const provision = mapDeclarationToProvision(config, declaration);
     const json = JSON.stringify(provision);
     fs.writeFile(filepath, json, (failure) => {
       if (failure) {
@@ -136,9 +135,9 @@ const provisionning = (filepath, config, Api) =>
  * Generate an archive (.zip file) used by upload process
  * @param {String} basepath
  * @param {Object} config
- * @param {Function} Api
+ * @param {WorkerDeclaration} declaration
  */
-const archive = (basepath, config, Api) => {
+const archive = (basepath, config, declaration) => {
   const ts = Date.now();
   const root = path.join(os.tmpdir(), String(ts));
   const app = path.join(root, 'app');
@@ -181,7 +180,7 @@ const archive = (basepath, config, Api) => {
         Object.assign({}, options, { saveTo: workerArchive }),
       ),
     )
-    .then(() => provisionning(app, config, Api))
+    .then(() => provisionning(app, config, declaration))
     .then(() =>
       compress(root, Object.assign({}, options, { saveTo: rootArchive })),
     )
@@ -245,12 +244,12 @@ const upload = (archived, config) =>
  * @param {Object} config
  * @param {Function} Worker
  */
-const push = (args, basepath, config, Api) => {
+const push = (args, basepath, config, declaration) => {
   log(`Execute command <push> ${basepath}`);
   basepath = path.isAbsolute(basepath)
     ? basepath
     : path.resolve(process.cwd(), basepath);
-  archive(basepath, config, Api)
+  archive(basepath, config, declaration)
     .then((archived) => upload(archived, config))
     .then((recipe) => {
       log('Uploaded', recipe.recipeId);
