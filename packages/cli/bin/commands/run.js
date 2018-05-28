@@ -2,9 +2,9 @@ const { uuid } = require('@zetapush/core');
 const { ServerClient } = require('@zetapush/server');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
-const di = require('../utils/di');
+const { instanciate } = require('../utils/di');
 const { log, error, todo, warn } = require('../utils/log');
-const { mapInjectedToProvision } = require('../utils/provisionning');
+const { mapDeclarationToProvision } = require('../utils/provisionning');
 
 /**
  * Run Worker instance
@@ -54,7 +54,7 @@ const run = (args, basepath, config, declaration) => {
     })
     .then(() => {
       log(`Resolve Dependency Injection`);
-      return di(client, declaration);
+      return instanciate(client, declaration);
     })
     .then((instance) => {
       log(`Register Server Task`);

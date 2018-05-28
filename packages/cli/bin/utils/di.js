@@ -41,9 +41,10 @@ const scan = (CustomCloudService, output = new ScanOutput()) => {
  * @param {WorkerDeclaration} declaration
  * @return {ScanOutput}
  */
-const analyse = (declaration) => {
+const analyze = (declaration) => {
+  const cleaned = clean(declaration);
   const output = new ScanOutput();
-  Object.values(declaration).map((CustomCloudService) =>
+  Object.values(cleaned).map((CustomCloudService) =>
     scan(CustomCloudService, output),
   );
   // Unicity
@@ -83,7 +84,7 @@ const isFunction = (value) => typeof value === Function.name.toLowerCase();
  * @param {WorkerDeclaration} declaration
  */
 const clean = (declaration) =>
-  Object.entries(declaration)
+  Object.entries(normalize(declaration))
     .filter(([namespace, CustomCloudService]) => isFunction(CustomCloudService))
     .reduce(
       (cleaned, [namespace, CustomCloudService]) => ({
@@ -129,8 +130,6 @@ const normalize = (declaration) => {
  * @param {WorkerDeclaration} declaration
  */
 const instanciate = (client, declaration) => {
-  const normalized = normalize(declaration);
-  const cleaned = clean(normalized);
   const output = analyse(cleaned);
   const providers = resolve(client, output);
   const injector = ReflectiveInjector.resolveAndCreate(providers);
@@ -143,4 +142,10 @@ const instanciate = (client, declaration) => {
   );
 };
 
-module.exports = instanciate;
+module.exports = {
+  analyze,
+  clean,
+  instanciate,
+  normalize,
+  resolve,
+};
