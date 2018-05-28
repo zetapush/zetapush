@@ -42,4 +42,5 @@ Outil en ligne de commande permettant de publier son code JavaScript (ses cloud 
 Dépendences:
 - [@zetapush/cometd](https://github.com/zetapush/zetapush/tree/master/packages/cometd)
 - [@zetapush/core](https://github.com/zetapush/zetapush/tree/master/packages/core)
+- [@zetapush/platform](https://github.com/zetapush/zetapush/tree/master/packages/platform)
 - [@zetapush/server](https://github.com/zetapush/zetapush/tree/master/packages/server)

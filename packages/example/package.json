@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "deploy": "zeta push",
+    "register": "zeta register",
     "start": "zeta run"
   },
   "dependencies": {

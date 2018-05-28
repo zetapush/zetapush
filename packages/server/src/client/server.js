@@ -36,8 +36,8 @@ export class ServerClient extends Client {
      */
     this.timeout = timeout;
   }
-  subscribeTaskServer(Worker, deploymentId = Queue.DEFAULT_DEPLOYMENT_ID) {
-    console.log('subscribeTaskServer', Worker, deploymentId);
+  subscribeTaskServer(worker, deploymentId = Queue.DEFAULT_DEPLOYMENT_ID) {
+    console.log('subscribeTaskServer', worker, deploymentId);
     const queue = this.createService({
       deploymentId,
       listener: {
@@ -58,7 +58,7 @@ export class ServerClient extends Client {
               owner,
             };
             const result = await timeoutify(
-              () => Worker[name](parameters, context),
+              () => worker[namespace][name](parameters, context),
               this.timeout,
             );
             console.log('result', result);

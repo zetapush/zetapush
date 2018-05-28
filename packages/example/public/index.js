@@ -9,11 +9,16 @@ const getSandboxId = () => {
   }
 }
 
+const getWeakClientOptions = () => {
+  const { zpSandboxid, zpPlatformUrl } =  document.documentElement.dataset;
+  return {
+    apiUrl: zpPlatformUrl || 'http://hq.zpush.io:9080/zbo/pub/business',
+    sandboxId: zpSandboxid || getSandboxId()
+  }
+}
+
 // Create new ZetaPush Client
-const client = new ZetaPush.WeakClient({
-  apiUrl: 'http://hq.zpush.io:9080/zbo/pub/business',
-  sandboxId: getSandboxId(),
-});
+const client = new ZetaPush.WeakClient(getWeakClientOptions());
 
 const api = client.createProxyTaskService();
 

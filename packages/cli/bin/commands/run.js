@@ -11,9 +11,9 @@ const { mapInjectedToProvision } = require('../utils/provisionning');
  * @param {Object} args
  * @param {String} basepath
  * @param {Object} config
- * @param {Function} Worker
+ * @param {WorkerDeclaration} declaration
  */
-const run = (args, basepath, config, Worker) => {
+const run = (args, basepath, config, declaration) => {
   const resource = `node_js_worker_${uuid()}`;
 
   const clientConfig = {
@@ -48,19 +48,17 @@ const run = (args, basepath, config, Worker) => {
     .then(() => {
       log(`Connected`);
     })
-    .then((declaration) => {
-      const { injected = [] } = Worker;
-      const { items } = mapInjectedToProvision(config, injected);
-      todo(`Check Service Provisionning`, items);
+    .then(() => {
+      todo(`Check Service Provisionning`, declaration);
       return declaration;
     })
     .then(() => {
       log(`Resolve Dependency Injection`);
-      return di(client, Worker);
+      return di(client, declaration);
     })
-    .then((declaration) => {
+    .then((instance) => {
       log(`Register Server Task`);
-      return client.subscribeTaskServer(declaration, config.workerServiceId);
+      return client.subscribeTaskServer(instance, config.workerServiceId);
     })
     .catch((failure) => error('ZetaPush Celtia Error', failure));
 };
