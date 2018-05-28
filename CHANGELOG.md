@@ -3,7 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-**Note:** Version bump only for package zetapush
+<a name="0.13.0"></a>
+# [0.13.0](https://github.com/zetapush/zetapush/compare/v0.12.0...v0.13.0) (2018-05-28)
+
+
+### Bug Fixes
+
+* **cometd:** remove mutation of Transport class properties ([93a29ce](https://github.com/zetapush/zetapush/commit/93a29ce))
+* **di:** rename Injectable decorator to Exposed ([3a6733f](https://github.com/zetapush/zetapush/commit/3a6733f))
+
+
+### Features
+
+* **custom-cloud-services:** update di mechanism with injection-js ([55532b6](https://github.com/zetapush/zetapush/commit/55532b6))
+* **custom-cloud-services:** update exposed CustomCloudService declaration ([b0c3072](https://github.com/zetapush/zetapush/commit/b0c3072))
+
+
+
 
 <a name="0.12.0"></a>
 # [0.12.0](https://github.com/zetapush/zetapush/compare/v0.11.1...v0.12.0) (2018-05-24)
