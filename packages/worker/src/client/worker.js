@@ -37,7 +37,6 @@ export class WorkerClient extends Client {
     this.timeout = timeout;
   }
   subscribeTaskWorker(worker, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
-    console.log('subscribeTaskWorker', worker, deploymentId);
     const queue = this.createService({
       deploymentId,
       listener: {

@@ -55,8 +55,6 @@ const run = (args, basepath, config, declaration) => {
     filter: filter(BLACKLIST),
   };
 
-  log(`Connect to worker with config`, clientConfig);
-
   // Check if we need to deploy services
   if (args.skipProvisioning) {
     log(`Skip provisioning`);
@@ -68,7 +66,7 @@ const run = (args, basepath, config, declaration) => {
         compress(
           root,
           Object.assign({}, options, { saveTo: rootArchive }),
-        ).then((res) => {
+        ).then(() => {
           log(`Upload 'app' to create services`);
           upload(rootArchive, config)
             .then((recipe) => {
