@@ -1,9 +1,9 @@
 import { Authentication, Client, uuid } from '@zetapush/core';
-import { Queue } from '@zetapush/platform';
+import { Queue as Worker } from '@zetapush/platform';
 
 import { timeoutify } from '../utils/async';
 
-export class ServerClient extends Client {
+export class WorkerClient extends Client {
   constructor({
     apiUrl,
     sandboxId,
@@ -36,16 +36,15 @@ export class ServerClient extends Client {
      */
     this.timeout = timeout;
   }
-  subscribeTaskServer(worker, deploymentId = Queue.DEFAULT_DEPLOYMENT_ID) {
-    console.log('subscribeTaskServer', worker, deploymentId);
+  subscribeTaskWorker(worker, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
+    console.log('subscribeTaskWorker', worker, deploymentId);
     const queue = this.createService({
       deploymentId,
       listener: {
         dispatch: async ({ data: { request, taskId } }) => {
-          console.log('dispatch', { request, taskId });
           const { data, requestId, owner } = request;
           const { name, namespace, parameters } = data;
-          console.log('Queue::dispatch', {
+          console.log('Worker::dispatch', {
             name,
             namespace,
             parameters,
@@ -61,7 +60,7 @@ export class ServerClient extends Client {
               () => worker[namespace][name](parameters, context),
               this.timeout,
             );
-            console.log('result', result);
+            console.log('Worker::result', result);
             queue.done({
               result,
               taskId,
@@ -69,7 +68,7 @@ export class ServerClient extends Client {
               success: true,
             });
           } catch (error) {
-            console.log('error', error);
+            console.log('Worker::error', error);
             queue.done({
               result: error,
               taskId,
@@ -79,7 +78,7 @@ export class ServerClient extends Client {
           }
         },
       },
-      Type: Queue,
+      Type: Worker,
     });
     queue.register({
       capacity: 100,

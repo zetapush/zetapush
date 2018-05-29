@@ -17,7 +17,7 @@
     "@zetapush/cometd": "^0.13.3",
     "@zetapush/core": "^0.13.3",
     "@zetapush/platform": "^0.13.3",
-    "@zetapush/server": "^0.13.3",
+    "@zetapush/worker": "^0.13.3",
     "ascii-progress": "^1.0.5",
     "chalk": "^2.4.1",
     "commander": "^2.15.1",

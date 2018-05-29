@@ -1,5 +1,5 @@
 const { uuid } = require('@zetapush/core');
-const { ServerClient } = require('@zetapush/server');
+const { WorkerClient } = require('@zetapush/worker');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
 const { instanciate } = require('../utils/di');
@@ -25,7 +25,7 @@ const run = (args, basepath, config, declaration) => {
     resource,
   };
 
-  const client = new ServerClient(clientConfig);
+  const client = new WorkerClient(clientConfig);
 
   const onTerminalSignal = (signal) => {
     warn(`Properly disconnect client`);
