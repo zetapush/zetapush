@@ -3,34 +3,39 @@ const { Inject, Stack } = require('@zetapush/platform');
 
 const { Calendar } = require('./calendar');
 
+class PrivateApi {
+  static get parameters() {
+    return [
+      new Inject(Stack)
+    ];
+  }
+  constructor(stack) {
+    this.stack = stack;
+  }
+  async push(item) {
+    return this.stack.push({ stack: 'demo', data: item });
+  }
+  async list() {
+    return this.stack.list({ stack: 'demo' });
+  }
+}
+
 module.exports = class Api {
   static get parameters() {
     return [
-      new Inject(Stack),
+      new Inject(PrivateApi),
       new Inject(Calendar)
     ];
   }
-  constructor(stack, calendar) {
-    this.stack = stack;
+  constructor(api, calendar) {
+    this.api = api;
     this.calendar = calendar;
   }
-  /**
-   * Add arbitrary item in a stack based storage
-   * @returns {Object}
-   */
   async push(item) {
-    const output = await this.stack.push({ stack: 'demo', data: item });
-    console.log('push', output);
-    return output;
+    return this.api.push({ stack: 'demo', data: item });
   }
-  /**
-   * List stacked items
-   * @returns {Object}
-   */
   async list() {
-    const output = await this.stack.list({ stack: 'demo' });
-    console.log('list', output);
-    return output;
+    return this.api.list({ stack: 'demo' });
   }
   async hello() {
     return `Hello World from JavaScript ${this.calendar.getNow()} Updated`;

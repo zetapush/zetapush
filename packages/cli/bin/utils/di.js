@@ -18,7 +18,7 @@ const scan = (CustomCloudService, output = new ScanOutput()) => {
         if (isFunction(injected.token)) {
           if (Array.isArray(injected.token.parameters)) {
             // CustomCloudService with DI
-            scan(injected.token, services);
+            scan(injected.token, output);
             output.custom.push(injected.token);
           } else if (injected.token.DEFAULT_DEPLOYMENT_ID) {
             // Platform CloudService
