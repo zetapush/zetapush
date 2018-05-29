@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.14.2"></a>
+## [0.14.2](https://github.com/zetapush/zetapush/compare/v0.14.1...v0.14.2) (2018-05-29)
+
+
+### Features
+
+* **progression:** update progression with [STAT] prefix ([c5e1baa](https://github.com/zetapush/zetapush/commit/c5e1baa))
+
+
+
+
 <a name="0.14.1"></a>
 ## [0.14.1](https://github.com/zetapush/zetapush/compare/v0.14.0...v0.14.1) (2018-05-29)
 
