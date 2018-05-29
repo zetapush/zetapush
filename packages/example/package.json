@@ -6,7 +6,8 @@
   "scripts": {
     "deploy": "zeta push",
     "register": "zeta register",
-    "start": "zeta run"
+    "start": "zeta run",
+    "start-skip-provisioning": "zeta run --skip-provisioning"
   },
   "dependencies": {
     "@zetapush/cli": "^0.14.0",

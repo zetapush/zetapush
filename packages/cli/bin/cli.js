@@ -27,13 +27,14 @@ program
 program
   .command('run')
   .option('-w, --worker', 'Run worker on local platform')
+  .option('-s, --skip-provisioning', 'Skip provisioning steps', false)
   .arguments('[basepath]')
   .description('Run your code')
   .action((basepath = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
     register(basepath, command)
       .then((config) => Promise.all([config, load(basepath)]))
       .then(([config, declaration]) =>
-        run(command.parent, basepath, config, declaration),
+        run(command, basepath, config, declaration),
       ),
   );
 

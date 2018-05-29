@@ -57,21 +57,28 @@ const run = (args, basepath, config, declaration) => {
 
   log(`Connect to worker with config`, clientConfig);
 
-  // Deploy all needed services
-  mkdir(root).then(() => {
-    provisionning(app, config, declaration).then(() => {
-      compress(root, Object.assign({}, options, { saveTo: rootArchive })).then(
-        (res) => {
+  // Check if we need to deploy services
+  if (args.skipProvisioning) {
+    log(`Skip provisioning`);
+    connectAndSubscribeClient(client, config, declaration);
+  } else {
+    // Deploy all needed services
+    mkdir(root).then(() => {
+      provisionning(app, config, declaration).then(() => {
+        compress(
+          root,
+          Object.assign({}, options, { saveTo: rootArchive }),
+        ).then((res) => {
           log(`Upload 'app' to create services`);
           upload(rootArchive, config)
             .then((recipe) => {
               waitingServicesDeployed(recipe, config, client, declaration);
             })
             .catch((failure) => error('Upload failed', failure));
-        },
-      );
+        });
+      });
     });
-  });
+  }
 };
 
 /**
@@ -87,28 +94,28 @@ function waitingServicesDeployed(recipe, config, client, declaration) {
   getRunProgression(config, recipeId)
     .then((recipeId) => {
       log(`Server is running on ${recipeId}`);
-
-      client
-        .connect()
-        .then(() => {
-          log(`Connected`);
-        })
-        .then(() => {
-          log(`Resolve Dependency Injection`);
-          return instanciate(client, declaration);
-        })
-        .then((declaration) => {
-          log(`Register Worker`);
-          return client.subscribeTaskWorker(
-            declaration,
-            config.workerServiceId,
-          );
-        })
-        .catch((failure) => error('ZetaPush Celtia Error', failure));
+      connectAndSubscribeClient(client, config, declaration);
     })
     .catch((err) => {
       error(`Failed running server`, err);
     });
 }
+
+const connectAndSubscribeClient = (client, config, declaration) => {
+  client
+    .connect()
+    .then(() => {
+      log(`Connected`);
+    })
+    .then(() => {
+      log(`Resolve Dependency Injection`);
+      return instanciate(client, declaration);
+    })
+    .then((declaration) => {
+      log(`Register Worker`);
+      return client.subscribeTaskWorker(declaration, config.workerServiceId);
+    })
+    .catch((failure) => error('ZetaPush Celtia Error', failure));
+};
 
 module.exports = run;
