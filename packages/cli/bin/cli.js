@@ -32,8 +32,8 @@ program
   .action((basepath = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
     register(basepath, command)
       .then((config) => Promise.all([config, load(basepath)]))
-      .then(([config, Worker]) =>
-        run(command.parent, basepath, config, Worker),
+      .then(([config, declaration]) =>
+        run(command.parent, basepath, config, declaration),
       ),
   );
 
@@ -46,8 +46,8 @@ program
   .action((basepath = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
     register(basepath, command)
       .then((config) => Promise.all([config, load(basepath)]))
-      .then(([config, Worker]) =>
-        push(command.parent, basepath, config, Worker),
+      .then(([config, declaration]) =>
+        push(command.parent, basepath, config, declaration),
       ),
   );
 

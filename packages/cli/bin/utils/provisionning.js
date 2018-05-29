@@ -1,16 +1,17 @@
+const { analyze } = require('./di');
 const { log } = require('./log');
-
 /**
  * Map injected service to provisioning items
  * @param {ZetaPushConfig} config
- * @param {Service[]} injected
+ * @param {WorkerDeclaration} declaration
  */
-const mapInjectedToProvision = (config, injected = []) => {
+const mapDeclarationToProvision = (config, declaration) => {
+  const { platform } = analyze(declaration);
   const items = Array.from(
     new Set([
       'queue',
       'weak',
-      ...injected.map((Service) => Service.DEPLOYMENT_TYPE),
+      ...platform.map((Service) => Service.DEPLOYMENT_TYPE),
     ]),
   );
   log(`Provisionning`, ...items);
@@ -32,4 +33,4 @@ const mapInjectedToProvision = (config, injected = []) => {
   };
 };
 
-module.exports = { mapInjectedToProvision };
+module.exports = { mapDeclarationToProvision };

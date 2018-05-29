@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.13.2"></a>
+## [0.13.2](https://github.com/zetapush/zetapush/compare/v0.13.1...v0.13.2) (2018-05-28)
+
+
+
+
+**Note:** Version bump only for package @zetapush/cometd
+
+<a name="0.13.1"></a>
+## [0.13.1](https://github.com/zetapush/zetapush/compare/v0.13.0...v0.13.1) (2018-05-28)
+
+
+
+
+**Note:** Version bump only for package @zetapush/cometd
+
+<a name="0.13.0"></a>
+# [0.13.0](https://github.com/zetapush/zetapush/compare/v0.12.0...v0.13.0) (2018-05-28)
+
+
+### Bug Fixes
+
+* **cometd:** remove mutation of Transport class properties ([93a29ce](https://github.com/zetapush/zetapush/commit/93a29ce))
+
+
+
+
+<a name="0.13.0-alpha.3a6733f2"></a>
+# [0.13.0-alpha.3a6733f2](https://github.com/zetapush/zetapush/compare/v0.12.0...v0.13.0-alpha.3a6733f2) (2018-05-28)
+
+
+### Bug Fixes
+
+* **cometd:** remove mutation of Transport class properties ([93a29ce](https://github.com/zetapush/zetapush/commit/93a29ce))
+
+
+
+
 <a name="0.12.0"></a>
 # [0.12.0](https://github.com/zetapush/zetapush/compare/v0.11.1...v0.12.0) (2018-05-24)
 

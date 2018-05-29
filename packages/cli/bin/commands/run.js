@@ -2,18 +2,18 @@ const { uuid } = require('@zetapush/core');
 const { ServerClient } = require('@zetapush/server');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
-const di = require('../utils/di');
+const { instanciate } = require('../utils/di');
 const { log, error, todo, warn } = require('../utils/log');
-const { mapInjectedToProvision } = require('../utils/provisionning');
+const { mapDeclarationToProvision } = require('../utils/provisionning');
 
 /**
  * Run Worker instance
  * @param {Object} args
  * @param {String} basepath
  * @param {Object} config
- * @param {Function} Worker
+ * @param {WorkerDeclaration} declaration
  */
-const run = (args, basepath, config, Worker) => {
+const run = (args, basepath, config, declaration) => {
   const resource = `node_js_worker_${uuid()}`;
 
   const clientConfig = {
@@ -48,19 +48,17 @@ const run = (args, basepath, config, Worker) => {
     .then(() => {
       log(`Connected`);
     })
-    .then((declaration) => {
-      const { injected = [] } = Worker;
-      const { items } = mapInjectedToProvision(config, injected);
-      todo(`Check Service Provisionning`, items);
+    .then(() => {
+      todo(`Check Service Provisionning`, declaration);
       return declaration;
     })
     .then(() => {
       log(`Resolve Dependency Injection`);
-      return di(client, Worker);
+      return instanciate(client, declaration);
     })
-    .then((declaration) => {
+    .then((instance) => {
       log(`Register Server Task`);
-      return client.subscribeTaskServer(declaration, config.workerServiceId);
+      return client.subscribeTaskServer(instance, config.workerServiceId);
     })
     .catch((failure) => error('ZetaPush Celtia Error', failure));
 };

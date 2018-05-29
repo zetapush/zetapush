@@ -1,7 +1,13 @@
 var Transport = require('./Transport');
 var Utils = require('./Utils');
 
-function WebSocketTransport() {
+/**
+ * Implements WebSocketTransport using WebSocket API
+ * @access private
+ * @param {Function} WebSocket
+ * @return {WebSocketTransport}
+ */
+function WebSocketTransport(WebSocket) {
     var _super = new Transport();
     var _self = Transport.derive(_super);
     var _cometd;
@@ -70,7 +76,6 @@ function WebSocketTransport() {
 
         try {
             var protocol = _cometd.getConfiguration().protocol;
-            var WebSocket = WebSocketTransport.WebSocket;
             context.webSocket = protocol ? new WebSocket(url, protocol) : new WebSocket(url);
             _connecting = context;
         } catch (x) {
@@ -338,7 +343,7 @@ function WebSocketTransport() {
     _self.accept = function(version, crossDomain, url) {
         this._debug('Transport', this.getType(), 'accept, supported:', _webSocketSupported);
         // Using !! to return a boolean (and not the WebSocket object).
-        return _webSocketSupported && !('string' === typeof WebSocketTransport.WebSocket) && _cometd.websocketEnabled !== false;
+        return _webSocketSupported && !('string' === typeof WebSocket) && _cometd.websocketEnabled !== false;
     };
 
     _self.send = function(envelope, metaConnect) {
@@ -364,9 +369,6 @@ function WebSocketTransport() {
 
     return _self;
 };
-
-// Reference global WebSocket 
-WebSocketTransport.WebSocket = 'Abstract';
 
 // Export WebSocketTransport
 module.exports = WebSocketTransport;

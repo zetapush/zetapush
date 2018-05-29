@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.13.2"></a>
+## [0.13.2](https://github.com/zetapush/zetapush/compare/v0.13.1...v0.13.2) (2018-05-28)
+
+
+### Bug Fixes
+
+* **cli/run:** update provisioning mechanism ([ee2b332](https://github.com/zetapush/zetapush/commit/ee2b332))
+
+
+
+
+<a name="0.13.1"></a>
+## [0.13.1](https://github.com/zetapush/zetapush/compare/v0.13.0...v0.13.1) (2018-05-28)
+
+
+### Features
+
+* **provisionning:** update provisioning with new DI mechanism ([cf7b60c](https://github.com/zetapush/zetapush/commit/cf7b60c))
+
+
+
+
+<a name="0.13.0"></a>
+# [0.13.0](https://github.com/zetapush/zetapush/compare/v0.12.0...v0.13.0) (2018-05-28)
+
+
+### Features
+
+* **custom-cloud-services:** update di mechanism with injection-js ([55532b6](https://github.com/zetapush/zetapush/commit/55532b6))
+* **custom-cloud-services:** update exposed CustomCloudService declaration ([b0c3072](https://github.com/zetapush/zetapush/commit/b0c3072))
+
+
+
+
+<a name="0.13.0-alpha.3a6733f2"></a>
+# [0.13.0-alpha.3a6733f2](https://github.com/zetapush/zetapush/compare/v0.12.0...v0.13.0-alpha.3a6733f2) (2018-05-28)
+
+
+### Features
+
+* **custom-cloud-services:** update di mechanism with injection-js ([55532b6](https://github.com/zetapush/zetapush/commit/55532b6))
+* **custom-cloud-services:** update exposed CustomCloudService declaration ([b0c3072](https://github.com/zetapush/zetapush/commit/b0c3072))
+
+
+
+
 <a name="0.12.0"></a>
 # [0.12.0](https://github.com/zetapush/zetapush/compare/v0.11.1...v0.12.0) (2018-05-24)
 

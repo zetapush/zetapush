@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/cometd",
-  "version": "0.12.0",
+  "version": "0.13.2",
   "description": "Zeta Push Next",
   "main": "index.js",
   "files": [
