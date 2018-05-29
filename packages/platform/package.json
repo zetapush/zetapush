@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/platform",
-  "version": "0.12.0",
+  "version": "0.13.3",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-platform.js",
   "main": "lib/index.js",
@@ -24,6 +24,9 @@
     "build:umd:min": "cross-env BABEL_ENV=umd NODE_ENV=production rollup -c -i src/index.js -o dist/zetapush-platform.min.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "prepublish": "npm run clean && npm run build"
+  },
+  "dependencies": {
+    "injection-js": "^2.2.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.46",

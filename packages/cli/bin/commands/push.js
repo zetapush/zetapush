@@ -15,9 +15,9 @@ const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
  * Generate an archive (.zip file) used by upload process
  * @param {String} basepath
  * @param {Object} config
- * @param {Function} Api
+ * @param {WorkerDeclaration} declaration
  */
-const archive = (basepath, config, Api) => {
+const archive = (basepath, config, declaration) => {
   const ts = Date.now();
   const root = path.join(os.tmpdir(), String(ts));
   const app = path.join(root, 'app');
@@ -50,7 +50,7 @@ const archive = (basepath, config, Api) => {
         Object.assign({}, options, { saveTo: workerArchive }),
       ),
     )
-    .then(() => provisionning(app, config, Api))
+    .then(() => provisionning(app, config, declaration))
     .then(() =>
       compress(root, Object.assign({}, options, { saveTo: rootArchive })),
     )
@@ -64,12 +64,12 @@ const archive = (basepath, config, Api) => {
  * @param {Object} config
  * @param {Function} Worker
  */
-const push = (args, basepath, config, Api) => {
+const push = (args, basepath, config, declaration) => {
   log(`Execute command <push> ${basepath}`);
   basepath = path.isAbsolute(basepath)
     ? basepath
     : path.resolve(process.cwd(), basepath);
-  archive(basepath, config, Api)
+  archive(basepath, config, declaration)
     .then((archived) => upload(archived, config))
     .then((recipe) => {
       log('Uploaded', recipe.recipeId);

@@ -25,7 +25,7 @@ const config = {
       '@zetapush/core': 'ZetaPush',
       '@zetapush/platform': 'ZetaPushPlatform'
     },
-    name: 'ZetaPushServer',
+    name: 'ZetaPushWorker',
     sourcemap: true
   },
 };

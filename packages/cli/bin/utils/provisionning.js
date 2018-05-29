@@ -1,17 +1,19 @@
-const { log, error } = require('./log');
 const fs = require('fs');
 
+const { log, error } = require('./log');
+const { analyze } = require('./di');
 /**
  * Map injected service to provisioning items
  * @param {ZetaPushConfig} config
- * @param {Service[]} injected
+ * @param {WorkerDeclaration} declaration
  */
-const mapInjectedToProvision = (config, injected = []) => {
+const mapDeclarationToProvision = (config, declaration) => {
+  const { platform } = analyze(declaration);
   const items = Array.from(
     new Set([
       'queue',
       'weak',
-      ...injected.map((Service) => Service.DEPLOYMENT_TYPE),
+      ...platform.map((Service) => Service.DEPLOYMENT_TYPE),
     ]),
   );
   log(`Provisionning`, ...items);
@@ -37,11 +39,11 @@ const mapInjectedToProvision = (config, injected = []) => {
  * Generate a normalized file use by ZBO to provision ZetaPush Services
  * @param {String} filepath
  * @param {Object} config
+ * @param {Object} declaration
  */
-const provisionning = (filepath, config, Api) =>
+const provisionning = (filepath, config, declaration) =>
   new Promise((resolve, reject) => {
-    const { injected = [] } = Api;
-    const provision = mapInjectedToProvision(config, injected);
+    const provision = mapDeclarationToProvision(config, declaration);
     const json = JSON.stringify(provision);
     fs.writeFile(filepath, json, (failure) => {
       if (failure) {

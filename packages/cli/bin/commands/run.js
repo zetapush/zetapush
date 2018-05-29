@@ -3,10 +3,10 @@ const fs = require('fs');
 const os = require('os');
 const compress = require('../utils/compress');
 const { uuid } = require('@zetapush/core');
-const { ServerClient } = require('@zetapush/server');
+const { WorkerClient } = require('@zetapush/worker');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
-const di = require('../utils/di');
+const { instanciate } = require('../utils/di');
 const { log, error, todo, warn } = require('../utils/log');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
 const provisionning = require('../utils/provisionning');
@@ -17,21 +17,18 @@ const { getLiveStatus, getRunProgression } = require('../utils/progression');
  * @param {Object} args
  * @param {String} basepath
  * @param {Object} config
- * @param {Function} Worker
+ * @param {WorkerDeclaration} declaration
  */
-const run = (args, basepath, config, Worker) => {
-  const resource = `node_js_worker_${uuid()}`;
-
+const run = (args, basepath, config, declaration) => {
   const clientConfig = {
     apiUrl: config.platformUrl,
     login: config.developerLogin,
     password: config.developerPassword,
     sandboxId: config.appName,
     transports,
-    resource,
   };
 
-  const client = new ServerClient(clientConfig);
+  const client = new WorkerClient(clientConfig);
 
   const onTerminalSignal = (signal) => {
     warn(`Properly disconnect client`);
@@ -62,13 +59,13 @@ const run = (args, basepath, config, Worker) => {
 
   // Deploy all needed services
   mkdir(root).then(() => {
-    provisionning(app, config, Worker).then(() => {
+    provisionning(app, config, declaration).then(() => {
       compress(root, Object.assign({}, options, { saveTo: rootArchive })).then(
         (res) => {
           log(`Upload 'app' to create services`);
           upload(rootArchive, config)
             .then((recipe) => {
-              waitingServicesDeployed(recipe, config, client, Worker);
+              waitingServicesDeployed(recipe, config, client, declaration);
             })
             .catch((failure) => error('Upload failed', failure));
         },
@@ -78,29 +75,9 @@ const run = (args, basepath, config, Worker) => {
 };
 
 /**
- * Create the 'app' file that describe the services
- */
-function createTempoAppFile(provision, root) {
-  return new Promise((resolve, reject) => {
-    const filepath = path.join(root, 'app');
-    const json = JSON.stringify(provision);
-    fs.mkdirSync(root);
-
-    fs.writeFile(filepath, json, (failure) => {
-      if (failure) {
-        reject(failure);
-        return error('provisionning', failure);
-      }
-      log(`Path app`, filepath);
-      resolve({ filepath, provision });
-    });
-  });
-}
-
-/**
  * Ask progression during deploy of services
  */
-function waitingServicesDeployed(recipe, config, client, worker) {
+function waitingServicesDeployed(recipe, config, client, declaration) {
   log('Uploaded', recipe.recipeId);
   const { recipeId } = recipe;
   if (recipeId === void 0) {
@@ -118,11 +95,11 @@ function waitingServicesDeployed(recipe, config, client, worker) {
         })
         .then(() => {
           log(`Resolve Dependency Injection`);
-          return di(client, worker);
+          return instanciate(client, declaration);
         })
         .then((declaration) => {
-          log(`Register Server Task`);
-          return client.subscribeTaskServer(
+          log(`Register Worker`);
+          return client.subscribeTaskWorker(
             declaration,
             config.workerServiceId,
           );

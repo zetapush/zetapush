@@ -90,7 +90,7 @@ const getLiveStatus = (config) =>
     });
   });
 
-getProgression = (config, recipeId) => {
+const getProgression = (config, recipeId) => {
   const progress = {};
 
   (async function check() {
@@ -130,7 +130,7 @@ getProgression = (config, recipeId) => {
   })();
 };
 
-getRunProgression = (config, recipeId) => {
+const getRunProgression = (config, recipeId) => {
   const progress = {};
 
   return new Promise((resolve, reject) => {

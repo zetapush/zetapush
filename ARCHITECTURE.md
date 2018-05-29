@@ -27,7 +27,7 @@ Dépendences:
 - [@zetapush/cometd](https://github.com/zetapush/zetapush/tree/master/packages/cometd)
 - [@zetapush/platform](https://github.com/zetapush/zetapush/tree/master/packages/platform)
 
-## @zetapush/server
+## @zetapush/worker
 
 C'est le SDK utilisé en interne au sein d'un **worker** NodeJS connecté à la plateforme ZetaPush. Il assure la communication en ZetaPush et le code écrit par le developpeur.
 
@@ -42,4 +42,5 @@ Outil en ligne de commande permettant de publier son code JavaScript (ses cloud 
 Dépendences:
 - [@zetapush/cometd](https://github.com/zetapush/zetapush/tree/master/packages/cometd)
 - [@zetapush/core](https://github.com/zetapush/zetapush/tree/master/packages/core)
-- [@zetapush/server](https://github.com/zetapush/zetapush/tree/master/packages/server)
+- [@zetapush/platform](https://github.com/zetapush/zetapush/tree/master/packages/platform)
+- [@zetapush/worker](https://github.com/zetapush/zetapush/tree/master/packages/worker)
