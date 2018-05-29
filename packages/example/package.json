@@ -1,16 +1,15 @@
 {
   "name": "@zetapush/example",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "main": "server/index.js",
   "private": true,
   "scripts": {
     "deploy": "zeta push",
     "register": "zeta register",
-    "start": "zeta run",
-    "start-skip-provisioning": "zeta run --skip-provisioning"
+    "start": "zeta run"
   },
   "dependencies": {
-    "@zetapush/cli": "^0.14.0",
-    "@zetapush/platform": "^0.14.0"
+    "@zetapush/cli": "^0.14.1",
+    "@zetapush/platform": "^0.14.1"
   }
 }
