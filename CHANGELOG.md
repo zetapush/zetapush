@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.13.3"></a>
+## [0.13.3](https://github.com/zetapush/zetapush/compare/v0.13.2...v0.13.3) (2018-05-29)
+
+
+### Bug Fixes
+
+* **di:** fix di issue for non exposed Api ([da9e756](https://github.com/zetapush/zetapush/commit/da9e756))
+
+
+
+
 <a name="0.13.2"></a>
 ## [0.13.2](https://github.com/zetapush/zetapush/compare/v0.13.1...v0.13.2) (2018-05-28)
 
