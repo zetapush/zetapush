@@ -1,4 +1,5 @@
-const { log } = require('./log');
+const { log, error } = require('./log');
+const fs = require('fs');
 
 /**
  * Map injected service to provisioning items
@@ -32,4 +33,23 @@ const mapInjectedToProvision = (config, injected = []) => {
   };
 };
 
-module.exports = { mapInjectedToProvision };
+/**
+ * Generate a normalized file use by ZBO to provision ZetaPush Services
+ * @param {String} filepath
+ * @param {Object} config
+ */
+const provisionning = (filepath, config, Api) =>
+  new Promise((resolve, reject) => {
+    const { injected = [] } = Api;
+    const provision = mapInjectedToProvision(config, injected);
+    const json = JSON.stringify(provision);
+    fs.writeFile(filepath, json, (failure) => {
+      if (failure) {
+        reject(failure);
+        return error('provisionning', failure);
+      }
+      resolve({ filepath, provision });
+    });
+  });
+
+module.exports = provisionning;
