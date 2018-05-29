@@ -1,8 +1,20 @@
+const getSandboxId = () => {
+  const PATTERN = /^#\/sandbox\/(.+)/;
+  const [hash, sandboxId] = PATTERN.exec(location.hash) || [];
+  if (sandboxId) {
+    return sandboxId;
+  } else {
+    location.href = `#/sandbox/${prompt('sandbox')}`;
+    location.reload();
+  }
+}
+
+
 const getWeakClientOptions = () => {
-  const { zpSandboxid, zpPlatformUrl } =  document.documentElement.dataset;
+  const { zpSandboxid, zpPlatformUrl } = document.documentElement.dataset;
   return {
-    apiUrl: zpPlatformUrl,
-    sandboxId: zpSandboxid
+    apiUrl: zpPlatformUrl || 'http://hq.zpush.io:9080/zbo/pub/business',
+    sandboxId: zpSandboxid || getSandboxId()
   }
 }
 

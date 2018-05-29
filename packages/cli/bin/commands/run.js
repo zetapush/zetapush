@@ -1,9 +1,16 @@
+const path = require('path');
+const fs = require('fs');
+const os = require('os');
+const compress = require('../utils/compress');
+const { uuid } = require('@zetapush/core');
 const { WorkerClient } = require('@zetapush/worker');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
 const { instanciate } = require('../utils/di');
 const { log, error, todo, warn } = require('../utils/log');
-const { mapDeclarationToProvision } = require('../utils/provisionning');
+const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
+const provisionning = require('../utils/provisionning');
+const { getLiveStatus, getRunProgression } = require('../utils/progression');
 
 /**
  * Run Worker instance
@@ -38,25 +45,70 @@ const run = (args, basepath, config, declaration) => {
     });
   });
 
+  const ts = Date.now();
+  const root = path.join(os.tmpdir(), String(ts));
+  const rootArchive = `${root}.zip`;
+  const app = path.join(root, 'app');
+
+  const options = {
+    each: (filepath) => log('Zipping', filepath),
+    filter: filter(BLACKLIST),
+  };
+
   log(`Connect to worker with config`, clientConfig);
-  client
-    .connect()
-    .then(() => {
-      log(`Connected`);
-    })
-    .then(() => {
-      todo(`Check Service Provisionning`, declaration);
-      return declaration;
-    })
-    .then(() => {
-      log(`Resolve Dependency Injection`);
-      return instanciate(client, declaration);
-    })
-    .then((instance) => {
-      log(`Register Server Task`);
-      return client.subscribeTaskServer(instance, config.workerServiceId);
-    })
-    .catch((failure) => error('ZetaPush Celtia Error', failure));
+
+  // Deploy all needed services
+  mkdir(root).then(() => {
+    provisionning(app, config, declaration).then(() => {
+      compress(root, Object.assign({}, options, { saveTo: rootArchive })).then(
+        (res) => {
+          log(`Upload 'app' to create services`);
+          upload(rootArchive, config)
+            .then((recipe) => {
+              waitingServicesDeployed(recipe, config, client, declaration);
+            })
+            .catch((failure) => error('Upload failed', failure));
+        },
+      );
+    });
+  });
 };
+
+/**
+ * Ask progression during deploy of services
+ */
+function waitingServicesDeployed(recipe, config, client, declaration) {
+  log('Uploaded', recipe.recipeId);
+  const { recipeId } = recipe;
+  if (recipeId === void 0) {
+    return error('Missing recipeId', recipe);
+  }
+  log('Progression');
+  getRunProgression(config, recipeId)
+    .then((recipeId) => {
+      log(`Server is running on ${recipeId}`);
+
+      client
+        .connect()
+        .then(() => {
+          log(`Connected`);
+        })
+        .then(() => {
+          log(`Resolve Dependency Injection`);
+          return instanciate(client, declaration);
+        })
+        .then((declaration) => {
+          log(`Register Worker`);
+          return client.subscribeTaskWorker(
+            declaration,
+            config.workerServiceId,
+          );
+        })
+        .catch((failure) => error('ZetaPush Celtia Error', failure));
+    })
+    .catch((err) => {
+      error(`Failed running server`, err);
+    });
+}
 
 module.exports = run;

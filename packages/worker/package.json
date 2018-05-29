@@ -27,8 +27,7 @@
   },
   "dependencies": {
     "@zetapush/core": "^0.13.3",
-    "@zetapush/platform": "^0.13.3",
-    "reflect-metadata": "^0.1.12"
+    "@zetapush/platform": "^0.13.3"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.46",
