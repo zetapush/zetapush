@@ -1,4 +1,3 @@
-const { uuid } = require('@zetapush/core');
 const { WorkerClient } = require('@zetapush/worker');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
@@ -14,15 +13,12 @@ const { mapDeclarationToProvision } = require('../utils/provisionning');
  * @param {WorkerDeclaration} declaration
  */
 const run = (args, basepath, config, declaration) => {
-  const resource = `node_js_worker_${uuid()}`;
-
   const clientConfig = {
     apiUrl: config.platformUrl,
     login: config.developerLogin,
     password: config.developerPassword,
     sandboxId: config.appName,
     transports,
-    resource,
   };
 
   const client = new WorkerClient(clientConfig);

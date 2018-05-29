@@ -11,6 +11,7 @@ export class WorkerClient extends Client {
     transports,
     login,
     password,
+    resource = `node_js_worker_${uuid()}`,
     timeout = 5000,
   }) {
     const authentication = () =>
@@ -18,7 +19,6 @@ export class WorkerClient extends Client {
         login,
         password,
       });
-    const resource = uuid();
     /**
      * Call Client constructor with specific parameters
      */
