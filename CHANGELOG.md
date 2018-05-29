@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.14.1"></a>
+## [0.14.1](https://github.com/zetapush/zetapush/compare/v0.14.0...v0.14.1) (2018-05-29)
+
+
+### Features
+
+* **cli/run:** implement 'skip-provisioning' on 'zeta run' ([ecd5ecb](https://github.com/zetapush/zetapush/commit/ecd5ecb))
+* **progress:** change display to match specs ([b3caba6](https://github.com/zetapush/zetapush/commit/b3caba6))
+
+
+
+
 <a name="0.14.0"></a>
 # [0.14.0](https://github.com/zetapush/zetapush/compare/v0.13.2...v0.14.0) (2018-05-29)
 
