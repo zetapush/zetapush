@@ -101,7 +101,9 @@ const getProgression = (config, recipeId) => {
         if (!progress[step.id]) {
           progress[step.id] = new ProgressBar({
             total: 100,
-            schema: `[:bar] :current/:total :percent :elapseds ${step.name}`,
+            width: 20,
+            schema: `:bar ${step.name}`,
+            blank: '░',
           });
         }
         progress[step.id].update(step.progress / 100);
