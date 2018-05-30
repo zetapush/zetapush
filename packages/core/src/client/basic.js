@@ -71,7 +71,7 @@ export class Client {
     authentication,
     resource,
     transports,
-  }) {
+  } = {}) {
     /**
      * @access private
      * @type {ClientHelper}

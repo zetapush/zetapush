@@ -1,6 +1,7 @@
 export { API_URL, FORCE_HTTPS, getSecureUrl } from './http';
-export { isDerivedOf } from './prototype.js';
 export { getSandboxConfig } from './network.js';
+export { merge } from './object.js';
+export { isDerivedOf } from './prototype.js';
 export { shuffle, uuid } from './random.js';
 export {
   ZETAPUSH_SESSION_KEY,

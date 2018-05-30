@@ -4,6 +4,7 @@ import { ConnectionStatusListener } from '../connection/connection-status.js';
 import {
   getSandboxConfig,
   isDerivedOf,
+  merge,
   shuffle,
   uuid,
 } from '../utils/index.js';
@@ -67,12 +68,20 @@ export class ClientHelper {
     authentication,
     resource = null,
     transports = Transports,
-  }) {
+  } = {}) {
+    // Merge config with overloaded environement
+    const options = merge(
+      {
+        apiUrl,
+        sandboxId,
+      },
+      transports.getOverloadedConfigFromEnvironement(),
+    );
     /**
      * @access private
      * @type {string}
      */
-    this.sandboxId = sandboxId;
+    this.sandboxId = options.sandboxId;
     /**
      * @access private
      * @type {function():AbstractHandshake}
@@ -108,8 +117,7 @@ export class ClientHelper {
      * @type {Promise}
      */
     this.config = getSandboxConfig({
-      apiUrl,
-      sandboxId,
+      ...options,
       forceHttps,
       transports,
     }).catch((error) => {
