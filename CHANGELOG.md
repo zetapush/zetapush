@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.14.4"></a>
+## [0.14.4](https://github.com/zetapush/zetapush/compare/v0.14.3...v0.14.4) (2018-05-30)
+
+
+### Bug Fixes
+
+* **core:** fix bad reduce prototype ([5a21e48](https://github.com/zetapush/zetapush/commit/5a21e48))
+
+
+
+
 <a name="0.14.3"></a>
 ## [0.14.3](https://github.com/zetapush/zetapush/compare/v0.14.2...v0.14.3) (2018-05-30)
 
