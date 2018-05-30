@@ -37,3 +37,17 @@ var ALL = [
   LONG_POLLING_TRANSPORT
 ];
 exports.ALL = ALL;
+
+/**
+ * Get overloaded config from environement
+ */
+var getOverloadedConfigFromEnvironement = function getOverloadedConfigFromEnvironement() {
+  var env = process.env;
+  var apiUrl = env.ZP_ZBO_URL;
+  var sandboxId = env.ZP_SANDBOX_ID;
+  return {
+    apiUrl: apiUrl,
+    sandboxId: sandboxId
+  }
+}
+exports.getOverloadedConfigFromEnvironement = getOverloadedConfigFromEnvironement;

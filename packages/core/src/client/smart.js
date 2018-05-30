@@ -41,7 +41,7 @@ export class SmartClient extends Client {
     forceHttps,
     resource,
     transports,
-  }) {
+  } = {}) {
     const persistence = new SessionPersistenceStrategy({ sandboxId });
 
     /**

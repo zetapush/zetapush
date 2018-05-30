@@ -42,7 +42,7 @@ export class WeakClient extends Client {
     forceHttps,
     resource,
     transports,
-  }) {
+  } = {}) {
     const authentication = () => {
       const token = this.getToken();
       const handshake = Authentication.weak({

@@ -1,25 +1,5 @@
-const getSandboxId = () => {
-  const PATTERN = /^#\/sandbox\/(.+)/;
-  const [hash, sandboxId] = PATTERN.exec(location.hash) || [];
-  if (sandboxId) {
-    return sandboxId;
-  } else {
-    location.href = `#/sandbox/${prompt('sandbox')}`;
-    location.reload();
-  }
-}
-
-
-const getWeakClientOptions = () => {
-  const { zpSandboxid, zpPlatformUrl } = document.documentElement.dataset;
-  return {
-    apiUrl: zpPlatformUrl || 'http://hq.zpush.io:9080/zbo/pub/business',
-    sandboxId: zpSandboxid || getSandboxId()
-  }
-}
-
 // Create new ZetaPush Client
-const client = new ZetaPush.WeakClient(getWeakClientOptions());
+const client = new ZetaPush.WeakClient();
 
 const api = client.createProxyTaskService();
 
