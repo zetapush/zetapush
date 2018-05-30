@@ -7,7 +7,11 @@ const { analyze } = require('./di');
  * @param {ZetaPushConfig} config
  * @param {WorkerDeclaration} declaration
  */
-const mapDeclarationToProvision = (config, declaration) => {
+const mapDeclarationToProvision = (config, declaration, queueOnly) => {
+  // Function to add options to Queue service
+  const getServiceOptions = (type) =>
+    type == 'queue' ? { queue_auth_id: 'developer' } : {};
+
   const { platform } = analyze(declaration);
   const items = Array.from(
     new Set([
@@ -26,7 +30,7 @@ const mapDeclarationToProvision = (config, declaration) => {
         businessId: config.appName,
         deploymentId: `${type}_0`,
         description: `${type}(${type}:${type}_0)`,
-        options: {},
+        options: getServiceOptions(type),
         forbiddenVerbs: [],
         enabled: true,
       },
@@ -41,9 +45,9 @@ const mapDeclarationToProvision = (config, declaration) => {
  * @param {Object} config
  * @param {Object} declaration
  */
-const provisionning = (filepath, config, declaration) =>
+const provisionning = (filepath, config, declaration, queueOnly) =>
   new Promise((resolve, reject) => {
-    const provision = mapDeclarationToProvision(config, declaration);
+    const provision = mapDeclarationToProvision(config, declaration, queueOnly);
     const json = JSON.stringify(provision);
     fs.writeFile(filepath, json, (failure) => {
       if (failure) {

@@ -50,7 +50,7 @@ const archive = (basepath, config, declaration) => {
         Object.assign({}, options, { saveTo: workerArchive }),
       ),
     )
-    .then(() => provisionning(app, config, declaration))
+    .then(() => provisionning(app, config, declaration, false))
     .then(() =>
       compress(root, Object.assign({}, options, { saveTo: rootArchive })),
     )

@@ -11,6 +11,7 @@ const { URL } = require('url');
 const upload = (archived, config) =>
   new Promise((resolve, reject) => {
     log(`Uploading`, archived);
+
     const { developerLogin, developerPassword, platformUrl, appName } = config;
     const { protocol, hostname, port } = new URL(platformUrl);
     const url = `${protocol}//${hostname}:${port}/zbo/orga/recipe/cook`;

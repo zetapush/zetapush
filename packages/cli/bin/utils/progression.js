@@ -132,25 +132,13 @@ const getProgression = (config, recipeId) => {
   })();
 };
 
-const getRunProgression = (config, recipeId) => {
-  const progress = {};
-
+const checkQueueServiceDeployed = (config, recipeId) => {
   return new Promise((resolve, reject) => {
     (async function check() {
       try {
         const { progressDetail } = await getProgress(config, recipeId);
-        const { steps, finished } = progressDetail;
-        steps.forEach((step) => {
-          if (!progress[step.id]) {
-            progress[step.id] = new ProgressBar({
-              total: 100,
-              width: 20,
-              schema: `[STAT] :bar ${step.name}`,
-              blank: '░',
-            });
-          }
-          progress[step.id].update(step.progress / 100);
-        });
+        const { finished } = progressDetail;
+
         if (!finished) {
           setTimeout(check, 2500);
         } else {
@@ -164,4 +152,4 @@ const getRunProgression = (config, recipeId) => {
   });
 };
 
-module.exports = { getLiveStatus, getProgression, getRunProgression };
+module.exports = { getLiveStatus, getProgression, checkQueueServiceDeployed };
