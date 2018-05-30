@@ -2,8 +2,7 @@ const clean = (object = {}) =>
   Object.entries(object)
     .filter(([property, value]) => Boolean(value))
     .reduce(
-      cleaned,
-      ([property, value]) => ({
+      (cleaned, [property, value]) => ({
         ...cleaned,
         [property]: value,
       }),
