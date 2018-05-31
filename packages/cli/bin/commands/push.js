@@ -1,14 +1,10 @@
 const path = require('path');
-const fs = require('fs');
 const os = require('os');
-const request = require('request');
-const { URL } = require('url');
-const ProgressBar = require('ascii-progress');
 
 const compress = require('../utils/compress');
-const provisionning = require('../utils/provisionning');
+const { generateProvisioningFile } = require('../utils/provisioning');
 const { log, error } = require('../utils/log');
-const { getProgression, getLiveStatus } = require('../utils/progression');
+const { getProgression } = require('../utils/progression');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
 
 /**
@@ -33,27 +29,18 @@ const archive = (basepath, config, declaration) => {
     : path.resolve(process.cwd(), basepath);
 
   const options = {
-    each: (filepath) => log('Zipping', filepath),
     filter: filter(BLACKLIST),
   };
 
   return mkdir(root)
     .then(() =>
-      compress(
-        frontSource,
-        Object.assign({}, options, { saveTo: frontArchive }),
-      ),
+      compress(frontSource, { ...options, ...{ saveTo: frontArchive } }),
     )
     .then(() =>
-      compress(
-        workerSource,
-        Object.assign({}, options, { saveTo: workerArchive }),
-      ),
+      compress(workerSource, { ...options, ...{ saveTo: workerArchive } }),
     )
-    .then(() => provisionning(app, config, declaration, false))
-    .then(() =>
-      compress(root, Object.assign({}, options, { saveTo: rootArchive })),
-    )
+    .then(() => generateProvisioningFile(app, config, declaration, false))
+    .then(() => compress(root, { ...options, ...{ saveTo: rootArchive } }))
     .then(() => rootArchive);
 };
 

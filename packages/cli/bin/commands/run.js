@@ -1,22 +1,20 @@
 const path = require('path');
-const fs = require('fs');
 const os = require('os');
-const compress = require('../utils/compress');
 const request = require('request');
 const { URL } = require('url');
-const { uuid } = require('@zetapush/core');
 const { WorkerClient } = require('@zetapush/worker');
 const { Queue } = require('@zetapush/platform');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
+const compress = require('../utils/compress');
 const { clean, analyze, instanciate } = require('../utils/di');
-const { log, error, todo, warn } = require('../utils/log');
+const { log, error, warn } = require('../utils/log');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
-const provisionning = require('../utils/provisionning');
 const {
-  getLiveStatus,
-  checkQueueServiceDeployed,
-} = require('../utils/progression');
+  generateProvisioningFile,
+  getRuntimeProvision,
+} = require('../utils/provisioning');
+const { checkQueueServiceDeployed } = require('../utils/progression');
 
 /**
  * Run Worker instance
@@ -130,22 +128,10 @@ const createServicesAndRunWorker = async (client, config, declaration) => {
     Type: Queue,
   });
 
-  const cleaned = clean(declaration);
-  const output = analyze(cleaned);
+  const { items } = getRuntimeProvision(config, declaration);
+  const services = items.map(({ item }) => item);
 
-  // By default, we create the weak service
-  const services = output.platform;
-  services.push({ DEPLOYMENT_TYPE: 'weak', DEFAULT_DEPLOYMENT_ID: 'weak_0' });
-
-  await api.$publish(
-    'createServices',
-    services.map((service) => ({
-      enabled: true,
-      businessId: config.appName,
-      itemId: service.DEPLOYMENT_TYPE,
-      deploymentId: service.DEFAULT_DEPLOYMENT_ID,
-    })),
-  );
+  await api.createServices({ services });
 };
 
 const checkServicesAlreadyDeployed = (config) => {
@@ -181,23 +167,18 @@ const checkServicesAlreadyDeployed = (config) => {
 };
 
 const cookWithOnlyQueueService = (config, client, declaration) => {
-  const { appName } = config;
-
   const ts = Date.now();
   const root = path.join(os.tmpdir(), String(ts));
   const rootArchive = `${root}.zip`;
   const app = path.join(root, 'app');
 
   const options = {
-    each: (filepath) => log('Zipping', filepath),
     filter: filter(BLACKLIST),
   };
 
   return mkdir(root)
-    .then(() => provisionning(app, config, declaration, true))
-    .then(() =>
-      compress(root, Object.assign({}, options, { saveTo: rootArchive })),
-    )
+    .then(() => generateProvisioningFile(app, config, declaration, true))
+    .then(() => compress(root, { ...options, ...{ saveTo: rootArchive } }))
     .then(() => {
       log(`Upload 'app' to create queue service`);
       upload(rootArchive, config)

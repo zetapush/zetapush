@@ -96,4 +96,23 @@ export class Queue extends Service {
   unregister() {
     return this.$publish('unregister', {});
   }
+  /**
+   * Makes several admin API calls at once.
+   *
+   * Calls are made sequentially in the given order.
+   * There is no rollback if something goes wrong.
+   */
+  admin({ requests }) {
+    return this.$publish('admin', { requests });
+  }
+  /**
+   * Creates several services
+   *
+   * Configures missing services, restarts modified services.
+   * Does not touch existing services with the same exact configuration.
+   * There is no rollback if something goes wrong.
+   */
+  createServices({ services }) {
+    return this.$publish('createServices', { services });
+  }
 }
