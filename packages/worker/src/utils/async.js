@@ -23,10 +23,10 @@ export const timeoutify = (task, timeout = 1000) =>
         );
       } else {
         clearInterval(timer);
-        return Promise.resolve(response);
+        return resolve(response);
       }
     } catch (error) {
       clearInterval(timer);
-      return Promise.reject(error);
+      return reject(error);
     }
   });
