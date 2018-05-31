@@ -38,7 +38,7 @@ module.exports = class Api {
     return this.api.list({ stack: 'demo' });
   }
   async hello() {
-    return `Hello World toto from JavaScript ${this.calendar.getNow()} Updated`;
+    return `Hello World from JavaScript ${this.calendar.getNow()} Updated`;
   }
   async reduce(list) {
     return list.reduce((cumulator, value) => cumulator + value, 0);

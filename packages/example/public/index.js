@@ -1,5 +1,20 @@
+const getSandboxId = () => {
+  const PATTERN = /^#\/sandbox\/(.+)/;
+  const [hash, sandboxId] = PATTERN.exec(location.hash) || [];
+  if (sandboxId) {
+    return sandboxId;
+  } else {
+    location.href = `#/sandbox/${prompt('sandbox')}`;
+    location.reload();
+  }
+}
+
+
 // Create new ZetaPush Client
-const client = new ZetaPush.WeakClient();
+const client = new ZetaPush.WeakClient({
+  sandboxId: document.documentElement.dataset.zpSandboxid || getSandboxId(),
+  apiUrl: 'http://hq.zpush.io:9080/zbo/pub/business'
+});
 
 const api = client.createProxyTaskService();
 
@@ -56,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
     event.target.dataset.count =
       (parseInt(event.target.dataset.count, 10) || 0) + 1;
     const id = uuid();
-    const item = parse(prompt('Item?'));
+    const item = parse(prompt('Item?', JSON.stringify({})));
     trace(`push--${id}`, () => api.push(item));
   });
   on('.js-List', 'click', async (event) => {
