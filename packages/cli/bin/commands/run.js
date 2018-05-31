@@ -54,29 +54,44 @@ const run = (args, basepath, config, declaration) => {
   /**
    * Run worker and create services if necessary
    */
-  checkServicesAlreadyDeployed(config).then((deployed) => {
-    if (!deployed) {
-      log(`Queue service not already deployed`);
-      cookWithOnlyQueueService(config, client, declaration);
-    } else {
-      // Queue service already exists
-      createServicesAndRunWorker(client, config, declaration)
-        .then(() => {
-          log(`Resolve Dependency Injection`);
-          return instanciate(client, declaration);
-        })
-        .then((declaration) => {
-          return client.subscribeTaskWorker(
-            declaration,
-            config.workerServiceId,
-          );
-        })
-        .then(() => {
-          log(`Worker is running...`);
-        })
-        .catch((failure) => error('ZetaPush Celtia Error', failure));
-    }
-  });
+  if (args.skipProvisioning) {
+    createServicesAndRunWorker(client, config, declaration)
+      .then(() => {
+        log(`Resolve Dependency Injection`);
+        return instanciate(client, declaration);
+      })
+      .then((declaration) => {
+        return client.subscribeTaskWorker(declaration, config.workerServiceId);
+      })
+      .then(() => {
+        log(`Worker is running...`);
+      })
+      .catch((failure) => error('ZetaPush Celtia Error', failure));
+  } else {
+    checkServicesAlreadyDeployed(config).then((deployed) => {
+      if (!deployed) {
+        log(`Queue service not already deployed`);
+        cookWithOnlyQueueService(config, client, declaration);
+      } else {
+        // Queue service already exists
+        createServicesAndRunWorker(client, config, declaration)
+          .then(() => {
+            log(`Resolve Dependency Injection`);
+            return instanciate(client, declaration);
+          })
+          .then((declaration) => {
+            return client.subscribeTaskWorker(
+              declaration,
+              config.workerServiceId,
+            );
+          })
+          .then(() => {
+            log(`Worker is running...`);
+          })
+          .catch((failure) => error('ZetaPush Celtia Error', failure));
+      }
+    });
+  }
 };
 
 /**

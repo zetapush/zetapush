@@ -13,13 +13,15 @@ const mapDeclarationToProvision = (config, declaration, queueOnly) => {
     type == 'queue' ? { queue_auth_id: 'developer' } : {};
 
   const { platform } = analyze(declaration);
-  const items = Array.from(
-    new Set([
-      'queue',
-      'weak',
-      ...platform.map((Service) => Service.DEPLOYMENT_TYPE),
-    ]),
-  );
+  const items = queueOnly
+    ? ['queue']
+    : Array.from(
+        new Set([
+          'queue',
+          'weak',
+          ...platform.map((Service) => Service.DEPLOYMENT_TYPE),
+        ]),
+      );
   log(`Provisionning`, ...items);
   return {
     businessId: config.appName,
