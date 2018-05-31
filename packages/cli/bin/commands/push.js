@@ -39,7 +39,7 @@ const archive = (basepath, config, declaration) => {
     .then(() =>
       compress(workerSource, { ...options, ...{ saveTo: workerArchive } }),
     )
-    .then(() => generateProvisioningFile(app, config, declaration, false))
+    .then(() => generateProvisioningFile(app, config))
     .then(() => compress(root, { ...options, ...{ saveTo: rootArchive } }))
     .then(() => rootArchive);
 };

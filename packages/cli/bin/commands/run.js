@@ -177,7 +177,7 @@ const cookWithOnlyQueueService = (config, client, declaration) => {
   };
 
   return mkdir(root)
-    .then(() => generateProvisioningFile(app, config, declaration, true))
+    .then(() => generateProvisioningFile(app, config))
     .then(() => compress(root, { ...options, ...{ saveTo: rootArchive } }))
     .then(() => {
       log(`Upload 'app' to create queue service`);

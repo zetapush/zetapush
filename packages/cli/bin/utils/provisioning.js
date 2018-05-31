@@ -69,14 +69,10 @@ const getRuntimeProvision = (config, declaration) => {
  * Generate a normalized file use by ZBO to provision ZetaPush Services
  * @param {String} filepath
  * @param {Object} config
- * @param {Object} declaration
- * @param {Boolean} bootstrap
  */
-const generateProvisioningFile = (filepath, config, declaration, bootstrap) =>
+const generateProvisioningFile = (filepath, config) =>
   new Promise((resolve, reject) => {
-    const provision = bootstrap
-      ? getBootstrapProvision(config)
-      : getRuntimeProvision(config, declaration);
+    const provision = getBootstrapProvision(config);
     const json = JSON.stringify(provision);
     fs.writeFile(filepath, json, (failure) => {
       if (failure) {
