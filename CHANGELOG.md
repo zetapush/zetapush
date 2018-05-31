@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.15.3"></a>
+## [0.15.3](https://github.com/zetapush/zetapush/compare/v0.15.2...v0.15.3) (2018-05-31)
+
+
+### Bug Fixes
+
+* **provisioning:** support provisioning for run and push ([e3d367a](https://github.com/zetapush/zetapush/commit/e3d367a))
+
+
+
+
 <a name="0.15.2"></a>
 ## [0.15.2](https://github.com/zetapush/zetapush/compare/v0.15.1...v0.15.2) (2018-05-31)
 
