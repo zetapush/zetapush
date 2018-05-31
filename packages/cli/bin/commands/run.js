@@ -7,7 +7,7 @@ const { Queue } = require('@zetapush/platform');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
 const compress = require('../utils/compress');
-const { clean, analyze, instanciate } = require('../utils/di');
+const { instanciate } = require('../utils/di');
 const { log, error, warn } = require('../utils/log');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
 const {
