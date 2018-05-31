@@ -1,46 +1,30 @@
 
-const { Inject, Stack } = require('@zetapush/platform');
+const { Inject } = require('@zetapush/platform');
 
-const { Calendar } = require('./calendar');
-
-class PrivateApi {
-  static get parameters() {
-    return [
-      new Inject(Stack)
-    ];
-  }
-  constructor(stack) {
-    this.stack = stack;
-  }
-  async push(item) {
-    return this.stack.push({ stack: 'demo', data: item });
-  }
-  async list() {
-    return this.stack.list({ stack: 'demo' });
-  }
-}
+const { Calendar } = require('./calendar.js');
+const { Storage } = require('./storage.js')
 
 module.exports = class Api {
   static get parameters() {
     return [
-      new Inject(PrivateApi),
+      new Inject(Storage),
       new Inject(Calendar)
     ];
   }
-  constructor(api, calendar) {
-    this.api = api;
+  constructor(storage, calendar) {
+    this.storage = storage;
     this.calendar = calendar;
   }
-  async push(item) {
-    return this.api.push({ stack: 'demo', data: item });
+  push(item) {
+    return this.storage.push(item);
   }
-  async list() {
-    return this.api.list({ stack: 'demo' });
+  list() {
+    return this.storage.list();
   }
-  async hello() {
+  hello() {
     return `Hello World from JavaScript ${this.calendar.getNow()} Updated`;
   }
-  async reduce(list) {
+  reduce(list) {
     return list.reduce((cumulator, value) => cumulator + value, 0);
   }
 }
