@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.15.1"></a>
+## [0.15.1](https://github.com/zetapush/zetapush/compare/v0.15.0...v0.15.1) (2018-05-31)
+
+
+### Bug Fixes
+
+* **worker:** allow non promise based public api ([c733867](https://github.com/zetapush/zetapush/commit/c733867))
+
+
+
+
 <a name="0.15.0"></a>
 # [0.15.0](https://github.com/zetapush/zetapush/compare/v0.14.4...v0.15.0) (2018-05-31)
 
