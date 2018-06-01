@@ -4,7 +4,8 @@
   "description": "Zeta Push Next",
   "files": [
     "index.js",
-    "createApp.js"
+    "createApp.js",
+    "template"
   ],
   "bin": "./index.js",
   "repository": "https://github.com/zetapush/zetapush",
@@ -13,7 +14,8 @@
   "scripts": {},
   "dependencies": {
     "chalk": "^2.4.1",
-    "commander": "^2.15.1"
+    "commander": "^2.15.1",
+    "cross-spawn": "^6.0.5"
   },
   "publishConfig": {
     "access": "public"
