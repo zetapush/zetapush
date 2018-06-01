@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.16.1"></a>
+## [0.16.1](https://github.com/zetapush/zetapush/compare/v0.16.0...v0.16.1) (2018-06-01)
+
+
+### Features
+
+* **create:** support template step ([0c026ce](https://github.com/zetapush/zetapush/commit/0c026ce))
+
+
+
+
 <a name="0.16.0"></a>
 # [0.16.0](https://github.com/zetapush/zetapush/compare/v0.15.3...v0.16.0) (2018-06-01)
 
