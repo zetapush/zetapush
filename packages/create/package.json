@@ -1,0 +1,23 @@
+{
+  "name": "@zetapush/create",
+  "version": "0.15.3",
+  "description": "Zeta Push Next",
+  "files": [
+    "index.js",
+    "createApp.js"
+  ],
+  "bin": {
+    "create": "./index.js"
+  },
+  "repository": "https://github.com/zetapush/zetapush",
+  "author": "ci@zetapush.com",
+  "license": "MIT",
+  "scripts": {},
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "commander": "^2.15.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
