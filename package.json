@@ -10,6 +10,7 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "commitizen": "^2.10.1",
     "conventional-changelog-angular": "^1.6.6",
     "conventional-changelog-core": "^2.0.11",
     "conventional-recommended-bump": "^2.0.9",
