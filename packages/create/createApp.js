@@ -1,11 +1,13 @@
 'use strict';
 
-const fs = require('fs');
 const os = require('os');
+const path = require('path');
+const execSync = require('child_process').execSync;
 
 const chalk = require('chalk');
 const commander = require('commander');
 const spawn = require('cross-spawn');
+const fs = require('fs-extra');
 
 const pkg = require('./package.json');
 
@@ -50,10 +52,7 @@ function createApp(name) {
       deploy: 'zeta push',
       start: 'zeta run'
     },
-    dependencies: {
-      '@zetapush/cli': `^${pkg.version}`,
-      '@zetapush/platform': `^${pkg.version}`
-    }
+    dependencies: {}
   };
   fs.writeFileSync(
     path.join(root, 'package.json'),
@@ -135,11 +134,8 @@ function init(
   appName,
   originalDirectory
 ) {
-  const ownPackageName = require(path.join(__dirname, 'package.json'))
-    .name;
-  const ownPath = path.join(appPath, 'node_modules', ownPackageName);
   // Copy the files for the user
-  const templatePath = path.join(ownPath, 'template');
+  const templatePath = path.join(__dirname, 'template');
   if (fs.existsSync(templatePath)) {
     fs.copySync(templatePath, appPath);
   } else {
@@ -147,25 +143,6 @@ function init(
       `Could not locate supplied template: ${chalk.green(templatePath)}`
     );
     return;
-  }
-
-  // Rename gitignore after the fact to prevent npm from renaming it to .npmignore
-  // See: https://github.com/npm/npm/issues/1862
-  try {
-    fs.moveSync(
-      path.join(appPath, 'gitignore'),
-      path.join(appPath, '.gitignore'),
-      []
-    );
-  } catch (err) {
-    // Append if there's already a `.gitignore` file there
-    if (err.code === 'EEXIST') {
-      const data = fs.readFileSync(path.join(appPath, 'gitignore'));
-      fs.appendFileSync(path.join(appPath, '.gitignore'), data);
-      fs.unlinkSync(path.join(appPath, 'gitignore'));
-    } else {
-      throw err;
-    }
   }
 
   if (tryGitInit(appPath)) {
@@ -218,9 +195,9 @@ function run(
   );
   console.log();
 
-  return install(dependencies, verbose)
+  return install(dependencies)
     .then(() =>
-      {}//init(root, appName, originalDirectory)
+      init(root, appName, originalDirectory)
     )
     .catch(reason => {
       console.log();
@@ -261,7 +238,7 @@ function run(
     });
 }
 
-function install(dependencies, verbose) {
+function install(dependencies) {
   return new Promise((resolve, reject) => {
     const command = 'npm';
     const args = [
@@ -271,10 +248,6 @@ function install(dependencies, verbose) {
       '--loglevel',
       'error',
     ].concat(dependencies);
-
-    if (verbose) {
-      args.push('--verbose');
-    }
 
     const child = spawn(command, args, { stdio: 'inherit' });
     child.on('close', code => {
@@ -287,4 +260,38 @@ function install(dependencies, verbose) {
       resolve();
     });
   });
+}
+
+function tryGitInit(appPath) {
+  let didInit = false;
+  try {
+    execSync('git --version', { stdio: 'ignore' });
+    if (isInGitRepository() || isInMercurialRepository()) {
+      return false;
+    }
+
+    execSync('git init', { stdio: 'ignore' });
+    didInit = true;
+
+    execSync('git add -A', { stdio: 'ignore' });
+    execSync('git commit -m "Initial commit from Create React App"', {
+      stdio: 'ignore',
+    });
+    return true;
+  } catch (e) {
+    if (didInit) {
+      // If we successfully initialized but couldn't commit,
+      // maybe the commit author config is not set.
+      // In the future, we might supply our own committer
+      // like Ember CLI does, but for now, let's just
+      // remove the Git files to avoid a half-done state.
+      try {
+        // unlinkSync() doesn't work on directories.
+        fs.removeSync(path.join(appPath, '.git'));
+      } catch (removeErr) {
+        // Ignore.
+      }
+    }
+    return false;
+  }
 }
