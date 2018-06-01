@@ -31,7 +31,13 @@ const upload = (archived, config) =>
       },
     };
     log('Upload archive', url);
-    trace(`credentials`, developerLogin, developerPassword, platformUrl, appName);
+    trace(
+      `credentials`,
+      developerLogin,
+      developerPassword,
+      platformUrl,
+      appName,
+    );
     request(options, (failure, response, body) => {
       if (failure) {
         error('Upload failed:', failure);

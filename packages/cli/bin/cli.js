@@ -14,10 +14,10 @@ const { load } = require('./loader/worker');
 
 const { setVerbosity } = require('./utils/log');
 
-setVerbosity(1)
+setVerbosity(1);
 
 function increaseVerbosity(v, total) {
-  setVerbosity(total)
+  setVerbosity(total);
   return total + 1;
 }
 
@@ -32,7 +32,12 @@ program
   .option('-p, --developer-password <developer-password>', 'Developer password')
   .option('-a, --app-name <app-name>', 'Application name')
   .option('-e, --env-name <env-name>', 'Environement name')
-  .option('-v, --verbose', 'Verbosity level (-v=error+warn+info, -vv=error+warn+info+log, -vvv=error+warn+info+log+trace)', increaseVerbosity, 1)
+  .option(
+    '-v, --verbose',
+    'Verbosity level (-v=error+warn+info, -vv=error+warn+info+log, -vvv=error+warn+info+log+trace)',
+    increaseVerbosity,
+    1,
+  );
 
 program
   .command('run')
@@ -44,7 +49,7 @@ program
     register(basepath, command)
       .then((config) => Promise.all([config, load(basepath)]))
       .then(([config, declaration]) => {
-        run(command, basepath, config, declaration)
+        run(command, basepath, config, declaration);
       }),
   );
 
@@ -58,7 +63,7 @@ program
     register(basepath, command)
       .then((config) => Promise.all([config, load(basepath)]))
       .then(([config, declaration]) => {
-        push(command.parent, basepath, config, declaration)
+        push(command.parent, basepath, config, declaration);
       }),
   );
 
@@ -67,7 +72,7 @@ program
   .arguments('[basepath]')
   .description('Register your account')
   .action((basepath = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) => {
-    register(basepath, command)
+    register(basepath, command);
   });
 
 program.parse(process.argv);

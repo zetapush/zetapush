@@ -1,23 +1,22 @@
 {
-  "name": "@zetapush/cometd",
+  "name": "@zetapush/create",
   "version": "0.16.1",
   "description": "Zeta Push Next",
-  "main": "index.js",
   "files": [
-    "lib/",
-    "index.js"
+    "index.js",
+    "createApp.js",
+    "template"
   ],
+  "bin": "./index.js",
   "repository": "https://github.com/zetapush/zetapush",
   "author": "ci@zetapush.com",
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "node-fetch": "^2.1.0",
-    "ws": "^5.1.0"
-  },
-  "optionalDependencies": {
-    "bufferutil": "^3.0.4",
-    "utf-8-validate": "^4.0.1"
+    "chalk": "^2.4.1",
+    "commander": "^2.15.1",
+    "cross-spawn": "^6.0.5",
+    "fs-extra": "6.0.1"
   },
   "publishConfig": {
     "access": "public"

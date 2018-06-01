@@ -92,11 +92,11 @@ const getLiveStatus = (config) =>
   });
 
 const getProgressionColor = (step) => {
-  if(step.hasUnrecoverableErrors) return "red"
-  if(step.hasErrors) return "yellow"
-  if(step.finished) return "green"
-  return "blue"
-}
+  if (step.hasUnrecoverableErrors) return 'red';
+  if (step.hasErrors) return 'yellow';
+  if (step.finished) return 'green';
+  return 'blue';
+};
 
 const getProgression = (config, recipeId) => {
   const progress = {};
@@ -104,7 +104,7 @@ const getProgression = (config, recipeId) => {
   (async function check() {
     try {
       const { progressDetail } = await getProgress(config, recipeId);
-      const { steps, finished, hasUnrecoverableErrors, logs  } = progressDetail;
+      const { steps, finished, hasUnrecoverableErrors, logs } = progressDetail;
       steps.forEach((step) => {
         if (!progress[step.id]) {
           progress[step.id] = new ProgressBar({
@@ -114,20 +114,22 @@ const getProgression = (config, recipeId) => {
             blank: '░',
           });
         }
-        progress[step.id].setSchema(`:bar.${getProgressionColor(step)} ${step.name}`)
+        progress[step.id].setSchema(
+          `:bar.${getProgressionColor(step)} ${step.name}`,
+        );
         progress[step.id].update(step.progress / 100);
       });
       if (!finished && !hasUnrecoverableErrors) {
         setTimeout(check, 500);
-      } else if(hasUnrecoverableErrors) {
-        process.stdout.removeAllListeners('before:newlines')   // FIXME: ugly hack required to avoid duplication of unfinished progressbars
-        console.log()
+      } else if (hasUnrecoverableErrors) {
+        process.stdout.removeAllListeners('before:newlines'); // FIXME: ugly hack required to avoid duplication of unfinished progressbars
+        console.log();
         // display errors in console
-        errorsHandler.displayError(steps)
+        errorsHandler.displayError(steps);
         // write logs in a file for debugging
-        const logFile = errorsHandler.writeLogs(config, logs, steps)
+        const logFile = errorsHandler.writeLogs(config, logs, steps);
         info(`A complete log of this run can be found in:
-              ${logFile}`)
+              ${logFile}`);
       } else {
         getLiveStatus(config)
           .then((fronts) => {
