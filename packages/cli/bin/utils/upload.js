@@ -1,4 +1,4 @@
-const { log, error } = require('./log');
+const { log, error, trace } = require('./log');
 const fs = require('fs');
 const request = require('request');
 const { URL } = require('url');
@@ -31,6 +31,7 @@ const upload = (archived, config) =>
       },
     };
     log('Upload archive', url);
+    trace(`credentials`, developerLogin, developerPassword, platformUrl, appName);
     request(options, (failure, response, body) => {
       if (failure) {
         error('Upload failed:', failure);
