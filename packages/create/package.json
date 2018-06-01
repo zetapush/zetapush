@@ -6,9 +6,7 @@
     "index.js",
     "createApp.js"
   ],
-  "bin": {
-    "create": "./index.js"
-  },
+  "bin": "./index.js",
   "repository": "https://github.com/zetapush/zetapush",
   "author": "ci@zetapush.com",
   "license": "MIT",
