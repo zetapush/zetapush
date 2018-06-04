@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/example",
-  "version": "0.17.1",
+  "version": "0.18.0",
   "main": "worker/index.js",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "start": "zeta run"
   },
   "dependencies": {
-    "@zetapush/cli": "^0.17.1",
-    "@zetapush/platform": "^0.17.1"
+    "@zetapush/cli": "^0.18.0",
+    "@zetapush/platform": "^0.18.0"
   }
 }
