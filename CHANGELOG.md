@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.18.0"></a>
+# [0.18.0](https://github.com/zetapush/zetapush/compare/v0.17.1...v0.18.0) (2018-06-04)
+
+
+### Features
+
+* **api:** update top level api with new wording definitions ([7895410](https://github.com/zetapush/zetapush/commit/7895410))
+
+
+### BREAKING CHANGES
+
+* **api:** Change top level api for client options
+
+
+
+
 <a name="0.17.1"></a>
 ## [0.17.1](https://github.com/zetapush/zetapush/compare/v0.17.0...v0.17.1) (2018-06-04)
 
