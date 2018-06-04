@@ -46,7 +46,7 @@ function createApp(name) {
   const packageJson = {
     name: appName,
     version: '0.1.0',
-    main: 'server/index.js',
+    main: 'worker/index.js',
     private: true,
     scripts: {
       deploy: 'zeta push',
@@ -143,6 +143,25 @@ function init(
       `Could not locate supplied template: ${chalk.green(templatePath)}`
     );
     return;
+  }
+
+  // Rename gitignore after the fact to prevent npm from renaming it to .npmignore
+  // See: https://github.com/npm/npm/issues/1862
+  try {
+    fs.moveSync(
+      path.join(appPath, 'gitignore'),
+      path.join(appPath, '.gitignore'),
+      []
+    );
+  } catch (err) {
+    // Append if there's already a `.gitignore` file there
+    if (err.code === 'EEXIST') {
+      const data = fs.readFileSync(path.join(appPath, 'gitignore'));
+      fs.appendFileSync(path.join(appPath, '.gitignore'), data);
+      fs.unlinkSync(path.join(appPath, 'gitignore'));
+    } else {
+      throw err;
+    }
   }
 
   if (tryGitInit(appPath)) {

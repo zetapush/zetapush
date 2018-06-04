@@ -37,10 +37,10 @@ npm run start
 ```console
 .
 └──
-  ├── public
+  ├── front
   │  ├── index.html
   │  └── index.js
-  ├── server
+  ├── worker
   │  └── index.js (api implementation)
   └── package.json
 ```

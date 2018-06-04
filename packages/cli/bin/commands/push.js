@@ -2,9 +2,10 @@ const path = require('path');
 const os = require('os');
 
 const compress = require('../utils/compress');
-const { generateProvisioningFile } = require('../utils/provisioning');
+const DEFAULTS = require('../utils/defaults');
 const { log, error } = require('../utils/log');
 const { getProgression } = require('../utils/progression');
+const { generateProvisioningFile } = require('../utils/provisioning');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
 
 /**
@@ -22,8 +23,8 @@ const archive = (basepath, config, declaration) => {
   const frontArchive = path.join(root, `front.zip`);
 
   const frontSource = path.isAbsolute(basepath)
-    ? path.join(basepath, 'public')
-    : path.resolve(process.cwd(), basepath, 'public');
+    ? path.join(basepath, DEFAULTS.FRONT_FOLDER_PATH)
+    : path.resolve(process.cwd(), basepath, DEFAULTS.FRONT_FOLDER_PATH);
   const workerSource = path.isAbsolute(basepath)
     ? basepath
     : path.resolve(process.cwd(), basepath);
