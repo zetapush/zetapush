@@ -5,8 +5,8 @@ import { ConnectionStatusListener } from '../connection/connection-status.js';
 /**
  * Client config object.
  * @typedef {Object} ClientConfig
- * @property {string} apiUrl - Api Url
- * @property {string} sandboxId - Sandbox id
+ * @property {string} platformUrl - Platform Url
+ * @property {string} appName - Application name
  * @property {boolean} forceHttps - Force end to end HTTPS connection
  * @property {function():AbstractHandshake} authentication - Return authentication properties
  * @property {string} resource - Client resource id
@@ -19,7 +19,7 @@ import { ConnectionStatusListener } from '../connection/connection-status.js';
  * @example
  * // Securized client with token based connection
  * const client = new ZetaPush.Client({
- *   sandboxId: '<YOUR-SANDBOX-ID>',
+ *   appName: '<YOUR-APP-NAME>',
  *   authentication() {
  *     return ZetaPush.Authentication.weak({
  *       token: null
@@ -29,7 +29,7 @@ import { ConnectionStatusListener } from '../connection/connection-status.js';
  * @example
  * // Client with authentication based connection
  * const client = new ZetaPush.Client({
- *   sandboxId: '<YOUR-SANDBOX-ID>',
+ *   appName: '<YOUR-APP-NAME>',
  *   authentication() {
  *     return ZetaPush.Authentication.simple({
  *       login: '<USER-LOGIN>',
@@ -40,7 +40,7 @@ import { ConnectionStatusListener } from '../connection/connection-status.js';
  * @example
  * // Explicit deploymentId
  * const clientSimple = new ZetaPush.Client({
- *   sandboxId: '<YOUR-SANDBOX-ID>',
+ *   appName: '<YOUR-APP-NAME>',
  *   authentication() {
  *     return ZetaPush.Authentication.simple({
  *       deploymentId: '<YOUR-SIMPLE-AUTHENTICATION-DEPLOYMENT-ID>',
@@ -50,7 +50,7 @@ import { ConnectionStatusListener } from '../connection/connection-status.js';
  *   }
  * })
  * const clientWeak = new ZetaPush.Client({
- *   sandboxId: '<YOUR-SANDBOX-ID>',
+ *   appName: '<YOUR-APP-NAME>',
  *   authentication() {
  *     return ZetaPush.Authentication.weak({
  *       deploymentId: '<YOUR-WEAK-AUTHENTICATION-DEPLOYMENT-ID>',
@@ -65,8 +65,8 @@ export class Client {
    * @param {ClientConfig} config
    */
   constructor({
-    apiUrl = API_URL,
-    sandboxId,
+    platformUrl = API_URL,
+    appName,
     forceHttps = FORCE_HTTPS,
     authentication,
     resource,
@@ -77,8 +77,8 @@ export class Client {
      * @type {ClientHelper}
      */
     this.helper = new ClientHelper({
-      apiUrl,
-      sandboxId,
+      platformUrl,
+      appName,
       forceHttps,
       authentication,
       resource,
@@ -190,9 +190,9 @@ export class Client {
   /**
    * Create a generic proxified macro service
    * Each property of the proxified service wrap a publish/subscribe
-   * Publish parameters on channel --> /service/${sandboxId}/${deploymentId}/call
-   * Subscribe success on channel --> /service/${sandboxId}/${deploymentId}/${method}
-   * Subscribe error on channel --> /service/${sandboxId}/${deploymentId}/error
+   * Publish parameters on channel --> /service/${appName}/${deploymentId}/call
+   * Subscribe success on channel --> /service/${appName}/${deploymentId}/${method}
+   * Subscribe error on channel --> /service/${appName}/${deploymentId}/error
    * If remote method publish response on a specific channel, generic proxy will not raise success
    * @example
    * const service = client.createProxyMacroService();
@@ -207,9 +207,9 @@ export class Client {
   /**
    * Create a generic proxified task service
    * Each property of the proxified service wrap a publish/subscribe
-   * Publish parameters on channel --> /service/${sandboxId}/${deploymentId}/call
-   * Subscribe success on channel --> /service/${sandboxId}/${deploymentId}/${method}
-   * Subscribe error on channel --> /service/${sandboxId}/${deploymentId}/error
+   * Publish parameters on channel --> /service/${appName}/${deploymentId}/call
+   * Subscribe success on channel --> /service/${appName}/${deploymentId}/${method}
+   * Subscribe error on channel --> /service/${appName}/${deploymentId}/error
    * If remote method publish response on a specific channel, generic proxy will not raise success
    * @example
    * const service = client.createProxyTaskService();
@@ -224,9 +224,9 @@ export class Client {
   /**
    * Create a generic proxified service
    * Each property of the proxified service wrap a publish/subscribe
-   * Publish parameters on channel --> /service/${sandboxId}/${deploymentId}/${method}
-   * Subscribe success on channel --> /service/${sandboxId}/${deploymentId}/${method}
-   * Subscribe error on channel --> /service/${sandboxId}/${deploymentId}/error
+   * Publish parameters on channel --> /service/${appName}/${deploymentId}/${method}
+   * Subscribe success on channel --> /service/${appName}/${deploymentId}/${method}
+   * Subscribe error on channel --> /service/${appName}/${deploymentId}/error
    * If remote method publish response on a specific channel, generic proxy will not raise success
    * @example
    * const service = client.createProxyService('');
@@ -319,8 +319,8 @@ export class Client {
    * Get the client sandbox id
    * @return {string}
    */
-  getSandboxId() {
-    return this.helper.getSandboxId();
+  getAppName() {
+    return this.helper.getAppName();
   }
   /**
    * Get the client resource
@@ -349,7 +349,7 @@ export class Client {
    * @example
    * // Create new ZetaPush Client
    * const client = new Client({
-   *   sandboxId: '<YOUR-SANDBOX-ID>',
+   *   appName: '<YOUR-APP-NAME>',
    *   authentication: () => Authentication.simple({
    *     login: '<YOUR-USER-LOGIN>',
    *     password: '<YOUR-USER-PASSWORD>'

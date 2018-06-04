@@ -1,13 +1,13 @@
 describe('Client', () => {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 25000
 
-  const apiUrl = 'http://api.zpush.io/'
-  const sandboxId = 'NotAvailableSandboxId'
+  const platformUrl = 'http://api.zpush.io/'
+  const appName = 'NotAvailableAppName'
 
   beforeEach(() => {
     this.client = new ZetaPush.Client({
-      apiUrl: apiUrl,
-      sandboxId: sandboxId,
+      platformUrl: platformUrl,
+      appName: appName,
       authentication: () => {
         return ZetaPush.Authentication.simple({
           login: 'root',

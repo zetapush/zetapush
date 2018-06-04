@@ -62,8 +62,8 @@ export class ClientHelper {
    * Create a new ZetaPush client helper
    */
   constructor({
-    apiUrl,
-    sandboxId,
+    platformUrl,
+    appName,
     forceHttps = false,
     authentication,
     resource = null,
@@ -72,8 +72,8 @@ export class ClientHelper {
     // Merge config with overloaded environement
     const options = merge(
       {
-        apiUrl,
-        sandboxId,
+        platformUrl,
+        appName,
       },
       transports.getOverloadedConfigFromEnvironement(),
     );
@@ -81,7 +81,7 @@ export class ClientHelper {
      * @access private
      * @type {string}
      */
-    this.sandboxId = options.sandboxId;
+    this.appName = options.appName;
     /**
      * @access private
      * @type {function():AbstractHandshake}
@@ -125,7 +125,7 @@ export class ClientHelper {
       this.connectionToServerFail(error);
       // Return empty config
       return {
-        sandboxId,
+        appName,
         servers: [],
       };
     });
@@ -168,7 +168,7 @@ export class ClientHelper {
     // Resolve sandbox alias from server-side config
     this.config.then((config) => {
       // Resolve
-      this.sandboxId = config.sandboxId;
+      this.appName = config.appName;
     });
 
     // Register transports layers
@@ -382,7 +382,7 @@ export class ClientHelper {
     Type,
     deploymentId = Type.DEFAULT_DEPLOYMENT_ID,
   }) {
-    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
+    const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     const $publish = this.getAsyncServicePublisher(prefix);
     // Create service by publisher
     return this.createServiceByPublisher({
@@ -402,7 +402,7 @@ export class ClientHelper {
     Type,
     deploymentId = Type.DEFAULT_DEPLOYMENT_ID,
   }) {
-    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
+    const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     const $publish = this.getAsyncMacroPublisher(prefix);
     // Create service by publisher
     return this.createServiceByPublisher({
@@ -419,7 +419,7 @@ export class ClientHelper {
    * @return {Object} service
    */
   createAsyncTaskService({ Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID }) {
-    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
+    const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     const $publish = this.getAsyncTaskPublisher(prefix);
     // Create service by publisher
     return this.createServiceByPublisher({
@@ -440,7 +440,7 @@ export class ClientHelper {
     if (typeof Proxy === 'undefined') {
       throw new Error('`Proxy` is not support in your environment');
     }
-    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
+    const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     return new Proxy(
       {},
       {
@@ -494,7 +494,7 @@ export class ClientHelper {
     if (typeof Proxy === 'undefined') {
       throw new Error('`Proxy` is not support in your environment');
     }
-    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
+    const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     return new Proxy(
       {},
       {
@@ -551,7 +551,7 @@ export class ClientHelper {
     if (typeof Proxy === 'undefined') {
       throw new Error('`Proxy` is not support in your environment');
     }
-    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
+    const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     return new Proxy(
       {},
       {
@@ -600,7 +600,7 @@ export class ClientHelper {
    */
   createService({ listener, Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID }) {
     const isMacroType = isDerivedOf(Type, Macro);
-    const prefix = () => `/service/${this.getSandboxId()}/${deploymentId}`;
+    const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     const $publish = isMacroType
       ? this.getMacroPublisher(prefix)
       : this.getServicePublisher(prefix);
@@ -813,8 +813,8 @@ export class ClientHelper {
    * Get sandbox id
    * @return {string}
    */
-  getSandboxId() {
-    return this.sandboxId;
+  getAppName() {
+    return this.appName;
   }
   /**
    * Get server urls list

@@ -5,9 +5,9 @@ import { SessionPersistenceStrategy } from '../utils/session-persistence.js';
 /**
  * WeakClient config object.
  * @typedef {Object} WeakClientConfig
- * @property {string} apiUrl - Api Url
+ * @property {string} platformUrl - Platform Url
  * @property {string} deploymentId - Authentication deployment id, default value is 'weak_0'
- * @property {string} sandboxId - Sandbox id
+ * @property {string} appName - Application name
  * @property {boolean} forceHttps - Force end to end HTTPS connection
  * @property {string} resource - Client resource id
  * @property {Array} transports - Client transports list
@@ -19,7 +19,7 @@ import { SessionPersistenceStrategy } from '../utils/session-persistence.js';
  * @example
  * // Create a new WeakClient
  * const client = new ZetaPush.WeakClient({
- *   sandboxId: '<YOUR-SANDBOX-ID>'
+ *   appName: '<YOUR-APP-NAME>'
  * })
  * @example
  * // Explicit deploymentId
@@ -27,7 +27,7 @@ import { SessionPersistenceStrategy } from '../utils/session-persistence.js';
  * // deploymentId default value is weak_0
  * const client = new ZetaPush.WeakClient({
  *   deploymentId: 'weak_0',
- *   sandboxId: '<YOUR-SANDBOX-ID>'
+ *   appName: '<YOUR-APP-NAME>'
  * })
  */
 export class WeakClient extends Client {
@@ -36,8 +36,8 @@ export class WeakClient extends Client {
    * @param {WeakClientConfig} config
    */
   constructor({
-    apiUrl,
-    sandboxId,
+    platformUrl,
+    appName,
     deploymentId,
     forceHttps,
     resource,
@@ -55,8 +55,8 @@ export class WeakClient extends Client {
      * Call Client constructor with specific parameters
      */
     super({
-      apiUrl,
-      sandboxId,
+      platformUrl,
+      appName,
       forceHttps,
       authentication,
       resource,
@@ -73,7 +73,7 @@ export class WeakClient extends Client {
      * @access private
      * @type {SessionPersistenceStrategy}
      */
-    this.strategy = new SessionPersistenceStrategy({ sandboxId });
+    this.strategy = new SessionPersistenceStrategy({ appName });
   }
   /**
    * @return {string} The stored token

@@ -4,7 +4,7 @@ interface HandshakeFields {
 
 interface AbstractHandshakeOptions {
   authType: string;
-  sandboxId: string;
+  appName: string;
   deploymentId: string;
 }
 
@@ -24,7 +24,7 @@ interface TokenHandshakeOptions {
 interface AbstractHandshake {
   authType: string;
   authVersion: string;
-  sandboxId: string;
+  appName: string;
   deploymentId: string;
   getHandshakeFields(client: Client): HandshakeFields;
 }
@@ -69,8 +69,8 @@ interface PublishParameters {
 }
 
 interface Options {
-  apiUrl?: string;
-  sandboxId: string;
+  platformUrl?: string;
+  appName: string;
   forceHttps?: boolean;
   resource?: string;
   transports?: any[];
@@ -164,7 +164,7 @@ export class Client {
   createProxyService(deploymentId: string): ProxyService;
   disconnect(): Promise<void>;
   isConnected(): boolean;
-  getSandboxId(): string;
+  getAppName(): string;
   getResource(): string;
   getUserId(): string;
   removeConnectionStatusListener(listener: ConnectionStatusHandler): void;

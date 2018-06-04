@@ -5,8 +5,8 @@ import { timeoutify } from '../utils/async';
 
 export class WorkerClient extends Client {
   constructor({
-    apiUrl,
-    sandboxId,
+    platformUrl,
+    appName,
     forceHttps,
     transports,
     login,
@@ -23,8 +23,8 @@ export class WorkerClient extends Client {
      * Call Client constructor with specific parameters
      */
     super({
-      apiUrl,
-      sandboxId,
+      platformUrl,
+      appName,
       forceHttps,
       authentication,
       resource,

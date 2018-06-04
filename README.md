@@ -126,11 +126,6 @@ const api = client.createProxyTaskService();
 const message = await api.hello();
 ```
 
-## Any questions?
-
-* [Frequently Asked Questions](./docs/faq.md)
-* :warning: ZetaPush v1.x users? Please check [Migration Guide](./docs/migration.md)
-
 [npm-version-image]: http://img.shields.io/npm/v/@zetapush/core.svg?style=flat-square
 [npm-url]: https://npmjs.org/package/@zetapush/core
 
