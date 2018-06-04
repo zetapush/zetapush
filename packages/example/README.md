@@ -2,18 +2,18 @@
 
 ## Installation
 
+npm 6+
+
 ```console
-npm install
+npm init @zetapush myproject
+cd myproject
 ```
 
-## Register
-
-Register an anonymous account on ZetaPush platform
-
-> Create a .zetarc file which contains developer credentials
+npm 5.x
 
 ```console
-npm run register
+npx @zetapush/create myproject
+cd myproject
 ```
 
 ## Deployment
@@ -32,7 +32,17 @@ Run your code on your local platform
 npm run start
 ```
 
-## Project structure
+## Register (optionnal)
+
+Register an anonymous account on ZetaPush platform
+
+> Create a .zetarc file which contains developer credentials
+
+```console
+npm run register
+```
+
+## Default project structure
 
 ```console
 .
