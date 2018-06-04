@@ -135,7 +135,7 @@ const getProgression = (config, recipeId) => {
           .then((fronts) => {
             log(`Application status`);
             Object.entries(fronts).forEach(([name, urls]) => {
-              log(
+              info(
                 `Your frontend application ${name} is available at ${
                   urls[urls.length - 1]
                 }`,
