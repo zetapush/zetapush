@@ -25,10 +25,10 @@ const { checkQueueServiceDeployed } = require('../utils/progression');
  */
 const run = (args, basepath, config, declaration) => {
   const clientConfig = {
-    apiUrl: config.platformUrl,
+    platformUrl: config.platformUrl,
     login: config.developerLogin,
     password: config.developerPassword,
-    sandboxId: config.appName,
+    appName: config.appName,
     transports,
   };
 

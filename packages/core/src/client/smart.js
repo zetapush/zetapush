@@ -12,9 +12,9 @@ import { SessionPersistenceStrategy } from '../utils/session-persistence.js';
 /**
  * SmartClient config object.
  * @typedef {Object} SmartClientConfig
- * @property {string} apiUrl - Api Url
+ * @property {string} platformUrl - Platform Url
  * @property {SmartClientDeployment} deployment - Deployment infos
- * @property {string} sandboxId - Sandbox id
+ * @property {string} appName - Application name
  * @property {boolean} forceHttps - Force end to end HTTPS connection
  * @property {string} resource - Client resource id
  * @property {Array} transports - Client transports list
@@ -26,7 +26,7 @@ import { SessionPersistenceStrategy } from '../utils/session-persistence.js';
  * @example
  * // Create a new WeakClient
  * const client = new ZetaPush.SmartClient({
- *   sandboxId: '<YOUR-SANDBOX-ID>'
+ *   appName: '<YOUR-APP-NAME>'
  * })
  */
 export class SmartClient extends Client {
@@ -35,14 +35,14 @@ export class SmartClient extends Client {
    * @param {SmartClientConfig} config
    */
   constructor({
-    apiUrl,
+    platformUrl,
     deployment,
-    sandboxId,
+    appName,
     forceHttps,
     resource,
     transports,
   } = {}) {
-    const persistence = new SessionPersistenceStrategy({ sandboxId });
+    const persistence = new SessionPersistenceStrategy({ appName });
 
     /**
      * @return {AbstractHandshakeManager}
@@ -76,8 +76,8 @@ export class SmartClient extends Client {
     };
     // Initialize base client
     super({
-      apiUrl,
-      sandboxId,
+      platformUrl,
+      appName,
       authentication,
       forceHttps,
       resource,

@@ -1,8 +1,8 @@
-const getSandboxId = () => {
+const getAppName = () => {
   const PATTERN = /^#\/sandbox\/(.+)/;
-  const [hash, sandboxId] = PATTERN.exec(location.hash) || [];
-  if (sandboxId) {
-    return sandboxId;
+  const [hash, appName] = PATTERN.exec(location.hash) || [];
+  if (appName) {
+    return appName;
   } else {
     location.href = `#/sandbox/${prompt('sandbox')}`;
     location.reload();
@@ -12,8 +12,8 @@ const getSandboxId = () => {
 
 // Create new ZetaPush Client
 const client = new ZetaPush.WeakClient({
-  sandboxId: document.documentElement.dataset.zpSandboxid || getSandboxId(),
-  apiUrl: 'http://hq.zpush.io:9080/zbo/pub/business'
+  appName: document.documentElement.dataset.zpSandboxid || getAppName(),
+  platformUrl: 'http://hq.zpush.io:9080/zbo/pub/business'
 });
 
 const api = client.createProxyTaskService();

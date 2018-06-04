@@ -1,13 +1,13 @@
 describe('WeakClient', () => {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 25000
 
-  const apiUrl = 'http://hq.zpush.io:9080/zbo/pub/business'
-  const sandboxId = 'zetapush_v3_ic'
+  const platformUrl = 'http://hq.zpush.io:9080/zbo/pub/business'
+  const appName = 'zetapush_v3_ic'
 
   beforeEach(() => {
     this.client = new ZetaPush.WeakClient({
-      apiUrl: apiUrl,
-      sandboxId: sandboxId
+      platformUrl: platformUrl,
+      appName: appName
     })
   })
   describe('Connection with sandbox alias', () => {

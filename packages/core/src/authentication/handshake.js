@@ -17,9 +17,9 @@ const DeployableNames = {
 class AbstractHandshake {
   /**
    * Create a new handshake manager
-   * @param {{authType: string, sandboxId: string, deploymentId: string}} parameters
+   * @param {{authType: string, appName: string, deploymentId: string}} parameters
    */
-  constructor({ authType, sandboxId, deploymentId }) {
+  constructor({ authType, appName, deploymentId }) {
     /**
      * @access protected
      * @type {string}
@@ -29,7 +29,7 @@ class AbstractHandshake {
      * @access protected
      * @type {string}
      */
-    this.sandboxId = sandboxId;
+    this.appName = appName;
     /**
      * @access protected
      * @type {string}
@@ -43,7 +43,7 @@ class AbstractHandshake {
   getHandshakeFields(client) {
     const authentication = {
       data: this.authData,
-      type: `${client.getSandboxId()}.${this.deploymentId}.${this.authType}`,
+      type: `${client.getAppName()}.${this.deploymentId}.${this.authType}`,
       version: this.authVersion,
     };
     if (client.getResource()) {

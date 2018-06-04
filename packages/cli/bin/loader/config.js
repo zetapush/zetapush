@@ -74,7 +74,7 @@ const fromCli = (command) => {
   log('Try to load conf from cli provess.argv');
   return Promise.resolve(
     validate({
-      platformUrl: command.parent.apiUrl,
+      platformUrl: command.parent.platformUrl,
       appName: command.parent.appName,
       developerLogin: command.parent.developerLogin,
       developerPassword: command.parent.developerPassword,

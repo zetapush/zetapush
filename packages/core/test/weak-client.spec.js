@@ -1,13 +1,13 @@
 describe('WeakClient', () => {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 25000
 
-  const apiUrl = 'http://api.zpush.io/'
-  const sandboxId = 'bcu1JtRb'
+  const platformUrl = 'http://api.zpush.io/'
+  const appName = 'bcu1JtRb'
 
   beforeEach(() => {
     this.client = new ZetaPush.WeakClient({
-      apiUrl: apiUrl,
-      sandboxId: sandboxId
+      platformUrl: platformUrl,
+      appName: appName
     })
   })
 
@@ -25,8 +25,8 @@ describe('WeakClient', () => {
       expect(this.client.getUserId()).toBeNull()
     })
 
-    it('Should have a correct sandboxId', () => {
-      expect(this.client.getSandboxId()).toBe(sandboxId)
+    it('Should have a correct appName', () => {
+      expect(this.client.getAppName()).toBe(appName)
     })
   })
 

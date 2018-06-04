@@ -11,14 +11,14 @@ export const ZETAPUSH_SESSION_KEY = 'zetapush.token';
  */
 export class SessionPersistenceStrategy {
   /**
-   * @param {{sandboxId: string, storage: DOMStorage}} parameters
+   * @param {{appName: string, storage: DOMStorage}} parameters
    */
-  constructor({ sandboxId, storage = platformStorage } = {}) {
+  constructor({ appName, storage = platformStorage } = {}) {
     /**
      * @access private
      * @type {string}
      */
-    this.key = `${ZETAPUSH_SESSION_KEY}.${sandboxId}`;
+    this.key = `${ZETAPUSH_SESSION_KEY}.${appName}`;
     /**
      * @access private
      * @type {DOMStorage}

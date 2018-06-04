@@ -7,13 +7,13 @@ describe('AsyncMacro', () => {
     }
   }
 
-  const apiUrl = 'http://api.zpush.io/'
-  const sandboxId = 'bcu1JtRb'
+  const platformUrl = 'http://api.zpush.io/'
+  const appName = 'bcu1JtRb'
 
   beforeEach(() => {
     this.client = new ZetaPush.WeakClient({
-      apiUrl: apiUrl,
-      sandboxId: sandboxId
+      platformUrl: platformUrl,
+      appName: appName
     })
     this.service = this.client.createAsyncMacroService({
       Type: HelloMacro

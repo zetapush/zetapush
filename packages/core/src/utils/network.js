@@ -2,38 +2,38 @@ import { getSecureUrl, HTTPS_PROTOCOL, HTTP_PROTOCOL } from './http.js';
 
 /**
  * @access private
- * @param {string} apiUrl
+ * @param {string} platformUrl
  * @return {string}
  */
-const normalizeApiUrl = (apiUrl) => {
-  const last = apiUrl.charAt(apiUrl.length - 1);
+const normalizePlatformUrl = (platformUrl) => {
+  const last = platformUrl.charAt(platformUrl.length - 1);
   const SLASH = '/';
-  return last === SLASH ? apiUrl : apiUrl + SLASH;
+  return last === SLASH ? platformUrl : platformUrl + SLASH;
 };
 
 /**
  * @access private
- * @param {{apiUrl: string, sandboxId: string, forceHttps: boolean, transports: Transports}} parameters
+ * @param {{platformUrl: string, appName: string, forceHttps: boolean, transports: Transports}} parameters
  * @return {Promise}
  */
 export const getSandboxConfig = ({
-  apiUrl,
-  sandboxId,
+  platformUrl,
+  appName,
   forceHttps,
   transports,
 }) => {
-  const normalizedSecuresApiUrl = normalizeApiUrl(
-    getSecureUrl(apiUrl, forceHttps),
+  const normalizedSecuresPlatformUrl = normalizePlatformUrl(
+    getSecureUrl(platformUrl, forceHttps),
   );
-  const url = `${normalizedSecuresApiUrl}${sandboxId}`;
+  const url = `${normalizedSecuresPlatformUrl}${appName}`;
   const options = { protocol: forceHttps ? HTTPS_PROTOCOL : HTTP_PROTOCOL };
   return (
     transports
       .fetch(url, options)
       .then((response) => response.json())
       // TODO: Replace by a server side implementation when available
-      .then(({ servers, businessId = sandboxId }) => ({
-        sandboxId: businessId,
+      .then(({ servers, businessId = appName }) => ({
+        appName: businessId,
         servers: servers.map((server) => getSecureUrl(server, forceHttps)),
       }))
   );
