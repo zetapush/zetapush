@@ -8,7 +8,7 @@ const currentNodeVersion = process.versions.node;
 const semver = currentNodeVersion.split('.').map((v) => parseInt(v, 10));
 const [major, minor] = semver;
 
-if (major < 8 || (major <= 8 && minor < 12)) {
+if (major < 8 || (major <= 8 && minor < 11)) {
   console.error(
     chalk.red(
       'You are running Node ' +
