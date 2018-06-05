@@ -1,7 +1,7 @@
 import { Authentication, Client, uuid } from '@zetapush/core';
 import { Queue as Worker } from '@zetapush/platform';
 
-import { timeoutify } from '../utils/async';
+import { timeoutify } from '../utils/async.js';
 
 export class WorkerClient extends Client {
   constructor({
@@ -13,6 +13,7 @@ export class WorkerClient extends Client {
     password,
     resource = `node_js_worker_${uuid()}`,
     timeout = 5000,
+    capacity = 100,
   }) {
     const authentication = () =>
       Authentication.developer({
@@ -30,6 +31,11 @@ export class WorkerClient extends Client {
       resource,
       transports,
     });
+    /**
+     * @access private
+     * @type {number}
+     */
+    this.capacity = capacity;
     /**
      * @access private
      * @type {number}
@@ -80,7 +86,7 @@ export class WorkerClient extends Client {
       Type: Worker,
     });
     queue.register({
-      capacity: 100,
+      capacity: this.capacity,
     });
   }
 }

@@ -1,4 +1,4 @@
-import { getType } from './types';
+import { getType } from './types.js';
 /**
  * Wrap async function execution in timeout
  * @param {() => Promise<any>} task
