@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.18.2"></a>
+## [0.18.2](https://github.com/zetapush/zetapush/compare/v0.18.1...v0.18.2) (2018-06-05)
+
+
+### Bug Fixes
+
+* **create:** support correct semver test for node version ([9f7e841](https://github.com/zetapush/zetapush/commit/9f7e841))
+
+
+
+
 <a name="0.18.1"></a>
 ## [0.18.1](https://github.com/zetapush/zetapush/compare/v0.18.0...v0.18.1) (2018-06-05)
 
