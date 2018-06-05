@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.18.4"></a>
+## [0.18.4](https://github.com/zetapush/zetapush/compare/v0.18.3...v0.18.4) (2018-06-05)
+
+
+### Bug Fixes
+
+* **create:** update minimal supported node version ([aec0573](https://github.com/zetapush/zetapush/commit/aec0573))
+
+
+
+
 <a name="0.18.3"></a>
 ## [0.18.3](https://github.com/zetapush/zetapush/compare/v0.18.2...v0.18.3) (2018-06-05)
 
