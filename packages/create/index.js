@@ -5,7 +5,7 @@
 const chalk = require('chalk');
 
 const currentNodeVersion = process.versions.node;
-const semver = currentNodeVersion.split('.');
+const semver = currentNodeVersion.split('.').map((v) => parseInt(v, 10));
 const [major, minor] = semver[0];
 
 if (major < 8 || (major <= 8 && minor < 12)) {
