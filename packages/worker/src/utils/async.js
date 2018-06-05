@@ -1,3 +1,4 @@
+import { getType } from './types';
 /**
  * Wrap async function execution in timeout
  * @param {() => Promise<any>} task
@@ -16,7 +17,7 @@ export const timeoutify = (task, timeout = 1000) =>
     );
     try {
       const response = task();
-      if (Object.getPrototypeOf(response) === Promise.prototype) {
+      if (getType(response) === Promise.name) {
         return response.then(
           (...success) => (clearInterval(timer), resolve(...success)),
           (...failed) => (clearInterval(timer), reject(...failed)),
