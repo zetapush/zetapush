@@ -1,6 +1,7 @@
 const path = require('path');
 const os = require('os');
 const request = require('request');
+const ora = require('ora');
 const { URL } = require('url');
 const { WorkerClient } = require('@zetapush/worker');
 const { Queue } = require('@zetapush/platform');
@@ -8,7 +9,7 @@ const transports = require('@zetapush/cometd/lib/node/Transports');
 
 const compress = require('../utils/compress');
 const { instanciate } = require('../utils/di');
-const { log, error, warn } = require('../utils/log');
+const { log, error, warn, info } = require('../utils/log');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
 const {
   generateProvisioningFile,
@@ -33,6 +34,10 @@ const run = (args, basepath, config, declaration) => {
   };
 
   const client = new WorkerClient(clientConfig);
+
+  // Progress
+  const spinner = ora('Starting worker... \n');
+  spinner.start();
 
   const onTerminalSignal = (signal) => {
     warn(`Properly disconnect client`);
@@ -62,14 +67,15 @@ const run = (args, basepath, config, declaration) => {
         return client.subscribeTaskWorker(declaration, config.workerServiceId);
       })
       .then(() => {
-        log(`Worker is running...`);
+        spinner.stop();
+        info(`Worker is up !`);
       })
       .catch((failure) => error('ZetaPush Celtia Error', failure));
   } else {
     checkServicesAlreadyDeployed(config).then((deployed) => {
       if (!deployed) {
         log(`Queue service not already deployed`);
-        cookWithOnlyQueueService(config, client, declaration);
+        cookWithOnlyQueueService(config, client, declaration, spinner);
       } else {
         // Queue service already exists
         createServicesAndRunWorker(client, config, declaration)
@@ -84,7 +90,8 @@ const run = (args, basepath, config, declaration) => {
             );
           })
           .then(() => {
-            log(`Worker is running...`);
+            spinner.stop();
+            info(`Worker is up !`);
           })
           .catch((failure) => error('ZetaPush Celtia Error', failure));
       }
@@ -95,7 +102,13 @@ const run = (args, basepath, config, declaration) => {
 /**
  * Ask progression during deployment of services
  */
-const waitingQueueServiceDeployed = (recipe, config, client, declaration) => {
+const waitingQueueServiceDeployed = (
+  recipe,
+  config,
+  client,
+  declaration,
+  spinner,
+) => {
   log('Uploaded', recipe.recipeId);
   const { recipeId } = recipe;
   if (recipeId === void 0) {
@@ -114,7 +127,8 @@ const waitingQueueServiceDeployed = (recipe, config, client, declaration) => {
         return client.subscribeTaskWorker(declaration, config.workerServiceId);
       })
       .then(() => {
-        log(`Worker is running...`);
+        spinner.stop();
+        info(`Worker is up !`);
       })
       .catch((failure) => error('ZetaPush Celtia Error', failure));
   });
@@ -166,7 +180,7 @@ const checkServicesAlreadyDeployed = (config) => {
   });
 };
 
-const cookWithOnlyQueueService = (config, client, declaration) => {
+const cookWithOnlyQueueService = (config, client, declaration, spinner) => {
   const ts = Date.now();
   const root = path.join(os.tmpdir(), String(ts));
   const rootArchive = `${root}.zip`;
@@ -183,7 +197,13 @@ const cookWithOnlyQueueService = (config, client, declaration) => {
       log(`Upload 'app' to create queue service`);
       upload(rootArchive, config)
         .then((recipe) => {
-          waitingQueueServiceDeployed(recipe, config, client, declaration);
+          waitingQueueServiceDeployed(
+            recipe,
+            config,
+            client,
+            declaration,
+            spinner,
+          );
         })
         .catch((failure) => error('Upload failed', failure));
     });
