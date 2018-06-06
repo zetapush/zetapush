@@ -25,6 +25,7 @@
     "precommit": "lint-staged",
     "commit": "git-cz",
     "prettify": "prettier --write 'packages/*/{bin,src}/**/*.{js,ts}'",
+    "lerna": "lerna",
     "lerna:bootstrap": "lerna bootstrap",
     "lerna:build": "lerna run build",
     "lerna:publish": "lerna publish --conventional-commits --changelog-preset angular --force-publish=*",
