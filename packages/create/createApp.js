@@ -33,8 +33,8 @@ const program = new commander.Command(pkg.name)
   .option('-a, --app-name <app-name>', 'Application name')
   .arguments('<project-directory>')
   .usage(`${chalk.green('<project-directory>')} [options]`)
-  .action((name, command) => {
-    createAccount(command).then((zetarc) => {
+  .action((name, { appName, developerLogin, developerPassword, platformUrl }) => {
+    createAccount({ appName, developerLogin, developerPassword, platformUrl}).then((zetarc) => {
       createApp(name, zetarc);
     }).catch((failure) => {
       logger.error('createAccount', failure)
