@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.19.0"></a>
+# [0.19.0](https://github.com/zetapush/zetapush/compare/v0.18.4...v0.19.0) (2018-06-07)
+
+
+### Features
+
+* **worker:** expose worker capacity ([72a0a3e](https://github.com/zetapush/zetapush/commit/72a0a3e))
+
+
+
+
 <a name="0.18.4"></a>
 ## [0.18.4](https://github.com/zetapush/zetapush/compare/v0.18.3...v0.18.4) (2018-06-05)
 
