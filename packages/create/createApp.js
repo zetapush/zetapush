@@ -9,6 +9,8 @@ const commander = require('commander');
 const spawn = require('cross-spawn');
 const fs = require('fs-extra');
 
+const { createAccount, DEFAULTS, logger } = require('@zetapush/cli');
+
 const pkg = require('./package.json');
 
 // These files should be allowed to remain on a failed install,
@@ -21,17 +23,29 @@ const errorLogFilePatterns = [
 
 const program = new commander.Command(pkg.name)
   .version(pkg.version)
+  .option(
+    '-u, --platform-url <platform-url>',
+    'Platform URL',
+    DEFAULTS.PLATFORM_URL,
+  )
+  .option('-l, --developer-login <developer-login>', 'Developer login')
+  .option('-p, --developer-password <developer-password>', 'Developer password')
+  .option('-a, --app-name <app-name>', 'Application name')
   .arguments('<project-directory>')
   .usage(`${chalk.green('<project-directory>')} [options]`)
-  .action((name) => {
-    createApp(name);
+  .action((name, { appName, developerLogin, developerPassword, platformUrl }) => {
+    createAccount({ appName, developerLogin, developerPassword, platformUrl}).then((zetarc) => {
+      createApp(name, zetarc);
+    }).catch((failure) => {
+      logger.error('createAccount', failure)
+    });
   })
   .on('--help', () => {
 
   })
   .parse(process.argv);
 
-function createApp(name) {
+function createApp(name, zetarc) {
   const root = path.resolve(name);
   const appName = path.basename(root);
 
@@ -54,9 +68,15 @@ function createApp(name) {
     },
     dependencies: {}
   };
+  // Create package.json
   fs.writeFileSync(
     path.join(root, 'package.json'),
     JSON.stringify(packageJson, null, 2) + os.EOL
+  );
+  // Create .zetarc
+  fs.writeFileSync(
+    path.join(root, '.zetarc'),
+    JSON.stringify(zetarc, null, 2) + os.EOL
   );
 
   const originalDirectory = process.cwd();

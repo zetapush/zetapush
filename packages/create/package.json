@@ -13,6 +13,7 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
+    "@zetapush/cli": "^0.18.4",
     "chalk": "^2.4.1",
     "commander": "^2.15.1",
     "cross-spawn": "^6.0.5",

@@ -4,15 +4,15 @@ const program = require('commander');
 
 const { version } = require('../package.json');
 
-const DEFAULTS = require('./utils/defaults');
+const DEFAULTS = require('../src/utils/defaults');
 
-const push = require('./commands/push');
-const run = require('./commands/run');
-const register = require('./commands/register');
+const push = require('../src/commands/push');
+const run = require('../src/commands/run');
+const createApp = require('../src/commands/createApp');
 
-const { load } = require('./loader/worker');
+const { load } = require('../src/loader/worker');
 
-const { setVerbosity } = require('./utils/log');
+const { setVerbosity } = require('../src/utils/log');
 
 setVerbosity(1);
 
@@ -46,7 +46,7 @@ program
   .arguments('[basepath]')
   .description('Run your code')
   .action((basepath = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
-    register(basepath, command)
+    createApp(basepath, command)
       .then((config) => Promise.all([config, load(basepath)]))
       .then(([config, declaration]) => {
         run(command, basepath, config, declaration);
@@ -60,19 +60,11 @@ program
   .arguments('[basepath]')
   .description('Push your application on ZetaPush platform')
   .action((basepath = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
-    register(basepath, command)
+    createApp(basepath, command)
       .then((config) => Promise.all([config, load(basepath)]))
       .then(([config, declaration]) => {
         push(command.parent, basepath, config, declaration);
       }),
   );
-
-program
-  .command('register')
-  .arguments('[basepath]')
-  .description('Register your account')
-  .action((basepath = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) => {
-    register(basepath, command);
-  });
 
 program.parse(process.argv);
