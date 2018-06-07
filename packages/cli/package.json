@@ -2,9 +2,10 @@
   "name": "@zetapush/cli",
   "version": "0.18.4",
   "description": "Zeta Push Next",
-  "main": "./bin/cli.js",
+  "main": "./src/index.js",
   "files": [
-    "bin/"
+    "bin/",
+    "src/"
   ],
   "bin": {
     "zeta": "./bin/cli.js"

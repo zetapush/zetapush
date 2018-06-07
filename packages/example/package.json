@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@zetapush/cli": "*",
+    "@zetapush/create": "*",
     "@zetapush/platform": "*"
   }
 }

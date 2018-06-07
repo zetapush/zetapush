@@ -3,20 +3,24 @@ const request = require('request');
 
 const { log, error } = require('./log');
 
-const fetch = ({ body, config, method = 'GET', pathname }) =>
+const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
   new Promise((resolve, reject) => {
-    const { developerLogin, developerPassword, platformUrl } = config;
+    const headers = {
+      'Content-Type': 'application/json;charset=UTF-8',
+    };
+    if (!anonymous) {
+      const { developerLogin, developerPassword } = config;
+      headers['X-Authorization'] = JSON.stringify({
+        username: developerLogin,
+        password: developerPassword,
+      });
+    }
+    const { platformUrl } = config;
     const { protocol, hostname, port } = new URL(platformUrl);
     const url = `${protocol}//${hostname}:${port}/zbo/${pathname}`;
     const options = {
       body,
-      headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-        'X-Authorization': JSON.stringify({
-          username: developerLogin,
-          password: developerPassword,
-        }),
-      },
+      headers,
       method,
       url,
     };
