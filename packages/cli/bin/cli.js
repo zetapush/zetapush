@@ -6,15 +6,26 @@ const { version } = require('../package.json');
 
 const DEFAULTS = require('../src/utils/defaults');
 
+const { setVerbosity, help } = require('../src/utils/log');
+
 const push = require('../src/commands/push');
 const run = require('../src/commands/run');
 const createApp = require('../src/commands/createApp');
+const troubleshoot = require('../src/commands/troubleshoot');
 
 const { load } = require('../src/loader/worker');
 
-const { setVerbosity } = require('../src/utils/log');
 
-setVerbosity(1);
+const { ErrorAnalyzer, errorHelper } = require('../src/errors/troubleshooting')
+const { MissingNpmDependencyErrorAnalyzer } = require('../src/errors/npm-dependency-issue')
+const { NetworkIssueAnalyzer } = require('../src/errors/network-issue')
+
+
+ErrorAnalyzer.register(new MissingNpmDependencyErrorAnalyzer())
+ErrorAnalyzer.register(new NetworkIssueAnalyzer())
+
+
+
 
 function increaseVerbosity(v, total) {
   setVerbosity(total);
@@ -66,5 +77,14 @@ program
         push(command.parent, basepath, config, declaration);
       }),
   );
+
+program
+  .command('troubleshoot')
+  .arguments('error code')
+  .option('-f, --force-refresh', 'Force refresh of cache', () => errorHelper.refresh=true, false)
+  .description('Display help to resolve a particular error (ex: NET-01, NET-02, ...)')
+  .action((errorCode, command) => {
+    troubleshoot(errorCode, command)
+  });
 
 program.parse(process.argv);

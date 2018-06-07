@@ -2,7 +2,9 @@ const { URL } = require('url');
 const request = require('request');
 const { log, error, info } = require('./log');
 const ProgressBar = require('ascii-progress');
-const errorsHandler = require('./errors-handler');
+const errorsHandler = require('../errors/errors-handler');
+const troubleshooting = require('../errors/troubleshooting');
+
 
 /**
  * Get deployment progression for a given recipe id (aka deployment token)
@@ -130,6 +132,7 @@ const getProgression = (config, recipeId) => {
         const logFile = errorsHandler.writeLogs(config, logs, steps);
         info(`A complete log of this run can be found in:
               ${logFile}`);
+        await troubleshooting.displayHelp(progressDetail)
       } else {
         getLiveStatus(config)
           .then((fronts) => {

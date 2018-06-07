@@ -7,6 +7,7 @@ const { log, error } = require('../utils/log');
 const { getProgression } = require('../utils/progression');
 const { generateProvisioningFile } = require('../utils/provisioning');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
+const troubleshooting = require('../errors/troubleshooting');
 
 /**
  * Generate an archive (.zip file) used by upload process
@@ -70,7 +71,10 @@ const push = (args, basepath, config, declaration) => {
 
       getProgression(config, recipeId);
     })
-    .catch((failure) => error('Push failed', failure));
+    .catch((failure) => {
+      error('Push failed', failure)
+      troubleshooting.displayHelp(failure)
+    });
 };
 
 module.exports = push;

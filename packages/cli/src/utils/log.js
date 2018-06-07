@@ -32,6 +32,14 @@ const info = (message, ...messages) => {
   );
 };
 
+const help = (message, ...messages) => {
+  console.info(
+    chalk`{blue.bold (?)} ${message}`,
+    messages.length > 0 ? messages : '',
+    '\u200C'
+  );
+}
+
 const error = (message, ...messages) =>
   console.error(
     chalk`[{red.bold ERROR}] {bold ${message}}`,
@@ -53,4 +61,6 @@ const warn = (message, ...messages) =>
     '\u200C',
   );
 
-module.exports = { trace, log, info, error, todo, warn, setVerbosity };
+setVerbosity(1)
+
+module.exports = { trace, log, info, error, todo, warn, help, setVerbosity };

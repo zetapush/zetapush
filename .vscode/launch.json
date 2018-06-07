@@ -1,0 +1,26 @@
+{
+  // Utilisez IntelliSense pour en savoir plus sur les attributs possibles.
+  // Pointez pour afficher la description des attributs existants.
+  // Pour plus d'informations, visitez : https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "zeta deploy (debug)",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": [
+        "run",
+        "deploy"
+      ],
+      "port": 9229,
+      "cwd": "/mnt/data/developpement/zetapush-celtia/zetapush-js-sdk/packages/example"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Lancer le programme",
+      "program": "${workspaceFolder}/index.js"
+    }
+  ]
+}

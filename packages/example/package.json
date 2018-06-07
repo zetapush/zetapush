@@ -5,7 +5,8 @@
   "scripts": {
     "deploy": "zeta push",
     "register": "zeta register",
-    "start": "zeta run"
+    "start": "zeta run",
+    "troubleshoot": "zeta troubleshoot"
   },
   "dependencies": {
     "@zetapush/cli": "*",
