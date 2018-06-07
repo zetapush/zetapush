@@ -2,6 +2,7 @@ const { fetch } = require('./network');
 
 /**
  * Create a new ZetaPush account and returns a valid ZetaPushConfig file
+ * @todo Support mandatory fields
  * @param {Object} config
  */
 const createAccount = (config) =>
