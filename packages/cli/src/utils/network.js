@@ -27,18 +27,15 @@ const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
     log(method, url, body);
     request(options, (failure, response, body) => {
       if (failure) {
-        error(method, url, failure);
         return reject(failure);
       }
       if (response.statusCode !== 200) {
-        error(method, url, response);
         return reject(response);
       }
       try {
         const parsed = JSON.parse(body);
         return resolve(parsed);
       } catch (failure) {
-        error(method, url, failure);
         return reject(failure);
       }
     });

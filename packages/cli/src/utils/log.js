@@ -1,5 +1,4 @@
 const chalk = require('chalk');
-const util = require('util');
 
 const setVerbosity = (verbosity) => {
   global.loggerVerbosity = verbosity;
