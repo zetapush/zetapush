@@ -23,6 +23,8 @@
     "chalk": "^2.4.1",
     "commander": "^2.15.1",
     "cosmiconfig": "^5.0.4",
+    "default-gateway": "^2.7.2",
+    "execa": "^0.10.0",
     "ora": "^2.1.0",
     "request": "^2.85.0",
     "resolve-cwd": "^2.0.0",

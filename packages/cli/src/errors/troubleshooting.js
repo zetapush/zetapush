@@ -8,6 +8,7 @@ const fs = require('fs');
 const path = require('path');
 const process = require('process');
 const os = require('os');
+const ora = require('ora');
 
 const DOC_BASE_URL = process.env.ZP_DOC_BASE_URL || "https://zetapush.github.io/documentation/"
 const DOC_SOURCE_BASE_URL = process.env.ZP_DOC_SOURCE_BASE_URL || "https://github.com/zetapush/documentation/tree/master"
@@ -27,9 +28,9 @@ class ErrorAnalyzer {
     ErrorAnalyzer.analyzers.push(analyzer)
   }
 
-  static analyze(errorCtx) {
+  static async analyze(errorCtx) {
     for(let analyzer of ErrorAnalyzer.analyzers) {
-      let errorCode = analyzer.getError(errorCtx)
+      let errorCode = await analyzer.getError(errorCtx)
       if(errorCode) {
         return errorCode
       }
@@ -130,7 +131,7 @@ class CacheErrorHelper extends ErrorHelper {
   }
   async getHelp(err) {
     try {
-      if(!this.refresh && !this.isExpired() && fs.readFileSync(this.getCachedFile(err.code))) {
+      if(!this.refresh && !this.isExpired() && fs.existsSync(this.getCachedFile(err.code))) {
         trace(`Use cached troubleshoot for ${err.code}`)
         return fs.readFileSync(this.getCachedFile(err.code)).toString()
       }
@@ -182,10 +183,16 @@ errorHelper.getMessages()
 
 const displayHelp = async (errorCtxt) => {
   try {
-    let error = ErrorAnalyzer.analyze(errorCtxt)
-    trace(`Analyze done => errorCode=${error}. Displaying help for this code`)
+    const spinner = ora('Analyzing the error to provide you useful help... \n');
+    spinner.start();
+    let error = await ErrorAnalyzer.analyze(errorCtxt)
+    spinner.stop()
     if(error) {
-      displayHelpMessage(error)
+      trace(`Analyze done => errorCode=${error.code}. Displaying help for this code`)
+      await displayHelpMessage(error)
+      // FIXME: shold have specific exit code for automation but npm add noise
+      // process.exit(EXIT_CODES[error.code] || 1)
+      process.exit(0)
     }
   } catch(e) {
     // TODO
@@ -204,5 +211,20 @@ const displayHelpMessage = async (error) => {
   }
 }
 
+
+const EXIT_CODES = {
+  'CONFIG-01': 2,
+  'NET-01': 11,
+  'NET-02': 12,
+  'NET-03': 13,
+  'NET-04': 14,
+  'DEPENDENCY-01': 31,
+  'DEPENDENCY-02': 32,
+  'ACCOUNT-01': 51,
+  'ACCOUNT-02': 52,
+  'ACCOUNT-03': 53,
+  'ACCOUNT-04': 54,
+  'ACCOUNT-05': 55,
+}
 
 module.exports = { ErrorAnalyzer, displayHelp, displayHelpMessage, errorHelper };

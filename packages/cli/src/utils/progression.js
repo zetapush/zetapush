@@ -29,11 +29,11 @@ const getProgress = (config, recipeId) =>
     // log('Get progresssion', url);
     request(options, (failure, response, body) => {
       if (failure) {
-        reject(failure);
+        reject({failure, request: options, config});
         return error('Get progresssion failed', failure);
       }
       if (response.statusCode !== 200) {
-        reject(response.statusCode);
+        reject({body, statusCode: response.statusCode, request: options, config});
         return error('Get progresssion failed', response.statusCode, body);
       }
       // log('Get progresssion successful', body);
@@ -63,11 +63,11 @@ const getLiveStatus = (config) =>
     // log('Get progresssion', url);
     request(options, (failure, response, body) => {
       if (failure) {
-        reject(failure);
+        reject({failure, request: options, config});
         return error('Get live status failed', failure);
       }
       if (response.statusCode !== 200) {
-        reject(response.statusCode);
+        reject({body, statusCode: response.statusCode, request: options, config});
         return error('Get live status failed', response.statusCode, body);
       }
       // log('Get progresssion successful', body);
@@ -87,7 +87,7 @@ const getLiveStatus = (config) =>
         }, {});
         resolve(fronts);
       } catch (failure) {
-        reject(failure);
+        reject({failure, config, request: options});
         return error('Get live status failed', failure);
       }
     });
@@ -169,7 +169,7 @@ const checkQueueServiceDeployed = (config, recipeId) => {
         }
       } catch (ex) {
         error('Progression', ex);
-        reject(ex);
+        reject({failure: ex, config});
       }
     })();
   });
