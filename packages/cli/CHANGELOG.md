@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.20.0"></a>
+# [0.20.0](https://github.com/zetapush/zetapush/compare/v0.19.0...v0.20.0) (2018-06-11)
+
+
+### Features
+
+* **create-app:** improve error catching ([31857e9](https://github.com/zetapush/zetapush/commit/31857e9))
+
+
+
+
 <a name="0.19.0"></a>
 # [0.19.0](https://github.com/zetapush/zetapush/compare/v0.18.4...v0.19.0) (2018-06-07)
 
