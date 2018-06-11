@@ -9,6 +9,10 @@ const DEFAULTS = require('../src/utils/defaults');
 const push = require('../src/commands/push');
 const run = require('../src/commands/run');
 const createApp = require('../src/commands/createApp');
+const {
+  helpMessageRun,
+  helpMessagePush,
+} = require('../src/utils/helper-messages');
 
 const { load } = require('../src/loader/worker');
 
@@ -51,7 +55,10 @@ program
       .then(([config, declaration]) => {
         run(command, basepath, config, declaration);
       }),
-  );
+  )
+  .on('--help', function() {
+    console.log(helpMessageRun());
+  });
 
 program
   .command('push')
@@ -65,6 +72,9 @@ program
       .then(([config, declaration]) => {
         push(command.parent, basepath, config, declaration);
       }),
-  );
+  )
+  .on('--help', function() {
+    console.log(helpMessagePush());
+  });
 
 program.parse(process.argv);
