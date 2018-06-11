@@ -64,7 +64,8 @@ function createApp(name, zetarc) {
     private: true,
     scripts: {
       deploy: 'zeta push',
-      start: 'zeta run'
+      start: 'zeta run',
+      troubleshoot: 'zeta troubleshoot'
     },
     dependencies: {}
   };
