@@ -76,7 +76,7 @@ const generateProvisioningFile = (filepath, config) =>
     const json = JSON.stringify(provision);
     fs.writeFile(filepath, json, (failure) => {
       if (failure) {
-        reject(failure);
+        reject({failure, config});
         return error('provisioning', failure);
       }
       resolve({ filepath, provision });
