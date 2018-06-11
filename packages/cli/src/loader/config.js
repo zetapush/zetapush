@@ -13,7 +13,7 @@ const explorer = cosmiconfig('zeta');
  * @return {boolean}
  */
 const isValid = (config = {}) =>
-  config.appName && config.developerLogin && config.developerPassword;
+  config.platformUrl && config.developerLogin && config.developerPassword;
 
 
 /**
