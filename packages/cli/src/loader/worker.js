@@ -1,7 +1,10 @@
 const cwd = require('resolve-cwd');
 
-const load = (basepath) => {
-  const id = cwd(basepath);
+/**
+ * @param {Object} command
+ */
+const load = (command) => {
+  const id = cwd(command.worker);
   const Worker = require(id);
   return Worker;
 };

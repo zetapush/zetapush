@@ -5,8 +5,8 @@ const program = require('commander');
 const { version } = require('../package.json');
 
 const DEFAULTS = require('../src/utils/defaults');
-
-const { setVerbosity, help, error } = require('../src/utils/log');
+const { identity } = require('../src/utils/validator');
+const { setVerbosity, error } = require('../src/utils/log');
 
 const push = require('../src/commands/push');
 const run = require('../src/commands/run');
@@ -55,15 +55,25 @@ program
 
 program
   .command('run')
-  .option('-w, --worker', 'Run worker on local platform')
-  .option('-s, --skip-provisioning', 'Skip provisioning steps', false)
-  .arguments('[basepath]')
+  .usage('[options]')
+  .option(
+    '-w, --worker <worker>',
+    'Push worker on cloud platform',
+    identity,
+    DEFAULTS.WORKER_FOLDER_PATH,
+  )
+  .option(
+    '-s, --skip-provisioning <skip-provisioning>',
+    'Skip provisioning steps',
+    Boolean,
+    false,
+  )
   .description('Run your code')
-  .action((basepath = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
-    createApp(basepath, command)
-      .then((config) => Promise.all([config, load(basepath)]))
+  .action((command) =>
+    createApp(command)
+      .then((config) => Promise.all([config, load(command)]))
       .then(([config, declaration]) => {
-        run(command, basepath, config, declaration);
+        run(command, config, declaration);
       })
       .catch((failure) => {
         error('Run failed', failure);
@@ -73,15 +83,25 @@ program
 
 program
   .command('push')
-  .option('-f, --front', 'Push front on cloud platform')
-  .option('-w, --worker', 'Push worker on cloud platform')
-  .arguments('[basepath]')
+  .usage('[options]')
+  .option(
+    '-f, --front <front>',
+    'Push front on cloud platform',
+    identity,
+    DEFAULTS.FRONT_FOLDER_PATH,
+  )
+  .option(
+    '-w, --worker <worker>',
+    'Push worker on cloud platform',
+    identity,
+    DEFAULTS.WORKER_FOLDER_PATH,
+  )
   .description('Push your application on ZetaPush platform')
-  .action((basepath = DEFAULTS.CURRENT_WORKING_DIRECTORY, command) =>
-    createApp(basepath, command)
-      .then((config) => Promise.all([config, load(basepath)]))
+  .action((command) =>
+    createApp(command)
+      .then((config) => Promise.all([config, load(command)]))
       .then(([config, declaration]) => {
-        push(command.parent, basepath, config, declaration);
+        push(command, config, declaration);
       })
       .catch((failure) => {
         error('Push failed', failure);

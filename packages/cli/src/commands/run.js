@@ -19,12 +19,11 @@ const { checkQueueServiceDeployed } = require('../utils/progression');
 
 /**
  * Run Worker instance
- * @param {Object} args
- * @param {String} basepath
+ * @param {Object} command
  * @param {Object} config
  * @param {WorkerDeclaration} declaration
  */
-const run = (args, basepath, config, declaration) => {
+const run = (command, config, declaration) => {
   const clientConfig = {
     platformUrl: config.platformUrl,
     login: config.developerLogin,
@@ -57,7 +56,7 @@ const run = (args, basepath, config, declaration) => {
   /**
    * Run worker and create services if necessary
    */
-  if (args.skipProvisioning) {
+  if (command.skipProvisioning) {
     createServicesAndRunWorker(client, config, declaration)
       .then(() => {
         log(`Resolve Dependency Injection`);
