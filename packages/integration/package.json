@@ -1,0 +1,12 @@
+{
+  "name": "@zetapush/integration",
+  "private": true,
+  "scripts": {
+    "test:ci": "rimraf project && npm init @zetapush project --developer-login $ZETAPUSH_DEVELOPER_LOGIN --developer-password $ZETAPUSH_DEVELOPER_PASSWORD && cd project && npm run deploy&& cd .. && node index.js"
+  },
+  "dependencies": {
+    "@zetapush/cometd": "*",
+    "@zetapush/core": "*",
+    "rimraf": "^2.6.2"
+  }
+}
