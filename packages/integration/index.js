@@ -5,7 +5,7 @@ const fs = require('fs');
 const readFile = util.promisify(fs.readFile);
 const PATTERN = /Hello World from JavaScript (\d+)/
 
-readFile('./hello/.zetarc', { encoding: 'utf-8' })
+readFile('./project/.zetarc', { encoding: 'utf-8' })
   .then((text) => JSON.parse(text))
   .then((config) => ({
     ...config,
