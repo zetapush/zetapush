@@ -41,7 +41,7 @@ const upload = (archived, config) =>
     request(options, (failure, response, body) => {
       if (failure) {
         trace('Upload failed:', failure);
-        return reject({failure, request: options, config});
+        return reject({ failure, request: options, config });
       }
       if (response.statusCode !== 200) {
         try {
@@ -55,7 +55,12 @@ const upload = (archived, config) =>
           trace('Upload body parsing:', exception);
         }
         trace('Upload failed:', response.statusCode, body);
-        return reject({ body, statusCode: response.statusCode, request: options, config });
+        return reject({
+          body,
+          statusCode: response.statusCode,
+          request: options,
+          config,
+        });
       }
       return resolve(JSON.parse(body));
     });

@@ -10,15 +10,14 @@ const { createApplication } = require('../utils/createApplication');
  * @param {Object} command
  */
 const createApp = (basepath, command) =>
-  load(basepath, command)
-    .then((config) => {
-      if (config.appName) {
-        info(`Using application defined in configuration: ${config.appName}`);
-        return config;
-      }
-      return createApplication(config).then((credentials) =>
-        save(basepath, credentials),
-      );
-    })
+  load(basepath, command).then((config) => {
+    if (config.appName) {
+      info(`Using application defined in configuration: ${config.appName}`);
+      return config;
+    }
+    return createApplication(config).then((credentials) =>
+      save(basepath, credentials),
+    );
+  });
 
 module.exports = createApp;

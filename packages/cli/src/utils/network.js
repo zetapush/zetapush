@@ -28,18 +28,28 @@ const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
     request(options, (failure, response, body) => {
       if (failure) {
         log(method, url, failure);
-        return reject({failure, request: options});
+        return reject({ failure, request: options });
       }
       if (response.statusCode !== 200) {
         log(method, url, response);
-        return reject({response, statusCode: response.statusCode, body, request: options});
+        return reject({
+          response,
+          statusCode: response.statusCode,
+          body,
+          request: options,
+        });
       }
       try {
         const parsed = JSON.parse(body);
         return resolve(parsed);
       } catch (failure) {
         log(method, url, failure);
-        return reject({failure, statusCode: response.statusCode, body, request: options});
+        return reject({
+          failure,
+          statusCode: response.statusCode,
+          body,
+          request: options,
+        });
       }
     });
   });
