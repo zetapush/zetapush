@@ -6,6 +6,7 @@
     "deploy": "zeta push",
     "register": "zeta register",
     "start": "zeta run",
+    "help": "zeta run --help",
     "troubleshoot": "zeta troubleshoot"
   },
   "dependencies": {
