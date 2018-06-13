@@ -9,11 +9,13 @@ const troubleshooting = require('../errors/troubleshooting');
 const WorkerLoader = require('../loader/worker');
 const compress = require('../utils/compress');
 const { instanciate } = require('../utils/di');
+const { equals } = require('../utils/helpers');
 const { log, error, warn, info, todo } = require('../utils/log');
 const { fetch } = require('../utils/network');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
 const {
   generateProvisioningFile,
+  getDeploymentIdList,
   getRuntimeProvision,
 } = require('../utils/provisioning');
 const { checkQueueServiceDeployed } = require('../utils/progression');
@@ -80,11 +82,25 @@ const run = (args, basepath, config, declaration) => {
     .then(() => start(client, config, declaration))
     .then((instance) => {
       spinner.stop();
-      WorkerLoader.events.on('reload', (reloaded) => {
-        const worker = instanciate(client, reloaded);
-        todo('Support new injected platforme services');
-        instance.setWorker(worker);
-        info('Update worker instance');
+      let previous = getDeploymentIdList(declaration);
+      WorkerLoader.events.on('reload', async (reloaded) => {
+        spinner.text = `Reloading worker... \n`;
+        spinner.start();
+        try {
+          let next = getDeploymentIdList(reloaded);
+          if (!equals(previous, next)) {
+            await createServices(client, config, reloaded);
+          }
+          // Create a new worker instance
+          const worker = instanciate(client, reloaded);
+          instance.setWorker(worker);
+          // Update previous deployment id list
+          previous = next;
+        } catch (exception) {
+          warn('Fail to reload worker');
+        }
+        info('Worker is up!');
+        spinner.stop();
       });
       info('Worker is up!');
     })
@@ -111,10 +127,7 @@ const waitingQueueServiceDeployed = (recipe, config, client, declaration) => {
   });
 };
 
-const connectClientAndCreateServices = async (client, config, declaration) => {
-  await client.connect();
-  log(`Connected`);
-
+const createServices = (client, config, declaration) => {
   const api = client.createAsyncService({
     Type: Queue,
   });
@@ -122,8 +135,15 @@ const connectClientAndCreateServices = async (client, config, declaration) => {
   const { items } = getRuntimeProvision(config, declaration);
   const services = items.map(({ item }) => item);
 
-  await api.createServices({ services });
+  return api.createServices({ services });
 };
+
+const connectClientAndCreateServices = (client, config, declaration) =>
+  client
+    .connect()
+    .then(() => log(`Connected`))
+    .then(() => createServices(client, config, declaration))
+    .then(() => log(`Platform services created`));
 
 const checkServicesAlreadyDeployed = (config) =>
   fetch({
