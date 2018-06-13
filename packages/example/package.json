@@ -6,11 +6,11 @@
     "deploy": "zeta push",
     "register": "zeta register",
     "start": "zeta run",
-    "help": "zeta run --help"
+    "help": "zeta run --help",
+    "troubleshoot": "zeta troubleshoot"
   },
   "dependencies": {
     "@zetapush/cli": "*",
-    "@zetapush/create": "*",
     "@zetapush/platform": "*"
   }
 }

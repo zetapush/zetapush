@@ -1,12 +1,8 @@
 # Generated sources
-/dist/
-/es/
-/lib/
+/project/
 # Third part dependencies
 /node_modules/
 # Log
 /lerna-*.log
 /npm-*.log
 /yarn-*.log
-# Editors
-.vscode/

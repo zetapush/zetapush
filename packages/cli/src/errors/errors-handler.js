@@ -2,14 +2,25 @@ const fs = require('fs');
 const path = require('path');
 const process = require('process');
 const os = require('os');
-const { log, error, info } = require('./log');
+const { log, error, info, help } = require('../utils/log');
 
 const displayError = (steps) => {
   steps.forEach((step) => {
     if (step.hasUnrecoverableErrors) {
-      error(`${step.name} failed:\n${getErrorsStr(step)}`);
+      error(
+        `${step.name} failed\n        Causes:\n${getErrorsStr(
+          step,
+        )}\n\n        Error logs:\n${getErrorsFromAssociatedLogsStr(step)}`,
+      );
     }
   });
+};
+
+const getErrorsFromAssociatedLogsStr = (step) => {
+  return step.associatedLogs
+    .filter((e) => e.level.name == 'ERROR')
+    .map((e) => e.message.replace(/^(.*)$/g, '          $1'))
+    .join('\n');
 };
 
 const writeLogs = (config, logs, steps) => {
@@ -21,12 +32,13 @@ const writeLogs = (config, logs, steps) => {
     logFile,
     `Context:
     developer-login=${config.developerLogin}
-    developer-password=${config.developerPassword}
     platform-url=${config.platformUrl}
     app-name=${config.appName}
-    ------------------------------------------------------------`,
+------------------------------------------------------------
+
+`,
   );
-  fs.writeFileSync(logFile, getLogsStr(logs, steps));
+  fs.appendFileSync(logFile, getLogsStr(logs, steps));
   return logFile;
 };
 
@@ -35,7 +47,7 @@ const getErrorsStr = (step) => {
     return '';
   }
   return step.errors
-    .map((e) => e.message.replace(/^(.*)$/g, '          $1'))
+    .map((e) => e.message.replace(/^(.*)$/g, '          - $1'))
     .join('\n');
 };
 
@@ -71,4 +83,4 @@ const fixedSize = (str, max) => {
     : str.padEnd(max, ' ');
 };
 
-module.exports = { getErrorsStr, getLogsStr, writeLogs, displayError };
+module.exports = { writeLogs, displayError };

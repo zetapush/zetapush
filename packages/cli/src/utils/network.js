@@ -27,19 +27,29 @@ const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
     log(method, url, body);
     request(options, (failure, response, body) => {
       if (failure) {
-        error(method, url, failure);
-        return reject(failure);
+        log(method, url, failure);
+        return reject({ failure, request: options });
       }
       if (response.statusCode !== 200) {
-        error(method, url, response);
-        return reject(response);
+        log(method, url, response);
+        return reject({
+          response,
+          statusCode: response.statusCode,
+          body,
+          request: options,
+        });
       }
       try {
         const parsed = JSON.parse(body);
         return resolve(parsed);
       } catch (failure) {
-        error(method, url, failure);
-        return reject(failure);
+        log(method, url, failure);
+        return reject({
+          failure,
+          statusCode: response.statusCode,
+          body,
+          request: options,
+        });
       }
     });
   });

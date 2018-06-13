@@ -2,7 +2,8 @@ const { URL } = require('url');
 const request = require('request');
 const { log, error, info } = require('./log');
 const ProgressBar = require('ascii-progress');
-const errorsHandler = require('./errors-handler');
+const errorsHandler = require('../errors/errors-handler');
+const troubleshooting = require('../errors/troubleshooting');
 
 /**
  * Get deployment progression for a given recipe id (aka deployment token)
@@ -27,11 +28,16 @@ const getProgress = (config, recipeId) =>
     // log('Get progresssion', url);
     request(options, (failure, response, body) => {
       if (failure) {
-        reject(failure);
+        reject({ failure, request: options, config });
         return error('Get progresssion failed', failure);
       }
       if (response.statusCode !== 200) {
-        reject(response.statusCode);
+        reject({
+          body,
+          statusCode: response.statusCode,
+          request: options,
+          config,
+        });
         return error('Get progresssion failed', response.statusCode, body);
       }
       // log('Get progresssion successful', body);
@@ -61,11 +67,16 @@ const getLiveStatus = (config) =>
     // log('Get progresssion', url);
     request(options, (failure, response, body) => {
       if (failure) {
-        reject(failure);
+        reject({ failure, request: options, config });
         return error('Get live status failed', failure);
       }
       if (response.statusCode !== 200) {
-        reject(response.statusCode);
+        reject({
+          body,
+          statusCode: response.statusCode,
+          request: options,
+          config,
+        });
         return error('Get live status failed', response.statusCode, body);
       }
       // log('Get progresssion successful', body);
@@ -85,7 +96,7 @@ const getLiveStatus = (config) =>
         }, {});
         resolve(fronts);
       } catch (failure) {
-        reject(failure);
+        reject({ failure, config, request: options });
         return error('Get live status failed', failure);
       }
     });
@@ -130,6 +141,7 @@ const getProgression = (config, recipeId) => {
         const logFile = errorsHandler.writeLogs(config, logs, steps);
         info(`A complete log of this run can be found in:
               ${logFile}`);
+        await troubleshooting.displayHelp(progressDetail);
       } else {
         getLiveStatus(config)
           .then((fronts) => {
@@ -166,7 +178,7 @@ const checkQueueServiceDeployed = (config, recipeId) => {
         }
       } catch (ex) {
         error('Progression', ex);
-        reject(ex);
+        reject({ failure: ex, config });
       }
     })();
   });

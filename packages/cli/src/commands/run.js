@@ -172,7 +172,13 @@ const checkServicesAlreadyDeployed = (config) => {
           `Failed to check if services are already deployed on ${appName} :`,
           failure,
         );
-        reject(failure);
+        reject({
+          body,
+          failure,
+          statusCode: response && response.statusCode,
+          request: options,
+          config,
+        });
       }
 
       resolve(JSON.parse(body).content.length > 0);

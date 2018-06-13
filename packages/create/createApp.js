@@ -11,6 +11,14 @@ const fs = require('fs-extra');
 
 const { createAccount, DEFAULTS, logger } = require('@zetapush/cli');
 
+logger.setVerbosity(1);
+
+function increaseVerbosity(v, total) {
+  logger.setVerbosity(total);
+  return total + 1;
+}
+
+
 const pkg = require('./package.json');
 
 // These files should be allowed to remain on a failed install,
@@ -31,10 +39,17 @@ const program = new commander.Command(pkg.name)
   .option('-l, --developer-login <developer-login>', 'Developer login')
   .option('-p, --developer-password <developer-password>', 'Developer password')
   .option('-a, --app-name <app-name>', 'Application name')
+  .option(
+    '-v, --verbose',
+    'Verbosity level (-v=error+warn+info, -vv=error+warn+info+log, -vvv=error+warn+info+log+trace)',
+    increaseVerbosity,
+    1,
+  )
   .arguments('<project-directory>')
   .usage(`${chalk.green('<project-directory>')} [options]`)
-  .action((name, { appName, developerLogin, developerPassword, platformUrl }) => {
-    createAccount({ appName, developerLogin, developerPassword, platformUrl}).then((zetarc) => {
+  .action((name, command) => {
+    const config = validateOptions(command);
+    createAccount(config).then((zetarc) => {
       createApp(name, zetarc);
     }).catch((failure) => {
       logger.error('createAccount', failure)
@@ -44,6 +59,20 @@ const program = new commander.Command(pkg.name)
 
   })
   .parse(process.argv);
+
+function validateOptions({ appName, developerLogin, developerPassword, platformUrl }) {
+  const missing = [];
+  if (!developerLogin) { missing.push('--developer-login'); }
+  if (!developerPassword) { missing.push('--developer-password'); }
+  if (missing.length > 0) {
+    console.log();
+    console.log('Aborting init.');
+    console.log(chalk.red(`Missing mandatory option(s): ${missing.join(', ')}`));
+    console.log();
+    process.exit(1);
+  }
+  return { appName, developerLogin, developerPassword, platformUrl }
+}
 
 function createApp(name, zetarc) {
   const root = path.resolve(name);
@@ -64,7 +93,8 @@ function createApp(name, zetarc) {
     private: true,
     scripts: {
       deploy: 'zeta push',
-      start: 'zeta run'
+      start: 'zeta run',
+      troubleshoot: 'zeta troubleshoot'
     },
     dependencies: {}
   };
