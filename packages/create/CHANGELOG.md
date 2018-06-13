@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.21.1"></a>
+## [0.21.1](https://github.com/zetapush/zetapush/compare/v0.21.0...v0.21.1) (2018-06-13)
+
+
+### Features
+
+* **defaults:** update default platformUrl for create package ([3d5fe41](https://github.com/zetapush/zetapush/commit/3d5fe41))
+
+
+
+
+<a name="0.21.0"></a>
+# [0.21.0](https://github.com/zetapush/zetapush/compare/v0.20.1...v0.21.0) (2018-06-13)
+
+
+
+
+**Note:** Version bump only for package @zetapush/create
+
 <a name="0.20.1"></a>
 ## [0.20.1](https://github.com/zetapush/zetapush/compare/v0.20.0...v0.20.1) (2018-06-11)
 

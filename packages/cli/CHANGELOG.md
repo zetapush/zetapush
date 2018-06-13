@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.21.1"></a>
+## [0.21.1](https://github.com/zetapush/zetapush/compare/v0.21.0...v0.21.1) (2018-06-13)
+
+
+
+
+**Note:** Version bump only for package @zetapush/cli
+
+<a name="0.21.0"></a>
+# [0.21.0](https://github.com/zetapush/zetapush/compare/v0.20.1...v0.21.0) (2018-06-13)
+
+
+### Features
+
+* **cli/run errors:** add error handling for 'zeta run' ([a44aa09](https://github.com/zetapush/zetapush/commit/a44aa09))
+* **defaults:** update default platformUrl value to https://celtia-alpha.zpush.io/ ([cc746f2](https://github.com/zetapush/zetapush/commit/cc746f2))
+
+
+
+
 <a name="0.20.1"></a>
 ## [0.20.1](https://github.com/zetapush/zetapush/compare/v0.20.0...v0.20.1) (2018-06-11)
 
