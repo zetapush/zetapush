@@ -1,22 +1,35 @@
 const path = require('path');
 const os = require('os');
-const request = require('request');
 const ora = require('ora');
-const { URL } = require('url');
 const { WorkerClient } = require('@zetapush/worker');
 const { Queue } = require('@zetapush/platform');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
+const troubleshooting = require('../errors/troubleshooting');
+const WorkerLoader = require('../loader/worker');
 const compress = require('../utils/compress');
 const { instanciate } = require('../utils/di');
-const { log, error, warn, info } = require('../utils/log');
-const troubleshooting = require('../errors/troubleshooting');
+const { equals } = require('../utils/helpers');
+const { log, error, warn, info, todo } = require('../utils/log');
+const { fetch } = require('../utils/network');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
 const {
   generateProvisioningFile,
+  getDeploymentIdList,
   getRuntimeProvision,
 } = require('../utils/provisioning');
 const { checkQueueServiceDeployed } = require('../utils/progression');
+
+/**
+ *
+ * @param {Object} client
+ * @param {Object} config
+ * @param {Object} declaration
+ */
+const start = (client, config, declaration) =>
+  Promise.resolve(instanciate(client, declaration)).then((declaration) =>
+    client.subscribeTaskWorker(declaration, config.workerServiceId),
+  );
 
 /**
  * Run Worker instance
@@ -25,21 +38,16 @@ const { checkQueueServiceDeployed } = require('../utils/progression');
  * @param {WorkerDeclaration} declaration
  */
 const run = (command, config, declaration) => {
-  const clientConfig = {
-    platformUrl: config.platformUrl,
-    login: config.developerLogin,
-    password: config.developerPassword,
-    appName: config.appName,
+  const client = new WorkerClient({
+    ...config,
     transports,
-  };
-
-  const client = new WorkerClient(clientConfig);
+  });
 
   // Progress
   const spinner = ora('Starting worker... \n');
   spinner.start();
 
-  const onTerminalSignal = (signal) => {
+  const onTerminalSignal = () => {
     warn(`Properly disconnect client`);
     client.disconnect().then(() => {
       warn(`Client properly disconnected`);
@@ -57,97 +65,68 @@ const run = (command, config, declaration) => {
   /**
    * Run worker and create services if necessary
    */
-  if (command.skipProvisioning) {
-    createServicesAndRunWorker(client, config, declaration)
-      .then(() => {
-        log(`Resolve Dependency Injection`);
-        return instanciate(client, declaration);
-      })
-      .then((declaration) => {
-        return client.subscribeTaskWorker(declaration, config.workerServiceId);
-      })
-      .then(() => {
-        spinner.stop();
-        info(`Worker is up !`);
-      })
-      .catch((failure) => {
-        error('ZetaPush Celtia Error', failure);
-        troubleshooting.displayHelp(failure);
-      });
-  } else {
-    checkServicesAlreadyDeployed(config).then((deployed) => {
-      if (!deployed) {
-        log(`Queue service not already deployed`);
-        cookWithOnlyQueueService(config, client, declaration, spinner);
-      } else {
-        // Queue service already exists
-        createServicesAndRunWorker(client, config, declaration)
-          .then(() => {
-            log(`Resolve Dependency Injection`);
-            return instanciate(client, declaration);
-          })
-          .then((declaration) => {
-            return client.subscribeTaskWorker(
-              declaration,
-              config.workerServiceId,
-            );
-          })
-          .then(() => {
-            spinner.stop();
-            info(`Worker is up !`);
-          })
-          .catch((failure) => {
-            spinner.stop();
+  const bootstrap = command.skipProvisioning
+    ? connectClientAndCreateServices(config, client, declaration)
+    : checkServicesAlreadyDeployed(config).then(
+        (deployed) =>
+          !deployed
+            ? cookWithOnlyQueueService(config, client, declaration)
+            : connectClientAndCreateServices(client, config, declaration),
+      );
 
-            return troubleshooting.displayHelp(failure);
-          });
-      }
+  /**
+   * Start worker
+   */
+  bootstrap
+    .then(() => start(client, config, declaration))
+    .then((instance) => {
+      spinner.stop();
+      let previous = getDeploymentIdList(declaration);
+      WorkerLoader.events.on('reload', async (reloaded) => {
+        spinner.text = `Reloading worker... \n`;
+        spinner.start();
+        try {
+          let next = getDeploymentIdList(reloaded);
+          if (!equals(previous, next)) {
+            await createServices(client, config, reloaded);
+          }
+          // Create a new worker instance
+          const worker = instanciate(client, reloaded);
+          instance.setWorker(worker);
+          // Update previous deployment id list
+          previous = next;
+        } catch (exception) {
+          warn('Fail to reload worker');
+        }
+        info('Worker is up!');
+        spinner.stop();
+      });
+      info('Worker is up!');
+    })
+    .catch((failure) => {
+      spinner.stop();
+      error('ZetaPush Celtia Error', failure);
+      troubleshooting.displayHelp(failure);
     });
-  }
 };
 
 /**
  * Ask progression during deployment of services
  */
-const waitingQueueServiceDeployed = (
-  recipe,
-  config,
-  client,
-  declaration,
-  spinner,
-) => {
+const waitingQueueServiceDeployed = (recipe, config, client, declaration) => {
   log('Uploaded', recipe.recipeId);
   const { recipeId } = recipe;
   if (recipeId === void 0) {
     return error('Missing recipeId', recipe);
   }
   log('Waiting Queue service deploying...');
-  checkQueueServiceDeployed(config, recipeId).then((recipeId) => {
+  return checkQueueServiceDeployed(config, recipeId).then((recipeId) => {
     log(`Queue service ready on ${recipeId}`);
-    createServicesAndRunWorker(client, config, declaration)
-      .then(() => {
-        log(`Resolve Dependency Injection`);
-        return instanciate(client, declaration);
-      })
-      .then((declaration) => {
-        log(`Register Worker`);
-        return client.subscribeTaskWorker(declaration, config.workerServiceId);
-      })
-      .then(() => {
-        spinner.stop();
-        info(`Worker is up !`);
-      })
-      .catch((failure) => {
-        error('ZetaPush Celtia Error', failure);
-        troubleshooting.displayHelp(failure);
-      });
+    return connectClientAndCreateServices(client, config, declaration);
   });
 };
 
-const createServicesAndRunWorker = async (client, config, declaration) => {
-  await client.connect();
-  log(`Connected`);
-
+const createServices = (client, config, declaration) => {
   const api = client.createAsyncService({
     Type: Queue,
   });
@@ -155,48 +134,24 @@ const createServicesAndRunWorker = async (client, config, declaration) => {
   const { items } = getRuntimeProvision(config, declaration);
   const services = items.map(({ item }) => item);
 
-  await api.createServices({ services });
+  return api.createServices({ services });
 };
 
-const checkServicesAlreadyDeployed = (config) => {
-  return new Promise((resolve, reject) => {
-    log(`Checking if services are already deployed`);
-    const { developerLogin, developerPassword, platformUrl, appName } = config;
-    const { protocol, hostname, port } = new URL(platformUrl);
-    const url = `${protocol}//${hostname}:${port}/zbo/orga/item/list/${appName}`;
+const connectClientAndCreateServices = (client, config, declaration) =>
+  client
+    .connect()
+    .then(() => log(`Connected`))
+    .then(() => createServices(client, config, declaration))
+    .then(() => log(`Platform services created`));
 
-    const options = {
-      headers: {
-        'X-Authorization': JSON.stringify({
-          username: developerLogin,
-          password: developerPassword,
-        }),
-      },
-      method: 'GET',
-      url,
-    };
+const checkServicesAlreadyDeployed = (config) =>
+  fetch({
+    config,
+    method: 'GET',
+    pathname: `orga/item/list/${config.appName}`,
+  }).then(({ content }) => content.length > 0);
 
-    request(options, (failure, response, body) => {
-      if (failure || response.statusCode !== 200) {
-        error(
-          `Failed to check if services are already deployed on ${appName} :`,
-          failure,
-        );
-        reject({
-          body,
-          failure,
-          statusCode: response && response.statusCode,
-          request: options,
-          config,
-        });
-      } else {
-        resolve(JSON.parse(body).content.length > 0);
-      }
-    });
-  });
-};
-
-const cookWithOnlyQueueService = (config, client, declaration, spinner) => {
+const cookWithOnlyQueueService = (config, client, declaration) => {
   const ts = Date.now();
   const root = path.join(os.tmpdir(), String(ts));
   const rootArchive = `${root}.zip`;
@@ -209,20 +164,13 @@ const cookWithOnlyQueueService = (config, client, declaration, spinner) => {
   return mkdir(root)
     .then(() => generateProvisioningFile(app, config))
     .then(() => compress(root, { ...options, ...{ saveTo: rootArchive } }))
-    .then(() => {
-      log(`Upload 'app' to create queue service`);
+    .then(() =>
       upload(rootArchive, config)
-        .then((recipe) => {
-          waitingQueueServiceDeployed(
-            recipe,
-            config,
-            client,
-            declaration,
-            spinner,
-          );
-        })
-        .catch((failure) => error('Upload failed', failure));
-    });
+        .then((recipe) =>
+          waitingQueueServiceDeployed(recipe, config, client, declaration),
+        )
+        .catch((failure) => error('Upload failed', failure)),
+    );
 };
 
 module.exports = run;

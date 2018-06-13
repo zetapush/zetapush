@@ -101,14 +101,6 @@ export class Client {
     return new Promise((resolve, reject) => {
       const handlers = [];
       this.disconnect().then(() => {
-        const onFailedHandshake = (error) => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
-          // Reject connection
-          reject();
-        };
         const onConnectionEstablished = () => {
           // Remove connection status listener
           handlers.forEach((handler) => {
@@ -117,8 +109,25 @@ export class Client {
           // Resolve connection success
           resolve();
         };
+        const onConnectionToServerFail = (error) => {
+          // Remove connection status listener
+          handlers.forEach((handler) => {
+            this.removeConnectionStatusListener(handler);
+          });
+          // Reject connection
+          reject(error);
+        };
+        const onFailedHandshake = (error) => {
+          // Remove connection status listener
+          handlers.forEach((handler) => {
+            this.removeConnectionStatusListener(handler);
+          });
+          // Reject connection
+          reject(error);
+        };
         // Handle connection success and fail
         handlers.push(this.onConnectionEstablished(onConnectionEstablished));
+        handlers.push(this.onConnectionToServerFail(onConnectionToServerFail));
         handlers.push(this.onFailedHandshake(onFailedHandshake));
         // Connect client to ZetaPush backend
         this.helper.connect();
