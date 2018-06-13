@@ -5,13 +5,17 @@ const program = require('commander');
 const { version } = require('../package.json');
 
 const DEFAULTS = require('../src/utils/defaults');
-
+const {
+  helpMessageRun,
+  helpMessagePush,
+} = require('../src/utils/helper-messages');
 const { setVerbosity, help, error } = require('../src/utils/log');
 
 const push = require('../src/commands/push');
 const run = require('../src/commands/run');
 const createApp = require('../src/commands/createApp');
 const troubleshoot = require('../src/commands/troubleshoot');
+
 
 const { load } = require('../src/loader/worker');
 
@@ -71,7 +75,10 @@ program
         error('Run failed', failure);
         displayHelp(failure);
       }),
-  );
+  )
+  .on('--help', function() {
+    console.log(helpMessageRun());
+  });
 
 program
   .command('push')
@@ -89,7 +96,10 @@ program
         error('Push failed', failure);
         displayHelp(failure);
       }),
-  );
+  )
+  .on('--help', function() {
+    console.log(helpMessagePush());
+  });
 
 program
   .command('troubleshoot')
