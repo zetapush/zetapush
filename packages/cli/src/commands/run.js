@@ -12,6 +12,7 @@ const { on } = require('../loader/worker');
 const { instanciate } = require('../utils/di');
 const { log, error, warn, info } = require('../utils/log');
 const { fetch } = require('./network');
+const troubleshooting = require('../errors/troubleshooting');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
 const {
   generateProvisioningFile,
@@ -67,7 +68,10 @@ const run = (args, basepath, config, declaration) => {
         spinner.stop();
         info(`Worker is up !`);
       })
-      .catch((failure) => error('ZetaPush Celtia Error', failure));
+      .catch((failure) => {
+        error('ZetaPush Celtia Error', failure);
+        troubleshooting.displayHelp(failure);
+      });
   } else {
     checkServicesAlreadyDeployed(config).then((deployed) => {
       if (!deployed) {
@@ -90,7 +94,11 @@ const run = (args, basepath, config, declaration) => {
             spinner.stop();
             info(`Worker is up !`);
           })
-          .catch((failure) => error('ZetaPush Celtia Error', failure));
+          .catch((failure) => {
+            spinner.stop();
+
+            return troubleshooting.displayHelp(failure);
+          });
       }
     });
   }
@@ -127,7 +135,10 @@ const waitingQueueServiceDeployed = (
         spinner.stop();
         info(`Worker is up !`);
       })
-      .catch((failure) => error('ZetaPush Celtia Error', failure));
+      .catch((failure) => {
+        error('ZetaPush Celtia Error', failure);
+        troubleshooting.displayHelp(failure);
+      });
   });
 };
 
