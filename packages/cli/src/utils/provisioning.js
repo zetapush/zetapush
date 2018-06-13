@@ -6,6 +6,21 @@ const { log, error } = require('./log');
 const { analyze } = require('./di');
 
 /**
+ * Get deployment id list from injected service to provisioning items
+ * @param {WorkerDeclaration} declaration
+ * @return {String[]}
+ */
+const getDeploymentIdList = (declaration) => {
+  const { platform } = analyze(declaration);
+  return Array.from(
+    new Set([
+      Weak.DEPLOYMENT_TYPE,
+      ...platform.map((Service) => Service.DEPLOYMENT_TYPE),
+    ]),
+  );
+};
+
+/**
  * Get bootstrap provisioning items
  * @param {ZetaPushConfig} config
  */
@@ -39,17 +54,11 @@ const getBootstrapProvision = (config) => {
  * @param {WorkerDeclaration} declaration
  */
 const getRuntimeProvision = (config, declaration) => {
-  const { platform } = analyze(declaration);
-  const items = Array.from(
-    new Set([
-      Weak.DEPLOYMENT_TYPE,
-      ...platform.map((Service) => Service.DEPLOYMENT_TYPE),
-    ]),
-  );
-  log(`Provisioning`, ...items);
+  const list = getDeploymentIdList(declaration);
+  log(`Provisioning`, ...list);
   return {
     businessId: config.appName,
-    items: items.map((type) => ({
+    items: list.map((type) => ({
       name: type,
       item: {
         itemId: type,
@@ -86,5 +95,6 @@ const generateProvisioningFile = (filepath, config) =>
 module.exports = {
   generateProvisioningFile,
   getBootstrapProvision,
+  getDeploymentIdList,
   getRuntimeProvision,
 };
