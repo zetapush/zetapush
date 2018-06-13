@@ -3,6 +3,7 @@ pipeline {
 
   options {
       timestamps()
+      timeout(time: 30, unit: 'MINUTES')
   }
 
   environment {
@@ -13,45 +14,61 @@ pipeline {
     stage('Integration Tests') {
       parallel {
         stage('Ubuntu 16.04 - NodeJS 8.11') {
-          agent { node { label 'ubuntu-16.04' } }
+          agent { 
+            node { 
+              label 'ubuntu-16.04'
+            }
+          }
           steps {
             dir('packages/integration') {
               sh 'npm i'
-              sh 'ZETAPUSH_DEVELOPER_LOGIN="$ZETAPUSH_DEVELOPER_ACCOUNT_USR" ZETAPUSH_DEVELOPER_PASSWORD="$ZETAPUSH_DEVELOPER_ACCOUNT_PSW" npm run test:npm5'
+              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' npm run test:npm5"
             }
           }
         }
 
         stage('Win 7 Pro - NodeJS 8.11') {
-          agent { node { label 'windows-7-pro' } }
+          agent { 
+            node { 
+              label 'windows-7-pro'
+            }
+          }
           steps {
             dir('packages/integration') {
               bat 'npm i'
-              bat 'set ZETAPUSH_DEVELOPER_LOGIN="$ZETAPUSH_DEVELOPER_ACCOUNT_USR"'
-              bat 'set ZETAPUSH_DEVELOPER_PASSWORD="$ZETAPUSH_DEVELOPER_ACCOUNT_PSW"'
+              bat "set ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}'"
+              bat "set ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}'"
               bat 'npm run test:npm5'
             }
           }
         }
 
         stage('Win 10 Pro - NodeJS 10.4') {
-          agent { node { label 'windows-10-pro' } }
+          agent { 
+            node { 
+              label 'windows-10-pro'
+            }
+          }
           steps {
             dir('packages/integration') {
               bat 'npm i'
-              bat 'set ZETAPUSH_DEVELOPER_LOGIN="$ZETAPUSH_DEVELOPER_ACCOUNT_USR"'
-              bat 'set ZETAPUSH_DEVELOPER_PASSWORD="$ZETAPUSH_DEVELOPER_ACCOUNT_PSW"'
+              bat "set ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}'"
+              bat "set ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}'"
               bat 'npm run test:npm6'
             }
           }
         }
 
         stage('Mac High Sierra - NodeJS 8.11') {
-          agent { node { label 'mac-high-sierra' } }
+          agent { 
+            node { 
+              label 'mac-high-sierra'
+            }
+          }
           steps {
             dir('packages/integration') {
               sh 'npm i'
-              sh 'ZETAPUSH_DEVELOPER_LOGIN="$ZETAPUSH_DEVELOPER_ACCOUNT_USR" ZETAPUSH_DEVELOPER_PASSWORD="$ZETAPUSH_DEVELOPER_ACCOUNT_PSW" npm run test:npm5'
+              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' npm run test:npm5"
             }
           }
         }
@@ -60,6 +77,9 @@ pipeline {
   }
 
   post {
+    always {
+      deleteDir()
+    }
     failure {
       slackSend(
           message: """ZetaPush celtia client : ${env.BRANCH_NAME} failed to build
