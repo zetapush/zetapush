@@ -228,9 +228,9 @@ const displayHelp = async (errorCtxt) => {
         }. Displaying help for this code`,
       );
       await displayHelpMessage(error);
-      // FIXME: shold have specific exit code for automation but npm add noise
-      // process.exit(EXIT_CODES[error.code] || 1)
-      process.exit(0);
+      // FIXME: remove noise from npm
+      process.exit(EXIT_CODES[error.code] || 1)
+      // process.exit(0);
     }
   } catch (e) {
     // TODO
@@ -250,7 +250,7 @@ const displayHelpMessage = async (error) => {
 };
 
 const EXIT_CODES = {
-  'CONFIG-01': 2,
+  'CONFIG-01': 1,
   'NET-01': 11,
   'NET-02': 12,
   'NET-03': 13,
@@ -262,7 +262,9 @@ const EXIT_CODES = {
   'ACCOUNT-03': 53,
   'ACCOUNT-04': 54,
   'ACCOUNT-05': 55,
-  'INJECTION-01': 61,
+  'ACCOUNT-06': 56,
+  'INJECTION-01': 71,
+  'SERVICE-04': 91,
 };
 
 module.exports = {
