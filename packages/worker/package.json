@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/worker",
-  "version": "0.20.1",
+  "version": "0.21.0",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-worker.js",
   "main": "lib/index.js",
@@ -26,8 +26,8 @@
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@zetapush/core": "^0.20.1",
-    "@zetapush/platform": "^0.20.1"
+    "@zetapush/core": "^0.21.0",
+    "@zetapush/platform": "^0.21.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.49",
