@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.21.1"></a>
+## [0.21.1](https://github.com/zetapush/zetapush/compare/v0.21.0...v0.21.1) (2018-06-13)
+
+
+### Features
+
+* **defaults:** update default platformUrl for create package ([3d5fe41](https://github.com/zetapush/zetapush/commit/3d5fe41))
+
+
+
+
+<a name="0.21.0"></a>
+# [0.21.0](https://github.com/zetapush/zetapush/compare/v0.20.1...v0.21.0) (2018-06-13)
+
+
+### Bug Fixes
+
+* **integration:** support test npm@5 and npm@6 ([52cd149](https://github.com/zetapush/zetapush/commit/52cd149))
+* **integration:** update project name in test file ([f57b7cb](https://github.com/zetapush/zetapush/commit/f57b7cb))
+
+
+### Features
+
+* **cli/run errors:** add error handling for 'zeta run' ([a44aa09](https://github.com/zetapush/zetapush/commit/a44aa09))
+* **defaults:** update default platformUrl value to https://celtia-alpha.zpush.io/ ([cc746f2](https://github.com/zetapush/zetapush/commit/cc746f2))
+* **test:** add integration package ([d12170e](https://github.com/zetapush/zetapush/commit/d12170e))
+
+
+
+
 <a name="0.20.1"></a>
 ## [0.20.1](https://github.com/zetapush/zetapush/compare/v0.20.0...v0.20.1) (2018-06-11)
 
