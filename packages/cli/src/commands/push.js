@@ -72,8 +72,8 @@ const push = (args, basepath, config, declaration) => {
       getProgression(config, recipeId);
     })
     .catch((failure) => {
-      error('Push failed', failure)
-      troubleshooting.displayHelp(failure)
+      error('Push failed', failure);
+      troubleshooting.displayHelp(failure);
     });
 };
 

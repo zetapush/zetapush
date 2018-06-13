@@ -5,6 +5,7 @@
     "publish": {
       "ignore": [
         "@zetapush/example",
+        "@zetapush/integration",
         "*.md",
         "test/**"
       ],
