@@ -44,3 +44,10 @@ Dépendences:
 - [@zetapush/core](https://github.com/zetapush/zetapush/tree/master/packages/core)
 - [@zetapush/platform](https://github.com/zetapush/zetapush/tree/master/packages/platform)
 - [@zetapush/worker](https://github.com/zetapush/zetapush/tree/master/packages/worker)
+
+## @zetapush/create
+
+Ce package permet la creation de nouveau projet zetapush
+
+Dépendences:
+- [@zetapush/cli](https://github.com/zetapush/zetapush/tree/master/packages/cli)
