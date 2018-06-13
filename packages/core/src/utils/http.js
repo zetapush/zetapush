@@ -20,7 +20,7 @@ export const HTTPS_PROTOCOL = 'https:';
  * Default ZetaPush API URL
  * @access private
  */
-export const API_URL = 'https://api.zpush.io/';
+export const API_URL = 'https://celtia-alpha.zpush.io/zbo/pub/business';
 
 /**
  * Force ssl based protocol for network echange
