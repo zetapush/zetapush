@@ -11,7 +11,7 @@ const os = require('os');
 const ora = require('ora');
 
 const DOC_BASE_URL =
-  process.env.ZP_DOC_BASE_URL || 'https://zetapush.github.io/documentation/';
+  process.env.ZP_DOC_BASE_URL || 'https://zetapush.github.io/documentation';
 const DOC_SOURCE_BASE_URL =
   process.env.ZP_DOC_SOURCE_BASE_URL ||
   'https://github.com/zetapush/documentation/tree/master';
@@ -262,6 +262,7 @@ const EXIT_CODES = {
   'ACCOUNT-03': 53,
   'ACCOUNT-04': 54,
   'ACCOUNT-05': 55,
+  'INJECTION-01': 61,
 };
 
 module.exports = {

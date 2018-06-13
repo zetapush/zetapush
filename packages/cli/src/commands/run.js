@@ -10,6 +10,7 @@ const transports = require('@zetapush/cometd/lib/node/Transports');
 const compress = require('../utils/compress');
 const { instanciate } = require('../utils/di');
 const { log, error, warn, info } = require('../utils/log');
+const troubleshooting = require('../errors/troubleshooting');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
 const {
   generateProvisioningFile,
@@ -69,7 +70,10 @@ const run = (command, config, declaration) => {
         spinner.stop();
         info(`Worker is up !`);
       })
-      .catch((failure) => error('ZetaPush Celtia Error', failure));
+      .catch((failure) => {
+        error('ZetaPush Celtia Error', failure);
+        troubleshooting.displayHelp(failure);
+      });
   } else {
     checkServicesAlreadyDeployed(config).then((deployed) => {
       if (!deployed) {
@@ -92,7 +96,11 @@ const run = (command, config, declaration) => {
             spinner.stop();
             info(`Worker is up !`);
           })
-          .catch((failure) => error('ZetaPush Celtia Error', failure));
+          .catch((failure) => {
+            spinner.stop();
+
+            return troubleshooting.displayHelp(failure);
+          });
       }
     });
   }
@@ -129,7 +137,10 @@ const waitingQueueServiceDeployed = (
         spinner.stop();
         info(`Worker is up !`);
       })
-      .catch((failure) => error('ZetaPush Celtia Error', failure));
+      .catch((failure) => {
+        error('ZetaPush Celtia Error', failure);
+        troubleshooting.displayHelp(failure);
+      });
   });
 };
 
@@ -178,9 +189,9 @@ const checkServicesAlreadyDeployed = (config) => {
           request: options,
           config,
         });
+      } else {
+        resolve(JSON.parse(body).content.length > 0);
       }
-
-      resolve(JSON.parse(body).content.length > 0);
     });
   });
 };
