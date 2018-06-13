@@ -8,8 +8,10 @@ const { Queue } = require('@zetapush/platform');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
 const compress = require('../utils/compress');
+const { on } = require('../loader/worker');
 const { instanciate } = require('../utils/di');
 const { log, error, warn, info } = require('../utils/log');
+const { fetch } = require('./network');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
 const {
   generateProvisioningFile,
@@ -25,15 +27,10 @@ const { checkQueueServiceDeployed } = require('../utils/progression');
  * @param {WorkerDeclaration} declaration
  */
 const run = (args, basepath, config, declaration) => {
-  const clientConfig = {
-    platformUrl: config.platformUrl,
-    login: config.developerLogin,
-    password: config.developerPassword,
-    appName: config.appName,
+  const client = new WorkerClient({
+    ...config,
     transports,
-  };
-
-  const client = new WorkerClient(clientConfig);
+  });
 
   // Progress
   const spinner = ora('Starting worker... \n');
@@ -66,7 +63,7 @@ const run = (args, basepath, config, declaration) => {
       .then((declaration) => {
         return client.subscribeTaskWorker(declaration, config.workerServiceId);
       })
-      .then(() => {
+      .then((unregister) => {
         spinner.stop();
         info(`Worker is up !`);
       })
@@ -89,7 +86,7 @@ const run = (args, basepath, config, declaration) => {
               config.workerServiceId,
             );
           })
-          .then(() => {
+          .then((unregister) => {
             spinner.stop();
             info(`Worker is up !`);
           })
@@ -126,7 +123,7 @@ const waitingQueueServiceDeployed = (
         log(`Register Worker`);
         return client.subscribeTaskWorker(declaration, config.workerServiceId);
       })
-      .then(() => {
+      .then((unregister) => {
         spinner.stop();
         info(`Worker is up !`);
       })
@@ -148,43 +145,12 @@ const createServicesAndRunWorker = async (client, config, declaration) => {
   await api.createServices({ services });
 };
 
-const checkServicesAlreadyDeployed = (config) => {
-  return new Promise((resolve, reject) => {
-    log(`Checking if services are already deployed`);
-    const { developerLogin, developerPassword, platformUrl, appName } = config;
-    const { protocol, hostname, port } = new URL(platformUrl);
-    const url = `${protocol}//${hostname}:${port}/zbo/orga/item/list/${appName}`;
-
-    const options = {
-      headers: {
-        'X-Authorization': JSON.stringify({
-          username: developerLogin,
-          password: developerPassword,
-        }),
-      },
-      method: 'GET',
-      url,
-    };
-
-    request(options, (failure, response, body) => {
-      if (failure || response.statusCode !== 200) {
-        error(
-          `Failed to check if services are already deployed on ${appName} :`,
-          failure,
-        );
-        reject({
-          body,
-          failure,
-          statusCode: response && response.statusCode,
-          request: options,
-          config,
-        });
-      }
-
-      resolve(JSON.parse(body).content.length > 0);
-    });
-  });
-};
+const checkServicesAlreadyDeployed = (config) =>
+  fetch({
+    config,
+    method: 'GET',
+    pathname: `orga/item/list/${config.appName}`,
+  }).then(({ content }) => content.length > 0);
 
 const cookWithOnlyQueueService = (config, client, declaration, spinner) => {
   const ts = Date.now();

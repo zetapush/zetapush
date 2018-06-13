@@ -42,6 +42,12 @@ export class WorkerClient extends Client {
      */
     this.timeout = timeout;
   }
+  /**
+   * Subscribe a task worker
+   * @param {Object} worker
+   * @param {String} deploymentId
+   * @return {() => void}
+   */
   subscribeTaskWorker(worker, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
     const queue = this.createService({
       deploymentId,
@@ -88,5 +94,6 @@ export class WorkerClient extends Client {
     queue.register({
       capacity: this.capacity,
     });
+    return () => queue.unregister();
   }
 }
