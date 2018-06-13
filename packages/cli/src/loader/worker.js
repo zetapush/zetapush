@@ -5,12 +5,11 @@ require('hot-module-replacement')({
 });
 
 const EventEmitter = require('events');
-const debounce = require('lodash.debounce');
 const cwd = require('resolve-cwd');
 
-const on = new EventEmitter();
+const events = new EventEmitter();
 
-const dispatch = debounce((worker) => on.emit('reload', worker), 150);
+const dispatch = (worker) => events.emit('reload', worker);
 
 /**
  * @param {String} basepath
@@ -19,7 +18,7 @@ const load = (basepath) => {
   const id = cwd(basepath);
   const worker = require(id);
   if (module.hot) {
-    module.hot.accept(id, () => {
+    module.hot.accept(id, (/*filepath*/) => {
       const reloaded = require(id);
       dispatch(reloaded);
     });
@@ -27,4 +26,4 @@ const load = (basepath) => {
   return worker;
 };
 
-module.exports = { load, on };
+module.exports = { load, events };

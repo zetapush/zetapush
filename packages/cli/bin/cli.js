@@ -16,7 +16,6 @@ const run = require('../src/commands/run');
 const createApp = require('../src/commands/createApp');
 const troubleshoot = require('../src/commands/troubleshoot');
 
-
 const { load } = require('../src/loader/worker');
 
 const {

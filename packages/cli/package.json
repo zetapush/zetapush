@@ -26,7 +26,6 @@
     "default-gateway": "^2.7.2",
     "execa": "^0.10.0",
     "hot-module-replacement": "^3.0.0",
-    "lodash.debounce": "^4.0.8",
     "ora": "^2.1.0",
     "request": "^2.85.0",
     "resolve-cwd": "^2.0.0",
