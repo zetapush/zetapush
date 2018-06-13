@@ -32,7 +32,9 @@ const { NetworkIssueAnalyzer } = require('../src/errors/network-issue');
 const {
   AccessDeniedIssueAnalyzer,
 } = require('../src/errors/access-denied-issue');
+const { InjectionIssueAnalyzer } = require('../src/errors/injection-issue');
 
+ErrorAnalyzer.register(new InjectionIssueAnalyzer());
 ErrorAnalyzer.register(new ConfigLoadIssueAnalyzer());
 ErrorAnalyzer.register(new MissingNpmDependencyErrorAnalyzer());
 ErrorAnalyzer.register(new AccessDeniedIssueAnalyzer());

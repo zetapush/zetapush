@@ -69,14 +69,16 @@ class MissingNpmDependencyErrorAnalyzer extends ErrorAnalyzer {
     return cantFindFile && isNodeModulesPath;
   }
 
-  getError(progress) {
+  async getError(progress) {
     if (!progress || !progress.logs) {
+      trace('not npm dependency issue');
       return null;
     }
     if (
       this.hasNpmInstallFailed(progress) &&
       this.hasNpmDependencyDownloadError(progress)
     ) {
+      trace('npm dependency download error');
       return {
         code: 'DEPENDENCY-01',
         missingDependency: this.getMissingDependency(progress),
@@ -87,8 +89,10 @@ class MissingNpmDependencyErrorAnalyzer extends ErrorAnalyzer {
       this.hasNpmInstallFailed(progress) &&
       this.hasNpmDependencyReadError(progress)
     ) {
+      trace('npm dependency read error');
       return { code: 'DEPENDENCY-02' };
     }
+    trace('not npm dependency issue');
     return null;
   }
 }

@@ -5,7 +5,7 @@
   "scripts": {
     "deploy": "zeta push",
     "register": "zeta register",
-    "start": "zeta run",
+    "start": "zeta run -vvv",
     "help": "zeta run --help",
     "troubleshoot": "zeta troubleshoot"
   },
