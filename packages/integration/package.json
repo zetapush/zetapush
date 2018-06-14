@@ -2,17 +2,20 @@
   "name": "@zetapush/integration",
   "private": true,
   "scripts": {
-    "test:npm5": "npm run zp:clean && npm run zp:create-project-5 && npm run zp:deploy && npm run zp:test",
-    "test:npm6": "npm run zp:clean && npm run zp:create-project-6 && npm run zp:deploy && npm run zp:test",
+    "test": "jasmine",
+    "test:npm5": "npm run zp:clean && npm run zp:create-project-5 && npm run zp:deploy && npm test",
+    "test:npm6": "npm run zp:clean && npm run zp:create-project-6 && npm run zp:deploy && npm test",
     "zp:clean": "rimraf project",
     "zp:create-project-5": "npx @zetapush/create project --developer-login $ZETAPUSH_DEVELOPER_LOGIN --developer-password $ZETAPUSH_DEVELOPER_PASSWORD",
     "zp:create-project-6": "npm init @zetapush project --developer-login $ZETAPUSH_DEVELOPER_LOGIN --developer-password $ZETAPUSH_DEVELOPER_PASSWORD",
-    "zp:deploy": "cd project && npm run deploy",
-    "zp:test": "node index.js"
+    "zp:deploy": "cd project && npm run deploy"
   },
   "dependencies": {
     "@zetapush/cometd": "*",
     "@zetapush/core": "*",
     "rimraf": "^2.6.2"
+  },
+  "devDependencies": {
+    "jasmine": "^3.1.0"
   }
 }
