@@ -25,6 +25,11 @@ pipeline {
               sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' npm run test:npm5"
             }
           }
+          post {
+            always {
+              deleteDir()
+            }
+          }
         }
 
         stage('Win 7 Pro - NodeJS 8.11') {
@@ -39,6 +44,11 @@ pipeline {
               bat "set ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}'"
               bat "set ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}'"
               bat 'npm run test:npm5'
+            }
+          }
+          post {
+            always {
+              deleteDir()
             }
           }
         }
@@ -57,6 +67,11 @@ pipeline {
               bat 'npm run test:npm6'
             }
           }
+          post {
+            always {
+              deleteDir()
+            }
+          }
         }
 
         stage('Mac High Sierra - NodeJS 8.11') {
@@ -71,15 +86,17 @@ pipeline {
               sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' npm run test:npm5"
             }
           }
+          post {
+            always {
+              deleteDir()
+            }
+          }
         }
       }
     }
   }
 
   post {
-    always {
-      deleteDir()
-    }
     failure {
       slackSend(
           message: """ZetaPush celtia client : ${env.BRANCH_NAME} failed to build
