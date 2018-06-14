@@ -32,12 +32,14 @@ const {
   AccessDeniedIssueAnalyzer,
 } = require('../src/errors/access-denied-issue');
 const { InjectionIssueAnalyzer } = require('../src/errors/injection-issue');
+const { CustomCloudServiceStartErrorAnalyzer } = require('../src/errors/custom-cloud-service-start-issue');
 
-ErrorAnalyzer.register(new InjectionIssueAnalyzer());
-ErrorAnalyzer.register(new ConfigLoadIssueAnalyzer());
-ErrorAnalyzer.register(new MissingNpmDependencyErrorAnalyzer());
-ErrorAnalyzer.register(new AccessDeniedIssueAnalyzer());
+ErrorAnalyzer.register(new ConfigLoadIssueAnalyzer()); 
 ErrorAnalyzer.register(new NetworkIssueAnalyzer());
+ErrorAnalyzer.register(new AccessDeniedIssueAnalyzer());
+ErrorAnalyzer.register(new InjectionIssueAnalyzer());
+ErrorAnalyzer.register(new MissingNpmDependencyErrorAnalyzer());
+ErrorAnalyzer.register(new CustomCloudServiceStartErrorAnalyzer());
 
 function increaseVerbosity(v, total) {
   setVerbosity(total);

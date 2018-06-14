@@ -1,4 +1,4 @@
-const { trace, log, error, info, help } = require('../utils/log');
+const { trace, log, error, info, help, warn } = require('../utils/log');
 const { parse } = require('./asciidoc-parser');
 const chalk = require('chalk');
 const chalkTpl = require('chalk/templates');
@@ -81,8 +81,10 @@ class HttpDownloadErrorHelper extends ErrorHelper {
           }.adoc`,
         ),
       );
-      let textContent = await this.loadTextSchemas(body);
+      let textContent = body;
       textContent = parse(textContent);
+      console.log(textContent)
+      textContent = await this.loadTextSchemas(textContent);
       return textContent;
     } catch (e) {
       error(`Failed to download help for error ${err.code}. Please visit
@@ -94,8 +96,9 @@ class HttpDownloadErrorHelper extends ErrorHelper {
   async loadTextSchemas(content) {
     const schemaUrls = [];
     let newContent = content.replace(
-      /\+\+\+\+\ninclude::\{docdir\}\/(.+)(\.[^.]+)\[\]\n\+\+\+\+/g,
+      /\+\+\+\+\ninclude::\{docdir\\?\}\/(.+)(\.[^.]+)\[\]\n\+\+\+\+/g,
       function(_, path, ext) {
+        console.log("ICI", path, ext)
         let imgUrl = new URL(
           `${DOC_SOURCE_BASE_URL}/src/docs/asciidoc/${path}${ext}`,
         );
@@ -233,8 +236,8 @@ const displayHelp = async (errorCtxt) => {
       // process.exit(0);
     }
   } catch (e) {
-    // TODO
-    trace(e);
+    spinner.stop();
+    warn("Failed to analyze error to provide useful help. Please report bug", e);
   }
 };
 
@@ -244,8 +247,7 @@ const displayHelpMessage = async (error) => {
     let helpMessage = await errorHelper.getHelp(error);
     help(chalkTpl(chalk, evaluate(helpMessage, error)));
   } catch (e) {
-    // TODO
-    trace(e);
+    warn("Failed to display help message. Please report bug", e);
   }
 };
 
@@ -264,7 +266,8 @@ const EXIT_CODES = {
   'ACCOUNT-05': 55,
   'ACCOUNT-06': 56,
   'INJECTION-01': 71,
-  'SERVICE-04': 91,
+  'SERVICE-04': 94,
+  'SERVICE-05': 95,
 };
 
 module.exports = {
