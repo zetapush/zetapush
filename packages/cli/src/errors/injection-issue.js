@@ -4,6 +4,9 @@ const { log, error, warn, info } = require('../utils/log');
 
 class InjectionIssueAnalyzer extends ErrorAnalyzer {
   isAnInjectionCustomServiceError(err) {
+    if(!err.message) {
+      return {isError: false}
+    }
     const parseMessage = err.message.split('.')[0];
 
     if (parseMessage.includes('Cannot resolve all parameters for')) {
@@ -20,7 +23,7 @@ class InjectionIssueAnalyzer extends ErrorAnalyzer {
   }
 
   isErrorInConstructorCustomService(err) {
-    if (err.message.includes('Error during instantiation')) {
+    if (err.message && err.message.includes('Error during instantiation')) {
       return true;
     } else {
       return false;

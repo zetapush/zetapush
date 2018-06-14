@@ -1,6 +1,6 @@
 const { URL } = require('url');
 const request = require('request');
-const { log, error, info } = require('./log');
+const { log, error, info, warn, trace } = require('./log');
 const ProgressBar = require('ascii-progress');
 const errorsHandler = require('../errors/errors-handler');
 const troubleshooting = require('../errors/troubleshooting');
@@ -109,27 +109,42 @@ const getProgressionColor = (step) => {
   return 'blue';
 };
 
+const displayProgress = (progress, steps) => {
+  try {
+    steps.forEach((step) => {
+      if (!progress[step.id]) {
+        progress[step.id] = new ProgressBar({
+          total: 100,
+          width: 20,
+          schema: `:bar.${getProgressionColor(step)} ${step.name}`,
+          blank: '░',
+        });
+      }
+      progress[step.id].setSchema(
+        `:bar.${getProgressionColor(step)} ${step.name}`,
+      );
+      progress[step.id].update(step.progress / 100);
+    });
+  } catch(e) {
+    trace("can't display progress => fallback", e)
+    console.log(''.padEnd(60, '-'))
+    steps.forEach((step) => {
+      const progressChars = Math.floor(step.progress * 20 / 100)
+      const blankChars = 20 - progressChars
+      console.log(`${''.padEnd(progressChars, '▇')}${''.padEnd(blankChars, '░')} ${step.name}`)
+    });
+  }
+}
+
 const getProgression = (config, recipeId) => {
   const progress = {};
+  let remainingRetries = 10;
 
   (async function check() {
     try {
       const { progressDetail } = await getProgress(config, recipeId);
       const { steps, finished, hasUnrecoverableErrors, logs } = progressDetail;
-      steps.forEach((step) => {
-        if (!progress[step.id]) {
-          progress[step.id] = new ProgressBar({
-            total: 100,
-            width: 20,
-            schema: `:bar.${getProgressionColor(step)} ${step.name}`,
-            blank: '░',
-          });
-        }
-        progress[step.id].setSchema(
-          `:bar.${getProgressionColor(step)} ${step.name}`,
-        );
-        progress[step.id].update(step.progress / 100);
-      });
+      displayProgress(progress, steps)
       if (!finished && !hasUnrecoverableErrors) {
         setTimeout(check, 500);
       } else if (hasUnrecoverableErrors) {
@@ -159,7 +174,13 @@ const getProgression = (config, recipeId) => {
           );
       }
     } catch (ex) {
-      error('Progression', ex);
+      warn('Failed to get progression. Retrying...', ex);
+      if(remainingRetries-- > 0) {
+        setTimeout(check, 500);
+      } else {
+        error("Failed to get progression", ex)
+        await troubleshooting.displayHelp(ex);
+      }
     }
   })();
 };
