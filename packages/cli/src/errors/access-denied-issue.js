@@ -49,6 +49,10 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
     }
   }
 
+  isAccountNotConfirmed(err) {
+    return err.body && err.body.contains('ACCOUNT_DISABLED')
+  }
+
   async getError(err) {
     if (err.statusCode != 403 && err.code != 'CONFIG_MISSING_REQUIRED_INFO') {
       trace('not access denied error and not no config');
@@ -75,10 +79,13 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
       trace("account exists but application doesn't belong to the account");
       return { code: 'ACCOUNT-06' };
     }
+    if(this.isAccountNotConfirmed(err)) {
+      trace('account not validated');
+      return { code: 'ACCOUNT-05' };
+    }
     // TODO: not allowed to push (missing authorization for orga)
-    // TODO: account not validated
-    trace('account not validated');
-    return { code: 'ACCOUNT-05' };
+    todo('other forbidden reason');
+    return null;
   }
 }
 

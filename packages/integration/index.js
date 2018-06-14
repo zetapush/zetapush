@@ -18,6 +18,16 @@ readFile('./project/.zetarc', { encoding: 'utf-8' })
   }))
   .then((client) => client.createProxyTaskService().hello())
   .then((message) => PATTERN.test(message))
-  .then((success) => console.log('[SUCCESS]', success))
-  .catch(() => console.error('[SUCCESS]', false))
-  .then(() => process.exit(0))
+  .then((success) => {
+    if(success) {
+      console.log('[SUCCESS]')
+      process.exit(0)
+    } else {
+      console.error('[FAILED]')
+      process.exit(1)
+    }
+  })
+  .catch(() => {
+    console.error('[FAILED]')
+    process.exit(1)
+  })
