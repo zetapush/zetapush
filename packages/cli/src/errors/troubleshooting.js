@@ -219,21 +219,25 @@ const errorHelper = new CacheErrorHelper(new HttpDownloadErrorHelper(), false);
 errorHelper.getMessages();
 
 const displayHelp = async (errorCtxt) => {
+  const spinner = ora('Analyzing the error to provide you useful help... \n');
   try {
-    const spinner = ora('Analyzing the error to provide you useful help... \n');
     spinner.start();
-    let error = await ErrorAnalyzer.analyze(errorCtxt);
+    let analyzedError = await ErrorAnalyzer.analyze(errorCtxt);
     spinner.stop();
-    if (error) {
+    if (analyzedError) {
       trace(
         `Analyze done => errorCode=${
-          error.code
+          analyzedError.code
         }. Displaying help for this code`,
       );
-      await displayHelpMessage(error);
+      await displayHelpMessage(analyzedError);
       // FIXME: remove noise from npm
-      process.exit(EXIT_CODES[error.code] || 1)
+      process.exit(EXIT_CODES[analyzedError.code] || 254)
       // process.exit(0);
+    } else {
+      info("No help available")
+      error(errorCtxt)
+      process.exit(253)
     }
   } catch (e) {
     spinner.stop();
