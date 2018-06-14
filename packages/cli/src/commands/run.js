@@ -67,11 +67,11 @@ const run = (args, basepath, config, declaration) => {
    * Run worker and create services if necessary
    */
   const bootstrap = args.skipProvisioning
-    ? connectClientAndCreateServices(config, client, declaration)
+    ? connectClientAndCreateServices(client, config, declaration)
     : checkServicesAlreadyDeployed(config).then(
         (deployed) =>
           !deployed
-            ? cookWithOnlyQueueService(config, client, declaration)
+            ? cookWithOnlyQueueService(client, config, declaration)
             : connectClientAndCreateServices(client, config, declaration),
       );
 
@@ -114,7 +114,7 @@ const run = (args, basepath, config, declaration) => {
 /**
  * Ask progression during deployment of services
  */
-const waitingQueueServiceDeployed = (recipe, config, client, declaration) => {
+const waitingQueueServiceDeployed = (recipe, client, config, declaration) => {
   log('Uploaded', recipe.recipeId);
   const { recipeId } = recipe;
   if (recipeId === void 0) {
@@ -152,7 +152,7 @@ const checkServicesAlreadyDeployed = (config) =>
     pathname: `orga/item/list/${config.appName}`,
   }).then(({ content }) => content.length > 0);
 
-const cookWithOnlyQueueService = (config, client, declaration) => {
+const cookWithOnlyQueueService = (client, config, declaration) => {
   const ts = Date.now();
   const root = path.join(os.tmpdir(), String(ts));
   const rootArchive = `${root}.zip`;
@@ -168,7 +168,7 @@ const cookWithOnlyQueueService = (config, client, declaration) => {
     .then(() =>
       upload(rootArchive, config)
         .then((recipe) =>
-          waitingQueueServiceDeployed(recipe, config, client, declaration),
+          waitingQueueServiceDeployed(recipe, client, config, declaration),
         )
         .catch((failure) => error('Upload failed', failure)),
     );
