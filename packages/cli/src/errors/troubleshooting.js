@@ -83,7 +83,6 @@ class HttpDownloadErrorHelper extends ErrorHelper {
       );
       let textContent = body;
       textContent = parse(textContent);
-      console.log(textContent)
       textContent = await this.loadTextSchemas(textContent);
       return textContent;
     } catch (e) {
@@ -98,7 +97,6 @@ class HttpDownloadErrorHelper extends ErrorHelper {
     let newContent = content.replace(
       /\+\+\+\+\ninclude::\{docdir\\?\}\/(.+)(\.[^.]+)\[\]\n\+\+\+\+/g,
       function(_, path, ext) {
-        console.log("ICI", path, ext)
         let imgUrl = new URL(
           `${DOC_SOURCE_BASE_URL}/src/docs/asciidoc/${path}${ext}`,
         );
@@ -182,13 +180,9 @@ class CacheErrorHelper extends ErrorHelper {
     }
   }
   getCachedFile(file) {
-    let dirs = [];
-    for (let dir of path.parse(file).dir.split('/')) {
-      dirs.push(dir);
-      let dirPath = path.resolve(os.homedir(), '.zeta', 'cache', ...dirs);
-      fs.existsSync(dirPath) || fs.mkdirSync(dirPath);
-    }
-    return path.resolve(os.homedir(), '.zeta', 'cache', file);
+    const p = path.normalize(path.resolve(os.homedir(), '.zeta', 'cache', file))
+    mkdirs(p)
+    return p;
   }
   isExpired() {
     const lastUpdateFile = this.getCachedFile('.last-update');
@@ -213,6 +207,17 @@ const evaluate = (message, err) => {
     return value;
   });
 };
+
+const mkdirs = (file) => {
+  let dirs = [];
+  for (let dir of path.parse(file).dir.split(path.sep)) {
+    dirs.push(dir);
+    let dirPath = dirs.join(path.sep)
+    if(dirPath) {
+      fs.existsSync(dirPath) || fs.mkdirSync(dirPath);
+    }
+  }
+}
 
 // Fill cache if necessary
 const errorHelper = new CacheErrorHelper(new HttpDownloadErrorHelper(), false);
