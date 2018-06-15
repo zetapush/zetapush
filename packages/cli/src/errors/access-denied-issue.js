@@ -67,21 +67,21 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
       trace('no developer password');
       return { code: 'ACCOUNT-02' };
     }
-    if (!this.hasAppName(err)) {
-      trace('no app name');
-      return { code: 'ACCOUNT-04' };
-    }
     if (!(await this.isDeveloperAccountExists(err.config))) {
       trace("account doesn't exist or account not validated expired");
       return { code: 'ACCOUNT-03' };
     }
-    if (!(await this.isAppExistsForOrga(err.config))) {
-      trace("account exists but application doesn't belong to the account");
-      return { code: 'ACCOUNT-06' };
-    }
     if(this.isAccountNotConfirmed(err)) {
       trace('account not validated');
       return { code: 'ACCOUNT-05' };
+    }
+    if (!this.hasAppName(err)) {
+      trace('no app name');
+      return { code: 'ACCOUNT-04' };
+    }
+    if (!(await this.isAppExistsForOrga(err.config))) {
+      trace("account exists but application doesn't belong to the account");
+      return { code: 'ACCOUNT-06' };
     }
     // TODO: not allowed to push (missing authorization for orga)
     todo('other forbidden reason');
