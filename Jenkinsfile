@@ -110,5 +110,12 @@ pipeline {
           recipientProviders: [[$class: 'CulpritsRecipientProvider']]
       )
     }      
+    success {
+      slackSend(
+          message: """ZetaPush celtia client : ${env.BRANCH_NAME} success
+                      - <${env.BUILD_URL}/consoleFull|View logs>""",
+          color: '#00ff00'
+      )
+    }
   }
 }
