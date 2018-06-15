@@ -65,7 +65,7 @@ const run = (command, config, declaration) => {
   /**
    * Run worker and create services if necessary
    */
-  const bootstrap = args.skipProvisioning
+  const bootstrap = command.skipProvisioning
     ? connectClientAndCreateServices(client, config, declaration)
     : checkServicesAlreadyDeployed(config).then(
         (deployed) =>
