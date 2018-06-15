@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const { Queue, Weak } = require('@zetapush/platform');
+const { Queue } = require('@zetapush/platform');
 
 const { log, error } = require('./log');
 const { analyze } = require('./di');
@@ -13,10 +13,7 @@ const { analyze } = require('./di');
 const getDeploymentIdList = (declaration) => {
   const { platform } = analyze(declaration);
   return Array.from(
-    new Set([
-      Weak.DEPLOYMENT_TYPE,
-      ...platform.map((Service) => Service.DEPLOYMENT_TYPE),
-    ]),
+    new Set(platform.map((Service) => Service.DEPLOYMENT_TYPE)),
   );
 };
 
