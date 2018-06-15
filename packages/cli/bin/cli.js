@@ -73,9 +73,9 @@ program
     DEFAULTS.WORKER_FOLDER_PATH,
   )
   .option(
-    '-s, --skip-provisioning <skip-provisioning>',
+    '-s, --skip-provisioning',
     'Skip provisioning steps',
-    Boolean,
+    () => true,
     false,
   )
   .description('Run your code')
