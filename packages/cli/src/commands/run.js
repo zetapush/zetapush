@@ -74,6 +74,10 @@ const run = (command, config, declaration) => {
             : connectClientAndCreateServices(client, config, declaration),
       );
 
+  if (command.httpServer) {
+    todo('Run http server');
+  }
+
   /**
    * Start worker
    */

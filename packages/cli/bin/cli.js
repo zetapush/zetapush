@@ -67,6 +67,12 @@ program
   .command('run')
   .usage('[options]')
   .option(
+    '-f, --front <front>',
+    'Push front on cloud platform',
+    identity,
+    DEFAULTS.FRONT_FOLDER_PATH,
+  )
+  .option(
     '-w, --worker <worker>',
     'Push worker on cloud platform',
     identity,
@@ -75,6 +81,12 @@ program
   .option(
     '-s, --skip-provisioning <skip-provisioning>',
     'Skip provisioning steps',
+    Boolean,
+    false,
+  )
+  .option(
+    '-h, --http-server <http-server>',
+    'Run local http server',
     Boolean,
     false,
   )
