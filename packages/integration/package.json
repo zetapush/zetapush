@@ -8,7 +8,7 @@
     "zp:clean": "rimraf project",
     "zp:create-project-5": "npx @zetapush/create project --developer-login $ZETAPUSH_DEVELOPER_LOGIN --developer-password $ZETAPUSH_DEVELOPER_PASSWORD",
     "zp:create-project-6": "npm init @zetapush project --developer-login $ZETAPUSH_DEVELOPER_LOGIN --developer-password $ZETAPUSH_DEVELOPER_PASSWORD",
-    "zp:deploy": "cd project && npm run deploy"
+    "zp:deploy": "cd project && npm run deploy -- -vvv"
   },
   "dependencies": {
     "@zetapush/cometd": "*",

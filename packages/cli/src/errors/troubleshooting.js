@@ -14,7 +14,7 @@ const DOC_BASE_URL =
   process.env.ZP_DOC_BASE_URL || 'https://zetapush.github.io/documentation';
 const DOC_SOURCE_BASE_URL =
   process.env.ZP_DOC_SOURCE_BASE_URL ||
-  'https://github.com/zetapush/documentation/tree/master';
+  'https://raw.githubusercontent.com/zetapush/documentation/master';
 const HELP_CACHE_EXPIRATION =
   process.env.ZP_HELP_CACHE_EXPIRATION || 7 * 24 * 60 * 60 * 1000;
 
@@ -74,13 +74,9 @@ class HttpDownloadErrorHelper extends ErrorHelper {
   }
   async getHelp(err) {
     try {
-      const body = await download(
-        new URL(
-          `${DOC_SOURCE_BASE_URL}/src/docs/asciidoc/common/troubleshooting/${
-            err.code
-          }.adoc`,
-        ),
-      );
+      const url = new URL(`${DOC_SOURCE_BASE_URL}/src/docs/asciidoc/common/troubleshooting/${err.code}.adoc`)
+      trace(`Downloading ${url}`)
+      const body = await download(url);
       let textContent = body;
       textContent = parse(textContent);
       textContent = await this.loadTextSchemas(textContent);
@@ -88,7 +84,7 @@ class HttpDownloadErrorHelper extends ErrorHelper {
     } catch (e) {
       error(`Failed to download help for error ${err.code}. Please visit
         ${DOC_BASE_URL}/common/help/${err.code}.html`);
-      trace(e);
+      trace('download error', e);
       throw e;
     }
   }
@@ -156,7 +152,7 @@ class CacheErrorHelper extends ErrorHelper {
       );
       return errorCodes;
     } catch (e) {
-      trace(e);
+      trace('cache error', e);
       return [];
     }
   }
@@ -175,7 +171,7 @@ class CacheErrorHelper extends ErrorHelper {
       fs.writeFileSync(this.getCachedFile(err.code), content);
       return content;
     } catch (e) {
-      trace(e);
+      trace('get help error', e);
       throw e;
     }
   }
@@ -241,7 +237,7 @@ const displayHelp = async (errorCtxt) => {
       // process.exit(0);
     } else {
       info("No help available")
-      error(errorCtxt)
+      error("original error", errorCtxt)
       process.exit(253)
     }
   } catch (e) {
