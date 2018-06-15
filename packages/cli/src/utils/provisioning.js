@@ -13,10 +13,7 @@ const { analyze } = require('./di');
 const getDeploymentIdList = (declaration) => {
   const { platform } = analyze(declaration);
   return Array.from(
-    new Set([
-      Weak.DEPLOYMENT_TYPE,
-      ...platform.map((Service) => Service.DEPLOYMENT_TYPE),
-    ]),
+    new Set(platform.map((Service) => Service.DEPLOYMENT_TYPE)),
   );
 };
 
@@ -25,25 +22,31 @@ const getDeploymentIdList = (declaration) => {
  * @param {ZetaPushConfig} config
  */
 const getBootstrapProvision = (config) => {
-  const type = Queue.DEPLOYMENT_TYPE;
+  const types = [
+    {
+      type: Queue.DEPLOYMENT_TYPE,
+      options: {
+        queue_auth_id: 'developer',
+      },
+    },
+    {
+      type: Weak.DEPLOYMENT_TYPE,
+    },
+  ];
   return {
     businessId: config.appName,
-    items: [
-      {
-        name: type,
-        item: {
-          itemId: type,
-          businessId: config.appName,
-          deploymentId: `${type}_0`,
-          description: `${type}(${type}:${type}_0)`,
-          options: {
-            queue_auth_id: 'developer',
-          },
-          forbiddenVerbs: [],
-          enabled: true,
-        },
+    items: types.map(({ type, options = {} }) => ({
+      name: type,
+      item: {
+        itemId: type,
+        businessId: config.appName,
+        deploymentId: `${type}_0`,
+        description: `${type}(${type}:${type}_0)`,
+        options,
+        forbiddenVerbs: [],
+        enabled: true,
       },
-    ],
+    })),
     calls: [],
   };
 };

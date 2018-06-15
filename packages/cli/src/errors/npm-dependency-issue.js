@@ -1,7 +1,6 @@
 const { ErrorAnalyzer } = require('./troubleshooting');
 const { log, error, info, warn, trace } = require('../utils/log');
 
-
 class MissingNpmDependencyErrorAnalyzer extends ErrorAnalyzer {
   hasNpmInstallFailed(progress) {
     for (let log of progress.logs) {

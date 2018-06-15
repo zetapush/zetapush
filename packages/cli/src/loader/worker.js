@@ -12,10 +12,10 @@ const events = new EventEmitter();
 const dispatch = (worker) => events.emit('reload', worker);
 
 /**
- * @param {String} basepath
+ * @param {Object} command
  */
-const load = (basepath) => {
-  const id = cwd(basepath);
+const load = (command) => {
+  const id = cwd(command.worker);
   const worker = require(id);
   if (module.hot) {
     module.hot.accept(id, (/*filepath*/) => {

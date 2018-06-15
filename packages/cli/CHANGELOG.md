@@ -3,32 +3,67 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-<a name="0.22.2"></a>
-## [0.22.2](https://github.com/zetapush/zetapush/compare/v0.22.1...v0.22.2) (2018-06-14)
+<a name="0.23.2"></a>
+## [0.23.2](https://github.com/zetapush/zetapush/compare/v0.23.1...v0.23.2) (2018-06-15)
+
+
+### Features
+
+* **cli/run:** add Weak auth as default provisionning bootstrap service ([ff95db5](https://github.com/zetapush/zetapush/commit/ff95db5))
 
 
 
 
-**Note:** Version bump only for package @zetapush/cli
-
-<a name="0.22.1"></a>
-## [0.22.1](https://github.com/zetapush/zetapush/compare/v0.22.0...v0.22.1) (2018-06-14)
+<a name="0.23.1"></a>
+## [0.23.1](https://github.com/zetapush/zetapush/compare/v0.23.0...v0.23.1) (2018-06-15)
 
 
-### Bug Fixes
+### Features
 
-* **cli-run:** change args name for internal run method ([639b3e8](https://github.com/zetapush/zetapush/commit/639b3e8))
+* **provisionning:** remove Weak as default deployment service ([a82cdb0](https://github.com/zetapush/zetapush/commit/a82cdb0))
+
+
+
+
+<a name="0.23.0"></a>
+# [0.23.0](https://github.com/zetapush/zetapush/compare/v0.22.2...v0.23.0) (2018-06-15)
+
+
+
+<a name="0.21.2"></a>
+## [0.21.2](https://github.com/zetapush/zetapush/compare/v0.21.1...v0.21.2) (2018-06-13)
+
+
+### Features
+
+* **custom-front-worker-path:** implement --front and --worker options ([f540e30](https://github.com/zetapush/zetapush/commit/f540e30))
 
 
 
 
 <a name="0.22.0"></a>
-# [0.22.0](https://github.com/zetapush/zetapush/compare/v0.21.1...v0.22.0) (2018-06-14)
+# [0.22.0](https://github.com/zetapush/zetapush/compare/v0.22.2...v0.22.0) (2018-06-15)
+
+
+
+<a name="0.21.2"></a>
+## [0.21.2](https://github.com/zetapush/zetapush/compare/v0.21.1...v0.21.2) (2018-06-13)
 
 
 ### Features
 
-* **hot-module-replacement:** support create services on worker updates ([28fec9e](https://github.com/zetapush/zetapush/commit/28fec9e))
+* **custom-front-worker-path:** implement --front and --worker options ([f540e30](https://github.com/zetapush/zetapush/commit/f540e30))
+
+
+
+
+<a name="0.21.2"></a>
+## [0.21.2](https://github.com/zetapush/zetapush/compare/v0.21.1...v0.21.2) (2018-06-13)
+
+
+### Features
+
+* **custom-front-worker-path:** implement --front and --worker options ([f540e30](https://github.com/zetapush/zetapush/commit/f540e30))
 
 
 

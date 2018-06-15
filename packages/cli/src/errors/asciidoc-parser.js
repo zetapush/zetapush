@@ -17,20 +17,59 @@ const parse = (content) => {
     .replace(/^=== (.+)$/gm, '{bold $1}')
     // handle code
     .replace(/```([^`]+)```/g, '{whiteBright.bgBlackBright $1}')
-    .replace(/\[source(, ?\w+)?[^\]]*\](\n[.]([^\n]+))?(\n(={4}|-{4})\n)(.+?)(\4)/gms, 
-            (_, language, __, legend, ___, ____, code) => highlight(language, legend, code))
+    .replace(
+      /\[source(, ?\w+)?[^\]]*\](\n[.]([^\n]+))?(\n(={4}|-{4})\n)(.+?)(\4)/gms,
+      (_, language, __, legend, ___, ____, code) =>
+        highlight(language, legend, code),
+    )
     .replace(/`([^`]+)`/g, '{whiteBright.bgBlackBright $1}')
     // handle Admonitions
-    .replace(/\[CAUTION\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms, 
-            (_, __, legend, ___, ____, content) => admonition('☢|', 'red.bold', legend, 'red.underline', content, ''))
-    .replace(/\[IMPORTANT\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
-            (_, __, legend, ___, ____, content) => admonition('❗|', 'redBright.bold', legend, 'redBright.underline', content, ''))
-    .replace(/\[WARNING\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
-            (_, __, legend, ___, ____, content) => admonition('/!\\\\|', 'yellow.bold', legend, 'yellow.underline', content, ''))
-    .replace(/\[NOTE\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
-            (_, __, legend, ___, ____, content) => admonition('ℹ|', 'blue.bold', legend, 'blue.underline', content, ''))
-    .replace(/\[TIP\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
-            (_, __, legend, ___, ____, content) => admonition('⛭|', 'yellow.bold', legend, 'yellow.underline', content, ''));
+    .replace(
+      /\[CAUTION\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
+      (_, __, legend, ___, ____, content) =>
+        admonition('☢|', 'red.bold', legend, 'red.underline', content, ''),
+    )
+    .replace(
+      /\[IMPORTANT\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
+      (_, __, legend, ___, ____, content) =>
+        admonition(
+          '❗|',
+          'redBright.bold',
+          legend,
+          'redBright.underline',
+          content,
+          '',
+        ),
+    )
+    .replace(
+      /\[WARNING\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
+      (_, __, legend, ___, ____, content) =>
+        admonition(
+          '/!\\\\|',
+          'yellow.bold',
+          legend,
+          'yellow.underline',
+          content,
+          '',
+        ),
+    )
+    .replace(
+      /\[NOTE\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
+      (_, __, legend, ___, ____, content) =>
+        admonition('ℹ|', 'blue.bold', legend, 'blue.underline', content, ''),
+    )
+    .replace(
+      /\[TIP\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
+      (_, __, legend, ___, ____, content) =>
+        admonition(
+          '⛭|',
+          'yellow.bold',
+          legend,
+          'yellow.underline',
+          content,
+          '',
+        ),
+    );
   // handle tabs
   parsed = parseTabContainer(parsed);
   return parsed;

@@ -33,12 +33,11 @@ const start = (client, config, declaration) =>
 
 /**
  * Run Worker instance
- * @param {Object} args
- * @param {String} basepath
+ * @param {Object} command
  * @param {Object} config
  * @param {WorkerDeclaration} declaration
  */
-const run = (args, basepath, config, declaration) => {
+const run = (command, config, declaration) => {
   const client = new WorkerClient({
     ...config,
     transports,
@@ -66,7 +65,7 @@ const run = (args, basepath, config, declaration) => {
   /**
    * Run worker and create services if necessary
    */
-  const bootstrap = args.skipProvisioning
+  const bootstrap = command.skipProvisioning
     ? connectClientAndCreateServices(client, config, declaration)
     : checkServicesAlreadyDeployed(config).then(
         (deployed) =>

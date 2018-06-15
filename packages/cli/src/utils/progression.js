@@ -125,16 +125,20 @@ const displayProgress = (progress, steps) => {
       );
       progress[step.id].update(step.progress / 100);
     });
-  } catch(e) {
-    trace("can't display progress => fallback", e)
-    console.log(''.padEnd(60, '-'))
+  } catch (e) {
+    trace("can't display progress => fallback", e);
+    console.log(''.padEnd(60, '-'));
     steps.forEach((step) => {
-      const progressChars = Math.floor(step.progress * 20 / 100)
-      const blankChars = 20 - progressChars
-      console.log(`${''.padEnd(progressChars, '▇')}${''.padEnd(blankChars, '░')} ${step.name}`)
+      const progressChars = Math.floor(step.progress * 20 / 100);
+      const blankChars = 20 - progressChars;
+      console.log(
+        `${''.padEnd(progressChars, '▇')}${''.padEnd(blankChars, '░')} ${
+          step.name
+        }`,
+      );
     });
   }
-}
+};
 
 const getProgression = (config, recipeId) => {
   const progress = {};
@@ -144,7 +148,7 @@ const getProgression = (config, recipeId) => {
     try {
       const { progressDetail } = await getProgress(config, recipeId);
       const { steps, finished, hasUnrecoverableErrors, logs } = progressDetail;
-      displayProgress(progress, steps)
+      displayProgress(progress, steps);
       if (!finished && !hasUnrecoverableErrors) {
         setTimeout(check, 500);
       } else if (hasUnrecoverableErrors) {
@@ -175,10 +179,10 @@ const getProgression = (config, recipeId) => {
       }
     } catch (ex) {
       warn('Failed to get progression. Retrying...', ex);
-      if(remainingRetries-- > 0) {
+      if (remainingRetries-- > 0) {
         setTimeout(check, 500);
       } else {
-        error("Failed to get progression", ex)
+        error('Failed to get progression', ex);
         await troubleshooting.displayHelp(ex);
       }
     }

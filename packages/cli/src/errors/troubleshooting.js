@@ -74,8 +74,12 @@ class HttpDownloadErrorHelper extends ErrorHelper {
   }
   async getHelp(err) {
     try {
-      const url = new URL(`${DOC_SOURCE_BASE_URL}/src/docs/asciidoc/common/troubleshooting/${err.code}.adoc`)
-      trace(`Downloading ${url}`)
+      const url = new URL(
+        `${DOC_SOURCE_BASE_URL}/src/docs/asciidoc/common/troubleshooting/${
+          err.code
+        }.adoc`,
+      );
+      trace(`Downloading ${url}`);
       const body = await download(url);
       let textContent = body;
       textContent = parse(textContent);
@@ -176,8 +180,10 @@ class CacheErrorHelper extends ErrorHelper {
     }
   }
   getCachedFile(file) {
-    const p = path.normalize(path.resolve(os.homedir(), '.zeta', 'cache', file))
-    mkdirs(p)
+    const p = path.normalize(
+      path.resolve(os.homedir(), '.zeta', 'cache', file),
+    );
+    mkdirs(p);
     return p;
   }
   isExpired() {
@@ -208,12 +214,12 @@ const mkdirs = (file) => {
   let dirs = [];
   for (let dir of path.parse(file).dir.split(path.sep)) {
     dirs.push(dir);
-    let dirPath = dirs.join(path.sep)
-    if(dirPath) {
+    let dirPath = dirs.join(path.sep);
+    if (dirPath) {
       fs.existsSync(dirPath) || fs.mkdirSync(dirPath);
     }
   }
-}
+};
 
 // Fill cache if necessary
 const errorHelper = new CacheErrorHelper(new HttpDownloadErrorHelper(), false);
@@ -233,16 +239,19 @@ const displayHelp = async (errorCtxt) => {
       );
       await displayHelpMessage(analyzedError);
       // FIXME: remove noise from npm
-      process.exit(EXIT_CODES[analyzedError.code] || 254)
+      process.exit(EXIT_CODES[analyzedError.code] || 254);
       // process.exit(0);
     } else {
-      info("No help available")
-      error("original error", errorCtxt)
-      process.exit(253)
+      info('No help available');
+      error('original error', errorCtxt);
+      process.exit(253);
     }
   } catch (e) {
     spinner.stop();
-    warn("Failed to analyze error to provide useful help. Please report bug", e);
+    warn(
+      'Failed to analyze error to provide useful help. Please report bug',
+      e,
+    );
   }
 };
 
@@ -252,7 +261,7 @@ const displayHelpMessage = async (error) => {
     let helpMessage = await errorHelper.getHelp(error);
     help(chalkTpl(chalk, evaluate(helpMessage, error)));
   } catch (e) {
-    warn("Failed to display help message. Please report bug", e);
+    warn('Failed to display help message. Please report bug', e);
   }
 };
 
