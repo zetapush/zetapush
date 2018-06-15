@@ -13,7 +13,7 @@ const getAppName = () => {
 // Create new ZetaPush Client
 const client = new ZetaPush.WeakClient({
   appName: document.documentElement.dataset.zpSandboxid || getAppName(),
-  platformUrl: 'https://celtia-alpha.zpush.io/zbo/pub/business'
+  platformUrl: 'https://celtia.zetapush.com/zbo/pub/business'
 });
 
 const api = client.createProxyTaskService();

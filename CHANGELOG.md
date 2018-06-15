@@ -3,37 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-<a name="0.22.2"></a>
-## [0.22.2](https://github.com/zetapush/zetapush/compare/v0.22.1...v0.22.2) (2018-06-14)
-
-
-
-
-**Note:** Version bump only for package zetapush
-
-<a name="0.22.1"></a>
-## [0.22.1](https://github.com/zetapush/zetapush/compare/v0.22.0...v0.22.1) (2018-06-14)
-
-
-### Bug Fixes
-
-* **cli-run:** change args name for internal run method ([639b3e8](https://github.com/zetapush/zetapush/commit/639b3e8))
-
-
-
-
-<a name="0.22.0"></a>
-# [0.22.0](https://github.com/zetapush/zetapush/compare/v0.21.1...v0.22.0) (2018-06-14)
-
-
-### Bug Fixes
-
-* **integration:** support test npm@5 and npm@6 ([2c91065](https://github.com/zetapush/zetapush/commit/2c91065))
+<a name="0.21.2"></a>
+## [0.21.2](https://github.com/zetapush/zetapush/compare/v0.21.1...v0.21.2) (2018-06-13)
 
 
 ### Features
 
-* **hot-module-replacement:** support create services on worker updates ([28fec9e](https://github.com/zetapush/zetapush/commit/28fec9e))
+* **custom-front-worker-path:** implement --front and --worker options ([f540e30](https://github.com/zetapush/zetapush/commit/f540e30))
 
 
 

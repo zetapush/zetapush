@@ -16,12 +16,12 @@ const isValid = (config = {}) =>
 
 /**
  * Load ZetaPush config file
- * @param {String} basepath
+ * @param {Object} command
  * @param {Object} content
  */
-const save = (basepath, content) =>
+const save = (command, content) =>
   new Promise((resolve, reject) => {
-    const filepath = path.join(basepath, '.zetarc');
+    const filepath = path.join(command.worker, '.zetarc');
     log('Save config file', filepath);
     fs.writeFile(filepath, JSON.stringify(content, null, 2), (failure) => {
       if (failure) {
@@ -65,7 +65,7 @@ const fromCli = async (command) => {
  * Default ZetaPush configuration
  * @return {Promise<ZetaPushConfig>}
  */
-const fromDefault = async (command) => {
+const fromDefault = async () => {
   trace('Using default values');
   return Promise.resolve({
     platformUrl: DEFAULTS.PLATFORM_URL,
@@ -74,37 +74,38 @@ const fromDefault = async (command) => {
 
 /**
  * Load ZetaPush config from file
+ * @param {Object} command
  * @return {Promise<ZetaPushConfig>}
  */
-const fromFile = async (basepath) => {
-  trace('Try to load conf from filesystem', basepath);
+const fromFile = async (command) => {
+  trace('Try to load conf from filesystem', command.worker);
   return explorer
-    .search(basepath)
+    .search(command.worker)
     .then((result) => {
-      trace('Configuration loaded from file', basepath, result);
+      trace('Configuration loaded from file', command.worker, result);
       return (result && result.config) || {};
     })
     .catch((e) => {
-      warn('Failed to load conf from filesystem', basepath);
+      warn('Failed to load conf from filesystem', command.worker);
       return {};
     });
 };
 
 /**
- * @param {String} basepath
  * @param {Object} command
+ * @param {Boolean} required
  */
-const load = async (basepath, command, required = true) => {
-  log(`Load and merge configuration with this priority order: 
+const load = async (command, required = true) => {
+  log(`Load and merge configuration with this priority order:
       1) command line arguments
       2) environment variables
-      3) from file defined in ${basepath}/.zetarc`);
+      3) from file defined in ${command.worker}/.zetarc`);
   let config;
   try {
     config = merge(
       await fromCli(command),
       await fromEnv(),
-      await fromFile(basepath),
+      await fromFile(command),
       await fromDefault(),
     );
     trace('merged config', config);
