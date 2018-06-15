@@ -3,5 +3,5 @@ module.exports = {
   CURRENT_WORKING_DIRECTORY: `.`,
   DEFAULT_NAMESPACE: ``,
   FRONT_FOLDER_PATH: `front`,
-  WORKER_FOLDER_PATH: `worker`,
+  WORKER_FOLDER_PATH: `.`,
 };

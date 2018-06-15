@@ -1,7 +1,7 @@
 const { displayHelpMessage } = require('../errors/troubleshooting');
 
-const troubleshoot = async (errorCode, command) => {
-  await displayHelpMessage({ code: errorCode });
+const troubleshoot = async (code) => {
+  await displayHelpMessage({ code });
 };
 
 module.exports = troubleshoot;
