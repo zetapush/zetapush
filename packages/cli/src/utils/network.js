@@ -37,7 +37,7 @@ const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
           statusCode: response.statusCode,
           body,
           request: options,
-          config
+          config,
         });
       }
       try {
@@ -50,7 +50,7 @@ const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
           statusCode: response.statusCode,
           body,
           request: options,
-          config
+          config,
         });
       }
     });

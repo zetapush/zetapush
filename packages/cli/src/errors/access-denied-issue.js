@@ -50,7 +50,7 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
   }
 
   isAccountNotConfirmed(err) {
-    return err.body && err.body.contains('ACCOUNT_DISABLED')
+    return err.body && err.body.contains('ACCOUNT_DISABLED');
   }
 
   async getError(err) {
@@ -79,7 +79,7 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
       trace("account exists but application doesn't belong to the account");
       return { code: 'ACCOUNT-06' };
     }
-    if(this.isAccountNotConfirmed(err)) {
+    if (this.isAccountNotConfirmed(err)) {
       trace('account not validated');
       return { code: 'ACCOUNT-05' };
     }

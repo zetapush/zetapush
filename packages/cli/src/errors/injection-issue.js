@@ -4,8 +4,8 @@ const { log, error, warn, info } = require('../utils/log');
 
 class InjectionIssueAnalyzer extends ErrorAnalyzer {
   isAnInjectionCustomServiceError(err) {
-    if(!err.message) {
-      return {isError: false}
+    if (!err.message) {
+      return { isError: false };
     }
     const parseMessage = err.message.split('.')[0];
 

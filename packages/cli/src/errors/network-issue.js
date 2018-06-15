@@ -127,7 +127,7 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
       const proxy = execa.sync('npm', ['config', 'get', 'proxy']);
       return proxy.stdout && proxy.stdout != 'null' ? proxy.stdout : null;
     } catch (e) {
-      trace("npm proxy", e);
+      trace('npm proxy', e);
       return null;
     }
   }
@@ -171,7 +171,7 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
       // TODO: port blocked (-> test citedia)
       return { code: 'NET-02' };
     } catch (e) {
-      trace("failed to determine network cause", e);
+      trace('failed to determine network cause', e);
       return { code: 'NET-05' };
     }
   }
