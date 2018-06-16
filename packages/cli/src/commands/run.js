@@ -10,7 +10,7 @@ const WorkerLoader = require('../loader/worker');
 const compress = require('../utils/compress');
 const { instanciate } = require('../utils/di');
 const { equals } = require('../utils/helpers');
-const { log, error, warn, info, todo } = require('../utils/log');
+const { log, error, warn, info } = require('../utils/log');
 const { fetch } = require('../utils/network');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
 const {
@@ -19,6 +19,7 @@ const {
   getRuntimeProvision,
 } = require('../utils/provisioning');
 const { checkQueueServiceDeployed } = require('../utils/progression');
+const { createServer } = require('../utils/http-server');
 
 /**
  *
@@ -42,10 +43,6 @@ const run = (command, config, declaration) => {
     ...config,
     transports,
   });
-
-  // Progress
-  const spinner = ora('Starting worker... \n');
-  spinner.start();
 
   const onTerminalSignal = () => {
     warn(`Properly disconnect client`);
@@ -75,8 +72,12 @@ const run = (command, config, declaration) => {
       );
 
   if (command.httpServer) {
-    todo('Run http server');
+    createServer(command, config);
   }
+
+  // Progress
+  const spinner = ora('Starting worker... \n');
+  spinner.start();
 
   /**
    * Start worker
