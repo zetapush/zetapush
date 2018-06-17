@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.24.0"></a>
+# [0.24.0](https://github.com/zetapush/zetapush/compare/v0.23.2...v0.24.0) (2018-06-17)
+
+
+### Features
+
+* **run-http-server:** support cli option flag ([09003a0](https://github.com/zetapush/zetapush/commit/09003a0))
+* **run-http-server:** support experimental http with config injection ([72152d7](https://github.com/zetapush/zetapush/commit/72152d7))
+* **run-http-server:** use variable free http port ([4e6177c](https://github.com/zetapush/zetapush/commit/4e6177c))
+
+
+
+
 <a name="0.23.2"></a>
 ## [0.23.2](https://github.com/zetapush/zetapush/compare/v0.23.1...v0.23.2) (2018-06-15)
 
