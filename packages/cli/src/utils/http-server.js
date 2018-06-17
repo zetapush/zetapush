@@ -1,6 +1,7 @@
 // Native
 const util = require('util');
 const fs = require('fs');
+const stat = util.promisify(fs.stat);
 const { Transform } = require('stream');
 const http = require('http');
 // Packages
@@ -15,14 +16,11 @@ const { experimental } = require('../utils/log');
  * @param {Object} config
  */
 const createServer = (command, config) => {
+  const injected = ` data-zp-sandboxid="${
+    config.appName
+  }" data-zp-platform-url="${config.platformUrl}`;
   experimental('Create HTTP Server');
   const server = http.createServer((request, response) => {
-    // You pass two more arguments for config and middleware
-    // More details here: https://github.com/zeit/serve-handler#options
-    const stat = util.promisify(fs.stat);
-    const replacement = ` data-zp-sandboxid="${
-      config.appName
-    }" data-zp-platform-url="${config.platformUrl}`;
     return handler(
       request,
       response,
@@ -35,7 +33,7 @@ const createServer = (command, config) => {
             (stats) =>
               filepath.endsWith('.html')
                 ? Object.assign(stats, {
-                    size: stats.size + replacement.length,
+                    size: stats.size + injected.length,
                   })
                 : stats,
           ),
@@ -49,7 +47,7 @@ const createServer = (command, config) => {
                 content = content.replace(
                   HTML_PATTERN,
                   (markup, attributes, position, html) =>
-                    `<html${attributes}${replacement}>`,
+                    `<html${attributes}${injected}>`,
                 );
               }
               this.push(content);
