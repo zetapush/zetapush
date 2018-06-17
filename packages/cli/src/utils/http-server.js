@@ -5,6 +5,7 @@ const { Transform } = require('stream');
 const http = require('http');
 // Packages
 const handler = require('serve-handler');
+const findFreePort = util.promisify(require('find-free-port'));
 // Other
 const { experimental } = require('../utils/log');
 
@@ -39,7 +40,6 @@ const createServer = (command, config) => {
                 : stats,
           ),
         createReadStream(filepath) {
-          experimental('Inject appName and platformUrl');
           const stream = fs.createReadStream(filepath);
           const template = new Transform({
             transform(chunk, encoding, callback) {
@@ -61,7 +61,19 @@ const createServer = (command, config) => {
       },
     );
   });
-  server.listen(3000, () => experimental('Running at http://localhost:3000'));
+  return findFreePort(3000).then(
+    (port) =>
+      new Promise((resolve, reject) => {
+        try {
+          server.listen(port, () => {
+            experimental(`Running at http://localhost:${port}`);
+            resolve();
+          });
+        } catch (failure) {
+          reject(failure);
+        }
+      }),
+  );
 };
 
 module.exports = { createServer };

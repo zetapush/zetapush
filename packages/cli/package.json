@@ -25,11 +25,12 @@
     "cosmiconfig": "^5.0.4",
     "default-gateway": "^2.7.2",
     "execa": "^0.10.0",
-    "serve-handler": "^3.2.1",
+    "find-free-port": "^1.2.0",
     "hot-module-replacement": "^3.0.0",
     "ora": "^2.1.0",
     "request": "^2.85.0",
     "resolve-cwd": "^2.0.0",
+    "serve-handler": "^3.2.1",
     "zip-dir": "^1.0.2"
   },
   "publishConfig": {
