@@ -84,12 +84,7 @@ program
     Boolean,
     false,
   )
-  .option(
-    '-h, --http-server <http-server>',
-    'Run local http server',
-    Boolean,
-    false,
-  )
+  .option('-h, --http-server', 'Run local http server', () => true, false)
   .description('Run your code')
   .action((command) =>
     createApp(command)
