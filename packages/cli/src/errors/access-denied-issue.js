@@ -71,7 +71,7 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
       trace("account doesn't exist or account not validated expired");
       return { code: 'ACCOUNT-03' };
     }
-    if(this.isAccountNotConfirmed(err)) {
+    if (this.isAccountNotConfirmed(err)) {
       trace('account not validated');
       return { code: 'ACCOUNT-05' };
     }

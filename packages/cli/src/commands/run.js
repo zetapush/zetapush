@@ -10,7 +10,8 @@ const WorkerLoader = require('../loader/worker');
 const compress = require('../utils/compress');
 const { instanciate } = require('../utils/di');
 const { equals } = require('../utils/helpers');
-const { log, error, warn, info, todo } = require('../utils/log');
+const { createServer } = require('../utils/http-server');
+const { log, error, warn, info } = require('../utils/log');
 const { fetch } = require('../utils/network');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
 const {
@@ -43,10 +44,6 @@ const run = (command, config, declaration) => {
     transports,
   });
 
-  // Progress
-  const spinner = ora('Starting worker... \n');
-  spinner.start();
-
   const onTerminalSignal = () => {
     warn(`Properly disconnect client`);
     client.disconnect().then(() => {
@@ -73,6 +70,10 @@ const run = (command, config, declaration) => {
             ? cookWithOnlyQueueService(client, config, declaration)
             : connectClientAndCreateServices(client, config, declaration),
       );
+
+  // Progress
+  const spinner = ora('Starting worker... \n');
+  spinner.start();
 
   /**
    * Start worker
@@ -102,6 +103,9 @@ const run = (command, config, declaration) => {
         spinner.stop();
       });
       info('Worker is up!');
+      if (command.httpServer) {
+        return createServer(command, config);
+      }
     })
     .catch((failure) => {
       spinner.stop();
