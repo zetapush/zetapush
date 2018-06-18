@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.24.1"></a>
+## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
+
+
+### Features
+
+* **integration:** add wip jasmine test ([c1891d7](https://github.com/zetapush/zetapush/commit/c1891d7))
+
+
+
+
 <a name="0.24.0"></a>
 # [0.24.0](https://github.com/zetapush/zetapush/compare/v0.23.2...v0.24.0) (2018-06-17)
 
