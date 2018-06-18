@@ -3,12 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.24.3](https://github.com/zetapush/zetapush/compare/v0.24.2...v0.24.3) (2018-06-18)
+## [0.24.4](https://github.com/zetapush/zetapush/compare/v0.24.3...v0.24.4) (2018-06-18)
 
 
 ### Bug Fixes
 
-* **core:** update mandatory fields for core client class ([42194dd](https://github.com/zetapush/zetapush/commit/42194dd))
+* **cli:** fix account not validated error ([67be2fc](https://github.com/zetapush/zetapush/commit/67be2fc))
+* **cometd:** update getOverloadedConfigFromEnvironement prototype ([a32085d](https://github.com/zetapush/zetapush/commit/a32085d))
 
 
 
