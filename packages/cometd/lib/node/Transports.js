@@ -46,7 +46,7 @@ var getOverloadedConfigFromEnvironement = function getOverloadedConfigFromEnviro
   var platformUrl = env.ZP_ZBO_URL;
   var appName = env.ZP_SANDBOX_ID;
   return {
-    apiUrl: apiUrl,
+    platformUrl: platformUrl,
     appName: appName
   }
 }

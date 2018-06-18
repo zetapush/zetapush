@@ -1,34 +1,32 @@
-const getAppName = () => {
-  const PATTERN = /^#\/sandbox\/(.+)/;
-  const [hash, appName] = PATTERN.exec(location.hash) || [];
-  if (appName) {
-    return appName;
-  } else {
-    location.href = `#/sandbox/${prompt('sandbox')}`;
-    location.reload();
-  }
-}
-
-// Create new ZetaPush Client
-const client = new ZetaPush.WeakClient({
-  appName: document.documentElement.dataset.zpSandboxid || getAppName()
-});
-
+const client = new ZetaPush.WeakClient();
 const api = client.createProxyTaskService();
-
-client.connect().then(() => (
-  console.debug('onConnectionEstablished'),
+client.connect().then(() =>
   [...document.querySelectorAll('button')].forEach((node) =>
     node.removeAttribute('disabled'),
   )
-));
-
+);
 const uuid = ((id = 0) => () => ++id)();
-
-const on = (cssClass, eventType, handler) =>
-  document.querySelector(cssClass).addEventListener(eventType, handler);
-
-const trace = async (section, behavior) => {
+const getCurrentTarget = (node, target, selector) => {
+  if (matchesSelector.call(target, selector)) { return target; }
+  while (target = target.parentNode && node !== target) {
+    if (target.nodeType != 1) { return false; }
+    if (target.matchesSelector(selector)) { return target; }
+  }
+  return false;
+}
+const on = (node, type, selector, handler) => {
+  node.addEventListener(type, (event) => {
+    var target = getCurrentTarget(node, event.target, selector)
+    if (target) {
+      handler.call(target, event)
+    }
+  }, false)
+}
+const trace = async (element, section) => {
+  const id = uuid();
+  const { name } = element;
+  const section = `${name}--${id}`;
+  const behavior = () => api[name]();
   const begin = Date.now();
   let output = null;
   let method = 'log';
@@ -43,50 +41,6 @@ const trace = async (section, behavior) => {
   console[method]({ section, begin, end, duration, output });
   return output;
 };
-
-const parse = (content) => {
-  try {
-    return JSON.parse(content);
-  } catch (error) {
-    return content;
-  }
-}
-
 document.addEventListener('DOMContentLoaded', () => {
-  on('.js-Hello', 'click', (event) => {
-    event.target.dataset.count =
-      (parseInt(event.target.dataset.count, 10) || 0) + 1;
-    const id = uuid();
-    trace(`hello--${id}`, () => api.hello());
-  });
-  on('.js-Reduce', 'click', async (event) => {
-    event.target.dataset.count =
-      (parseInt(event.target.dataset.count, 10) || 0) + 1;
-    const id = uuid();
-    trace(`reduce--${id}`, () => api.reduce([10, 20, 30, 40]));
-  });
-  on('.js-Push', 'click', async (event) => {
-    event.target.dataset.count =
-      (parseInt(event.target.dataset.count, 10) || 0) + 1;
-    const id = uuid();
-    const item = parse(prompt('Item?', JSON.stringify({})));
-    trace(`push--${id}`, () => api.push(item));
-  });
-  on('.js-List', 'click', async (event) => {
-    event.target.dataset.count =
-      (parseInt(event.target.dataset.count, 10) || 0) + 1;
-    const id = uuid();
-    const { result: { content: list } } = await trace(`list--${id}`, () => api.list());
-    const ul = document.querySelector('ul');
-    const fragment = document.createDocumentFragment();
-    while (ul.firstChild) {
-      ul.removeChild(ul.firstChild);
-    }
-    list.forEach((item) => {
-      const li = document.createElement('li');
-      li.textContent = JSON.stringify(item);
-      fragment.appendChild(li);
-    });
-    ul.appendChild(fragment);
-  });
+  on('[name]', 'click', (event) => trace(event.target));
 });
