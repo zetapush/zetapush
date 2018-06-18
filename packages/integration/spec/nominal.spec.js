@@ -13,7 +13,7 @@ describe(`As developer with
     this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN
     this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD
       // clean
-    await rm(projectDir)
+    await rm('.generated-projects/'+projectDir)
   });
 
   it(`should be able to 

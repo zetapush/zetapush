@@ -4,7 +4,7 @@ const { log, error, warn, info, trace } = require('../utils/log');
 class CustomCloudServiceStartErrorAnalyzer extends ErrorAnalyzer {
   hasWorkerStartNpmErr(progress) {
     for (let log of progress.logs) {
-      if (log.category == 'WORKER_START' && log.message.contains('npm ERR!')) {
+      if (log.category == 'WORKER_START' && log.message.includes('npm ERR!')) {
         return true;
       }
     }
@@ -30,6 +30,7 @@ class CustomCloudServiceStartErrorAnalyzer extends ErrorAnalyzer {
     if (this.hasWorkerStartNpmErr(progress)) {
       return { code: 'SERVICE-05', logs: this.getWorkerStartLogs(progress) };
     }
+    trace('not custom cloud service start issue');
     return null;
   }
 }

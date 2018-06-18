@@ -50,7 +50,7 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
   }
 
   isAccountNotConfirmed(err) {
-    return err.body && err.body.contains('ACCOUNT_DISABLED');
+    return err.body && err.body.includes('ACCOUNT_DISABLED');
   }
 
   async getError(err) {
