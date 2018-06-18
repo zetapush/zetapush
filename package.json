@@ -18,7 +18,6 @@
     "husky": "^0.14.3",
     "lerna": "^2.11.0",
     "lint-staged": "^6.1.1",
-    "node": "8.9",
     "prettier": "^1.12.1"
   },
   "scripts": {
@@ -26,6 +25,7 @@
     "commit": "git-cz",
     "prettify": "prettier --write 'packages/*/{bin,src}/**/*.{js,ts}'",
     "lerna": "lerna",
+    "lerna:clean": "lerna clean",
     "lerna:bootstrap": "lerna bootstrap",
     "lerna:build": "lerna run build",
     "lerna:publish": "lerna publish --conventional-commits --changelog-preset angular --force-publish=*",
