@@ -67,13 +67,13 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
       trace('no developer password');
       return { code: 'ACCOUNT-02' };
     }
-    if (!(await this.isDeveloperAccountExists(err.config))) {
-      trace("account doesn't exist or account not validated expired");
-      return { code: 'ACCOUNT-03' };
-    }
     if (this.isAccountNotConfirmed(err)) {
       trace('account not validated');
       return { code: 'ACCOUNT-05' };
+    }
+    if (!(await this.isDeveloperAccountExists(err.config))) {
+      trace("account doesn't exists");
+      return { code: 'ACCOUNT-03' };
     }
     if (!this.hasAppName(err)) {
       trace('no app name');
