@@ -45,11 +45,11 @@ exports.ALL = ALL;
  */
 var getOverloadedConfigFromEnvironement = function getOverloadedConfigFromEnvironement() {
   var env = document.documentElement.dataset;
-  var apiUrl = env.zpPlatformUrl;
-  var sandboxId = env.zpSandboxid;
+  var platformUrl = env.zpPlatformUrl;
+  var appName = env.zpSandboxid;
   return {
-    apiUrl: apiUrl,
-    sandboxId: sandboxId
+    platformUrl: platformUrl,
+    appName: appName
   }
 }
 exports.getOverloadedConfigFromEnvironement = getOverloadedConfigFromEnvironement;
