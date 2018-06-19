@@ -9,7 +9,7 @@ const commander = require('commander');
 const spawn = require('cross-spawn');
 const fs = require('fs-extra');
 
-const { createAccount, DEFAULTS, logger } = require('@zetapush/cli');
+const { createAccount, DEFAULTS, getDeveloperPassword, logger } = require('@zetapush/cli');
 
 logger.setVerbosity(1);
 
@@ -62,7 +62,11 @@ const program = new commander.Command(pkg.name)
 
 function validateOptions({ appName, developerLogin, developerPassword, platformUrl }) {
   const missing = [];
+  if (!developerPassword) {
+    developerPassword = getDeveloperPassword();
+  }
   if (!developerLogin) { missing.push('--developer-login'); }
+  if (!developerPassword) { missing.push('--developer-password'); }
   if (missing.length > 0) {
     console.log();
     console.log('Aborting init.');

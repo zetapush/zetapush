@@ -2,12 +2,11 @@
 const fs = require('fs');
 const path = require('path');
 // Packages
-const chalk = require('chalk');
 const cosmiconfig = require('cosmiconfig');
-const prompt = require('prompt-sync')();
 // Local
 const DEFAULTS = require('../utils/defaults');
 const { log, error, warn, trace } = require('../utils/log');
+const { getDeveloperPassword } = require('../utils/security');
 const explorer = cosmiconfig('zeta');
 
 /**
@@ -114,11 +113,7 @@ const load = async (command, required = true) => {
     );
     trace('merged config', config);
     if (!config.developerPassword) {
-      const developperPassword = prompt({
-        ask: chalk`[{green.bold SECURITY}] {bold Developer password ?}:`,
-        echo: '*',
-      });
-      config.developerPassword = developperPassword;
+      config.developerPassword = getDeveloperPassword();
     }
     if (isValid(config)) {
       trace('config is valid', config);
