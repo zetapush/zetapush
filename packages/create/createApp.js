@@ -63,7 +63,6 @@ const program = new commander.Command(pkg.name)
 function validateOptions({ appName, developerLogin, developerPassword, platformUrl }) {
   const missing = [];
   if (!developerLogin) { missing.push('--developer-login'); }
-  if (!developerPassword) { missing.push('--developer-password'); }
   if (missing.length > 0) {
     console.log();
     console.log('Aborting init.');
