@@ -28,8 +28,7 @@
       display: flex;
       flex-direction: column;
     }
-    button,
-    label {
+    button {
       margin: 0.5rem 1rem;
       height: 5vh;
       font-size: calc(5vh / 2);
@@ -43,33 +42,22 @@
       box-sizing: border-box;
       align-items: flex-start;
     }
-    button::after,
-    label::after {
+    button::after {
       content: "(" attr(data-count) ")";
       display: inline-block;
     }
-    button[disabled],
-    label[disabled] {
+    button[disabled] {
       opacity: 0.9;
       pointer-events: none;
       cursor: not-allowed;
       color: graytext;
-    }
-    input[type="file"] {
-      position: absolute;
-      overflow: hidden;
-      height: 0;
-      width: 0;
     }
   </style>
 </head>
 
 <body>
   <nav>
-    <button disabled class="js-Hello">hello</button>
-    <button disabled class="js-Reduce">reduce</button>
-    <button disabled class="js-Push">push</button>
-    <button disabled class="js-List">list</button>
+    <button disabled name="hello">hello</button>
   </nav>
   <main>
     <ul></ul>

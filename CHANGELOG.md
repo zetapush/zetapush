@@ -3,6 +3,40 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.25.2](https://github.com/zetapush/zetapush/compare/v0.25.1...v0.25.2) (2018-06-19)
+
+
+### Features
+
+* **create:** reduce boilerplat on create front files ([69c9669](https://github.com/zetapush/zetapush/commit/69c9669))
+
+
+
+
+<a name="0.24.1"></a>
+## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
+
+
+### Features
+
+* **integration:** add wip jasmine test ([c1891d7](https://github.com/zetapush/zetapush/commit/c1891d7))
+
+
+
+
+<a name="0.24.0"></a>
+# [0.24.0](https://github.com/zetapush/zetapush/compare/v0.23.2...v0.24.0) (2018-06-17)
+
+
+### Features
+
+* **run-http-server:** support cli option flag ([09003a0](https://github.com/zetapush/zetapush/commit/09003a0))
+* **run-http-server:** support experimental http with config injection ([72152d7](https://github.com/zetapush/zetapush/commit/72152d7))
+* **run-http-server:** use variable free http port ([4e6177c](https://github.com/zetapush/zetapush/commit/4e6177c))
+
+
+
+
 <a name="0.23.2"></a>
 ## [0.23.2](https://github.com/zetapush/zetapush/compare/v0.23.1...v0.23.2) (2018-06-15)
 

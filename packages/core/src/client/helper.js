@@ -77,6 +77,13 @@ export class ClientHelper {
       },
       transports.getOverloadedConfigFromEnvironement(),
     );
+    // Validate mandatory parameters
+    const mandatory = ['appName', 'platformUrl'].filter(
+      (property) => !options[property],
+    );
+    if (mandatory.length) {
+      throw new Error(`Missing mandatory parameter(s) ${mandatory.join(', ')}`);
+    }
     /**
      * @access private
      * @type {string}

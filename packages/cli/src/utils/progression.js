@@ -129,7 +129,7 @@ const displayProgress = (progress, steps) => {
     trace("can't display progress => fallback", e);
     console.log(''.padEnd(60, '-'));
     steps.forEach((step) => {
-      const progressChars = Math.floor(step.progress * 20 / 100);
+      const progressChars = Math.floor((step.progress * 20) / 100);
       const blankChars = 20 - progressChars;
       console.log(
         `${''.padEnd(progressChars, '▇')}${''.padEnd(blankChars, '░')} ${

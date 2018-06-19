@@ -67,6 +67,12 @@ program
   .command('run')
   .usage('[options]')
   .option(
+    '-f, --front <front>',
+    'Push front on cloud platform',
+    identity,
+    DEFAULTS.FRONT_FOLDER_PATH,
+  )
+  .option(
     '-w, --worker <worker>',
     'Push worker on cloud platform',
     identity,
@@ -78,6 +84,7 @@ program
     () => true,
     false,
   )
+  .option('-h, --http-server', 'Run local http server', () => true, false)
   .description('Run your code')
   .action((command) =>
     createApp(command)

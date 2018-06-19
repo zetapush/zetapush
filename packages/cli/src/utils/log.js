@@ -53,6 +53,13 @@ const todo = (message, ...messages) =>
     '\u200C',
   );
 
+const experimental = (message, ...messages) =>
+  console.warn(
+    chalk`[{keyword('magenta').bold EXPERIMENTAL}] {bold ${message}}`,
+    messages.length > 0 ? messages : '',
+    '\u200C',
+  );
+
 const warn = (message, ...messages) =>
   console.warn(
     chalk`[{yellow.bold WARN}] {bold ${message}}`,
@@ -62,4 +69,14 @@ const warn = (message, ...messages) =>
 
 setVerbosity(1);
 
-module.exports = { trace, log, info, error, todo, warn, help, setVerbosity };
+module.exports = {
+  trace,
+  log,
+  info,
+  error,
+  todo,
+  warn,
+  help,
+  experimental,
+  setVerbosity,
+};
