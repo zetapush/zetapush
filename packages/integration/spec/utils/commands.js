@@ -19,7 +19,7 @@ const npmInit = (developerLogin, developerPassword, dir) => {
       cmd = execa('npm', ['init', '@zetapush', dir, '--developer-login', developerLogin, '--developer-password', developerPassword], {cwd: '.generated-projects'});
     }
   } else {
-    cmd = execa('npx', ['@zetapush/create@canary', dir, '--developer-login', developerLogin, '--developer-password', developerPassword], {cwd: '.generated-projects'});
+    cmd = execa('npx', ['@zetapush/create@canary', dir, '--force-current-version', '--developer-login', developerLogin, '--developer-password', developerPassword], {cwd: '.generated-projects'});
   }
   cmd.stdout.pipe(process.stdout);
   cmd.stderr.pipe(process.stdout);
