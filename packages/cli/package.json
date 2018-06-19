@@ -28,6 +28,7 @@
     "find-free-port": "^1.2.0",
     "hot-module-replacement": "^3.0.0",
     "ora": "^2.1.0",
+    "prompt-sync": "^4.1.6",
     "request": "^2.85.0",
     "resolve-cwd": "^2.0.0",
     "serve-handler": "^3.2.1",
