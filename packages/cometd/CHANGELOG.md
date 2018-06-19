@@ -3,15 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.24.5](https://github.com/zetapush/zetapush/compare/v0.24.4...v0.24.5) (2018-06-18)
-
-
-### Bug Fixes
-
-* **cometd:** update platformUlr for node env ([0c9c30e](https://github.com/zetapush/zetapush/commit/0c9c30e))
+## [0.25.2](https://github.com/zetapush/zetapush/compare/v0.25.1...v0.25.2) (2018-06-19)
 
 
 
+
+**Note:** Version bump only for package @zetapush/cometd
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

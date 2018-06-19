@@ -18,7 +18,7 @@ const { experimental } = require('../utils/log');
 const createServer = (command, config) => {
   const injected = ` data-zp-sandboxid="${
     config.appName
-  }" data-zp-platform-url="${config.platformUrl}`;
+  }" data-zp-platform-url="${config.platformUrl}"`;
   experimental('Create HTTP Server');
   const server = http.createServer((request, response) => {
     return handler(
