@@ -25,6 +25,7 @@
     "commit": "git-cz",
     "prettify": "prettier --write 'packages/*/{bin,spec,src}/**/*.{js,ts}'",
     "lerna": "lerna",
+    "lerna:clean": "lerna clean",
     "lerna:bootstrap": "lerna bootstrap",
     "lerna:build": "lerna run build",
     "lerna:publish": "lerna publish --conventional-commits --changelog-preset angular --force-publish=*",

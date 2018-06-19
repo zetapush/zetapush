@@ -12,6 +12,8 @@ const includes = (from, target) =>
  * @param {Array} target
  */
 const equals = (from, target) =>
-  includes(from, target) && includes(target, from);
+  from.length === target.length &&
+  includes(from, target) &&
+  includes(target, from);
 
 module.exports = { equals, includes };

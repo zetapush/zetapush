@@ -88,7 +88,8 @@ const run = (command, config, declaration) => {
         spinner.start();
         try {
           let next = getDeploymentIdList(reloaded);
-          if (!equals(previous, next)) {
+          const deploymentListHasChange = !equals(previous, next);
+          if (deploymentListHasChange) {
             await createServices(client, config, reloaded);
           }
           // Create a new worker instance
@@ -137,6 +138,8 @@ const createServices = (client, config, declaration) => {
 
   const { items } = getRuntimeProvision(config, declaration);
   const services = items.map(({ item }) => item);
+
+  info(`Create services`);
 
   return api.createServices({ services });
 };
