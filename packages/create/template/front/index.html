@@ -24,7 +24,7 @@
       font-family: Calibri, Helvetica, Arial;
       font-weight: bold;
     }
-    nav {
+    main, nav {
       display: flex;
       flex-direction: column;
     }
@@ -43,34 +43,20 @@
       box-sizing: border-box;
       align-items: flex-start;
     }
-    button::after,
-    label::after {
-      content: "(" attr(data-count) ")";
-      display: inline-block;
-    }
-    button[disabled],
-    label[disabled] {
+    body:not(.connected) button,
+    body:not(.connected) label {
       opacity: 0.9;
       pointer-events: none;
       cursor: not-allowed;
       color: graytext;
-    }
-    input[type="file"] {
-      position: absolute;
-      overflow: hidden;
-      height: 0;
-      width: 0;
     }
   </style>
 </head>
 
 <body>
   <nav>
-    <button disabled class="js-Hello">hello</button>
+    <button class="js-Hello">hello</button>
   </nav>
-  <main>
-    <ul></ul>
-  </main>
   <script src="https://unpkg.com/@zetapush/core"></script>
   <script src="https://unpkg.com/@zetapush/platform"></script>
   <script src="./index.js"></script>
