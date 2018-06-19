@@ -3,12 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.24.5](https://github.com/zetapush/zetapush/compare/v0.24.4...v0.24.5) (2018-06-18)
+## [0.24.6](https://github.com/zetapush/zetapush/compare/v0.24.5...v0.24.6) (2018-06-19)
+
+
+### Features
+
+* **create:** remove boilerplate from generate example ([2e97152](https://github.com/zetapush/zetapush/commit/2e97152))
 
 
 
-
-**Note:** Version bump only for package @zetapush/create
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

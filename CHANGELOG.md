@@ -3,12 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.24.5](https://github.com/zetapush/zetapush/compare/v0.24.4...v0.24.5) (2018-06-18)
+## [0.24.6](https://github.com/zetapush/zetapush/compare/v0.24.5...v0.24.6) (2018-06-19)
 
 
 ### Bug Fixes
 
-* **cometd:** update platformUlr for node env ([0c9c30e](https://github.com/zetapush/zetapush/commit/0c9c30e))
+* **help:** contains -> includes ([514098a](https://github.com/zetapush/zetapush/commit/514098a))
+* **run-http-server:** add missing string delimiter ([6d0cac9](https://github.com/zetapush/zetapush/commit/6d0cac9))
+
+
+### Features
+
+* **create:** remove boilerplate from generate example ([2e97152](https://github.com/zetapush/zetapush/commit/2e97152))
 
 
 

@@ -3,12 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.24.5](https://github.com/zetapush/zetapush/compare/v0.24.4...v0.24.5) (2018-06-18)
+## [0.24.6](https://github.com/zetapush/zetapush/compare/v0.24.5...v0.24.6) (2018-06-19)
+
+
+### Bug Fixes
+
+* **help:** contains -> includes ([514098a](https://github.com/zetapush/zetapush/commit/514098a))
+* **run-http-server:** add missing string delimiter ([6d0cac9](https://github.com/zetapush/zetapush/commit/6d0cac9))
 
 
 
-
-**Note:** Version bump only for package @zetapush/cli
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
