@@ -3,7 +3,6 @@ const util = require('util');
 const fs = require('fs');
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
-const getStream = require('get-stream');
 const rimraf = require('rimraf');
 
 
@@ -24,22 +23,24 @@ const npmInit = (developerLogin, developerPassword, dir) => {
   return cmd;
 }
 
-const zetaPush = async (dir) => {
-  const cmd = execa('npm', ['run', 'deploy', '--', '-vvv'], { cwd: '.generated-projects/' + dir })
-
-  cmd.stdout.pipe(process.stdout);
-  cmd.stderr.pipe(process.stdout);
-
-  return Promise.resolve(getStream(cmd.stderr));
+const zetaPush = (dir) => {
+  try {
+    execa.shellSync('npm run deploy -- -vvv', { cwd: '.generated-projects/' + dir });
+    return 0;
+  } catch (err) {
+    console.error(err);
+    return err.code;
+  }
 }
 
 const zetaRun = async (dir) => {
-  const cmd = execa('npm', ['run', 'start', '--', '-vvv'], { cwd: '.generated-projects/' + dir });
-
-  cmd.stdout.pipe(process.stdout);
-  cmd.stderr.pipe(process.stdout);
-
-  return Promise.resolve(getStream(cmd.stderr));
+  try {
+    execa.shellSync('npm run start -- -vvv', { cwd: '.generated-projects/' + dir });
+    return 0;
+  } catch (err) {
+    console.error(err);
+    return err.code;
+  }
 }
 
 const readZetarc = async (dir) => {

@@ -17,15 +17,15 @@ describe(`As developer with
 
     it("Should failed with errorCode 'ACCOUNT-05' (55) for 'zeta push'", async () => {
 
-      const output = await zetaPush(projectDir);
-      expect(output).toContain(`Exit status ${errorCode}`);
+      const code = await zetaPush(projectDir);
+      expect(code).toBe(errorCode);
 
     }, 10 * 60 * 1000);
 
     it("Should failed with errorCode 'ACCOUNT-05' (55) for 'zeta run'", async () => {
 
-      const output = await zetaRun(projectDir);
-      expect(output).toContain(`Exit status ${errorCode}`);
+      const code = await zetaRun(projectDir);
+      expect(code).toBe(errorCode);
 
     }, 10 * 60 * 1000);
 
