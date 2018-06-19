@@ -4,6 +4,8 @@ const fs = require('fs');
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 const rimraf = require('rimraf');
+const { fetch } = require('@zetapush/cli');
+const kill = require('tree-kill');
 
 const rm = (path) =>
   new Promise((resolve, reject) =>
@@ -152,6 +154,74 @@ const npmVersion = () => {
   return { major, minor, patch };
 };
 
+/**
+ * Run a local worker asynchronously with run()
+ * wait for it to be up with waitForWorkerUp()
+ * stop it with stop()
+ *
+ *   const runner = new Runner('./myProject');
+ *   runner.run();
+ *   await runner.waitForWorkerUp();
+ *   await runner.stop();
+ *
+ */
+class Runner {
+  constructor(dir) {
+    this.dir = dir;
+    this.cmd = null;
+  }
+
+  async waitForWorkerUp() {
+    return new Promise((resolve) => {
+      const getStatus = async () => {
+        // console.log("is up ? ")
+        const creds = await readZetarc(this.dir);
+        if (creds.appName != undefined) {
+          const res = await fetch({
+            config: creds,
+            pathname: `orga/business/live/${creds.appName}`,
+          });
+          for (let node in res.nodes) {
+            for (let item in res.nodes[node].items) {
+              if (res.nodes[node].items[item].itemId === 'queue') {
+                if (res.nodes[node].items[item].liveData != undefined) {
+                  if (
+                    res.nodes[node].items[item].liveData['queue.workers']
+                      .length > 0
+                  ) {
+                    // console.log("it's up !");
+                    resolve();
+                    return;
+                  }
+                }
+              }
+            }
+          }
+        }
+        setTimeout(getStatus, 300);
+      };
+      getStatus();
+    });
+  }
+
+  stop() {
+    return new Promise((resolve) => {
+      kill(this.cmd.pid, 'SIGTERM', () => {
+        resolve();
+      });
+    });
+  }
+
+  run() {
+    console.log('RUN');
+    this.cmd = execa('npm', ['run', 'start', '--', '-vvv'], {
+      cwd: '.generated-projects/' + this.dir,
+    });
+    this.cmd.stdout.pipe(process.stdout);
+    this.cmd.stderr.pipe(process.stdout);
+  }
+}
+
 module.exports = {
   rm,
   npmInit,
@@ -161,4 +231,5 @@ module.exports = {
   zetaRun,
   setAppNameToZetarc,
   setAccountToZetarc,
+  Runner,
 };

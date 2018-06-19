@@ -5,9 +5,11 @@
     "test": "jasmine"
   },
   "dependencies": {
+    "@zetapush/cli": "*",
     "@zetapush/cometd": "*",
     "@zetapush/client": "*",
-    "rimraf": "2.6.2"
+    "rimraf": "2.6.2",
+    "tree-kill": "^1.2.0"
   },
   "devDependencies": {
     "jasmine": "3.1.0",
