@@ -1,9 +1,12 @@
+// Native
 const fs = require('fs');
 const path = require('path');
+// Packages
 const cosmiconfig = require('cosmiconfig');
+// Local
 const DEFAULTS = require('../utils/defaults');
-
 const { log, error, warn, trace } = require('../utils/log');
+const { getDeveloperPassword } = require('../utils/security');
 const explorer = cosmiconfig('zeta');
 
 /**
@@ -109,6 +112,9 @@ const load = async (command, required = true) => {
       await fromDefault(),
     );
     trace('merged config', config);
+    if (!config.developerPassword) {
+      config.developerPassword = getDeveloperPassword();
+    }
     if (isValid(config)) {
       trace('config is valid', config);
       return config;
