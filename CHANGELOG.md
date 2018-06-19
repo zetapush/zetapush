@@ -3,18 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.24.6](https://github.com/zetapush/zetapush/compare/v0.24.5...v0.24.6) (2018-06-19)
-
-
-### Bug Fixes
-
-* **help:** contains -> includes ([514098a](https://github.com/zetapush/zetapush/commit/514098a))
-* **run-http-server:** add missing string delimiter ([6d0cac9](https://github.com/zetapush/zetapush/commit/6d0cac9))
+# [0.25.0](https://github.com/zetapush/zetapush/compare/v0.24.6...v0.25.0) (2018-06-19)
 
 
 ### Features
 
-* **create:** remove boilerplate from generate example ([2e97152](https://github.com/zetapush/zetapush/commit/2e97152))
+* **prompt-password:** add prompt if developerPassword is missing in cli args ([25dff69](https://github.com/zetapush/zetapush/commit/25dff69))
 
 
 
