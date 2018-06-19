@@ -9,7 +9,7 @@ const commander = require('commander');
 const spawn = require('cross-spawn');
 const fs = require('fs-extra');
 
-const { createAccount, DEFAULTS, getDeveloperPassword, logger } = require('@zetapush/cli');
+const { createAccount, DEFAULTS, getDeveloperLogin, getDeveloperPassword, logger } = require('@zetapush/cli');
 
 logger.setVerbosity(1);
 
@@ -71,10 +71,14 @@ function getCurrentVersion(command) {
 }
 
 function validateOptions({ appName, developerLogin, developerPassword, platformUrl }) {
-  const missing = [];
+  // Prompt mandatory values
+  if (!developerLogin) {
+    developerLogin = getDeveloperLogin();
+  }
   if (!developerPassword) {
     developerPassword = getDeveloperPassword();
   }
+  const missing = [];
   if (!developerLogin) { missing.push('--developer-login'); }
   if (!developerPassword) { missing.push('--developer-password'); }
   if (missing.length > 0) {
