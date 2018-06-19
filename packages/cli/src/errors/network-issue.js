@@ -88,7 +88,7 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
     const code = err.failure && err.failure.code;
     return (
       code == 'ENETUNREACH' ||
-      (code == 'ECONNREFUSED' && !err.request.url.contains(err.failure.address))
+      (code == 'ECONNREFUSED' && !err.request.url.includes(err.failure.address))
     ); // if address different from URL, request goes through a proxy (TODO: is always working?)
   }
 
