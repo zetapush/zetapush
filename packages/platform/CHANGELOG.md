@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.25.4](https://github.com/zetapush/zetapush/compare/v0.25.3...v0.25.4) (2018-06-20)
+## [0.25.5](https://github.com/zetapush/zetapush/compare/v0.25.4...v0.25.5) (2018-06-20)
 
 
 
