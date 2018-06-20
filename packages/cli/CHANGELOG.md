@@ -3,12 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.25.4](https://github.com/zetapush/zetapush/compare/v0.25.3...v0.25.4) (2018-06-20)
+## [0.25.5](https://github.com/zetapush/zetapush/compare/v0.25.4...v0.25.5) (2018-06-20)
 
 
 ### Bug Fixes
 
-* **hot-module-replacement:** improve hmr support ([542d49c](https://github.com/zetapush/zetapush/commit/542d49c))
+* **create:** add empty favicon ([ab1f0b4](https://github.com/zetapush/zetapush/commit/ab1f0b4))
 
 
 

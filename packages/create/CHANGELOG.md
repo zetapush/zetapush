@@ -3,12 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.25.4](https://github.com/zetapush/zetapush/compare/v0.25.3...v0.25.4) (2018-06-20)
+## [0.25.5](https://github.com/zetapush/zetapush/compare/v0.25.4...v0.25.5) (2018-06-20)
+
+
+### Bug Fixes
+
+* **create:** add empty favicon ([ab1f0b4](https://github.com/zetapush/zetapush/commit/ab1f0b4))
 
 
 
-
-**Note:** Version bump only for package @zetapush/create
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
