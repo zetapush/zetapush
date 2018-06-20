@@ -8,12 +8,13 @@ describe(`As developer with
       - no configured application
   `, () => {
   const projectDir = 'project-nominal-case';
+  const fullPathProject = `.generated-projects/${projectDir}`;
 
   beforeEach(async () => {
     this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
     this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
     // clean
-    await rm('.generated-projects/' + projectDir);
+    await rm(fullPathProject);
   });
 
   it(
@@ -24,7 +25,11 @@ describe(`As developer with
     async () => {
       // 1) npm init
       await npmInit(this.developerLogin, this.developerPassword, projectDir);
-      let zetarc = await readZetarc(projectDir);
+
+      // 2) zeta push
+      await zetaPush(fullPathProject);
+
+      let zetarc = await readZetarc(fullPathProject);
       expect(zetarc).toBeTruthy();
       expect(zetarc.developerLogin).toBe(this.developerLogin);
       expect(zetarc.developerPassword).toBe(this.developerPassword);

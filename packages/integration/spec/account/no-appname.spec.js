@@ -14,12 +14,13 @@ describe(`As developer with
         - no appName
     `, () => {
   const projectDir = 'project-nominal-case';
+  const fullPathProject = `.generated-projets/ ${projectDir}`;
 
   beforeEach(async () => {
     this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
     this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
     // clean
-    await rm('.generated-projects/' + projectDir);
+    await rm(fullPathProject);
   });
 
   it(
@@ -29,13 +30,13 @@ describe(`As developer with
       await npmInit(this.developerLogin, this.developerPassword, projectDir);
 
       // Delete the 'appName' from the .zetarc
-      await setAppNameToZetarc(projectDir, '');
+      await setAppNameToZetarc(fullPathProject, '');
 
       // zeta push
-      await zetaPush(projectDir);
+      await zetaPush(fullPathProject);
 
       // Check the .zetarc file
-      let zetarc = await readZetarc(projectDir);
+      let zetarc = await readZetarc(fullPathProject);
       expect(zetarc.appName.length).toBeGreaterThan(0);
 
       // check using a client

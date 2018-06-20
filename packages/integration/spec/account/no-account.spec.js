@@ -3,7 +3,7 @@ const { zetaPush, zetaRun, setAccountToZetarc } = require('../utils/commands');
 describe(`As developer with
         - account doesn't exists
     `, () => {
-  const projectDir = 'empty-app';
+  const projectDir = 'empty-projects/empty-app';
   const errorCode = 53;
 
   beforeEach(async () => {

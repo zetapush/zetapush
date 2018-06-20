@@ -3,7 +3,7 @@ const { zetaPush, zetaRun, setAccountToZetarc } = require('../utils/commands');
 describe(`As developer with
         - account not validated
     `, () => {
-  const projectDir = 'empty-app';
+  const projectDir = 'empty-projects/empty-app';
   const errorCode = 55;
 
   beforeEach(async () => {

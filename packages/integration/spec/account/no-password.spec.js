@@ -3,7 +3,7 @@ const { zetaPush, zetaRun, setAccountToZetarc } = require('../utils/commands');
 describe(`As developer with
         - no developerPassword
     `, () => {
-  const projectDir = 'empty-app';
+  const projectDir = 'empty-projects/empty-app';
   const errorCode = 52;
 
   beforeEach(async () => {

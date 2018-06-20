@@ -14,6 +14,12 @@ const rm = (path) =>
 
 const PLATFORM_URL = 'https://celtia.zetapush.com/zbo/pub/business';
 
+/**
+ * Init a new application
+ * @param {string} developerLogin
+ * @param {string} developerPassword
+ * @param {string} dir Name of the application folder
+ */
 const npmInit = (developerLogin, developerPassword, dir) => {
   if (npmVersion().major < 5) {
     throw new Error('Minimum required npm version is 5.6.0');
@@ -68,11 +74,13 @@ const npmInit = (developerLogin, developerPassword, dir) => {
   return cmd;
 };
 
+/**
+ * Run 'zeta push' command
+ * @param {string} dir Full path of the application folder
+ */
 const zetaPush = (dir) => {
   try {
-    execa.shellSync('npm run deploy -- -vvv', {
-      cwd: '.generated-projects/' + dir,
-    });
+    execa.shellSync('npm run deploy -- -vvv', { cwd: dir });
     return 0;
   } catch (err) {
     console.error(err);
@@ -80,11 +88,13 @@ const zetaPush = (dir) => {
   }
 };
 
+/**
+ * Run 'zeta run' command
+ * @param {string} dir Full path of the application folder
+ */
 const zetaRun = async (dir) => {
   try {
-    execa.shellSync('npm run start -- -vvv', {
-      cwd: '.generated-projects/' + dir,
-    });
+    execa.shellSync('npm run start -- -vvv', { cwd: dir });
     return 0;
   } catch (err) {
     console.error(err);
@@ -92,60 +102,67 @@ const zetaRun = async (dir) => {
   }
 };
 
+/**
+ * Read the .zetarc file of an application
+ * @param {string} dir Full path of the application folder
+ */
 const readZetarc = async (dir) => {
-  const content = await readFile(`.generated-projects/${dir}/.zetarc`, {
+  const content = await readFile(`${dir}/.zetarc`, {
     encoding: 'utf-8',
   });
   return JSON.parse(content);
 };
 
+/**
+ * Delete login and password of .zetarc file
+ * @param {string} dir Full path of the application folder
+ */
 const deleteAccountFromZetarc = async (dir) => {
-  const content = await readFile(`.generated-projects/${dir}/.zetarc`, {
-    encoding: 'utf-8',
-  });
+  const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
   let jsonContent = JSON.parse(content);
 
   delete jsonContent.developerLogin;
   delete jsonContent.developerPassword;
 
-  await writeFile(
-    `.generated-projects/${dir}/.zetarc`,
-    JSON.stringify(jsonContent),
-    { encoding: 'utf-8' },
-  );
+  await writeFile(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
+    encoding: 'utf-8',
+  });
 
   return jsonContent;
 };
 
+/**
+ * Update the appName in the .zetarc
+ * @param {string} dir Full path of the application folder
+ * @param {string} appName new appName in the .zetarc
+ */
 const setAppNameToZetarc = async (dir, appName) => {
-  const content = await readFile(`.generated-projects/${dir}/.zetarc`, {
-    encoding: 'utf-8',
-  });
+  const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
   let jsonContent = JSON.parse(content);
   jsonContent.appName = appName;
 
-  await writeFile(
-    `.generated-projects/${dir}/.zetarc`,
-    JSON.stringify(jsonContent),
-    { encoding: 'utf-8' },
-  );
+  await writeFile(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
+    encoding: 'utf-8',
+  });
 
   return jsonContent;
 };
 
+/**
+ * Update ZetaPush account in the .zetarc
+ * @param {string} dir Full path of the application folder
+ * @param {string} login
+ * @param {string} password
+ */
 const setAccountToZetarc = async (dir, login, password) => {
-  const content = await readFile(`.generated-projects/${dir}/.zetarc`, {
-    encoding: 'utf-8',
-  });
+  const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
   let jsonContent = JSON.parse(content);
   jsonContent.developerLogin = login;
   jsonContent.developerPassword = password;
 
-  await writeFile(
-    `.generated-projects/${dir}/.zetarc`,
-    JSON.stringify(jsonContent),
-    { encoding: 'utf-8' },
-  );
+  await writeFile(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
+    encoding: 'utf-8',
+  });
 
   return jsonContent;
 };
