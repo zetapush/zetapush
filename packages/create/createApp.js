@@ -263,7 +263,7 @@ function init(
   console.log(chalk.cyan('  cd'), cdpath);
   console.log(`  ${chalk.cyan(`npm run start`)}`);
   console.log();
-  console.log('Happy hacking!');
+  console.log('Enjoy, Celtia is on your back !');
 };
 
 function run(
