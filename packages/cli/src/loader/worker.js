@@ -19,7 +19,6 @@ let last = Date.now();
  */
 const load = (command) => {
   const id = cwd(command.worker);
-  console.log('load', id);
   let worker = require(id);
   if (module.hot) {
     module.hot.accept(id, (filepath) => {
