@@ -6,7 +6,6 @@
       "ignore": [
         "@zetapush/example",
         "@zetapush/integration",
-        "project-nominal-case",
         "*.md",
         "test/**"
       ],
@@ -16,6 +15,5 @@
   },
   "packages": [
     "packages/*",
-    "packages/integration/.generated-projects/*"
   ]
 }
