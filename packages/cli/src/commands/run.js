@@ -83,25 +83,30 @@ const run = (command, config, declaration) => {
     .then((instance) => {
       spinner.stop();
       let previous = getDeploymentIdList(declaration);
-      WorkerLoader.events.on('reload', async (reloaded) => {
+      WorkerLoader.events.on('reload', (reloaded) => {
         spinner.text = `Reloading worker... \n`;
         spinner.start();
-        try {
-          let next = getDeploymentIdList(reloaded);
-          const deploymentListHasChange = !equals(previous, next);
-          if (deploymentListHasChange) {
-            await createServices(client, config, reloaded);
-          }
-          // Create a new worker instance
-          const worker = instanciate(client, reloaded);
-          instance.setWorker(worker);
-          // Update previous deployment id list
-          previous = next;
-        } catch (exception) {
-          warn('Fail to reload worker');
+        let next = getDeploymentIdList(reloaded);
+        const deploymentListHasChange = !equals(previous, next);
+        const tasks = [];
+        if (deploymentListHasChange) {
+          tasks.push(createServices(client, config, reloaded));
         }
-        info('Worker is up!');
-        spinner.stop();
+        Promise.all(tasks)
+          .then(() => {
+            // Create a new worker instance
+            const worker = instanciate(client, reloaded);
+            instance.setWorker(worker);
+            // Update previous deployment id list
+            previous = next;
+            // Stop spiner
+            spinner.stop();
+            info('Worker is up!');
+          })
+          .catch(() => {
+            spinner.stop();
+            warn('Fail to reload worker');
+          });
       });
       info('Worker is up!');
       if (command.httpServer) {
