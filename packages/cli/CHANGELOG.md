@@ -3,17 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.25.3](https://github.com/zetapush/zetapush/compare/v0.25.2...v0.25.3) (2018-06-19)
+## [0.25.4](https://github.com/zetapush/zetapush/compare/v0.25.3...v0.25.4) (2018-06-20)
 
 
 ### Bug Fixes
 
-* **livereload:** support livereload on new services ([abdbf1f](https://github.com/zetapush/zetapush/commit/abdbf1f))
-
-
-### Features
-
-* **create:** add developerLogin as prompted value ([8932b78](https://github.com/zetapush/zetapush/commit/8932b78)), closes [#49](https://github.com/zetapush/zetapush/issues/49)
+* **hot-module-replacement:** improve hmr support ([542d49c](https://github.com/zetapush/zetapush/commit/542d49c))
 
 
 
