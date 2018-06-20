@@ -74,6 +74,13 @@ const npmInit = (developerLogin, developerPassword, dir) => {
   return cmd;
 };
 
+const npmInstall = (dir) => {
+  cmd = execa('npm', ['i', '--save'], { cwd: '.generated-projects/' + dir });
+  cmd.stdout.pipe(process.stdout);
+  cmd.stderr.pipe(process.stdout);
+  return cmd;
+};
+
 /**
  * Run 'zeta push' command
  * @param {string} dir Full path of the application folder
@@ -267,4 +274,6 @@ module.exports = {
   setAppNameToZetarc,
   setAccountToZetarc,
   Runner,
+  createZetarc,
+  npmInstall,
 };
