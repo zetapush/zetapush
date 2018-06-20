@@ -24,17 +24,16 @@ describe(`As developer with
     async () => {
       // 1) npm init
       await npmInit(this.developerLogin, this.developerPassword, projectDir);
+      let zetarc = await readZetarc(projectDir);
+      expect(zetarc).toBeTruthy();
+      expect(zetarc.developerLogin).toBe(this.developerLogin);
+      expect(zetarc.developerPassword).toBe(this.developerPassword);
 
       // 2) zeta push
       await zetaPush(projectDir);
 
-      let zetarc = await readZetarc(projectDir);
-      expect(zetarc).toBeTruthy();
-      expect(zetarc.appName).toBeTruthy();
-      expect(zetarc.developerLogin).toBe(this.developerLogin);
-      expect(zetarc.developerPassword).toBe(this.developerPassword);
-
       // 3) check using a client
+      zetarc = await readZetarc(projectDir);
       this.client = new WeakClient({
         ...zetarc,
         transports,

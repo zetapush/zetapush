@@ -12,6 +12,8 @@ const rm = (path) =>
     rimraf(path, (failure) => (failure ? reject(failure) : resolve())),
   );
 
+const PLATFORM_URL = 'https://celtia.zetapush.com/zbo/pub/business';
+
 const npmInit = (developerLogin, developerPassword, dir) => {
   if (npmVersion().major < 5) {
     throw new Error('Minimum required npm version is 5.6.0');
@@ -154,6 +156,21 @@ const npmVersion = () => {
   return { major, minor, patch };
 };
 
+const createZetarc = (developerLogin, developerPassword, dir) => {
+  fs.writeFileSync(
+    dir + '/.zetarc',
+    JSON.stringify(
+      {
+        platformUrl: PLATFORM_URL,
+        developerLogin,
+        developerPassword,
+      },
+      null,
+      2,
+    ),
+  );
+};
+
 /**
  * Run a local worker asynchronously with run()
  * wait for it to be up with waitForWorkerUp()
@@ -162,6 +179,7 @@ const npmVersion = () => {
  *   const runner = new Runner('./myProject');
  *   runner.run();
  *   await runner.waitForWorkerUp();
+ *   doStuff();
  *   await runner.stop();
  *
  */
@@ -172,9 +190,8 @@ class Runner {
   }
 
   async waitForWorkerUp() {
-    return new Promise((resolve) => {
+    return new Promise((resolve, err) => {
       const getStatus = async () => {
-        // console.log("is up ? ")
         const creds = await readZetarc(this.dir);
         if (creds.appName != undefined) {
           const res = await fetch({
@@ -189,7 +206,6 @@ class Runner {
                     res.nodes[node].items[item].liveData['queue.workers']
                       .length > 0
                   ) {
-                    // console.log("it's up !");
                     resolve();
                     return;
                   }
@@ -212,13 +228,15 @@ class Runner {
     });
   }
 
-  run() {
-    console.log('RUN');
+  run(quiet = false) {
     this.cmd = execa('npm', ['run', 'start', '--', '-vvv'], {
       cwd: '.generated-projects/' + this.dir,
     });
-    this.cmd.stdout.pipe(process.stdout);
-    this.cmd.stderr.pipe(process.stdout);
+    if (!quiet) {
+      this.cmd.stdout.pipe(process.stdout);
+      this.cmd.stderr.pipe(process.stdout);
+    }
+    return this.cmd;
   }
 }
 
