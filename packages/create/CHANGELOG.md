@@ -3,18 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.26.0](https://github.com/zetapush/zetapush/compare/v0.25.6...v0.26.0) (2018-06-21)
-
-
-### Features
-
-* **typescript:** add typescript command in generated project ([bde95ad](https://github.com/zetapush/zetapush/commit/bde95ad))
-* **typescript:** initial support for typescript ([09c01bc](https://github.com/zetapush/zetapush/commit/09c01bc))
-* **typescript:** transpile code on project install ([58be352](https://github.com/zetapush/zetapush/commit/58be352))
-* **typescript:** update worker example ([f088125](https://github.com/zetapush/zetapush/commit/f088125))
+## [0.26.1](https://github.com/zetapush/zetapush/compare/v0.26.0...v0.26.1) (2018-06-21)
 
 
 
+
+**Note:** Version bump only for package @zetapush/create
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
