@@ -1,14 +1,23 @@
-const { zetaPush, zetaRun, setAccountToZetarc } = require('../utils/commands');
+const {
+  zetaPush,
+  zetaRun,
+  setAccountToZetarc,
+  npmInstall,
+} = require('../utils/commands');
 
 describe(`As developer with
         - no developerLogin
     `, () => {
-  const projectDir = 'empty-projects/empty-app';
+  const projectDir = 'testing-projects/empty-app';
   const errorCode = 51;
 
   beforeEach(async () => {
     this.developerLogin = '';
     this.developerPassword = 'password';
+    this.version = process.env.ZETAPUSH_VERSION;
+
+    // Install dependencies
+    await npmInstall(projectDir, this.version);
 
     // Update zetarc with wrong account
     await setAccountToZetarc(
@@ -16,7 +25,7 @@ describe(`As developer with
       this.developerLogin,
       this.developerPassword,
     );
-  });
+  }, 10 * 60 * 1000);
 
   it(
     "Should failed with errorCode 'ACCOUNT-01' (51) for 'zeta push'",

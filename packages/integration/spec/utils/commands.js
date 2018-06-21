@@ -71,13 +71,7 @@ const npmInit = (developerLogin, developerPassword, dir) => {
   }
   cmd.stdout.pipe(process.stdout);
   cmd.stderr.pipe(process.stdout);
-  return cmd;
-};
 
-const npmInstall = (dir) => {
-  cmd = execa('npm', ['i', '--save'], { cwd: '.generated-projects/' + dir });
-  cmd.stdout.pipe(process.stdout);
-  cmd.stderr.pipe(process.stdout);
   return cmd;
 };
 
@@ -164,8 +158,18 @@ const setAppNameToZetarc = async (dir, appName) => {
 const setAccountToZetarc = async (dir, login, password) => {
   const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
   let jsonContent = JSON.parse(content);
-  jsonContent.developerLogin = login;
-  jsonContent.developerPassword = password;
+
+  if (login.length > 0) {
+    jsonContent.developerLogin = login;
+  } else {
+    delete jsonContent.developerLogin;
+  }
+
+  if (password.length > 0) {
+    jsonContent.developerPassword = password;
+  } else {
+    delete jsonContent.developerPassword;
+  }
 
   await writeFile(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
     encoding: 'utf-8',
@@ -283,6 +287,32 @@ class Runner {
     return this.cmd;
   }
 }
+
+/**
+ * Update the package.json with latest version and install npm dependencies
+ * @param {string} dir Full path of the application folder
+ * @param {string} version Version of the ZetaPush dependency
+ */
+const npmInstall = async (dir, version) => {
+  await rm(`${dir}/node_modules/`);
+
+  const content = await readFile(`${dir}/package.json`, { encoding: 'utf-8' });
+  let jsonContent = JSON.parse(content);
+  jsonContent.dependencies['@zetapush/cli'] = version;
+  jsonContent.dependencies['@zetapush/platform'] = version;
+
+  await writeFile(`${dir}/package.json`, JSON.stringify(jsonContent), {
+    encoding: 'utf-8',
+  });
+
+  try {
+    execa.shellSync('npm install', { cwd: dir });
+    return 0;
+  } catch (err) {
+    console.error(err);
+    return err.code;
+  }
+};
 
 module.exports = {
   rm,
