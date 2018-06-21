@@ -18,7 +18,7 @@ describe(`As developer with
   });
 
   it(
-    `should be able to
+    `should be able to 
       - have a new hello-world project
       - push hello-world
       - use published hello-world custom cloud services`,

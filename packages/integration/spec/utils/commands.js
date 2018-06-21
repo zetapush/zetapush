@@ -195,6 +195,26 @@ const createZetarc = (developerLogin, developerPassword, dir) => {
   );
 };
 
+const nukeApp = (dir) => {
+  return new Promise(async (resolve, reject) => {
+    const creds = await readZetarc(dir);
+    if (creds.appName != undefined) {
+      try {
+        const res = await fetch({
+          method: 'DELETE',
+          config: creds,
+          pathname: `orga/business/nuke/${creds.appName}`,
+        });
+        resolve(res);
+      } catch (err) {
+        resolve(err); //TODO : make reject when orga/business/nuke will send JSON response
+      }
+    } else {
+      reject(new Error('No appName in zetarc'));
+    }
+  });
+};
+
 /**
  * Run a local worker asynchronously with run()
  * wait for it to be up with waitForWorkerUp()
@@ -276,4 +296,5 @@ module.exports = {
   Runner,
   createZetarc,
   npmInstall,
+  nukeApp,
 };

@@ -1,12 +1,11 @@
 const { WeakClient } = require('@zetapush/core');
 const transports = require('@zetapush/cometd/lib/node/Transports');
-const { rm, npmInit, zetaPush, readZetarc, Runner, createZetarc, npmInstall} = require('./utils/commands')
+const { rm, npmInit, zetaPush, readZetarc, Runner, createZetarc, npmInstall, nukeApp} = require('./utils/commands')
 const PATTERN = /Hello World from JavaScript (\d+)/;
 const fs = require('fs');
 const copydir = require('copy-dir');
 
 const sleep = (millis) => {return new Promise(resolve => setTimeout(resolve, millis));}
-
 
 describe(`As developer with 
       - valid account
@@ -45,6 +44,7 @@ describe(`As developer with
       failure = true;
     } 
     await runner.stop();
+    await nukeApp(basicWorkerDir);
     expect(failure).toBe(false);
   }, 60 * 1000 * 10);
 
@@ -72,6 +72,7 @@ describe(`As developer with
       failure = true;
     } 
     await runner.stop();
+    await nukeApp(brokenWorkerDir);
     expect(failure).toBe(true);
   }, 60 * 1000 * 2);
 
@@ -90,6 +91,7 @@ describe(`As developer with
       failure = true;
     }
     await runner.stop();
+    await nukeApp(brokenWorkerInitDir);
     expect(failure).toBe(true);
   }, 60 * 1000 * 10);
 
@@ -119,6 +121,7 @@ describe(`As developer with
     sendHello();
     await sleep(5000);
     await runner.stop();
+    await nukeApp(exitWorkerDir);
     expect(helloReceived).toBe(false);
   }, 60 * 1000 * 10);
 
@@ -149,6 +152,7 @@ describe(`As developer with
     }
     sendHello();
     sleep(5 * 1000);
+    await nukeApp(shutdownWorkerDir);
     expect(helloReceived).toBe(false);
   }, 60 * 1000 * 10);
 });
