@@ -78,7 +78,7 @@ pipeline {
       }
       steps {
         script {
-          sh "pwd"
+          sh 'pwd'
           def json = readJSON(file: ./lerna.json)
           env.ZETAPUSH_VERSION = json.version
           sh "echo ZetaPush version : ${env.ZETAPUSH_VERSION}"
