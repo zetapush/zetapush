@@ -292,9 +292,7 @@ function run(
 
   console.log('Installing packages. This might take a couple of minutes.');
   console.log(
-    `Installing ${chalk.cyan(`@zetapush/cli${versionStr}`)}, and ${chalk.cyan(
-      `@zetapush/platform${versionStr}`
-    )}...`
+    `Installing ${dependencies.map((dependency) => `${chalk.cyan(dependency)}`).join(', ')}.`
   );
   console.log();
 
