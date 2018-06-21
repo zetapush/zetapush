@@ -6,11 +6,3 @@ client.connect().then(() =>
 document.querySelector('.js-Hello').addEventListener('click', async () => {
   console.log(await api.hello());
 });
-document.querySelector('.js-Add').addEventListener('click', async () => {
-  console.log(await api.add({
-    name: prompt('Name?')
-  }));
-});
-document.querySelector('.js-List').addEventListener('click', async () => {
-  console.log(await api.list());
-});

@@ -1,0 +1,4 @@
+# Vendor
+/node_modules/
+# ZetaPush Config
+.zetarc
