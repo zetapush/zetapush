@@ -8,6 +8,8 @@ pipeline {
 
   environment {
     ZETAPUSH_DEVELOPER_ACCOUNT = credentials('jenkins-zetapush-celtia-account')
+    ZETAPUSH_VERSION = '*'
+    
   }
 
   stages {
@@ -66,6 +68,24 @@ pipeline {
       }
     }
 
+    stage('Update ZetaPush version') {
+      agent { 
+        docker {
+          image 'node:10.4.1'
+          label 'docker'
+          args '-u 0:0'
+        }
+      }
+      steps {
+        script {
+          sh "pwd"
+          def json = readJSON(file: ./lerna.json)
+          env.ZETAPUSH_VERSION = json.version
+          sh "echo ZetaPush version : ${env.ZETAPUSH_VERSION}"
+        }
+      }
+    }
+
     stage('Clear again and fix permissions') {
       agent { 
         docker {
@@ -93,7 +113,7 @@ pipeline {
           steps {
             dir('packages/integration') {
               sh 'npm i'
-              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' npm run test"
+              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' ZETAPUSH_VERSION='${env.ZETAPUSH_VERSION}' npm run test"
             }
           }
           post {
@@ -114,6 +134,7 @@ pipeline {
               bat 'npm i'
               bat "set ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}'"
               bat "set ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}'"
+              bat "set ZETAPUSH_VERSION='${env.ZETAPUSH_VERSION}'"
               bat 'npm run test'
             }
           }
@@ -135,6 +156,7 @@ pipeline {
               bat 'npm i'
               bat "set ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}'"
               bat "set ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}'"
+              bat "set ZETAPUSH_VERSION='${env.ZETAPUSH_VERSION}'"
               bat 'npm run test'
             }
           }
@@ -154,7 +176,7 @@ pipeline {
           steps {
             dir('packages/integration') {
               sh 'npm i'
-              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' npm run test"
+              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' ZETAPUSH_VERSION='${env.ZETAPUSH_VERSION}' npm run test"
             }
           }
           post {
