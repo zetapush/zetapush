@@ -117,6 +117,11 @@ function createApp(name, zetarc, version, command) {
     },
     dependencies: {}
   };
+  // Firstclass TypeScript Support
+  if (!command.javascript) {
+    packageJson.scripts.postinstall = 'tsc';
+    packageJson.scripts.predeploy = 'tsc';
+  }
   // Create package.json
   fs.writeFileSync(
     path.join(root, 'package.json'),
