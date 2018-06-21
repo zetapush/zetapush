@@ -119,7 +119,7 @@ const normalize = (declaration) => {
     };
   } else if (typeof declaration === Object.name.toLowerCase()) {
     if (declaration.__esModule === true) {
-      warn(`ES Modules are not yet fully supported`);
+      // warn(`ES Modules are not yet fully supported`);
       // Support ES Module
       if (isFunction(declaration.default)) {
         return {
@@ -147,9 +147,7 @@ const instanciate = (client, declaration) => {
   try {
     const cleaned = clean(declaration);
     const output = analyze(cleaned);
-    info('instanciate.output', output);
     const providers = resolve(client, output);
-    info('instanciate.providers', providers);
     const injector = ReflectiveInjector.resolveAndCreate(providers);
     singleton = Object.entries(cleaned).reduce(
       (instance, [namespace, CustomCloudService]) => {
