@@ -1,7 +1,9 @@
+require('reflect-metadata');
+
 const { ReflectiveInjector } = require('@zetapush/platform');
 
 const DEFAULTS = require('./defaults');
-const { error, warn } = require('./log');
+const { log, error, info, warn } = require('./log');
 
 class ScanOutput {
   constructor() {
@@ -10,22 +12,33 @@ class ScanOutput {
   }
 }
 
+const getInjectionMetadata = (target) =>
+  Reflect.hasMetadata('design:paramtypes', target)
+    ? Reflect.getMetadata('design:paramtypes', target)
+    : target.parameters;
+
+const isToken = (provider) =>
+  Boolean(provider) &&
+  !isFunction(provider) &&
+  typeof provider.token === Object.name;
+
 const scan = (CustomCloudService, output = new ScanOutput()) => {
   if (isFunction(CustomCloudService)) {
-    const { parameters } = CustomCloudService;
-    if (Array.isArray(parameters)) {
-      parameters.forEach((injected) => {
-        if (isFunction(injected.token)) {
-          if (Array.isArray(injected.token.parameters)) {
+    const metadata = getInjectionMetadata(CustomCloudService);
+    if (Array.isArray(metadata)) {
+      metadata.forEach((injected) => {
+        const provider = isToken(injected) ? injected.token : injected;
+        if (isFunction(provider)) {
+          if (Array.isArray(getInjectionMetadata(provider))) {
             // CustomCloudService with DI
-            scan(injected.token, output);
-            output.custom.push(injected.token);
-          } else if (injected.token.DEFAULT_DEPLOYMENT_ID) {
+            scan(provider, output);
+            output.custom.push(provider);
+          } else if (provider.DEFAULT_DEPLOYMENT_ID) {
             // Platform CloudService
-            output.platform.push(injected.token);
+            output.platform.push(provider);
           } else {
             // CustomCloudService without DI
-            output.custom.push(injected.token);
+            output.custom.push(provider);
           }
         }
       });
@@ -110,7 +123,7 @@ const normalize = (declaration) => {
       // Support ES Module
       if (isFunction(declaration.default)) {
         return {
-          [DEFAULTS.DEFAULT_NAMESPACE]: declaration,
+          [DEFAULTS.DEFAULT_NAMESPACE]: declaration.default,
         };
       } else if (typeof declaration.default === Object.name.toLowerCase()) {
         return declaration.default;
@@ -130,17 +143,26 @@ const normalize = (declaration) => {
  * @param {WorkerDeclaration} declaration
  */
 const instanciate = (client, declaration) => {
-  const cleaned = clean(declaration);
-  const output = analyze(cleaned);
-  const providers = resolve(client, output);
-  const injector = ReflectiveInjector.resolveAndCreate(providers);
-  return Object.entries(cleaned).reduce(
-    (instance, [namespace, CustomCloudService]) => {
-      instance[namespace] = injector.get(CustomCloudService);
-      return instance;
-    },
-    {},
-  );
+  let singleton;
+  try {
+    const cleaned = clean(declaration);
+    const output = analyze(cleaned);
+    info('instanciate.output', output);
+    const providers = resolve(client, output);
+    info('instanciate.providers', providers);
+    const injector = ReflectiveInjector.resolveAndCreate(providers);
+    singleton = Object.entries(cleaned).reduce(
+      (instance, [namespace, CustomCloudService]) => {
+        instance[namespace] = injector.get(CustomCloudService);
+        return instance;
+      },
+      {},
+    );
+  } catch (ex) {
+    error('instanciate', ex);
+  }
+  log('instanciate', singleton);
+  return singleton;
 };
 
 module.exports = {
