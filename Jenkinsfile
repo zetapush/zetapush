@@ -69,7 +69,7 @@ pipeline {
     }
 
     stage('Update ZetaPush version') {
-      agent { 
+      agent {
         docker {
           image 'node:10.4.1'
           label 'docker'
