@@ -119,7 +119,6 @@ function createApp(name, zetarc, version, command) {
   };
   // Firstclass TypeScript Support
   if (!command.javascript) {
-    packageJson.scripts.postinstall = 'tsc';
     packageJson.scripts.predeploy = 'tsc';
   }
   // Create package.json
@@ -300,6 +299,7 @@ function run(
     .then(() =>
       init(root, appName, originalDirectory, command)
     )
+    .then(() => command.javascript ? null : transpile())
     .catch(reason => {
       console.log();
       console.log('Aborting installation.');
@@ -337,6 +337,25 @@ function run(
       console.log('Done.');
       process.exit(1);
     });
+}
+
+function transpile() {
+  return new Promise((resolve, reject) => {
+    const command = 'npx';
+    const args = [
+      'tsc'
+    ];
+    const child = spawn(command, args, { stdio: 'inherit' });
+    child.on('close', code => {
+      if (code !== 0) {
+        reject({
+          command: `${command} ${args.join(' ')}`,
+        });
+        return;
+      }
+      resolve();
+    });
+  })
 }
 
 function install(dependencies) {
