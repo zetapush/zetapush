@@ -3,14 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.25.6](https://github.com/zetapush/zetapush/compare/v0.25.4...v0.25.6) (2018-06-20)
+# [0.26.0](https://github.com/zetapush/zetapush/compare/v0.25.6...v0.26.0) (2018-06-21)
 
 
-### Bug Fixes
+### Features
 
-* **cli:** fix lerna bootstrap ([002fcb2](https://github.com/zetapush/zetapush/commit/002fcb2))
-* **config:** fix lerna.json config ([be97508](https://github.com/zetapush/zetapush/commit/be97508))
-* **create:** add empty favicon ([2bd838a](https://github.com/zetapush/zetapush/commit/2bd838a))
+* **typescript:** add typescript command in generated project ([bde95ad](https://github.com/zetapush/zetapush/commit/bde95ad))
+* **typescript:** initial support for typescript ([09c01bc](https://github.com/zetapush/zetapush/commit/09c01bc))
+* **typescript:** transpile code on project install ([58be352](https://github.com/zetapush/zetapush/commit/58be352))
+* **typescript:** update worker example ([f088125](https://github.com/zetapush/zetapush/commit/f088125))
 
 
 
