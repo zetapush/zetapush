@@ -3,12 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.26.1](https://github.com/zetapush/zetapush/compare/v0.26.0...v0.26.1) (2018-06-21)
+# [0.27.0](https://github.com/zetapush/zetapush/compare/v0.26.1...v0.27.0) (2018-06-22)
+
+
+### Features
+
+* **typescript:** firstClass typescript support ([3dec6e7](https://github.com/zetapush/zetapush/commit/3dec6e7))
 
 
 
-
-**Note:** Version bump only for package zetapush
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
