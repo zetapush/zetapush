@@ -3,12 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.27.0](https://github.com/zetapush/zetapush/compare/v0.26.1...v0.27.0) (2018-06-22)
+## [0.27.1](https://github.com/zetapush/zetapush/compare/v0.27.0...v0.27.1) (2018-06-22)
 
 
-### Features
+### Bug Fixes
 
-* **typescript:** firstClass typescript support ([3dec6e7](https://github.com/zetapush/zetapush/commit/3dec6e7))
+* **typescript:** support main value for ts project ([8f35ef4](https://github.com/zetapush/zetapush/commit/8f35ef4))
 
 
 
