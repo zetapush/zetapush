@@ -314,6 +314,21 @@ const npmInstall = async (dir, version) => {
   }
 };
 
+const npmInstallLatestVersion = async (dir) => {
+  await rm(`${dir}/node_modules/`);
+
+  try {
+    execa.shellSync('npm install @zetapush/cli@canary --save', { cwd: dir });
+    execa.shellSync('npm install @zetapush/platform@canary --save', {
+      cwd: dir,
+    });
+    return 0;
+  } catch (err) {
+    console.error(err);
+    return err.code;
+  }
+};
+
 module.exports = {
   rm,
   npmInit,
@@ -327,4 +342,5 @@ module.exports = {
   createZetarc,
   npmInstall,
   nukeApp,
+  npmInstallLatestVersion,
 };

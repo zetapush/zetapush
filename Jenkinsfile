@@ -8,7 +8,6 @@ pipeline {
 
   environment {
     ZETAPUSH_DEVELOPER_ACCOUNT = credentials('jenkins-zetapush-celtia-account')
-    ZETAPUSH_VERSION = '*'
     
   }
 
@@ -67,25 +66,7 @@ pipeline {
         }
       }
     }
-
-    stage('Update ZetaPush version') {
-      agent {
-        docker {
-          image 'node:10.4.1'
-          label 'docker'
-          args '-u 0:0'
-        }
-      }
-      steps {
-        script {
-          sh 'pwd'
-          def json = readJSON(file: ./lerna.json)
-          env.ZETAPUSH_VERSION = json.version
-          sh "echo ZetaPush version : ${env.ZETAPUSH_VERSION}"
-        }
-      }
-    }
-
+    
     stage('Clear again and fix permissions') {
       agent { 
         docker {

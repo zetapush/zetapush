@@ -2,7 +2,7 @@ const {
   zetaPush,
   zetaRun,
   setAccountToZetarc,
-  npmInstall,
+  npmInstallLatestVersion,
 } = require('../utils/commands');
 
 describe(`As developer with
@@ -14,10 +14,9 @@ describe(`As developer with
   beforeEach(async () => {
     this.developerLogin = 'accountnotexists@zetapush.com';
     this.developerPassword = 'password';
-    this.version = process.env.ZETAPUSH_VERSION;
 
     // Install dependencies
-    await npmInstall(projectDir, this.version);
+    await npmInstallLatestVersion(projectDir);
 
     // Update zetarc with wrong account
     await setAccountToZetarc(
