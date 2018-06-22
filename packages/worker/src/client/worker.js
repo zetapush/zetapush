@@ -49,6 +49,7 @@ export class WorkerClient extends Client {
    * @return {() => void}
    */
   subscribeTaskWorker(worker, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
+    console.log('subscribeTaskWorker', worker);
     const instance = new WorkerInstance({
       timeout: this.timeout,
       worker,
