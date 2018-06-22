@@ -106,7 +106,7 @@ function createApp(name, zetarc, version, command) {
   const packageJson = {
     name: appName,
     version: '0.1.0',
-    main: 'worker/index.js',
+    main: `worker/index.${command.javascript ? 'js' : 'ts'}`,
     private: true,
     scripts: {
       deploy: 'zeta push',
