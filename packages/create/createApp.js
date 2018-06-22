@@ -18,8 +18,6 @@ function increaseVerbosity(v, total) {
   return total + 1;
 }
 
-const identity = (value) => value;
-
 const pkg = require('./package.json');
 
 // These files should be allowed to remain on a failed install,
@@ -117,10 +115,6 @@ function createApp(name, zetarc, version, command) {
     },
     dependencies: {}
   };
-  // Firstclass TypeScript Support
-  if (!command.javascript) {
-    packageJson.scripts.predeploy = 'tsc';
-  }
   // Create package.json
   fs.writeFileSync(
     path.join(root, 'package.json'),
@@ -299,7 +293,6 @@ function run(
     .then(() =>
       init(root, appName, originalDirectory, command)
     )
-    .then(() => command.javascript ? null : transpile())
     .catch(reason => {
       console.log();
       console.log('Aborting installation.');
@@ -337,25 +330,6 @@ function run(
       console.log('Done.');
       process.exit(1);
     });
-}
-
-function transpile() {
-  return new Promise((resolve, reject) => {
-    const command = 'npx';
-    const args = [
-      'tsc'
-    ];
-    const child = spawn(command, args, { stdio: 'inherit' });
-    child.on('close', code => {
-      if (code !== 0) {
-        reject({
-          command: `${command} ${args.join(' ')}`,
-        });
-        return;
-      }
-      resolve();
-    });
-  })
 }
 
 function install(dependencies) {

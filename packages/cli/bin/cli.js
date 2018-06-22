@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// FirstClass TypeScript Support
+require('ts-node').register({});
+
 const program = require('commander');
 
 const { version } = require('../package.json');

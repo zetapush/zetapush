@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/example",
-  "main": "worker/index.js",
+  "main": "worker/index.ts",
   "private": true,
   "scripts": {
     "deploy": "zeta push",

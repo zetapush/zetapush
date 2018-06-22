@@ -14,7 +14,7 @@ export default class Api {
     return this.storage.list();
   }
   hello() {
-    return `Hello World from TypeScript ${this.calendar.getNow()} Updated`;
+    return `Hello World from TypeScript ${this.calendar.getNow()}`;
   }
   reduce(list: number[]) {
     return list.reduce((cumulator, value) => cumulator + value, 0);
