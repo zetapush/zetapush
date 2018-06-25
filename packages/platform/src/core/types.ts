@@ -5,7 +5,7 @@ export interface Impersonable {
 
 export interface Paginable {
   /** Pagination information */
-  page: Pagination;
+  page?: Pagination;
 }
 
 export interface PageContent<T> {
@@ -19,11 +19,11 @@ export type PageDirection = 'ASC' | 'DESC';
 
 export interface Pagination {
   /** Page size (minimum 1) */
-  pageSize: number;
+  pageSize?: number;
   /** Page number (zero-based) */
-  pageNumber: number;
+  pageNumber?: number;
   /** Sort direction. Default is ASC when not specified. */
-  direction: PageDirection;
+  direction?: PageDirection;
 }
 
 export type Resource = string;
