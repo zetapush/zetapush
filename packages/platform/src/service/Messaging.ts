@@ -1,5 +1,18 @@
 import { Service } from '../core/index';
 
+type Target = string | string[];
+
+type MessageData = Map<string, Object>;
+
+interface Message {
+  /** Target user or group. Can be either a string, an array of string or an object that contains an array of string. The 'target' property of the output message will have exactly the same form. Target user or group, in the form userId or groupDeploymentId:owner:group. */
+  target: Target;
+  /** Optional (alphanumeric) channel name */
+  channel?: string;
+  /** Data to be sent. Message payload. object with a free format. */
+  data: MessageData;
+}
+
 /**
  * Messaging service
  *
@@ -32,7 +45,7 @@ export class Messaging extends Service {
    * Sends the given message to the specified target on the given (optional) channel.
    * The administratively given default channel name is used when none is provided in the message itself.
    * */
-  send({ target, channel, data }) {
+  send({ target, channel, data }: Message): Promise<void> {
     return this.$publish('send', { target, channel, data });
   }
 }

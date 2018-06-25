@@ -1,4 +1,51 @@
-import { Service } from '../core/index';
+import { Service, Impersonable, Paginable, PageContent } from '../core/index';
+
+type StackData = Map<string, Object>;
+
+type StackGuid = string;
+
+interface StackRequest extends Impersonable {
+  /** Stack name. */
+  stack: string;
+}
+
+interface StackItemAddInput extends StackRequest {
+  /** Stored data */
+  data: StackData;
+}
+
+interface StackItemAddOutput extends StackItemAddInput {
+  /** Key of this stack item */
+  guid: StackGuid;
+}
+
+interface StackItemRemove extends StackRequest {
+  /** List of keys of the items to be removed */
+  guids: StackGuid[];
+}
+
+interface StackListRequest extends StackRequest, Paginable {}
+
+interface StackItem {
+  /** Server-generated GUID */
+  guid: StackGuid;
+  /** Insertion timestamp */
+  ts: number;
+  /** Stored data */
+  data: StackData;
+}
+
+interface StackListResponse extends Impersonable {
+  /** Request leading to the result */
+  request: StackListRequest;
+  /** Result for the specified request */
+  result: PageContent<StackItem>;
+}
+
+interface StackListeners extends StackRequest {
+  /** List of userKeys (as in the value of __userKey) or fully qualified group names (the syntax is groupServiceDeploymentId:userKey:group) that will be notified of modifying stack operations */
+  listeners?: string[];
+}
 
 /**
  * Data stacks
@@ -34,7 +81,7 @@ export class Stack extends Service {
    *
    * Returns the whole list of listeners for the given stack.
    * */
-  getListeners({ stack, owner }) {
+  getListeners({ stack, owner }: StackRequest): Promise<StackListeners> {
     return this.$publish('getListeners', { stack, owner });
   }
   /**
@@ -43,7 +90,7 @@ export class Stack extends Service {
    * Returns a paginated list of contents for the given stack.
    * Content is sorted according to the statically configured order.
    * */
-  list({ stack, owner, page }) {
+  list({ stack, owner, page }: StackListRequest): Promise<StackListResponse> {
     return this.$publish('list', { stack, owner, page });
   }
   /**
@@ -51,7 +98,7 @@ export class Stack extends Service {
    *
    * Removes all items from the given stack.
    * */
-  purge({ stack, owner }) {
+  purge({ stack, owner }: StackRequest): Promise<StackRequest> {
     return this.$publish('purge', { stack, owner });
   }
   /**
@@ -60,7 +107,7 @@ export class Stack extends Service {
    * Pushes an item onto the given stack.
    * The stack does not need to be created.
    * */
-  push({ stack, data, owner }) {
+  push({ stack, data, owner }: StackItemAddInput): Promise<StackItemAddOutput> {
     return this.$publish('push', { stack, data, owner });
   }
   /**
@@ -68,7 +115,7 @@ export class Stack extends Service {
    *
    * Removes the item with the given guid from the given stack.
    * */
-  remove({ guids, stack, owner }) {
+  remove({ guids, stack, owner }: StackItemRemove): Promise<StackItemRemove> {
     return this.$publish('remove', { guids, stack, owner });
   }
   /**
@@ -76,7 +123,11 @@ export class Stack extends Service {
    *
    * Sets the listeners for the given stack.
    * */
-  setListeners({ listeners, stack, owner }) {
+  setListeners({
+    listeners,
+    stack,
+    owner,
+  }: StackListeners): Promise<StackListeners> {
     return this.$publish('setListeners', { listeners, stack, owner });
   }
   /**
@@ -85,7 +136,12 @@ export class Stack extends Service {
    * Updates an existing item of the given stack.
    * The item MUST exist prior to the call.
    * */
-  update({ guid, stack, data, owner }) {
+  update({
+    guid,
+    stack,
+    data,
+    owner,
+  }: StackItemAddOutput): Promise<StackItemAddOutput> {
     return this.$publish('update', { guid, stack, data, owner });
   }
 }
