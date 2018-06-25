@@ -316,6 +316,7 @@ const npmInstall = async (dir, version) => {
 
 const npmInstallLatestVersion = async (dir) => {
   await rm(`${dir}/node_modules/`);
+  await clearDependencies(dir);
 
   try {
     execa.shellSync('npm install @zetapush/cli@canary --save', { cwd: dir });
@@ -327,6 +328,21 @@ const npmInstallLatestVersion = async (dir) => {
     console.error(err);
     return err.code;
   }
+};
+
+/**
+ * Remove all installed dependencies
+ * @param {string} dir Full path of the application
+ */
+const clearDependencies = async (dir) => {
+  const content = await readFile(`${dir}/package.json`, { encoding: 'utf-8' });
+
+  let jsonContent = JSON.parse(content);
+  delete jsonContent.dependencies;
+
+  await writeFile(`${dir}/package.json`, JSON.stringify(jsonContent), {
+    encoding: 'utf-8',
+  });
 };
 
 module.exports = {
