@@ -12,9 +12,7 @@
   },
   "dependencies": {
     "@zetapush/cli": "*",
-    "@zetapush/platform": "*"
-  },
-  "devDependencies": {
+    "@zetapush/platform": "*",
     "typescript": "^2.9.1"
   }
 }
