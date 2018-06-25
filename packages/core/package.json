@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/core",
-  "version": "0.27.7",
+  "version": "0.27.8",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush.js",
   "main": "lib/index.js",
@@ -27,8 +27,8 @@
     "test:ci": "karma start karma.conf.js"
   },
   "dependencies": {
-    "@zetapush/cometd": "^0.27.7",
-    "@zetapush/platform": "^0.27.7"
+    "@zetapush/cometd": "^0.27.8",
+    "@zetapush/platform": "^0.27.8"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.51",

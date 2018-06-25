@@ -3,12 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.27.7](https://github.com/zetapush/zetapush/compare/v0.27.6...v0.27.7) (2018-06-25)
+## [0.27.8](https://github.com/zetapush/zetapush/compare/v0.27.7...v0.27.8) (2018-06-25)
 
 
 ### Bug Fixes
 
-* **platform:** update mandatory parameters ([d8f0cfe](https://github.com/zetapush/zetapush/commit/d8f0cfe))
+* **platform:** update group management typing ([13f1972](https://github.com/zetapush/zetapush/commit/13f1972))
+* **platform:** update internal map definition ([b4fc692](https://github.com/zetapush/zetapush/commit/b4fc692))
 
 
 
