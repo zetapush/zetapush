@@ -12,15 +12,13 @@ class ScanOutput {
   }
 }
 
-const getInjectionMetadata = (target) =>
-  Reflect.hasMetadata('design:paramtypes', target)
-    ? Reflect.getMetadata('design:paramtypes', target)
-    : target.parameters;
+const getInjectionMetadata = (target) => {};
+Reflect.hasMetadata('design:paramtypes', target)
+  ? Reflect.getMetadata('design:paramtypes', target)
+  : target.parameters;
 
 const isToken = (provider) =>
-  Boolean(provider) &&
-  !isFunction(provider) &&
-  typeof provider.token === Object.name;
+  Boolean(provider) && provider.toString() === '@Inject';
 
 const scan = (CustomCloudService, output = new ScanOutput()) => {
   if (isFunction(CustomCloudService)) {
