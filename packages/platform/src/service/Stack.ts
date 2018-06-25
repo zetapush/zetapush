@@ -1,7 +1,9 @@
 import { Service } from '../core/index';
 import { Impersonable, Paginable, PageContent } from '../core/types';
 
-type StackData = Map<string, Object>;
+type StackData = {
+  [property: string]: any;
+};
 
 type StackGuid = string;
 
