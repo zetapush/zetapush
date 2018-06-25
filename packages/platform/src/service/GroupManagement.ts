@@ -8,7 +8,7 @@ export interface GroupRelated extends Impersonable {
 
 export interface GroupInfo extends GroupRelated {
   /** Group name, as displayed to the user */
-  groupName: string;
+  groupName?: string;
 }
 
 export interface GroupUsers extends GroupInfo {
