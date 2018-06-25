@@ -3,12 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.27.3](https://github.com/zetapush/zetapush/compare/v0.27.2...v0.27.3) (2018-06-25)
+## [0.27.4](https://github.com/zetapush/zetapush/compare/v0.27.3...v0.27.4) (2018-06-25)
+
+
+### Features
+
+* **platform:** export internal types ([09d0570](https://github.com/zetapush/zetapush/commit/09d0570))
 
 
 
-
-**Note:** Version bump only for package zetapush
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
