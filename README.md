@@ -47,16 +47,6 @@ Run your code on your local platform
 npm run start
 ```
 
-## Register (optionnal)
-
-Register an anonymous account on ZetaPush platform
-
-> Create a .zetarc file which contains developer credentials
-
-```console
-npm run register
-```
-
 ## Default project structure
 
 ```console
@@ -66,7 +56,7 @@ npm run register
   │  ├── index.html
   │  └── index.js
   ├── worker
-  │  └── index.js (api implementation)
+  │  └── index.ts (api implementation)
   └── package.json
 ```
 
@@ -79,8 +69,8 @@ Your server api in a plain old class defining your interface.
 Example:
 
 ```js
-module.exports = class Api {
-  async hello() {
+export default class Api {
+  hello() {
     return `Hello World from JavaScript ${Date.now()}`;
   }
 }
@@ -93,18 +83,12 @@ You can use injected platform services with to following.
 > Dependency injection use [injection-js](https://github.com/mgechev/injection-js)
 
 ```js
-const { Inject, Stack } = require('@zetapush/platform');
+import { Injectable, Stack } from '@zetapush/platform';
 
-module.exports = class Api {
-  static get parameters() {
-    return [
-      new Inject(Stack)
-    ];
-  }
-  constructor(stack) {
-    this.stack = stack;
-  }
-  async push(item) {
+@Injectable()
+export default class Api {
+  constructor(private stack: Stack) {}
+  push(item) {
     return this.stack.push({ stack: 'list', data: item });
   }
 }
