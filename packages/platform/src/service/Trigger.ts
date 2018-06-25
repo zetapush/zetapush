@@ -1,4 +1,12 @@
 import { Service } from '../core/index';
+import { Impersonable } from '../core/types';
+
+export interface EventTrigger extends Impersonable {
+  /** Event name */
+  event: string;
+  /** Event data */
+  data: any;
+}
 
 /**
  * Triggers
@@ -26,5 +34,13 @@ export class Trigger extends Service {
    */
   static get DEFAULT_DEPLOYMENT_ID() {
     return `${Trigger.DEPLOYMENT_TYPE}_0`;
+  }
+  /**
+   * Triggers an event.
+   *
+   * All listeners previously registered for that event will be called, in no particular order.
+   * */
+  trigger({ event, data, owner }: EventTrigger): Promise<void> {
+    return this.$publish('trigger', { event, data, owner });
   }
 }
