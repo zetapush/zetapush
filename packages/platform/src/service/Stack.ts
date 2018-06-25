@@ -1,4 +1,5 @@
-import { Service, Impersonable, Paginable, PageContent } from '../core/index';
+import { Service } from '../core/index';
+import { Impersonable, Paginable, PageContent } from '../core/types';
 
 type StackData = Map<string, Object>;
 

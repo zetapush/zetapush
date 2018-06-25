@@ -1,6 +1,5 @@
 import { Service } from '../core/index';
-
-type Target = string | string[];
+import { Target } from '../core/types';
 
 type MessageData = Map<string, Object>;
 

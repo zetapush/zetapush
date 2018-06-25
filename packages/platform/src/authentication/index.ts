@@ -1,3 +1,3 @@
-export { Delegating } from './Delegating';
-export { Simple } from './Simple';
-export { Weak } from './Weak';
+export * from './Delegating';
+export * from './Simple';
+export * from './Weak';

@@ -1,7 +1,5 @@
-import { Service, Impersonable } from '../core/index';
-
-type UserKey = string;
-type Resource = string;
+import { Service } from '../core/index';
+import { Impersonable, UserKey, Resource } from '../core/types';
 
 interface GroupRelated extends Impersonable {
   /** Group id. Must be alphanumerical. You MAY use the wildcard '*' when granting rights. */
