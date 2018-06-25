@@ -5,29 +5,29 @@ type StackData = Map<string, Object>;
 
 type StackGuid = string;
 
-interface StackRequest extends Impersonable {
+export interface StackRequest extends Impersonable {
   /** Stack name. */
   stack: string;
 }
 
-interface StackItemAddInput extends StackRequest {
+export interface StackItemAddInput extends StackRequest {
   /** Stored data */
   data: StackData;
 }
 
-interface StackItemAddOutput extends StackItemAddInput {
+export interface StackItemAddOutput extends StackItemAddInput {
   /** Key of this stack item */
   guid: StackGuid;
 }
 
-interface StackItemRemove extends StackRequest {
+export interface StackItemRemove extends StackRequest {
   /** List of keys of the items to be removed */
   guids: StackGuid[];
 }
 
-interface StackListRequest extends StackRequest, Paginable {}
+export interface StackListRequest extends StackRequest, Paginable {}
 
-interface StackItem {
+export interface StackItem {
   /** Server-generated GUID */
   guid: StackGuid;
   /** Insertion timestamp */
@@ -36,14 +36,14 @@ interface StackItem {
   data: StackData;
 }
 
-interface StackListResponse extends Impersonable {
+export interface StackListResponse extends Impersonable {
   /** Request leading to the result */
   request: StackListRequest;
   /** Result for the specified request */
   result: PageContent<StackItem>;
 }
 
-interface StackListeners extends StackRequest {
+export interface StackListeners extends StackRequest {
   /** List of userKeys (as in the value of __userKey) or fully qualified group names (the syntax is groupServiceDeploymentId:userKey:group) that will be notified of modifying stack operations */
   listeners?: string[];
 }

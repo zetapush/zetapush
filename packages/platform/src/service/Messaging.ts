@@ -3,7 +3,7 @@ import { Target } from '../core/types';
 
 type MessageData = Map<string, Object>;
 
-interface Message {
+export interface Message {
   /** Target user or group. Can be either a string, an array of string or an object that contains an array of string. The 'target' property of the output message will have exactly the same form. Target user or group, in the form userId or groupDeploymentId:owner:group. */
   target: Target;
   /** Optional (alphanumeric) channel name */

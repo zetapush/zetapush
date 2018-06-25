@@ -1,54 +1,54 @@
 import { Service } from '../core/index';
 import { Impersonable, UserKey, Resource } from '../core/types';
 
-interface GroupRelated extends Impersonable {
+export interface GroupRelated extends Impersonable {
   /** Group id. Must be alphanumerical. You MAY use the wildcard '*' when granting rights. */
   group: string;
 }
 
-interface GroupInfo extends GroupRelated {
+export interface GroupInfo extends GroupRelated {
   /** Group name, as displayed to the user */
   groupName: string;
 }
 
-interface GroupUsers extends GroupInfo {
+export interface GroupUsers extends GroupInfo {
   /** User keys of the group members */
   users: UserKey[];
 }
 
-interface UserGroup extends GroupRelated {
+export interface UserGroup extends GroupRelated {
   /** The user's key (as in __userKey). */
   user: UserKey;
 }
 
-interface GroupExistence extends GroupInfo {
+export interface GroupExistence extends GroupInfo {
   /** Existence of the group */
   exists: boolean;
 }
 
-interface UserGroup extends GroupRelated {
+export interface UserGroup extends GroupRelated {
   /** The user's key (as in __userKey) */
   user: UserKey;
 }
 
-interface UserMembership extends GroupRelated {
+export interface UserMembership extends GroupRelated {
   /** True if lack of effective membership should be treated as an error. False to return the information as a boolean in the response. */
   hardFail: boolean;
 }
 
-interface UserGroupMembership extends UserGroup {
+export interface UserGroupMembership extends UserGroup {
   /** Whether the user is member of the group */
   member: boolean;
 }
 
-interface Grant extends GroupRelated {
+export interface Grant extends GroupRelated {
   /** Resource on which the grant applies. For API defined resources, it often has the syntax deploymentId:owner:preciseResource. For example to give access to a gda table, it may look like 'WxzV:wshwWSDOJSD:myTable' , WxzV being the gda deploymentId, wshwWSDOJSD the data owner, and myTable the table to be shared. For grants on user devices, it can match the resource field used during authentication. You can use the wildcard '*' */
   resource: Resource;
   /** Action which will be authorized. For built-in API verbs, it is often the verb itself. You can use the wildcard '*' */
   action: string;
 }
 
-interface Grants extends GroupRelated {
+export interface Grants extends GroupRelated {
   /** Resource on which the grant applies. For API defined resources, it often has the syntax deploymentId:owner:preciseResource. For example to give access to a gda table, it may look like 'WxzV:wshwWSDOJSD:myTable' , WxzV being the gda deploymentId, wshwWSDOJSD the data owner, and myTable the table to be shared. For grants on user devices, it can match the resource field used during authentication. You can use the wildcard '*' */
   resource: Resource;
   /** Actions which will be authorized. For built-in API verbs, it is often the verb itself. You can use the wildcard '*' */
