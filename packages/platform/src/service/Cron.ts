@@ -1,5 +1,5 @@
 import { Service } from '../core/index';
-import { Impersonable, PageContent, Paginable } from '../../es';
+import { Impersonable, PageContent, Paginable } from '../core/types';
 
 type CronLikeExpression = string | number;
 
