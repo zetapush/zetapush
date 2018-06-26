@@ -1,7 +1,7 @@
 import { Service } from '../core/index';
-import { Impersonable, UserKey, Resource } from '../core/types';
+import { ImpersonatedRequest, UserKey, Resource } from '../core/types';
 
-export interface GroupRelated extends Impersonable {
+export interface GroupRelated extends ImpersonatedRequest {
   /** Group id. Must be alphanumerical. You MAY use the wildcard '*' when granting rights. */
   group: string;
 }
@@ -106,7 +106,7 @@ export class GroupManagement extends Service {
    *
    * Returns the whole list of groups owned by the current user, with their members
    * */
-  allGroups({ owner }: Impersonable) {
+  allGroups({ owner }: ImpersonatedRequest) {
     return this.$publish('allGroups', { owner });
   }
   /**
@@ -165,7 +165,7 @@ export class GroupManagement extends Service {
    *
    * Returns the whole list of groups owned by the current user
    * */
-  groups({ owner }: Impersonable): Promise<GroupInfo[]> {
+  groups({ owner }: ImpersonatedRequest): Promise<GroupInfo[]> {
     return this.$publish('groups', { owner });
   }
   /**
@@ -219,7 +219,7 @@ export class GroupManagement extends Service {
    * Returns the whole list of groups the current user is part of.
    * Groups may be owned by anyone, including the current user.
    * */
-  myGroups({ owner }: Impersonable): Promise<GroupInfo> {
+  myGroups({ owner }: ImpersonatedRequest): Promise<GroupInfo> {
     return this.$publish('myGroups', { owner });
   }
   /**Revokes a right for a group*/

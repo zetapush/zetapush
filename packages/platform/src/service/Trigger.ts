@@ -1,7 +1,7 @@
 import { Service } from '../core/index';
-import { Impersonable } from '../core/types';
+import { ImpersonatedRequest } from '../core/types';
 
-export interface EventTrigger extends Impersonable {
+export interface EventTrigger extends ImpersonatedRequest {
   /** Event name */
   event: string;
   /** Event data */

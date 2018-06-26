@@ -1,4 +1,4 @@
-export interface Impersonable {
+export interface ImpersonatedRequest {
   /** Optional User key. When calling the API, defaults to the current (calling) user's primary key. For impersonation purposes, the caller may use the key of another user, provided that the proper authorizations have been given by the impersonated user */
   owner?: string;
 }

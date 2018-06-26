@@ -4,9 +4,9 @@ import { Injectable, Stack } from '@zetapush/platform';
 export class Storage {
   constructor(private stack: Stack) {}
   push(item: any) {
-    return this.stack.push({ stack: 'demo', data: item, owner: null });
+    return this.stack.push({ stack: 'demo', data: item });
   }
   list() {
-    return this.stack.list({ stack: 'demo', owner: null, page: null });
+    return this.stack.list({ stack: 'demo' });
   }
 }

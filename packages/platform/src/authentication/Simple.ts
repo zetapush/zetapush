@@ -1,4 +1,61 @@
 import { Service } from '../core/index';
+import { ImpersonatedRequest } from '../core/types';
+
+export interface ChangePasswordRequest {
+  /** Server-provided temporary token to reset a password */
+  token?: string;
+  /** Account key in the realm. (configured 'unique key' used for authentication). */
+  key?: string;
+  /** New password */
+  password: string;
+}
+
+export interface CheckPasswordRequest {
+  /** Account key in the realm. (configured 'unique key' used for authentication). */
+  key: string;
+  /** Password to be checked */
+  password: string;
+}
+
+export interface CheckPasswordResult {
+  /** Whether the password matches */
+  matches: boolean;
+  /** Account key in the realm. (configured 'unique key' used for authentication) */
+  key: string;
+}
+
+export interface ExistenceCheck {
+  /** User key within the realm */
+  key: string;
+  /** Whether to fail is the user does not exist. When true, fails silently. */
+  softFail?: boolean;
+}
+
+export interface BasicAuthenticatedUser {
+  [property: string]: any;
+}
+
+export interface AllCredentials extends ImpersonatedRequest {
+  /** List of account information for the asking user. empty if the user does not have credentials in the service. One item in this list is a map of account fields. */
+  credentials: BasicAuthenticatedUser[];
+}
+
+export interface ResetRequest {
+  /** Account key in the realm. (configured 'unique key' used for authentication). */
+  key: string;
+}
+
+export interface ResetInfo extends ResetRequest {
+  /** Server-provided temporary token to reset a password */
+  token: string;
+}
+
+export interface UserLoginchange extends ImpersonatedRequest {
+  /** New account key within this realm. Must not be already in use. */
+  newKey: string;
+  /** Existing account key within this realm (login). Will be free for use upon successful completion. */
+  oldKey: string;
+}
 
 /**
  * Local authentication
@@ -28,31 +85,82 @@ export class Simple extends Service {
   static get DEFAULT_DEPLOYMENT_ID() {
     return `${Simple.DEPLOYMENT_TYPE}_0`;
   }
-  changePassword({ token, key, password }) {
+  /**
+   * Changes a user password for this authentication realm.
+   * The user can be either explicit, implicit (one of the current user's accounts) or deduced from the token.
+   * You should provide at least one of 'key' and 'token'. If you do not, the server will try and find any key for the current user.
+   * The change is effective immediately. However, already logged in users might stay connected.
+   * The password and token fields are always null in the output.
+   */
+  changePassword({
+    token,
+    key,
+    password,
+  }: ChangePasswordRequest): Promise<ChangePasswordRequest> {
     return this.$publish('changePassword', { token, key, password });
   }
-  checkPassword({ key, password }) {
+  checkPassword({
+    key,
+    password,
+  }: CheckPasswordRequest): Promise<CheckPasswordResult> {
     return this.$publish('checkPassword', { key, password });
   }
-  checkUser({ key, softFail }) {
+  /**
+   * Checks whether the given account already exists in this 'simple' authentication realm.
+   * This verb returns all the information about the user, including non public fields.
+   */
+  checkUser({
+    key,
+    softFail,
+  }: ExistenceCheck): Promise<BasicAuthenticatedUser> {
     return this.$publish('checkUser', { key, softFail });
   }
-  createUser(profile) {
+  /**
+   * Creates a new account in this 'simple' authentication realm.
+   * Returns a map of account fields, including a field named zetapushKey containing the global user key of the user (value of the __userKey pseudo-constant when this new account will be used)
+   */
+  createUser(profile: BasicAuthenticatedUser): Promise<BasicAuthenticatedUser> {
     return this.$publish('createUser', profile);
   }
-  credentials({ owner }) {
+  /**
+   * Returns the list of account credentials in this service for the asking user.
+   * Might return an empty list.
+   */
+  credentials({ owner }: ImpersonatedRequest): Promise<AllCredentials> {
     return this.$publish('credentials', { owner });
   }
-  deleteUser({ key, softFail }) {
+  /**
+   * Deletes an existing account in this 'simple' authentication realm.
+   */
+  deleteUser({ key, softFail }: ExistenceCheck): Promise<ExistenceCheck> {
     return this.$publish('deleteUser', { key, softFail });
   }
-  requestReset({ key }) {
+  /**
+   * Requests a password reset for the given unique account key.
+   * The account key must exist and must be given, as it cannot obviously be deduced from the currently logged in user.
+   * The returned token needs to be sent to the intended recipient only. The typical use case is to define a macro that requests a reset, generates a email template and emails the user. The macro can then be safely called by a weakly authenticated user.
+   * Requesting a reset does not invalidate the password.
+   * Requesting a reset again invalidates previous reset requests (only the last token is usable)
+   */
+  requestReset({ key }: ResetRequest): Promise<ResetInfo> {
     return this.$publish('requestReset', { key });
   }
-  updateKey({ newKey, oldKey, owner }) {
+  /**
+   * Updates an existing account primary key (login, NOT __userKey) in this 'simple' authentication realm.
+   * The updated account MUST belong to the user making the call.
+   * The configured login field MUST be given, as a user (identified by his zetapush userKey) might possess several accounts.
+   * Returns a map of account fields
+   */
+  updateKey({ newKey, oldKey, owner }): Promise<BasicAuthenticatedUser> {
     return this.$publish('updateKey', { newKey, oldKey, owner });
   }
-  updateUser(profile) {
+  /**
+   * Updates an existing account in this 'simple' authentication realm.
+   * The updated account MUST belong to the user making the call.
+   * The configured login field MUST be given, as a user (identified by his zetapush userKey) might possess several accounts.
+   * Returns a map of account fields
+   */
+  updateUser(profile: BasicAuthenticatedUser): Promise<BasicAuthenticatedUser> {
     return this.$publish('updateUser', profile);
   }
 }

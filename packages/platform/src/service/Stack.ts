@@ -1,5 +1,5 @@
 import { Service } from '../core/index';
-import { Impersonable, Paginable, PageContent } from '../core/types';
+import { ImpersonatedRequest, Paginable, PageContent } from '../core/types';
 
 type StackData = {
   [property: string]: any;
@@ -7,7 +7,7 @@ type StackData = {
 
 type StackGuid = string;
 
-export interface StackRequest extends Impersonable {
+export interface StackRequest extends ImpersonatedRequest {
   /** Stack name. */
   stack: string;
 }
@@ -38,7 +38,7 @@ export interface StackItem {
   data: StackData;
 }
 
-export interface StackListResponse extends Impersonable {
+export interface StackListResponse extends ImpersonatedRequest {
   /** Request leading to the result */
   request: StackListRequest;
   /** Result for the specified request */

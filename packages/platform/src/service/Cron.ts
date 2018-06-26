@@ -1,5 +1,5 @@
 import { Service } from '../core/index';
-import { Impersonable, PageContent, Paginable } from '../core/types';
+import { ImpersonatedRequest, PageContent, Paginable } from '../core/types';
 
 type CronLikeExpression = string | number;
 
@@ -14,19 +14,19 @@ export interface CronPlanning {
   tasks: PageContent<CronTaskRequest>;
 }
 
-export interface CronTaskListRequest extends Impersonable, Paginable {
+export interface CronTaskListRequest extends ImpersonatedRequest, Paginable {
   /** Start timestamp for the task list. Not implemented */
   start: number;
   /** Stop timestamp for the task list. Not implemented */
   stop: number;
 }
 
-export interface CronTaskDeletion extends Impersonable {
+export interface CronTaskDeletion extends ImpersonatedRequest {
   /** Cron identifier. mandatory for creation or update. */
   cronName: string;
 }
 
-export interface CronTaskRequest extends Impersonable {
+export interface CronTaskRequest extends ImpersonatedRequest {
   /** Cron identifier. mandatory for creation or update. */
   cronName: string;
   /** Cron-like expression (with fixed minutes and hours) or unix timestamp (as milliseconds from the epoch). Times are UTC. */
@@ -43,7 +43,7 @@ export interface CronTaskRequest extends Impersonable {
   loud?: boolean;
 }
 
-export interface TimerRequest extends Impersonable {
+export interface TimerRequest extends ImpersonatedRequest {
   /** Parameter that will be passed to the target verb when called. The format is the format accepted by the target. */
   parameter?: CronTaskParameter;
   /** DeploymentId of the target service. */
