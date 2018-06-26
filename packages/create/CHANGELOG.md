@@ -3,12 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.27.11](https://github.com/zetapush/zetapush/compare/v0.27.10...v0.27.11) (2018-06-26)
+## [0.27.12](https://github.com/zetapush/zetapush/compare/v0.27.11...v0.27.12) (2018-06-26)
+
+
+### Bug Fixes
+
+* **typescript:** disable typescript integration ([c115394](https://github.com/zetapush/zetapush/commit/c115394))
 
 
 
-
-**Note:** Version bump only for package @zetapush/create
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
