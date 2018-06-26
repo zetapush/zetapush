@@ -3,12 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.27.13](https://github.com/zetapush/zetapush/compare/v0.27.12...v0.27.13) (2018-06-26)
+## [0.27.14](https://github.com/zetapush/zetapush/compare/v0.27.13...v0.27.14) (2018-06-26)
+
+
+### Bug Fixes
+
+* **platform:** fix template typings mismatch ([a736301](https://github.com/zetapush/zetapush/commit/a736301))
+* **typescript:** add firstclass support for TypeScript ([79f6fa8](https://github.com/zetapush/zetapush/commit/79f6fa8))
 
 
 ### Features
 
-* **platform:** improve typings for auth platforms ([c06ac28](https://github.com/zetapush/zetapush/commit/c06ac28))
+* **platform:** add typings for template service ([1a3804c](https://github.com/zetapush/zetapush/commit/1a3804c))
 
 
 
