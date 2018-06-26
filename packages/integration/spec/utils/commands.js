@@ -140,7 +140,12 @@ const deleteAccountFromZetarc = async (dir) => {
 const setAppNameToZetarc = async (dir, appName) => {
   const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
   let jsonContent = JSON.parse(content);
-  jsonContent.appName = appName;
+
+  if (appName.length > 0) {
+    jsonContent.appName = appName;
+  } else {
+    delete jsonContent.appName;
+  }
 
   await writeFile(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
     encoding: 'utf-8',

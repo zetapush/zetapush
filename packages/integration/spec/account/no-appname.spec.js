@@ -46,6 +46,6 @@ describe(`As developer with
       expect(typeof message).toBe('string');
       expect(PATTERN.test(message)).toBe(true);
     },
-    10 * 60 * 1000,
+    15 * 60 * 1000,
   );
 });

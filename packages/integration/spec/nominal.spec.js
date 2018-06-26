@@ -30,6 +30,7 @@ describe(`As developer with
       await zetaPush(fullPathProject);
 
       let zetarc = await readZetarc(fullPathProject);
+
       expect(zetarc).toBeTruthy();
       expect(zetarc.developerLogin).toBe(this.developerLogin);
       expect(zetarc.developerPassword).toBe(this.developerPassword);
@@ -49,6 +50,6 @@ describe(`As developer with
       expect(typeof message).toBe('string');
       expect(PATTERN.test(message)).toBe(true);
     },
-    10 * 60 * 1000,
+    15 * 60 * 1000,
   );
 });

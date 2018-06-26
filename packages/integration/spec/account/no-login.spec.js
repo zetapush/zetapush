@@ -24,7 +24,7 @@ describe(`As developer with
       this.developerLogin,
       this.developerPassword,
     );
-  }, 10 * 60 * 1000);
+  }, 15 * 60 * 1000);
 
   it(
     "Should failed with errorCode 'ACCOUNT-01' (51) for 'zeta push'",
@@ -32,7 +32,7 @@ describe(`As developer with
       const code = await zetaPush(projectDir);
       expect(code).toBe(errorCode);
     },
-    10 * 60 * 1000,
+    15 * 60 * 1000,
   );
 
   it(
@@ -41,6 +41,6 @@ describe(`As developer with
       const code = await zetaRun(projectDir);
       expect(code).toBe(errorCode);
     },
-    10 * 60 * 1000,
+    15 * 60 * 1000,
   );
 });
