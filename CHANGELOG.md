@@ -3,12 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.27.10](https://github.com/zetapush/zetapush/compare/v0.27.9...v0.27.10) (2018-06-25)
+## [0.27.11](https://github.com/zetapush/zetapush/compare/v0.27.10...v0.27.11) (2018-06-26)
 
 
 ### Bug Fixes
 
-* **platform:** change types path ([aa5a190](https://github.com/zetapush/zetapush/commit/aa5a190))
+* **di:** syntax error on di core file ([84cc9be](https://github.com/zetapush/zetapush/commit/84cc9be))
 
 
 

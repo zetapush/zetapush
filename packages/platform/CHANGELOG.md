@@ -3,15 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.27.10](https://github.com/zetapush/zetapush/compare/v0.27.9...v0.27.10) (2018-06-25)
-
-
-### Bug Fixes
-
-* **platform:** change types path ([aa5a190](https://github.com/zetapush/zetapush/commit/aa5a190))
+## [0.27.11](https://github.com/zetapush/zetapush/compare/v0.27.10...v0.27.11) (2018-06-26)
 
 
 
+
+**Note:** Version bump only for package @zetapush/platform
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
