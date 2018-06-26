@@ -50,7 +50,7 @@
     "rollup-plugin-node-resolve": "3.3.0",
     "rollup-plugin-uglify": "4.0.0",
     "rollup-watch": "^4.3.1",
-    "typescript": "^2.8.3",
+    "typescript": "^2.9.2",
     "uglify-es": "3.3.10"
   },
   "publishConfig": {

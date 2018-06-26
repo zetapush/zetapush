@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+// FirstClass TypeScript Support
+require('ts-node').register({
+  ignore: '/node_modules/',
+});
+
 const program = require('commander');
 
 const { version } = require('../package.json');
@@ -85,12 +90,6 @@ program
     false,
   )
   .option('-h, --http-server', 'Run local http server', () => true, false)
-  .option(
-    '-t, --typescript',
-    'Run a project with TypeScript instead of JavaScript',
-    () => true,
-    false,
-  )
   .description('Run your code')
   .action((command) =>
     createApp(command)
@@ -121,12 +120,6 @@ program
     'Push worker on cloud platform',
     identity,
     DEFAULTS.WORKER_FOLDER_PATH,
-  )
-  .option(
-    '-t, --typescript',
-    'Generate a project with TypeSript instead of JavaScript',
-    () => true,
-    false,
   )
   .description('Push your application on ZetaPush platform')
   .action((command) =>
