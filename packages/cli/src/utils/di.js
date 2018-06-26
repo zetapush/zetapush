@@ -12,10 +12,10 @@ class ScanOutput {
   }
 }
 
-const getInjectionMetadata = (target) => {};
-Reflect.hasMetadata('design:paramtypes', target)
-  ? Reflect.getMetadata('design:paramtypes', target)
-  : target.parameters;
+const getInjectionMetadata = (target) =>
+  Reflect.hasMetadata('design:paramtypes', target)
+    ? Reflect.getMetadata('design:paramtypes', target)
+    : target.parameters;
 
 const isToken = (provider) =>
   Boolean(provider) && provider.toString() === '@Inject';
