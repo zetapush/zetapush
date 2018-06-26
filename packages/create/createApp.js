@@ -39,7 +39,7 @@ const program = new commander.Command(pkg.name)
   .option('-p, --developer-password <developer-password>', 'Developer password')
   .option('-a, --app-name <app-name>', 'Application name')
   .option('-f, --force-current-version', 'Use the same version as built version for the generated project', () => true, false)
-  .option('-j, --javascript', 'Generate a project with JavaScript instead of TypeScript', () => true, false)
+  .option('-t, --typescript', 'Generate a project with TypeScript instead of JavaScript', () => true, false)
   .option(
     '-v, --verbose',
     'Verbosity level (-v=error+warn+info, -vv=error+warn+info+log, -vvv=error+warn+info+log+trace)',
@@ -106,7 +106,7 @@ function createApp(name, zetarc, version, command) {
   const packageJson = {
     name: appName,
     version: '0.1.0',
-    main: `worker/index.${command.javascript ? 'js' : 'ts'}`,
+    main: `worker/index.${command.typescript ? 'js' : 'js'}`,
     private: true,
     scripts: {
       deploy: 'zeta push',
@@ -202,7 +202,7 @@ function init(
   originalDirectory,
   command
 ) {
-  const language = command.javascript ? 'javascript': 'typescript';
+  const language = command.typescript ? 'typescript' : 'javascript';
   // Copy the files for the user
   const templatePath = path.join(__dirname, 'template', language);
   if (fs.existsSync(templatePath)) {
@@ -279,7 +279,7 @@ function run(
   const dependencies = [`@zetapush/cli${versionStr}`, `@zetapush/platform${versionStr}`];
 
   // Firstclass TypeScript support
-  if (!command.javascript) {
+  if (command.typescript) {
     dependencies.push(`typescript@latest`);
   }
 
