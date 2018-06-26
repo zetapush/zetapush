@@ -1,6 +1,5 @@
 import { Service } from '../core/index';
-import { Paginable } from '../../es';
-import { PageContent } from '../core/types';
+import { PageContent, Paginable } from '../core/types';
 
 type TemplateData = {
   [property: string]: any;
