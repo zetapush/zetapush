@@ -1,6 +1,6 @@
 const { URL } = require('url');
 const request = require('request');
-const { log, error, info, warn, trace } = require('./log');
+const { log, error, info, warn, trace, debugObject } = require('./log');
 const ProgressBar = require('ascii-progress');
 const errorsHandler = require('../errors/errors-handler');
 const troubleshooting = require('../errors/troubleshooting');
@@ -27,6 +27,13 @@ const getProgress = (config, recipeId) =>
     };
     // log('Get progresssion', url);
     request(options, (failure, response, body) => {
+      debugObject(
+        'GET progression',
+        { request: options },
+        { failure },
+        { response },
+        { body },
+      );
       if (failure) {
         reject({ failure, request: options, config });
         return error('Get progresssion failed', failure);
@@ -66,6 +73,13 @@ const getLiveStatus = (config) =>
     };
     // log('Get progresssion', url);
     request(options, (failure, response, body) => {
+      debugObject(
+        'GET live status',
+        { request: options },
+        { failure },
+        { response },
+        { body },
+      );
       if (failure) {
         reject({ failure, request: options, config });
         return error('Get live status failed', failure);
@@ -178,6 +192,7 @@ const getProgression = (config, recipeId) => {
           );
       }
     } catch (ex) {
+      debugObject('progression check', { ex });
       warn('Failed to get progression. Retrying...', ex);
       if (remainingRetries-- > 0) {
         setTimeout(check, 500);

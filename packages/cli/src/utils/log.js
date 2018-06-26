@@ -1,7 +1,34 @@
 const chalk = require('chalk');
+const fs = require('fs');
+const path = require('path');
+const process = require('process');
+const os = require('os');
+const files = require('./files');
 
 const setVerbosity = (verbosity) => {
   global.loggerVerbosity = verbosity;
+};
+
+const debugObject = (what, ...objects) => {
+  if (global.loggerVerbosity < 4) return;
+  for (let obj of objects) {
+    for (let name in obj) {
+      try {
+        let file = files.getZetaFilePath(
+          'zeta-debug',
+          `${Date.now()}-${what}-${name}.json`,
+        );
+        fs.writeFileSync(file, JSON.stringify(obj[name], null, 2));
+        console.debug(chalk`{gray [TRACE] ${what}-${name} written in ${file}}`);
+      } catch (e) {
+        console.debug(
+          chalk`{gray [TRACE] ${what}-${name} couldn't be written in ${file}}`,
+          obj[name],
+          e,
+        );
+      }
+    }
+  }
 };
 
 const trace = (message, ...messages) => {
@@ -79,4 +106,5 @@ module.exports = {
   help,
   experimental,
   setVerbosity,
+  debugObject,
 };
