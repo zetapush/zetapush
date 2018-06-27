@@ -89,7 +89,12 @@ program
     () => true,
     false,
   )
-  .option('-h, --http-server', 'Run local http server', () => true, false)
+  .option(
+    '--serve-front',
+    'Run local http server to serve your front code',
+    () => true,
+    false,
+  )
   .description('Run your code')
   .action((command) =>
     createApp(command)
