@@ -50,6 +50,6 @@ describe(`As developer with
       expect(typeof message).toBe('string');
       expect(PATTERN.test(message)).toBe(true);
     },
-    15 * 60 * 1000,
+    20 * 60 * 1000,
   );
 });

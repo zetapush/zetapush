@@ -135,9 +135,7 @@ pipeline {
           steps {
             dir('packages/integration') {
               bat 'npm i'
-              bat "set ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}'"
-              bat "set ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}'"
-              bat 'npm run test'
+              bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& npm run test"
             }
           }
           post {

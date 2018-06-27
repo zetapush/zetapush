@@ -26,13 +26,17 @@ describe(`As developer with
     );
   }, 15 * 60 * 1000);
 
+  afterEach(async () => {
+    await nukeApp(projectDir);
+  });
+
   it(
     "Should failed with errorCode 'ACCOUNT-05' (55) for 'zeta push'",
     async () => {
       const code = await zetaPush(projectDir);
       expect(code).toBe(errorCode);
     },
-    15 * 60 * 1000,
+    20 * 60 * 1000,
   );
 
   it(

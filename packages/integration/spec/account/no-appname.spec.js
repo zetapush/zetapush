@@ -23,6 +23,10 @@ describe(`As developer with
     await rm(fullPathProject);
   });
 
+  afterEach(async () => {
+    await nukeApp(fullPathProject);
+  });
+
   it(
     "Should success with new appName for 'zeta push'",
     async () => {

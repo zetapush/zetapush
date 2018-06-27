@@ -26,10 +26,8 @@ describe(`As developer with
     async () => {
       // // 1) npm init
       // await npmInit(this.developerLogin, this.developerPassword, projectDir);
-
       // // 2) zeta push
       // await zetaPush(fullPathProject);
-
       // let zetarc = await readZetarc(fullPathProject);
       // expect(zetarc).toBeTruthy();
       // expect(zetarc.appName).toBeTruthy();
@@ -47,6 +45,7 @@ describe(`As developer with
       // expect(typeof message).toBe('string');
       // expect(PATTERN.test(message)).toBe(true);
       expect(true).toBe(true);
+      // await nukeApp(fullPathProject);
     },
     10 * 60 * 1000,
   );
