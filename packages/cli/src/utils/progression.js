@@ -1,7 +1,7 @@
 const { URL } = require('url');
 const request = require('request');
 const { log, error, info, warn, trace } = require('./log');
-const ProgressBar = require('ascii-progress');
+const ProgressBar = require('node-progress-bars');
 const errorsHandler = require('../errors/errors-handler');
 const troubleshooting = require('../errors/troubleshooting');
 
