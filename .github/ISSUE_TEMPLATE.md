@@ -9,13 +9,14 @@ IF YOU DON'T FILL OUT THE FOLLOWING INFORMATION WE MIGHT CLOSE YOUR ISSUE WITHOU
 ```
 
 **Scope** (check one with "x")
-
-[ ] @angular/cli
-[ ] @angular/cometd
-[ ] @angular/core
-[ ] @angular/create
-[ ] @angular/platform
-[ ] @angular/worker
+```
+[ ] @zetapush/cli
+[ ] @zetapush/cometd
+[ ] @zetapush/core
+[ ] @zetapush/create
+[ ] @zetapush/platform
+[ ] @zetapush/worker
+```
 
 **Current behavior**
 <!-- Describe how the bug manifests. -->
