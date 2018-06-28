@@ -37,6 +37,6 @@ please provide the *STEPS TO REPRODUCE*
 * **Operating System:**
 * **Node Version:** X.Y.Z
 * **Npm Version:** X.Y.Z
-* **@angular/* Version:** X.Y.Z
+* **@angular/\* Version:** X.Y.Z
 
 <!-- Check whether this is still an issue in the most recent ZetaPush version -->
