@@ -3,18 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.27.14](https://github.com/zetapush/zetapush/compare/v0.27.13...v0.27.14) (2018-06-26)
+# [0.28.0](https://github.com/zetapush/zetapush/compare/v0.27.14...v0.28.0) (2018-06-29)
 
 
 ### Bug Fixes
 
-* **platform:** fix template typings mismatch ([a736301](https://github.com/zetapush/zetapush/commit/a736301))
-* **typescript:** add firstclass support for TypeScript ([79f6fa8](https://github.com/zetapush/zetapush/commit/79f6fa8))
+* **cli:** replace ascii-progress by node-progress-bars ([fdfdca2](https://github.com/zetapush/zetapush/commit/fdfdca2)), closes [#55](https://github.com/zetapush/zetapush/issues/55)
+* **oss:** fix typo for template issue ([935d104](https://github.com/zetapush/zetapush/commit/935d104))
+* **template-issue:** rename Angular to ZetaPush ref, add missing ``` ([598ff17](https://github.com/zetapush/zetapush/commit/598ff17)), closes [#63](https://github.com/zetapush/zetapush/issues/63)
 
 
 ### Features
 
-* **platform:** add typings for template service ([1a3804c](https://github.com/zetapush/zetapush/commit/1a3804c))
+* **cli:** according to documentation, rename http-server option to serve-front ([7a0268d](https://github.com/zetapush/zetapush/commit/7a0268d)), closes [#55](https://github.com/zetapush/zetapush/issues/55)
+* **platform:** add typings for Gda service ([dd64809](https://github.com/zetapush/zetapush/commit/dd64809))
+* **worker:** increase worker timeout to 60000ms ([b4399b8](https://github.com/zetapush/zetapush/commit/b4399b8))
+
+
+### BREAKING CHANGES
+
+* **cli:** rename http-server option to serve-front
 
 
 
