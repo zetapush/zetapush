@@ -12,7 +12,7 @@ export class WorkerClient extends Client {
     developerLogin,
     developerPassword,
     resource = `node_js_worker_${uuid()}`,
-    timeout = 5000,
+    timeout = 60 * 1000,
     capacity = 100,
   }) {
     const authentication = () =>
