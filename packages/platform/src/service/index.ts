@@ -16,3 +16,15 @@ export * from './Template';
 export * from './Trigger';
 export * from './Userdir';
 export * from './Zpfs_hdfs';
+
+export * from './providers/NotifProvider';
+export * from './providers/RdbmsProvider';
+export * from './providers/SearchProvider';
+export * from './providers/SendmailProvider';
+export * from './providers/TemplateProvider';
+export * from './providers/TriggerProvider';
+export * from './providers/UserdirProvider';
+export * from './providers/Zpfs_hdfsProvider';
+export * from './providers/AggregProvider';
+export * from './providers/GdaProvider';
+export * from './providers/MacroProvider';
