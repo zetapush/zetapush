@@ -17,7 +17,7 @@ export class TriggerProvider extends Provider {
    * */
   async addApiListener(body: zp.ApiTriggerListener): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Trigger.DEFAULT_DEPLOYMENT_ID,
       '/trigger/addApiListener',
     );
@@ -30,7 +30,7 @@ export class TriggerProvider extends Provider {
    * */
   async addListener(body: zp.TriggerListener): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Trigger.DEFAULT_DEPLOYMENT_ID,
       '/trigger/addListener',
     );
@@ -42,7 +42,7 @@ export class TriggerProvider extends Provider {
    * */
   async removeApiListener(body: zp.ApiTriggerId): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Trigger.DEFAULT_DEPLOYMENT_ID,
       '/trigger/removeApiListener',
     );
@@ -54,7 +54,7 @@ export class TriggerProvider extends Provider {
    * */
   async removeListener(body: zp.TriggerId): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Trigger.DEFAULT_DEPLOYMENT_ID,
       '/trigger/removeListener',
     );
@@ -67,7 +67,7 @@ export class TriggerProvider extends Provider {
    * */
   async setListeners(body: zp.MassTriggers): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Trigger.DEFAULT_DEPLOYMENT_ID,
       '/trigger/setListeners',
     );

@@ -13,7 +13,7 @@ export class UserdirProvider extends Provider {
    * */
   async setMapping(body: zp.UserSearchConfig): Promise<zp.UserSearchConfig> {
     return await this.provide(
-      null,
+      body,
       Userdir.DEFAULT_DEPLOYMENT_ID,
       '/config/setMapping',
     );

@@ -13,7 +13,7 @@ export class SearchProvider extends Provider {
    * */
   async createIndex(body: zp.SearchIndex): Promise<zp.SearchIndex> {
     return await this.provide(
-      null,
+      body,
       Search.DEFAULT_DEPLOYMENT_ID,
       '/search/createIndex',
     );

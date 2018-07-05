@@ -21,7 +21,7 @@ export class GdaProvider extends Provider {
    * */
   async addColumns(body: zp.GdaTableModification): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Gda.DEFAULT_DEPLOYMENT_ID,
       '/gda/addColumns',
     );
@@ -35,7 +35,7 @@ export class GdaProvider extends Provider {
    * */
   async createTable(body: zp.GdaTableModification): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Gda.DEFAULT_DEPLOYMENT_ID,
       '/gda/createTable',
     );
@@ -62,7 +62,7 @@ export class GdaProvider extends Provider {
    * */
   async removeColumns(body: zp.GdaRemoveColumns): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Gda.DEFAULT_DEPLOYMENT_ID,
       '/gda/removeColumns',
     );
@@ -74,7 +74,7 @@ export class GdaProvider extends Provider {
    * */
   async removeTable(body: zp.GdaTableRemoval): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Gda.DEFAULT_DEPLOYMENT_ID,
       '/gda/removeTable',
     );

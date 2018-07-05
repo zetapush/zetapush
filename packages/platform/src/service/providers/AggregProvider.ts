@@ -20,7 +20,7 @@ export class AggregProvider extends Provider {
    * */
   async create(body: zp.AggregationItemCategory): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Aggreg.DEFAULT_DEPLOYMENT_ID,
       '/aggreg/create',
     );

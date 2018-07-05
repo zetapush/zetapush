@@ -16,7 +16,7 @@ export class NotifProvider extends Provider {
    * */
   async createApp(body: zp.NotifiableApplication): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Notif.DEFAULT_DEPLOYMENT_ID,
       '/notifs/createApp',
     );

@@ -18,7 +18,7 @@ export class MacroProvider extends Provider {
    * */
   async create(body: zp.MacroInfo): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Macro.DEFAULT_DEPLOYMENT_ID,
       '/macro/create',
     );
@@ -34,7 +34,7 @@ export class MacroProvider extends Provider {
    * */
   async exec(body: zp.StringAnyMap): Promise<zp.ConfigurableHttpOutput> {
     return await this.provide(
-      null,
+      body,
       Macro.DEFAULT_DEPLOYMENT_ID,
       '/macro/exec/**',
     );
@@ -54,7 +54,7 @@ export class MacroProvider extends Provider {
    * */
   async mcreate(body: zp.MacroInfos): Promise<zp.MacroUploadReport> {
     return await this.provide(
-      null,
+      body,
       Macro.DEFAULT_DEPLOYMENT_ID,
       '/macro/mcreate',
     );
@@ -66,7 +66,7 @@ export class MacroProvider extends Provider {
    * Any given macro of the service can be called with any given user key.
    * */
   async run(body: zp.SuMacroPlay): Promise<zp.MacroCompletion> {
-    return await this.provide(null, Macro.DEFAULT_DEPLOYMENT_ID, '/macro/run');
+    return await this.provide(body, Macro.DEFAULT_DEPLOYMENT_ID, '/macro/run');
   }
   /**
    * Validates a macro
@@ -76,7 +76,7 @@ export class MacroProvider extends Provider {
    * */
   async validate(body: zp.MacroInfo): Promise<string> {
     return await this.provide(
-      null,
+      body,
       Macro.DEFAULT_DEPLOYMENT_ID,
       '/macro/validate',
     );
@@ -93,7 +93,7 @@ export class MacroProvider extends Provider {
    * */
   async configure(body: zp.MacroServiceDebugConfig): Promise<void> {
     return await this.provide(
-      null,
+      body,
       Macro.DEFAULT_DEPLOYMENT_ID,
       '/debug/configure',
     );

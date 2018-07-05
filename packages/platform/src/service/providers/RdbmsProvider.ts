@@ -15,6 +15,6 @@ export class RdbmsProvider extends Provider {
    * Runs the given query or queries.
    * */
   async ddl(body: zp.RdbmsSimpleQuery): Promise<void> {
-    return await this.provide(null, Rdbms.DEFAULT_DEPLOYMENT_ID, '/rdbms/ddl');
+    return await this.provide(body, Rdbms.DEFAULT_DEPLOYMENT_ID, '/rdbms/ddl');
   }
 }
