@@ -26,10 +26,6 @@ describe(`As developer with
     );
   }, 15 * 60 * 1000);
 
-  afterEach(async () => {
-    await nukeApp(projectDir);
-  });
-
   it(
     "Should failed with errorCode 'ACCOUNT-01' (51) for 'zeta push'",
     async () => {

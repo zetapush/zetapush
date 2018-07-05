@@ -24,11 +24,7 @@ describe(`As developer with
       this.developerLogin,
       this.developerPassword,
     );
-  }, 20 * 60 * 1000);
-
-  afterEach(async () => {
-    await nukeApp(projectDir);
-  });
+  }, 30 * 60 * 1000);
 
   it(
     "Should failed with errorCode 'ACCOUNT-03' (53) for 'zeta push'",

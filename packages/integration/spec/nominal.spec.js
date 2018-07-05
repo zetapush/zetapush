@@ -17,6 +17,10 @@ describe(`As developer with
     await rm(fullPathProject);
   });
 
+  afterEach(async () => {
+    await nukeApp(fullPathProject);
+  });
+
   it(
     `should be able to 
       - have a new hello-world project

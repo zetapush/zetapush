@@ -7,7 +7,7 @@ const {
   readZetarc,
   Runner,
   createZetarc,
-  npmInstall,
+  npmInstallLatestVersion,
   nukeApp,
 } = require('./utils/commands');
 const PATTERN = /Hello World from JavaScript (\d+)/;
