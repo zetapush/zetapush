@@ -106,7 +106,9 @@ export enum AccountStatus {
   disabled = 'DISABLED'
 }
 
-export interface UserProfile {}
+export interface UserProfile {
+  accountId: string;
+}
 
 export interface AccountCreationDetails {}
 
@@ -115,4 +117,8 @@ export interface ConfirmedAccount extends Account {}
 export interface PendingAccountConfirmation {
   createdAccountId: string;
   token: Token;
+}
+
+export interface AccountDetails {
+  accountId: string;
 }
