@@ -22,6 +22,7 @@
     "build:umd": "cross-env NODE_ENV=development rollup -c -i src/index.ts -o dist/zetapush-platform.js",
     "build:umd:min": "cross-env NODE_ENV=production rollup -c -i src/index.ts -o dist/zetapush-platform.min.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "test": "npm run clean && npm run build:commonjs && jasmine",
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
@@ -38,7 +39,7 @@
     "rollup-plugin-uglify": "4.0.0",
     "rollup-watch": "4.3.1",
     "typescript": "2.9.2",
-    "uglify-es": "3.3.9"
+    "uglify-es": "3.3.10"
   },
   "publishConfig": {
     "access": "public"
