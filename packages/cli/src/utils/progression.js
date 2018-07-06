@@ -1,7 +1,7 @@
 const { URL } = require('url');
 const request = require('request');
 const { log, error, info, warn, trace, debugObject } = require('./log');
-const ProgressBar = require('ascii-progress');
+const ProgressBar = require('node-progress-bars');
 const errorsHandler = require('../errors/errors-handler');
 const troubleshooting = require('../errors/troubleshooting');
 
@@ -143,7 +143,7 @@ const displayProgress = (progress, steps) => {
     trace("can't display progress => fallback", e);
     console.log(''.padEnd(60, '-'));
     steps.forEach((step) => {
-      const progressChars = Math.floor((step.progress * 20) / 100);
+      const progressChars = Math.floor(step.progress * 20 / 100);
       const blankChars = 20 - progressChars;
       console.log(
         `${''.padEnd(progressChars, '▇')}${''.padEnd(blankChars, '░')} ${

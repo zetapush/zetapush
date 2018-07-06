@@ -105,11 +105,6 @@ const load = async (command, required = true) => {
       1) command line arguments
       2) environment variables
       3) from file defined in ${command.worker}/.zetarc`);
-  if (command.typescript && !isTsLoaderRegistered) {
-    // FirstClass TypeScript Support
-    require('ts-node').register({});
-    isTsLoaderRegistered = true;
-  }
   let config;
   try {
     config = merge(

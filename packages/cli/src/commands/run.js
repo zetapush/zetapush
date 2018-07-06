@@ -109,7 +109,7 @@ const run = (command, config, declaration) => {
           });
       });
       info('Worker is up!');
-      if (command.httpServer) {
+      if (command.serveFront) {
         return createServer(command, config);
       }
     })

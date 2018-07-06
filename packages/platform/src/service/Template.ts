@@ -1,4 +1,60 @@
 import { Service } from '../core/index';
+import { PageContent, Paginable } from '../core/types';
+
+type TemplateData = {
+  [property: string]: any;
+};
+
+export interface TemplateInfo {
+  /** Template name, as configured by an admin */
+  name: string;
+  /** List of languages for which a localization of the template exists */
+  languageTags: string[];
+}
+
+export interface TemplateRequest {
+  /** Locale, as defined by IETF BCP 47 */
+  languageTag?: string;
+  /** Template name, as configured by an admin */
+  name: string;
+  /** Data model */
+  data: TemplateData;
+}
+
+export interface TemplateResult {
+  /** Result of template evaluation */
+  content: string;
+}
+
+export interface LocalizedTemplateCreation {
+  /** Locale, as defined by IETF BCP 47 */
+  languageTag: string;
+  /** Template name, as configured by an admin */
+  name: string;
+  /** Template contents, as a character string */
+  template: string;
+}
+
+export interface TemplateCreation {
+  /** Template name */
+  name: string;
+  /** Template contents, as a character string */
+  template: string;
+}
+
+export interface TemplateRemoval {
+  /** Locale, as defined by IETF BCP 47 */
+  languageTag: string;
+  /** Template name, as configured by an admin */
+  name: string;
+}
+
+export interface TemplateListRequest extends Paginable {}
+
+export interface TemplateListResult {
+  request: TemplateListRequest;
+  result: PageContent<TemplateInfo>;
+}
 
 /**
  * Template engine
@@ -39,5 +95,31 @@ export class Template extends Service {
    * */
   evaluate({ languageTag, name, requestId, data }) {
     return this.$publish('evaluate', { languageTag, name, requestId, data });
+  }
+  /**
+   * Creates a new localized template for the given 'name' and 'languageTag' (IETF BCP 47), replacing an existing one if it already exists. The default template for the given 'name' must exist.
+   */
+  add({
+    languageTag,
+    name,
+    template,
+  }: LocalizedTemplateCreation): Promise<void> {
+    return this.$publish('add', { languageTag, name, template });
+  }
+  /**
+   * Creates a new default template for the given 'name', replacing an existing one if it already exists.
+   */
+  create({ name, template }: TemplateCreation): Promise<void> {
+    return this.$publish('create', { name, template });
+  }
+  /**
+   * Removes an existing localized template for the given 'name' and 'languageTag'.
+   * If you omit the languageTag, all localizations will be removed, including the default.
+   */
+  delete({ languageTag, name }: TemplateRemoval): Promise<void> {
+    return this.$publish('delete', { languageTag, name });
+  }
+  list({ page }: TemplateListRequest): Promise<TemplateListResult> {
+    return this.$publish('list', { page });
   }
 }
