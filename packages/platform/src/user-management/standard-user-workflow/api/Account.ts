@@ -93,7 +93,7 @@ export interface AccountConfirmationMessageManager {
 export interface Account {
   accountId: string;
   accountStatus: AccountStatus;
-  userProfile: UserProfile;
+  userProfile?: UserProfile;
 }
 
 export interface AccountStatusProvider {
