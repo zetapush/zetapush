@@ -1,9 +1,4 @@
-import {
-  Credentials,
-  AccountCreationDetails,
-  ConfirmationRedirection,
-  Account,
-} from './standard-user-workflow/api';
+import { Credentials, AccountCreationDetails, ConfirmationRedirection, Account } from './standard-user-workflow/api';
 
 /**
  * The 'StandardUserWorkflow' is the standard process of users management in the application.
@@ -108,8 +103,5 @@ export interface StandardUserWorkflow {
    * @param {ConfirmationDirection} confirmationRedirection Optional redirection when an account is confirmed
    * @returns {Account} ID, status of the account and user profile
    */
-  signup(
-    accountCreationDetails: AccountCreationDetails,
-    confirmationRedirection?: ConfirmationRedirection,
-  ): Account;
+  signup(accountCreationDetails: AccountCreationDetails, confirmationRedirection?: ConfirmationRedirection): Account;
 }
