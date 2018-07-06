@@ -2,3 +2,4 @@
 export * from './Credentials';
 export * from './Account';
 export * from './Redirection';
+export * from './Authentication';
