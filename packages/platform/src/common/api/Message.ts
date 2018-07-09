@@ -4,7 +4,7 @@
  * ================================
  */
 export interface MessageSender {
-  send(message: Message): SentMessage;
+  send(message: Message): Promise<SentMessage>;
 }
 
 /**
