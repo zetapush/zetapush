@@ -1,7 +1,7 @@
 const { URL } = require('url');
 const request = require('request');
 
-const { log, error } = require('./log');
+const { log } = require('./log');
 
 const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
   new Promise((resolve, reject) => {

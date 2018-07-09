@@ -1,5 +1,5 @@
 const conditions = require('./conditions');
-const { trace, log, error, info, help } = require('../utils/log');
+const { trace } = require('../utils/log');
 
 const parse = (content) => {
   let parsed = content
