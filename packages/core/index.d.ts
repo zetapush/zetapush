@@ -85,12 +85,12 @@ interface Service {
 interface ServiceDeclaration<T> {
   deploymentId?: string;
   listener?: any;
-  Type: T;
+  Type: Function;
 }
 
 interface TaskServiceDeclaration<T> {
   deploymentId?: string;
-  Type: T;
+  Type: Function;
 }
 
 interface Token {
