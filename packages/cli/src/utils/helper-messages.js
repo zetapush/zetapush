@@ -1,8 +1,6 @@
 const chalk = require('chalk');
 
-helpMessageRun = () => {
-  return chalk`
-    
+const helpMessageRun = () => chalk`
     {bold NAME :}
         zeta run - Launch your worker (back end code) locally
 
@@ -48,11 +46,8 @@ helpMessageRun = () => {
             The default environment is prod but you can create your own (dev, preprod, …​). 
             An environment is one stage in the life-cycle of the application.}
     `;
-};
 
-helpMessagePush = () => {
-  return chalk`
-    
+const helpMessagePush = () => chalk`
     {bold NAME :}
         zeta push - Deploy your application
 
@@ -92,13 +87,12 @@ helpMessagePush = () => {
             In most cases, the developer doesn’t need to set this property. 
             He just need to use this property if ZetaPush says explicitly to use an other ZetaPush platform.}
 
-       {italic --env-name }
-       
+        {italic --env-name }
+        
             {reset Override the value in the ".zetarc" file.
             An application created by a developer can takes many environments. 
             The default environment is prod but you can create your own (dev, preprod, …​). 
             An environment is one stage in the life-cycle of the application.}
     `;
-};
 
 module.exports = { helpMessageRun, helpMessagePush };

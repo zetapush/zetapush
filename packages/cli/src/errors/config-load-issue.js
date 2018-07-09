@@ -1,5 +1,5 @@
 const { ErrorAnalyzer } = require('./troubleshooting');
-const { trace, log, error, info, help } = require('../utils/log');
+const { trace } = require('../utils/log');
 
 class ConfigLoadIssueAnalyzer extends ErrorAnalyzer {
   async getError(err) {
