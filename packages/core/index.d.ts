@@ -64,6 +64,8 @@ type MacroServicePublisher = (method: string, parameters?: PublishParameters, ha
 
 type ServicePublisher = (method: string, parameters: any) => void;
 
+type UUIDFactory = (entropy?: number, dictionary?: string) => string;
+
 interface PublishParameters {
   [property: string]: any;
 }
@@ -80,15 +82,15 @@ interface Service {
   DEFAULT_DEPLOYMENT_ID: string;
 }
 
-interface ServiceDeclaration {
+interface ServiceDeclaration<T> {
   deploymentId?: string;
   listener?: any;
-  Type: Service;
+  Type: T;
 }
 
-interface TaskServiceDeclaration {
+interface TaskServiceDeclaration<T> {
   deploymentId?: string;
-  Type: Service;
+  Type: T;
 }
 
 interface Token {
@@ -131,6 +133,7 @@ export interface SmartClientOptions extends Options {
 
 export class Authentication {
   static delegating(authData: TokenAuthData): TokenHandshake;
+  static developer(authData: CredentialsAuthData): CredentialsHandshake;
   static simple(authData: CredentialsAuthData): CredentialsHandshake;
   static weak(authData: TokenAuthData): TokenHandshake;
   static create(
@@ -156,10 +159,10 @@ export class Client {
   constructor(options: ClientOptions);
   addConnectionStatusListener(listener: ConnectionStatusListener): ConnectionStatusHandler;
   connect(): Promise<void>;
-  createService(declaration: ServiceDeclaration): Service;
-  createAsyncMacroService(declaration: ServiceDeclaration): services.Macro;
-  createAsyncTaskService(declaration: TaskServiceDeclaration): Service;
-  createAsyncService(declaration: ServiceDeclaration): Service;
+  createService<T>(declaration: ServiceDeclaration<T>): T;
+  createAsyncMacroService<T>(declaration: ServiceDeclaration<T>): T;
+  createAsyncTaskService<T>(declaration: TaskServiceDeclaration<T>): T;
+  createAsyncService<T>(declaration: ServiceDeclaration<T>): T;
   createProxyMacroService(deploymentId?: string): ProxyService;
   createProxyService(deploymentId: string): ProxyService;
   disconnect(): Promise<void>;
@@ -208,6 +211,8 @@ export namespace services {
     constructor($publish: AsyncMacroServicePublisher);
   }
 }
+
+export const uuid: UUIDFactory;
 
 export const VERSION: string;
 
