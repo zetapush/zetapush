@@ -1,8 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const process = require('process');
 const os = require('os');
-const { log, error, info, help } = require('../utils/log');
+const { error } = require('../utils/log');
 
 const displayError = (steps) => {
   steps.forEach((step) => {

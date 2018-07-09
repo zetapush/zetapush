@@ -1,5 +1,5 @@
 const { ErrorAnalyzer } = require('./troubleshooting');
-const { log, error, warn, info, trace } = require('../utils/log');
+const { log, trace } = require('../utils/log');
 
 class CustomCloudServiceStartErrorAnalyzer extends ErrorAnalyzer {
   hasWorkerStartNpmErr(progress) {

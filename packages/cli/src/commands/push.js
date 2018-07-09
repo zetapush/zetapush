@@ -2,7 +2,6 @@ const path = require('path');
 const os = require('os');
 
 const compress = require('../utils/compress');
-const DEFAULTS = require('../utils/defaults');
 const { log, error } = require('../utils/log');
 const { getProgression } = require('../utils/progression');
 const { generateProvisioningFile } = require('../utils/provisioning');
