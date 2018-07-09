@@ -1,7 +1,5 @@
 const { ErrorAnalyzer } = require('./troubleshooting');
 
-const { log, error, warn, info } = require('../utils/log');
-
 class InjectionIssueAnalyzer extends ErrorAnalyzer {
   isAnInjectionCustomServiceError(err) {
     if (!err.message) {
