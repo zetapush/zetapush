@@ -1,6 +1,17 @@
-import { timeoutify } from './async.js';
+import { timeoutify } from './async';
 
 export class WorkerInstance {
+  /**
+   * Worker instance timeout
+   */
+  private timeout: number;
+  /**
+   * Worker implementation
+   */
+  private worker: any;
+  /**
+   *
+   */
   constructor({ timeout, worker }) {
     /**
      * @access private

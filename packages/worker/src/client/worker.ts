@@ -1,9 +1,20 @@
 import { Authentication, Client, uuid } from '@zetapush/core';
 import { Queue as Worker } from '@zetapush/platform';
 
-import { WorkerInstance } from '../utils/worker-instance.js';
+import { WorkerInstance } from '../utils/worker-instance';
 
 export class WorkerClient extends Client {
+  /**
+   * Worker capacity
+   */
+  private capacity: number;
+  /**
+   * Worker task timeout
+   */
+  private timeout: number;
+  /**
+   * WorkerClient constructor
+   */
   constructor({
     platformUrl,
     appName,
@@ -44,17 +55,13 @@ export class WorkerClient extends Client {
   }
   /**
    * Subscribe a task worker
-   * @param {Object} worker
-   * @param {String} deploymentId
-   * @return {() => void}
    */
   subscribeTaskWorker(worker, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
-    console.log('subscribeTaskWorker', worker);
     const instance = new WorkerInstance({
       timeout: this.timeout,
       worker,
     });
-    const queue = this.createService({
+    const queue = this.createService<Worker>({
       deploymentId,
       listener: {
         async dispatch(task) {
