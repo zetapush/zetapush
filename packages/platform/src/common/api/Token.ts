@@ -4,7 +4,7 @@
  * ================================
  */
 export interface TokenGenerator {
-  generate(): Token;
+  generate(): Promise<Token>;
 }
 
 /**
