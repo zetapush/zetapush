@@ -4,15 +4,15 @@
  * ================================
  */
 export interface TemplateManager {
-  loadAndParse(location: Location, variables: Variables): Template;
+  loadAndParse(location: Location, variables: Variables): Promise<Template>;
 }
 
 export interface ResourceResolver {
-  resolve(location: Location): Resource;
+  resolve(location: Location): Promise<Resource>;
 }
 
 export interface TemplateParser {
-  parse(resource: Resource, variables: Variables): ParsedTemplate;
+  parse(resource: Resource, variables: Variables): Promise<ParsedTemplate>;
 }
 
 /**

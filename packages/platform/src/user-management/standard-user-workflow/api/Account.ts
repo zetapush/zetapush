@@ -6,16 +6,18 @@ import { Token, Message, SentMessage } from '../../../common/api';
  * ================================
  */
 export interface AccountCreationManager {
-  signup(accountCreationDetails: AccountCreationDetails): Account;
+  signup(accountCreationDetails: AccountCreationDetails): Promise<Account>;
 }
 
 export interface AccountConfirmationManager {
-  askConfirmation(accountToConfirm: Account): PendingAccountConfirmation;
-  confirm(token: Token): ConfirmedAccount;
+  askConfirmation(
+    accountToConfirm: Account,
+  ): Promise<PendingAccountConfirmation>;
+  confirm(token: Token): Promise<ConfirmedAccount>;
 }
 
 export interface AccountConfirmationMessageManager {
-  send(message: Message): SentMessage;
+  send(message: Message): Promise<SentMessage>;
 }
 
 /**
@@ -26,7 +28,7 @@ export interface AccountConfirmationMessageManager {
 export interface Account {
   accountId: string;
   accountStatus: AccountStatus;
-  userProfile?: UserProfile;
+  userProfile: UserProfile;
 }
 
 export enum AccountStatus {
