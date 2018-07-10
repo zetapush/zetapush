@@ -1,7 +1,7 @@
 const { URL } = require('url');
 const request = require('request');
 
-const { log, error } = require('./log');
+const { log, debugObject } = require('./log');
 
 const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
   new Promise((resolve, reject) => {
@@ -26,6 +26,13 @@ const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
     };
     log(method, url, body);
     request(options, (failure, response, body) => {
+      debugObject(
+        'fetch',
+        { request: options },
+        { failure },
+        { response },
+        { body },
+      );
       if (failure) {
         log(method, url, failure);
         return reject({ failure, request: options });

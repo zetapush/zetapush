@@ -3,7 +3,7 @@ const dns = require('dns');
 const os = require('os');
 const process = require('process');
 const gateway = require('default-gateway');
-const { trace, log, error, info, help } = require('../utils/log');
+const { trace } = require('../utils/log');
 const execa = require('execa');
 
 class NetworkIssueAnalyzer extends ErrorAnalyzer {

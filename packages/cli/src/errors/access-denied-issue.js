@@ -1,7 +1,6 @@
 const { ErrorAnalyzer } = require('./troubleshooting');
-const { trace, log, error, info, help } = require('../utils/log');
+const { trace } = require('../utils/log');
 const { fetch } = require('../utils/network');
-const request = require('request');
 
 class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
   hasDeveloperLogin(err) {
@@ -18,7 +17,7 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
 
   async isDeveloperAccountExists(config) {
     try {
-      const account = await fetch({
+      await fetch({
         config,
         method: 'POST',
         pathname: '/auth/login',

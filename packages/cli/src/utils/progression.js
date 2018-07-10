@@ -1,7 +1,9 @@
-const { URL } = require('url');
-const request = require('request');
+const { fetch } = require('./network');
 const { log, error, info, warn, trace, debugObject } = require('./log');
 const ProgressBar = require('node-progress-bars');
+
+const { fetch } = require('./network');
+const { log, error, info, warn, trace } = require('./log');
 const errorsHandler = require('../errors/errors-handler');
 const troubleshooting = require('../errors/troubleshooting');
 
@@ -11,45 +13,10 @@ const troubleshooting = require('../errors/troubleshooting');
  * @param {String} recipeId
  */
 const getProgress = (config, recipeId) =>
-  new Promise((resolve, reject) => {
-    const { developerLogin, developerPassword, platformUrl, appName } = config;
-    const { protocol, hostname, port } = new URL(platformUrl);
-    const url = `${protocol}//${hostname}:${port}/zbo/orga/recipe/status/${appName}/${recipeId}`;
-    const options = {
-      headers: {
-        'X-Authorization': JSON.stringify({
-          username: developerLogin,
-          password: developerPassword,
-        }),
-      },
-      method: 'GET',
-      url,
-    };
-    // log('Get progresssion', url);
-    request(options, (failure, response, body) => {
-      debugObject(
-        'GET progression',
-        { request: options },
-        { failure },
-        { response },
-        { body },
-      );
-      if (failure) {
-        reject({ failure, request: options, config });
-        return error('Get progresssion failed', failure);
-      }
-      if (response.statusCode !== 200) {
-        reject({
-          body,
-          statusCode: response.statusCode,
-          request: options,
-          config,
-        });
-        return error('Get progresssion failed', response.statusCode, body);
-      }
-      // log('Get progresssion successful', body);
-      resolve(JSON.parse(body));
-    });
+  fetch({
+    config,
+    method: 'GET',
+    pathname: `orga/recipe/status/${config.appName}/${recipeId}`,
   });
 
 /**
@@ -57,63 +24,22 @@ const getProgress = (config, recipeId) =>
  * @param {Object} config
  */
 const getLiveStatus = (config) =>
-  new Promise((resolve, reject) => {
-    const { developerLogin, developerPassword, platformUrl, appName } = config;
-    const { protocol, hostname, port } = new URL(platformUrl);
-    const url = `${protocol}//${hostname}:${port}/zbo/orga/business/live/${appName}`;
-    const options = {
-      headers: {
-        'X-Authorization': JSON.stringify({
-          username: developerLogin,
-          password: developerPassword,
-        }),
-      },
-      method: 'GET',
-      url,
-    };
-    // log('Get progresssion', url);
-    request(options, (failure, response, body) => {
-      debugObject(
-        'GET live status',
-        { request: options },
-        { failure },
-        { response },
-        { body },
-      );
-      if (failure) {
-        reject({ failure, request: options, config });
-        return error('Get live status failed', failure);
-      }
-      if (response.statusCode !== 200) {
-        reject({
-          body,
-          statusCode: response.statusCode,
-          request: options,
-          config,
-        });
-        return error('Get live status failed', response.statusCode, body);
-      }
-      // log('Get progresssion successful', body);
-      try {
-        const parsed = JSON.parse(body);
-        const nodes = Object.values(parsed.nodes);
-        const fronts = nodes.reduce((reduced, node) => {
-          const contexts =
-            node.liveData['jetty.local.static.files.contexts'] || [];
-          return {
-            ...reduced,
-            ...contexts.reduce((acc, context) => {
-              acc[context.name] = context.urls;
-              return acc;
-            }, {}),
-          };
-        }, {});
-        resolve(fronts);
-      } catch (failure) {
-        reject({ failure, config, request: options });
-        return error('Get live status failed', failure);
-      }
-    });
+  fetch({
+    config,
+    method: 'GET',
+    pathname: `orga/business/live/${config.appName}`,
+  }).then((response) => {
+    const nodes = Object.values(response.nodes);
+    return nodes.reduce((reduced, node) => {
+      const contexts = node.liveData['jetty.local.static.files.contexts'] || [];
+      return {
+        ...reduced,
+        ...contexts.reduce((acc, context) => {
+          acc[context.name] = context.urls;
+          return acc;
+        }, {}),
+      };
+    }, {});
   });
 
 const getProgressionColor = (step) => {
@@ -143,7 +69,7 @@ const displayProgress = (progress, steps) => {
     trace("can't display progress => fallback", e);
     console.log(''.padEnd(60, '-'));
     steps.forEach((step) => {
-      const progressChars = Math.floor(step.progress * 20 / 100);
+      const progressChars = Math.floor((step.progress * 20) / 100);
       const blankChars = 20 - progressChars;
       console.log(
         `${''.padEnd(progressChars, '▇')}${''.padEnd(blankChars, '░')} ${

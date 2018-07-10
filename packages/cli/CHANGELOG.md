@@ -3,22 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.28.0](https://github.com/zetapush/zetapush/compare/v0.27.14...v0.28.0) (2018-06-29)
-
-
-### Bug Fixes
-
-* **cli:** replace ascii-progress by node-progress-bars ([fdfdca2](https://github.com/zetapush/zetapush/commit/fdfdca2)), closes [#55](https://github.com/zetapush/zetapush/issues/55)
+# [0.29.0](https://github.com/zetapush/zetapush/compare/v0.28.0...v0.29.0) (2018-07-10)
 
 
 ### Features
 
-* **cli:** according to documentation, rename http-server option to serve-front ([7a0268d](https://github.com/zetapush/zetapush/commit/7a0268d)), closes [#55](https://github.com/zetapush/zetapush/issues/55)
-
-
-### BREAKING CHANGES
-
-* **cli:** rename http-server option to serve-front
+* **provisioning:** add decorator to support service options ([bba9e0a](https://github.com/zetapush/zetapush/commit/bba9e0a))
+* **provisionning:** support service options ([bf617da](https://github.com/zetapush/zetapush/commit/bf617da))
 
 
 

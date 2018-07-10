@@ -1,4 +1,4 @@
-const { log, error, trace } = require('./log');
+const { log, trace } = require('./log');
 const fs = require('fs');
 const request = require('request');
 const { URL } = require('url');
