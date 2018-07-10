@@ -1,4 +1,5 @@
 import { UuidGenerator, Uuid } from '../api';
+import { Injectable } from 'injection-js';
 
 /**
  * Generate a unique identifier based on two factors:
@@ -10,7 +11,8 @@ import { UuidGenerator, Uuid } from '../api';
  *
  * The '0.' characters are removed.
  */
-export class TimestampBasedUuidGenerator implements UuidGenerator {
+@Injectable()
+export class TimestampBasedUuidGenerator extends UuidGenerator {
   async generate(): Promise<Uuid> {
     const ts = new Date().valueOf();
     let rand;
