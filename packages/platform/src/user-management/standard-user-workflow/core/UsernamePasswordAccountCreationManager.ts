@@ -6,7 +6,7 @@ import {
   AccountDetailsProvider,
   AccountStatusProvider,
   UserProfile,
-  AccountCreationError,
+  AccountCreationError
 } from '../api';
 import { UuidGenerator } from '../../../common/api';
 
@@ -31,18 +31,15 @@ export class UsernameAlreadyUsedError extends AccountCreationError {
   }
 }
 
-export class UsernamePasswordAccountCreationManager
-  implements AccountCreationManager {
+export class UsernamePasswordAccountCreationManager implements AccountCreationManager {
   constructor(
     private userService: Simple,
     private uuidGenerator: UuidGenerator,
     private accountStatusProvider: AccountStatusProvider,
-    private additionalAccountDetailsProvider?: AccountDetailsProvider,
+    private additionalAccountDetailsProvider?: AccountDetailsProvider
   ) {}
 
-  async signup(
-    accountCreationDetails: AccountCreationDetails,
-  ): Promise<Account> {
+  async signup(accountCreationDetails: AccountCreationDetails): Promise<Account> {
     if (accountCreationDetails instanceof UsernamePasswordAccountDetails) {
       return null;
     }
@@ -60,7 +57,7 @@ export class UsernamePasswordAccountCreationManager
         accountStatus,
         login: details.username,
         password: details.password,
-        userProfile,
+        userProfile
       });
       // TODO: logs
       console.log('result', result);
@@ -68,16 +65,13 @@ export class UsernamePasswordAccountCreationManager
       return {
         accountId,
         accountStatus,
-        userProfile,
+        userProfile
       };
     } catch (e) {
       // TODO: catch errors and handle them
       if (e.code === 'MISSING_MANDATORY_FIELDS') {
       } else if (e.code === 'ACCOUNT_EXISTS') {
-        throw new UsernameAlreadyUsedError(
-          `Username "${details.username}" is already used`,
-          accountCreationDetails,
-        );
+        throw new UsernameAlreadyUsedError(`Username "${details.username}" is already used`, accountCreationDetails);
       } else if (e.code === 'KEY_BADCHAR') {
       }
     }
@@ -85,9 +79,7 @@ export class UsernamePasswordAccountCreationManager
 
   private async getUserProfile(details): Promise<UserProfile> {
     if (this.additionalAccountDetailsProvider) {
-      return await this.additionalAccountDetailsProvider.getUserProfile(
-        details,
-      );
+      return await this.additionalAccountDetailsProvider.getUserProfile(details);
     } else {
       return details.profile;
     }

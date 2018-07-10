@@ -1,9 +1,6 @@
 import { TimestampBasedUuidGenerator } from '../core';
 import { Provider, Type } from 'injection-js';
-import {
-  AccountStatus,
-  AccountStatusProvider,
-} from '../../user-management/standard-user-workflow/api';
+import { AccountStatus, AccountStatusProvider } from '../../user-management/standard-user-workflow/api';
 import { StaticAccountStatusProvider } from '../../user-management/standard-user-workflow/core';
 
 export interface And<P> {
@@ -18,8 +15,7 @@ export interface StandardUserWorkflowConfigurer {
   account(): StandardUserWorkflowAccountConfigurer;
 }
 
-export interface StandardUserWorkflowAccountConfigurer
-  extends And<StandardUserWorkflowConfigurer> {
+export interface StandardUserWorkflowAccountConfigurer extends And<StandardUserWorkflowConfigurer> {
   registration(): StandardUserWorkflowAccountRegistrationConfigurer;
 
   login(): StandardUserWorkflowAccountLoginConfigurer;
@@ -74,8 +70,7 @@ export interface FieldConfigurer<P> extends And<P> {
 
 //==================== account registration ====================//
 
-export interface StandardUserWorkflowAccountRegistrationConfigurer
-  extends And<StandardUserWorkflowAccountConfigurer> {
+export interface StandardUserWorkflowAccountRegistrationConfigurer extends And<StandardUserWorkflowAccountConfigurer> {
   uuid(): UuidConfigurer<StandardUserWorkflowAccountRegistrationConfigurer>;
 
   creationStatus(): StandardUserWorkflowAccountCreationStatusConfigurer;
@@ -89,39 +84,25 @@ export interface StandardUserWorkflowAccountRegistrationConfigurer
 
 export interface StandardUserWorkflowAccountCreationStatusConfigurer
   extends And<StandardUserWorkflowAccountRegistrationConfigurer> {
-  value(
-    accountStatus: AccountStatus,
-  ): StandardUserWorkflowAccountCreationStatusConfigurer;
+  value(accountStatus: AccountStatus): StandardUserWorkflowAccountCreationStatusConfigurer;
 
-  provider(
-    accountStatusProvider: AccountStatusProvider,
-  ): StandardUserWorkflowAccountCreationStatusConfigurer;
+  provider(accountStatusProvider: AccountStatusProvider): StandardUserWorkflowAccountCreationStatusConfigurer;
 }
 
 export interface StandardUserWorkflowAccountRegistrationWelcomeConfigurer
   extends And<StandardUserWorkflowAccountRegistrationConfigurer> {
-  email(): EmailConfigurer<
-    StandardUserWorkflowAccountRegistrationWelcomeConfigurer
-  >;
+  email(): EmailConfigurer<StandardUserWorkflowAccountRegistrationWelcomeConfigurer>;
 
-  sms(): SmsConfigurer<
-    StandardUserWorkflowAccountRegistratioConfirmationConfigurer
-  >;
+  sms(): SmsConfigurer<StandardUserWorkflowAccountRegistratioConfirmationConfigurer>;
 }
 
 export interface StandardUserWorkflowAccountRegistratioConfirmationConfigurer
   extends And<StandardUserWorkflowAccountRegistrationConfigurer> {
-  email(): EmailConfigurer<
-    StandardUserWorkflowAccountRegistratioConfirmationConfigurer
-  >;
+  email(): EmailConfigurer<StandardUserWorkflowAccountRegistratioConfirmationConfigurer>;
 
-  sms(): SmsConfigurer<
-    StandardUserWorkflowAccountRegistratioConfirmationConfigurer
-  >;
+  sms(): SmsConfigurer<StandardUserWorkflowAccountRegistratioConfirmationConfigurer>;
 
-  redirection(): SuccessFailureRedirectionConfigurer<
-    StandardUserWorkflowAccountRegistratioConfirmationConfigurer
-  >;
+  redirection(): SuccessFailureRedirectionConfigurer<StandardUserWorkflowAccountRegistratioConfirmationConfigurer>;
 }
 
 //==================== account login ====================//
@@ -133,7 +114,5 @@ export interface StandardUserWorkflowAccountLoginConfigurer {
 //==================== account password reset ====================//
 
 export interface StandardUserWorkflowAccountPasswordResetConfigurer {
-  email(): EmailConfigurer<
-    StandardUserWorkflowAccountRegistrationWelcomeConfigurer
-  >;
+  email(): EmailConfigurer<StandardUserWorkflowAccountRegistrationWelcomeConfigurer>;
 }
