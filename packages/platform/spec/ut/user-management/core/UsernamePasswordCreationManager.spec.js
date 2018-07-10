@@ -1,11 +1,11 @@
 const {
   AccountStatus,
   AccountStatusProvider,
-  AccountDetailsProvider,
+  AccountDetailsProvider
 } = require('../../../../lib/user-management/standard-user-workflow/api');
 const {
   UsernamePasswordAccountCreationManager,
-  UsernameAlreadyUsedError,
+  UsernameAlreadyUsedError
 } = require('../../../../lib/user-management/standard-user-workflow/core');
 const { UuidGenerator } = require('../../../../lib/common/api');
 const { Simple } = require('../../../../lib/authentication');
@@ -13,14 +13,8 @@ const { Simple } = require('../../../../lib/authentication');
 describe(`UsernamePasswordAccountCreationManager`, () => {
   const userService = jasmine.createSpyObj(Simple, ['createUser']);
   const uuidGenerator = jasmine.createSpyObj(UuidGenerator, ['generate']);
-  const accountStatusProvider = jasmine.createSpyObj(AccountStatusProvider, [
-    'getStatus',
-  ]);
-  const creationManager = new UsernamePasswordAccountCreationManager(
-    userService,
-    uuidGenerator,
-    accountStatusProvider,
-  );
+  const accountStatusProvider = jasmine.createSpyObj(AccountStatusProvider, ['getStatus']);
+  const creationManager = new UsernamePasswordAccountCreationManager(userService, uuidGenerator, accountStatusProvider);
 
   beforeEach(() => {});
 
@@ -35,9 +29,7 @@ describe(`UsernamePasswordAccountCreationManager`, () => {
       - userProfile = {firstname: 'Odile', lastname: 'DERAY'}`, async () => {
     // GIVEN
     uuidGenerator.generate.and.returnValue({ value: 42 });
-    accountStatusProvider.getStatus.and.returnValue(
-      AccountStatus.waitingConfirmation,
-    );
+    accountStatusProvider.getStatus.and.returnValue(AccountStatus.waitingConfirmation);
     // TODO: real value from service
     userService.createUser.and.returnValue();
     // WHEN
@@ -46,15 +38,15 @@ describe(`UsernamePasswordAccountCreationManager`, () => {
       password: '123456',
       profile: {
         firstname: 'Odile',
-        lastname: 'DERAY',
-      },
+        lastname: 'DERAY'
+      }
     });
     // THEN
     expect(account.accountId).toBe(42);
     expect(account.accountStatus).toBe(AccountStatus.waitingConfirmation);
     expect(account.userProfile).toEqual({
       firstname: 'Odile',
-      lastname: 'DERAY',
+      lastname: 'DERAY'
     });
   });
 
@@ -67,9 +59,7 @@ describe(`UsernamePasswordAccountCreationManager`, () => {
       - throw UsernameAlreadyUsedError`, async () => {
     // GIVEN
     uuidGenerator.generate.and.returnValue({ value: 42 });
-    accountStatusProvider.getStatus.and.returnValue(
-      AccountStatus.waitingConfirmation,
-    );
+    accountStatusProvider.getStatus.and.returnValue(AccountStatus.waitingConfirmation);
     // TODO: real error from service
     const err = new Error('foobar');
     err.code = 'ACCOUNT_EXISTS';
@@ -81,18 +71,15 @@ describe(`UsernamePasswordAccountCreationManager`, () => {
         password: '123456',
         profile: {
           firstname: 'Odile',
-          lastname: 'DERAY',
-        },
+          lastname: 'DERAY'
+        }
       });
       fail('no exception ');
     } catch (e) {
       // THEN
       expect(() => {
         throw e;
-      }).toThrowError(
-        UsernameAlreadyUsedError,
-        'Username "odile.deray" is already used',
-      );
+      }).toThrowError(UsernameAlreadyUsedError, 'Username "odile.deray" is already used');
     }
   });
 });
