@@ -9,7 +9,7 @@ export class Configurer extends Service {
     return `${Configurer.DEPLOYMENT_TYPE}_0`;
   }
 
-  async $configure(parameters: object, deploymentId: string, verb: string) {
+  protected $configure(parameters: object, deploymentId: string, verb: string) {
     return this.$publish('admin', {
       requests: [
         {
