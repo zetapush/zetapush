@@ -144,7 +144,7 @@ const createServices = (client, config, declaration) => {
   const { items } = getRuntimeProvision(config, declaration);
   const services = items.map(({ item }) => item);
 
-  info(`Create services`);
+  info(`Create services`, services);
 
   return api.createServices({ services });
 };
