@@ -68,9 +68,7 @@ export interface AccountDetailsProvider {
 }
 
 export interface AccountConfirmationManager {
-  askConfirmation(
-    accountToConfirm: Account,
-  ): Promise<PendingAccountConfirmation>;
+  askConfirmation(accountToConfirm: Account): Promise<PendingAccountConfirmation>;
   confirm(token: Token): Promise<ConfirmedAccount>;
 }
 
@@ -105,7 +103,7 @@ export interface AccountStatusProvider {
 export enum AccountStatus {
   active = 'ACTIVE',
   waitingConfirmation = 'WAITING_FOR_CONFIRMATION',
-  disabled = 'DISABLED',
+  disabled = 'DISABLED'
 }
 
 export interface UserProfile {}
