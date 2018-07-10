@@ -74,7 +74,7 @@ describe(`UsernamePasswordAccountCreationManager`, () => {
           lastname: 'DERAY'
         }
       });
-      fail('no exception ');
+      fail('should have failed with UsernameAlreadyUsedError exception');
     } catch (e) {
       // THEN
       expect(() => {

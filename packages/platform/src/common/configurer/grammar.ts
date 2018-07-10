@@ -1,7 +1,6 @@
-import { TimestampBasedUuidGenerator } from '../core';
 import { Provider, Type } from 'injection-js';
 import { AccountStatus, AccountStatusProvider } from '../../user-management/standard-user-workflow/api';
-import { StaticAccountStatusProvider } from '../../user-management/standard-user-workflow/core';
+import { UuidGenerator, Uuid } from '../api';
 
 export interface And<P> {
   and(): P;
@@ -12,46 +11,48 @@ export interface Configurer<T> {
 }
 
 export interface StandardUserWorkflowConfigurer {
-  account(): StandardUserWorkflowAccountConfigurer;
+  account(): AccountConfigurer;
 }
 
-export interface StandardUserWorkflowAccountConfigurer extends And<StandardUserWorkflowConfigurer> {
-  registration(): StandardUserWorkflowAccountRegistrationConfigurer;
+export interface AccountConfigurer extends And<StandardUserWorkflowConfigurer> {
+  registration(): RegistrationConfigurer;
 
-  login(): StandardUserWorkflowAccountLoginConfigurer;
+  login(): LoginConfigurer;
 
-  reset(): StandardUserWorkflowAccountPasswordResetConfigurer;
+  lostPassword(): LostPasswordConfigurer;
 }
 
 //==================== general ====================//
 
 export interface UuidConfigurer<P> extends And<P> {
-  generator(provider: Provider);
+  generator(func: () => Promise<Uuid>): UuidConfigurer<P>;
+  generator(instance: UuidGenerator): UuidConfigurer<P>;
+  generator(generatorClass: Type<UuidGenerator>): UuidConfigurer<P>;
 }
 
 export interface EmailConfigurer<P> extends And<P> {
-  from(email: string): P;
-  from(provider: Provider): P;
+  from(email: string): EmailConfigurer<P>;
+  // from(): EmailConfigurer<P>;
 
   htmlTemplate /* TODO */(): EmailInliningConfigurer<EmailConfigurer<P>>;
 
-  textTemplate /* TODO */(): P;
+  textTemplate /* TODO */(): EmailConfigurer<P>;
 }
 
 export interface EmailInliningConfigurer<P> extends And<P> {
-  inlineCss /* TODO */(): P;
+  inlineCss /* TODO */(): EmailInliningConfigurer<P>;
 
-  inlineImages /* TODO */(): P;
+  inlineImages /* TODO */(): EmailInliningConfigurer<P>;
 }
 
 export interface SmsConfigurer<P> extends And<P> {
-  template /* TODO */(): P;
+  template /* TODO */(): SmsConfigurer<P>;
 }
 
 export interface SuccessFailureRedirectionConfigurer<P> extends And<P> {
-  successUrl(url: string);
+  successUrl(url: string): SuccessFailureRedirectionConfigurer<P>;
 
-  failureUrl(url: string);
+  failureUrl(url: string): SuccessFailureRedirectionConfigurer<P>;
 }
 
 export interface FieldsConfigurer<P> extends And<P> {
@@ -61,7 +62,7 @@ export interface FieldsConfigurer<P> extends And<P> {
 }
 
 export interface ScanConfigurer<P> extends And<P> {
-  annotations(clazz: Type<any>): ScanConfigurer<P>;
+  annotations(model: Type<any>): ScanConfigurer<P>;
 }
 
 export interface FieldConfigurer<P> extends And<P> {
@@ -70,49 +71,52 @@ export interface FieldConfigurer<P> extends And<P> {
 
 //==================== account registration ====================//
 
-export interface StandardUserWorkflowAccountRegistrationConfigurer extends And<StandardUserWorkflowAccountConfigurer> {
-  uuid(): UuidConfigurer<StandardUserWorkflowAccountRegistrationConfigurer>;
+export interface RegistrationConfigurer extends And<AccountConfigurer> {
+  fields(): RegistrationFieldsConfigurer;
 
-  creationStatus(): StandardUserWorkflowAccountCreationStatusConfigurer;
+  welcome(): RegistrationWelcomeConfigurer;
 
-  fields(): FieldsConfigurer<StandardUserWorkflowAccountRegistrationConfigurer>;
-
-  welcome(): StandardUserWorkflowAccountRegistrationWelcomeConfigurer;
-
-  confirmation(): StandardUserWorkflowAccountRegistratioConfirmationConfigurer;
+  confirmation(): RegistrationConfirmationConfigurer;
 }
 
-export interface StandardUserWorkflowAccountCreationStatusConfigurer
-  extends And<StandardUserWorkflowAccountRegistrationConfigurer> {
-  value(accountStatus: AccountStatus): StandardUserWorkflowAccountCreationStatusConfigurer;
+export interface RegistrationFieldsConfigurer extends FieldConfigurer<RegistrationConfigurer> {
+  accountUuid(): UuidConfigurer<RegistrationFieldsConfigurer>;
 
-  provider(accountStatusProvider: AccountStatusProvider): StandardUserWorkflowAccountCreationStatusConfigurer;
+  initialStatus(): AccountStatusConfigurer;
 }
 
-export interface StandardUserWorkflowAccountRegistrationWelcomeConfigurer
-  extends And<StandardUserWorkflowAccountRegistrationConfigurer> {
-  email(): EmailConfigurer<StandardUserWorkflowAccountRegistrationWelcomeConfigurer>;
+export interface AccountStatusConfigurer extends And<RegistrationFieldsConfigurer> {
+  value(accountStatus: AccountStatus): AccountStatusConfigurer;
 
-  sms(): SmsConfigurer<StandardUserWorkflowAccountRegistratioConfirmationConfigurer>;
+  provider(accountStatusProvider: AccountStatusProvider): AccountStatusConfigurer;
 }
 
-export interface StandardUserWorkflowAccountRegistratioConfirmationConfigurer
-  extends And<StandardUserWorkflowAccountRegistrationConfigurer> {
-  email(): EmailConfigurer<StandardUserWorkflowAccountRegistratioConfirmationConfigurer>;
+export interface RegistrationWelcomeConfigurer extends And<RegistrationConfigurer> {
+  email(): EmailConfigurer<RegistrationWelcomeConfigurer>;
 
-  sms(): SmsConfigurer<StandardUserWorkflowAccountRegistratioConfirmationConfigurer>;
+  sms(): SmsConfigurer<RegistrationWelcomeConfigurer>;
+}
 
-  redirection(): SuccessFailureRedirectionConfigurer<StandardUserWorkflowAccountRegistratioConfirmationConfigurer>;
+export interface RegistrationConfirmationConfigurer extends And<RegistrationConfigurer> {
+  email(): EmailConfigurer<RegistrationConfirmationConfigurer>;
+
+  sms(): SmsConfigurer<RegistrationConfirmationConfigurer>;
+
+  redirection(): SuccessFailureRedirectionConfigurer<RegistrationConfirmationConfigurer>;
 }
 
 //==================== account login ====================//
 
-export interface StandardUserWorkflowAccountLoginConfigurer {
-  fields(): FieldsConfigurer<StandardUserWorkflowAccountRegistrationConfigurer>;
+export interface LoginConfigurer extends And<AccountConfigurer> {
+  fields(): FieldsConfigurer<LoginConfigurer>;
 }
 
 //==================== account password reset ====================//
 
-export interface StandardUserWorkflowAccountPasswordResetConfigurer {
-  email(): EmailConfigurer<StandardUserWorkflowAccountRegistrationWelcomeConfigurer>;
+export interface LostPasswordConfigurer extends And<AccountConfigurer> {
+  reset(): ResetPasswordConfigurer;
+}
+
+export interface ResetPasswordConfigurer extends And<AccountConfigurer> {
+  email(): EmailConfigurer<ResetPasswordConfigurer>;
 }
