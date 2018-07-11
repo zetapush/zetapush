@@ -1,4 +1,4 @@
-import { UuidGenerator, Uuid } from '../api';
+import { UuidGenerator, Uuid, IllegalArgumentError } from '../api';
 
 /**
  * Simple implementation that just delegates to a function call.
@@ -15,10 +15,14 @@ export class FuncCallUuidGenerator extends UuidGenerator {
   /**
    * Initialize with the function used to delegate Uuid generation.
    *
-   * @param {Function} func the function used to generate a Uuid. The function takes no parameter and returns a Uuid instance.
+   * @param {Function} func the function used to generate a Uuid.
+   * The function takes no parameter and returns a Uuid instance.
    */
   constructor(private func: () => Promise<Uuid>) {
     super();
+    if (!func) {
+      throw new IllegalArgumentError('Generator function is required', 'func');
+    }
   }
 
   generate(): Promise<Uuid> {
