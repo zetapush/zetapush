@@ -1,5 +1,5 @@
-const { IllegalArgumentError } = require('../../../../lib/common/api/exception');
-const { Base36RandomTokenGenerator } = require('../../../../lib/common/core/Base36RandomTokenGenerator');
+import { Base36RandomTokenGenerator } from '../../../../src/common/core';
+import { IllegalArgumentError } from '../../../../src/common/api';
 
 describe(`Base36RandomTokenGenerator`, () => {
   it(`configured with
