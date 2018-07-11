@@ -1,19 +1,17 @@
-const {
-  AccountStatus,
-  AccountStatusProvider,
-  AccountDetailsProvider
-} = require('../../../../lib/user-management/standard-user-workflow/api');
-const {
+import 'jasmine';
+import { Simple } from '../../../../src';
+import { UuidGenerator } from '../../../../src/common/api';
+import { AccountStatusProvider } from '../../../../src/user-management/standard-user-workflow/api';
+import {
   UsernamePasswordAccountCreationManager,
   UsernameAlreadyUsedError
-} = require('../../../../lib/user-management/standard-user-workflow/core');
-const { UuidGenerator } = require('../../../../lib/common/api');
-const { Simple } = require('../../../../lib/authentication');
+} from '../../../../src/user-management/standard-user-workflow/core';
+import { StandardAccountStatus } from '../../../../src/user-management/standard-user-workflow/core';
 
 describe(`UsernamePasswordAccountCreationManager`, () => {
-  const userService = jasmine.createSpyObj(Simple, ['createUser']);
-  const uuidGenerator = jasmine.createSpyObj(UuidGenerator, ['generate']);
-  const accountStatusProvider = jasmine.createSpyObj(AccountStatusProvider, ['getStatus']);
+  const userService = jasmine.createSpyObj('Simple', ['createUser']);
+  const uuidGenerator = jasmine.createSpyObj('UuidGenerator', ['generate']);
+  const accountStatusProvider = jasmine.createSpyObj('AccountStatusProvider', ['getStatus']);
   const creationManager = new UsernamePasswordAccountCreationManager(userService, uuidGenerator, accountStatusProvider);
 
   beforeEach(() => {});
@@ -28,12 +26,12 @@ describe(`UsernamePasswordAccountCreationManager`, () => {
       - accountStatus = 'WAITING_FOR_CONFIRMATION'
       - userProfile = {firstname: 'Odile', lastname: 'DERAY'}`, async () => {
     // GIVEN
-    uuidGenerator.generate.and.returnValue({ value: 42 });
-    accountStatusProvider.getStatus.and.returnValue(AccountStatus.waitingConfirmation);
+    uuidGenerator.generate.and.returnValue({ value: '42' });
+    accountStatusProvider.getStatus.and.returnValue(StandardAccountStatus.WaitingConfirmation);
     // TODO: real value from service
     userService.createUser.and.returnValue();
     // WHEN
-    const account = await creationManager.signup({
+    const account = await creationManager.createAccount({
       username: 'odile.deray',
       password: '123456',
       profile: {
@@ -42,8 +40,8 @@ describe(`UsernamePasswordAccountCreationManager`, () => {
       }
     });
     // THEN
-    expect(account.accountId).toBe(42);
-    expect(account.accountStatus).toBe(AccountStatus.waitingConfirmation);
+    expect(account.accountId).toBe('42');
+    expect(account.accountStatus).toBe(StandardAccountStatus.WaitingConfirmation);
     expect(account.userProfile).toEqual({
       firstname: 'Odile',
       lastname: 'DERAY'
@@ -58,15 +56,15 @@ describe(`UsernamePasswordAccountCreationManager`, () => {
      should 
       - throw UsernameAlreadyUsedError`, async () => {
     // GIVEN
-    uuidGenerator.generate.and.returnValue({ value: 42 });
-    accountStatusProvider.getStatus.and.returnValue(AccountStatus.waitingConfirmation);
+    uuidGenerator.generate.and.returnValue({ value: '42' });
+    accountStatusProvider.getStatus.and.returnValue(StandardAccountStatus.WaitingConfirmation);
     // TODO: real error from service
     const err = new Error('foobar');
-    err.code = 'ACCOUNT_EXISTS';
+    (<any>err).code = 'ACCOUNT_EXISTS';
     userService.createUser.and.throwError(err);
     // WHEN
     try {
-      await creationManager.signup({
+      await creationManager.createAccount({
         username: 'odile.deray',
         password: '123456',
         profile: {
