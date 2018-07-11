@@ -1,4 +1,4 @@
-import { Simple } from '../../../authentication';
+import { Simple } from '../../../Simple';
 import {
   AccountCreationManager,
   AccountCreationDetails,
@@ -31,6 +31,18 @@ export class UsernameAlreadyUsedError extends AccountCreationError {
   }
 }
 
+/**
+ * Create the account using ZetaPush cloud service.
+ *
+ * The account is created using a login and a password. Login and password will later be used
+ * by the user to log in your application.
+ *
+ * The account creation may also use data provided in profile to store data about
+ * the user.
+ *
+ * When the account is created, a status (AccountStatus) is set to indicate the
+ * initial state of the confirmation process.
+ */
 export class UsernamePasswordAccountCreationManager implements AccountCreationManager {
   constructor(
     private userService: Simple,
@@ -39,7 +51,7 @@ export class UsernamePasswordAccountCreationManager implements AccountCreationMa
     private additionalAccountDetailsProvider?: AccountDetailsProvider
   ) {}
 
-  async signup(accountCreationDetails: AccountCreationDetails): Promise<Account> {
+  async createAccount(accountCreationDetails: AccountCreationDetails): Promise<Account> {
     if (accountCreationDetails instanceof UsernamePasswordAccountDetails) {
       return null;
     }
@@ -48,19 +60,20 @@ export class UsernamePasswordAccountCreationManager implements AccountCreationMa
     // TODO: configure mandatory fields (not really necessary thanks to validator)
     // TODO: configure public fields
     // TODO: provide profile information. /!\ not all fields of the profile are public !!!!!!
+    // TODO: store user profile information in a "real" database to dissociate public fields from private fields ?
     try {
       const { value: accountId } = await this.uuidGenerator.generate();
       const accountStatus = await this.accountStatusProvider.getStatus();
       const userProfile = await this.getUserProfile(details);
-      const result = await this.userService.createUser({
-        accountId,
-        accountStatus,
-        login: details.username,
-        password: details.password,
-        userProfile
-      });
-      // TODO: logs
-      console.log('result', result);
+      // const result = await this.userService.createUser({
+      //   accountId,
+      //   accountStatus,
+      //   login: details.username,
+      //   password: details.password,
+      //   userProfile
+      // });
+      // // TODO: logs
+      // console.log('result', result);
       // TODO: transform raw result to something usable
       return {
         accountId,
@@ -70,9 +83,11 @@ export class UsernamePasswordAccountCreationManager implements AccountCreationMa
     } catch (e) {
       // TODO: catch errors and handle them
       if (e.code === 'MISSING_MANDATORY_FIELDS') {
+        // TODO
       } else if (e.code === 'ACCOUNT_EXISTS') {
         throw new UsernameAlreadyUsedError(`Username "${details.username}" is already used`, accountCreationDetails);
       } else if (e.code === 'KEY_BADCHAR') {
+        // TODO
       }
     }
   }

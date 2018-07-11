@@ -11,10 +11,6 @@ export interface Configurer<T> {
 }
 
 export interface StandardUserWorkflowConfigurer {
-  account(): AccountConfigurer;
-}
-
-export interface AccountConfigurer extends And<StandardUserWorkflowConfigurer> {
   registration(): RegistrationConfigurer;
 
   login(): LoginConfigurer;
@@ -62,7 +58,11 @@ export interface FieldsConfigurer<P> extends And<P> {
 }
 
 export interface ScanConfigurer<P> extends And<P> {
-  annotations(model: Type<any>): ScanConfigurer<P>;
+  annotations(model: Type<any>): AnnotationScanConfigurer<ScanConfigurer<P>>;
+}
+
+export interface AnnotationScanConfigurer<P> extends And<P> {
+  // TODO
 }
 
 export interface FieldConfigurer<P> extends And<P> {
@@ -72,20 +72,26 @@ export interface FieldConfigurer<P> extends And<P> {
 //==================== account registration ====================//
 
 export interface RegistrationConfigurer extends And<AccountConfigurer> {
-  fields(): RegistrationFieldsConfigurer;
+  account(): AccountConfigurer;
 
   welcome(): RegistrationWelcomeConfigurer;
 
   confirmation(): RegistrationConfirmationConfigurer;
 }
 
-export interface RegistrationFieldsConfigurer extends FieldConfigurer<RegistrationConfigurer> {
-  accountUuid(): UuidConfigurer<RegistrationFieldsConfigurer>;
+export interface AccountConfigurer extends And<RegistrationConfigurer> {
+  uuid(): UuidConfigurer<AccountConfigurer>;
 
   initialStatus(): AccountStatusConfigurer;
+
+  fields(): RegistrationFieldsConfigurer;
 }
 
-export interface AccountStatusConfigurer extends And<RegistrationFieldsConfigurer> {
+export interface RegistrationFieldsConfigurer extends FieldConfigurer<RegistrationConfigurer> {
+  scan(): ScanConfigurer<RegistrationFieldsConfigurer>;
+}
+
+export interface AccountStatusConfigurer extends And<AccountConfigurer> {
   value(accountStatus: AccountStatus): AccountStatusConfigurer;
 
   provider(accountStatusProvider: AccountStatusProvider): AccountStatusConfigurer;
