@@ -7,7 +7,7 @@ import {
 import { TimestampBasedUuidGenerator } from '../../../common/core';
 import { AccountStatus } from '../api';
 import { UsernamePasswordAccountDetails } from '../core';
-import { Type } from 'injection-js';
+import { StandardAccountStatus } from '../core/Account';
 
 // prettier-ignore
 
@@ -34,22 +34,24 @@ export class DefaultUserWorkflowConfigurer {
   ) {}
 
   configure() {
-    this.configureAccountRegistration(this.userManagementConfigurer.account().registration());
-    this.configureLogin(this.userManagementConfigurer.account().login());
-    this.configurePasswordReset(this.userManagementConfigurer.account().lostPassword());
+    this.configureAccountRegistration(this.userManagementConfigurer.registration());
+    this.configureLogin(this.userManagementConfigurer.login());
+    this.configurePasswordReset(this.userManagementConfigurer.lostPassword());
   }
 
   configureAccountRegistration(registrationConfigurer: RegistrationConfigurer) {
     registrationConfigurer
-      .fields()
-        .accountUuid()
+      .account()
+        .uuid()
           .generator(TimestampBasedUuidGenerator)
           .and()
         .initialStatus()
-          .value(AccountStatus.waitingConfirmation)
+          .value(StandardAccountStatus.WaitingConfirmation)
           .and()
-        .scan()
-          .annotations(UsernamePasswordAccountDetails)
+        .fields()
+          .scan()
+            .annotations(UsernamePasswordAccountDetails)
+            .and()
           .and()
         .and()
       // .fields()
@@ -84,10 +86,9 @@ export class DefaultUserWorkflowConfigurer {
             .and()
           .textTemplate(/*new MustacheTemplateProvider('templates/email/confirm.txt')*/)
           .and()
-        .and()
-      .redirection()
-        .successUrl(`${this.zetapushContext.frontUrl}#account-confirmed`)
-        .failureUrl(`${this.zetapushContext.frontUrl}#error`);
+        .redirection()
+          .successUrl(`${this.zetapushContext.frontUrl}#account-confirmed`)
+          .failureUrl(`${this.zetapushContext.frontUrl}#error`);
   }
 
   configureLogin(loginConfigurer: LoginConfigurer) {

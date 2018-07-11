@@ -4,32 +4,38 @@ import {
   Configurer,
   RegistrationConfigurer,
   RegistrationFieldsConfigurer,
-  UuidConfigurer
+  UuidConfigurer,
+  AccountConfigurer
 } from '../../../common/configurer/grammar';
-import { UuidGeneratorConfigurer } from '../../../common/configurer/Uuid';
+import { UuidGeneratorConfigurerImpl } from '../../../common/configurer/Uuid';
 import { AccountCreationManager } from '../api';
 import { UsernamePasswordAccountCreationManager } from '../core';
 import { AccountStatusConfigurerImpl } from './AccountStatusConfigurer';
-import { ReflectiveInjector, Injector } from 'injection-js';
-import { Simple } from '../../../authentication';
+import { Injector } from 'injection-js';
+import { Simple } from '../../../Simple';
 
 export class AccountCreationManagerConfigurerImpl extends AbstractParent<RegistrationConfigurer>
-  implements RegistrationFieldsConfigurer, Configurer<AccountCreationManager> {
-  private accountUuidConfigurer: UuidGeneratorConfigurer<RegistrationFieldsConfigurer>;
+  implements AccountConfigurer, Configurer<AccountCreationManager> {
+  private accountUuidConfigurer: UuidGeneratorConfigurerImpl<AccountConfigurer>;
   private initialStatusConfigurer: AccountStatusConfigurerImpl;
 
   constructor(parentConfigurer: RegistrationConfigurer, private injector: Injector) {
     super(parentConfigurer);
   }
 
-  accountUuid(): UuidConfigurer<RegistrationFieldsConfigurer> {
-    this.accountUuidConfigurer = new UuidGeneratorConfigurer(this, this.injector);
+  uuid(): UuidConfigurer<AccountConfigurer> {
+    this.accountUuidConfigurer = new UuidGeneratorConfigurerImpl(this, this.injector);
     return this.accountUuidConfigurer;
   }
 
   initialStatus(): AccountStatusConfigurer {
     this.initialStatusConfigurer = new AccountStatusConfigurerImpl(this);
     return this.initialStatusConfigurer;
+  }
+
+  fields(): RegistrationFieldsConfigurer {
+    // TODO
+    throw new Error('Method not implemented.');
   }
 
   async build(): Promise<AccountCreationManager> {

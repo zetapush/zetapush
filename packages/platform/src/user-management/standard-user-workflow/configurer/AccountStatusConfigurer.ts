@@ -1,15 +1,15 @@
-import { AccountStatusConfigurer, Configurer, RegistrationFieldsConfigurer } from '../../../common/configurer/grammar';
+import { AccountStatusConfigurer, Configurer, AccountConfigurer } from '../../../common/configurer/grammar';
 import { AccountStatus, AccountStatusProvider } from '../api';
 import { AbstractParent } from '../../../common/configurer/AbstractParent';
 import { StaticAccountStatusProvider } from '../core';
 import { MissingMandatoryConfigurationError } from '../../../common/configurer/ConfigurerError';
 
-export class AccountStatusConfigurerImpl extends AbstractParent<RegistrationFieldsConfigurer>
+export class AccountStatusConfigurerImpl extends AbstractParent<AccountConfigurer>
   implements AccountStatusConfigurer, Configurer<AccountStatusProvider> {
   private accountStatus: AccountStatus;
   private accountStatusProvider: AccountStatusProvider;
 
-  constructor(parentConfigurer: RegistrationFieldsConfigurer) {
+  constructor(parentConfigurer: AccountConfigurer) {
     super(parentConfigurer);
   }
 

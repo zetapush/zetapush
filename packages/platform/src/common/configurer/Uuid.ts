@@ -6,7 +6,7 @@ import { MissingMandatoryConfigurationError, InstantiationError } from './Config
 import { isType } from 'injection-js/facade/type';
 import { FuncCallUuidGenerator } from '../core/FuncCallUuidGenerator';
 
-export class UuidGeneratorConfigurer<P> extends AbstractParent<P>
+export class UuidGeneratorConfigurerImpl<P> extends AbstractParent<P>
   implements UuidConfigurer<P>, Configurer<UuidGenerator> {
   private generatorInstance: UuidGenerator;
   private generatorClass: Type<UuidGenerator>;
