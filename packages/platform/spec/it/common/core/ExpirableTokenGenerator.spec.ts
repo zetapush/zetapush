@@ -1,5 +1,4 @@
-const { ExpirableTokenGenerator } = require('../../../../lib/common/core/ExpirableTokenGenerator');
-const { Base36RandomTokenGenerator } = require('../../../../lib/common/core/Base36RandomTokenGenerator');
+import { ExpirableTokenGenerator, Base36RandomTokenGenerator } from '../../../../src/common/core';
 
 describe(`ExpirableTokenGenerator`, () => {
   it(`configured with
