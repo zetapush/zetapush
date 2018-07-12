@@ -14,9 +14,9 @@
   "scripts": {},
   "dependencies": {
     "@zetapush/cli": "^0.29.0",
-    "chalk": "^2.4.1",
-    "commander": "^2.15.1",
-    "cross-spawn": "^6.0.5",
+    "chalk": "2.4.1",
+    "commander": "2.16.0",
+    "cross-spawn": "6.0.5",
     "fs-extra": "6.0.1"
   },
   "publishConfig": {

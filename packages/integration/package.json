@@ -7,10 +7,10 @@
   "dependencies": {
     "@zetapush/cometd": "*",
     "@zetapush/client": "*",
-    "rimraf": "^2.6.2"
+    "rimraf": "2.6.2"
   },
   "devDependencies": {
-    "jasmine": "^3.1.0",
-    "execa": "^0.10.0"
+    "jasmine": "3.1.0",
+    "execa": "0.10.0"
   }
 }
