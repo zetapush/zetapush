@@ -19,7 +19,7 @@ Contient l'ensemble des class de mapping des services platforme ZetaPush. Le cod
 Dépendences:
 - N/A
 
-## @zetapush/core
+## @zetapush/client
 
 Surcouche au protocole CometD. Ce package contient les différents client de connection au backend. Il implémente la gestion des pseudos requète/response sur le pattern publish/subscribe 
 
@@ -32,7 +32,7 @@ Dépendences:
 C'est le SDK utilisé en interne au sein d'un **worker** NodeJS connecté à la plateforme ZetaPush. Il assure la communication en ZetaPush et le code écrit par le developpeur.
 
 Dépendences:
-- [@zetapush/core](https://github.com/zetapush/zetapush/tree/master/packages/core)
+- [@zetapush/client](https://github.com/zetapush/zetapush/tree/master/packages/core)
 - [@zetapush/platform](https://github.com/zetapush/zetapush/tree/master/packages/platform)
 
 ## @zetapush/cli
@@ -41,7 +41,7 @@ Outil en ligne de commande permettant de publier son code JavaScript (ses cloud 
 
 Dépendences:
 - [@zetapush/cometd](https://github.com/zetapush/zetapush/tree/master/packages/cometd)
-- [@zetapush/core](https://github.com/zetapush/zetapush/tree/master/packages/core)
+- [@zetapush/client](https://github.com/zetapush/zetapush/tree/master/packages/core)
 - [@zetapush/platform](https://github.com/zetapush/zetapush/tree/master/packages/platform)
 - [@zetapush/worker](https://github.com/zetapush/zetapush/tree/master/packages/worker)
 

@@ -1,4 +1,4 @@
-const { uuid } = require('@zetapush/core');
+const { uuid } = require('@zetapush/client');
 
 const { fetch } = require('./network');
 

@@ -1,4 +1,4 @@
-const { WeakClient } = require('@zetapush/core');
+const { WeakClient } = require('@zetapush/client');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 const { rm, npmInit, zetaPush, readZetarc } = require('./utils/commands');
 const PATTERN = /Hello World from JavaScript (\d+)/;

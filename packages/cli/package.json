@@ -16,7 +16,7 @@
   "scripts": {},
   "dependencies": {
     "@zetapush/cometd": "^0.29.0",
-    "@zetapush/core": "^0.29.0",
+    "@zetapush/client": "^0.29.0",
     "@zetapush/platform": "^0.29.0",
     "@zetapush/worker": "^0.29.0",
     "chalk": "^2.4.1",
