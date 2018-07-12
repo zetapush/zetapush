@@ -1,4 +1,4 @@
-const { WeakClient } = require('@zetapush/core');
+const { WeakClient } = require('@zetapush/client');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 const { rm, npmInit, zetaPush, readZetarc } = require('../utils/commands');
 const PATTERN = /Hello World from JavaScript (\d+)/;
@@ -8,17 +8,17 @@ describe(`As developer with
       - no configured application
       - network latency
   `, () => {
-  const projectDir = 'project-nominal-case';
-  const fullPathProject = `.generated-projects/${projectDir}`;
+  // const projectDir = 'project-nominal-case';
+  // const fullPathProject = `.generated-projects/${projectDir}`;
 
   beforeEach(async () => {
-    this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
-    this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
-    // clean
-    await rm(fullPathProject);
+    // this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
+    // this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
+    // // clean
+    // await rm(fullPathProject);
   });
 
-  it(
+  xit(
     `should be able to
       - have a new hello-world project
       - push hello-world
@@ -33,7 +33,6 @@ describe(`As developer with
       // expect(zetarc.appName).toBeTruthy();
       // expect(zetarc.developerLogin).toBe(this.developerLogin);
       // expect(zetarc.developerPassword).toBe(this.developerPassword);
-
       // // 3) check using a client
       // this.client = new WeakClient({
       //   ...zetarc,
@@ -44,7 +43,7 @@ describe(`As developer with
       // const message = await api.hello();
       // expect(typeof message).toBe('string');
       // expect(PATTERN.test(message)).toBe(true);
-      expect(true).toBe(true);
+      // expect(true).toBe(true);
       // await nukeApp(fullPathProject);
     },
     10 * 60 * 1000,

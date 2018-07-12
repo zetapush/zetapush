@@ -4,6 +4,7 @@ const util = require('util');
 const fs = require('fs');
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
+const exists = util.promisify(fs.exists);
 const rimraf = require('rimraf');
 const { fetch } = require('@zetapush/cli');
 const kill = require('tree-kill');
@@ -30,6 +31,9 @@ const npmInit = (developerLogin, developerPassword, dir) => {
   let cmd;
   if (process.env.TEST_RELEASE_VERSION) {
     if (npmVersion().major < 6) {
+      console.log(
+        'npmInit() -> [npx @zetapush/create --developer-login xxx --developer-password xxx]',
+      );
       cmd = execa(
         'npx',
         [
@@ -42,10 +46,10 @@ const npmInit = (developerLogin, developerPassword, dir) => {
         ],
         { cwd: '.generated-projects' },
       );
-      console.log(
-        'npmInit() -> [npx @zetapush/create --developer-login xxx --developer-password xxx]',
-      );
     } else {
+      console.log(
+        'npmInit() -> [npm init @zetapush --developer-login xxx --developer-password xxx]',
+      );
       cmd = execa(
         'npm',
         [
@@ -59,11 +63,11 @@ const npmInit = (developerLogin, developerPassword, dir) => {
         ],
         { cwd: '.generated-projects' },
       );
-      console.log(
-        'npmInit() -> [npm init @zetapush --developer-login xxx --developer-password xxx]',
-      );
     }
   } else {
+    console.log(
+      'npmInit() -> [npx @zetapush/create@canary --force-current-version --developer-login xxx --developer-password xxx]',
+    );
     cmd = execa(
       'npx',
       [
@@ -76,9 +80,6 @@ const npmInit = (developerLogin, developerPassword, dir) => {
         developerPassword,
       ],
       { cwd: '.generated-projects' },
-    );
-    console.log(
-      'npmInit() -> [npx @zetapush/create@canary --force-current-version --developer-login xxx --developer-password xxx]',
     );
   }
   cmd.stdout.pipe(/*new IndentStream(*/ process.stdout /*)*/);
@@ -168,8 +169,8 @@ const zetaPush = (dir) => {
   try {
     console.log();
     console.log();
+    console.log(`zetaPush(${dir}) -> [npm run deploy -- -vvv]`);
     execa.shellSync('npm run deploy -- -vvv', { cwd: dir });
-    console.log('zetaPush -> [npm run deploy -- -vvv]');
     return 0;
   } catch (err) {
     console.error(err);
@@ -185,8 +186,8 @@ const zetaRun = async (dir) => {
   try {
     console.log();
     console.log();
+    console.log(`zetaRun(${dir}) -> [npm run start -- -vvv]`);
     execa.shellSync('npm run start -- -vvv', { cwd: dir });
-    console.log('zetaRun -> [npm run start -- -vvv]');
     return 0;
   } catch (err) {
     console.error(err);
@@ -212,11 +213,16 @@ const readZetarc = async (dir) => {
  * @param {string} dir Full path of the application folder
  */
 const deleteAccountFromZetarc = async (dir) => {
-  const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
-  let jsonContent = JSON.parse(content);
+  let jsonContent;
+  if (await exists(`${dir}/.zetarc`)) {
+    const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
+    jsonContent = JSON.parse(content);
 
-  delete jsonContent.developerLogin;
-  delete jsonContent.developerPassword;
+    delete jsonContent.developerLogin;
+    delete jsonContent.developerPassword;
+  } else {
+    jsonContent = {};
+  }
 
   await writeFile(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
     encoding: 'utf-8',
@@ -231,13 +237,18 @@ const deleteAccountFromZetarc = async (dir) => {
  * @param {string} appName new appName in the .zetarc
  */
 const setAppNameToZetarc = async (dir, appName) => {
-  const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
-  let jsonContent = JSON.parse(content);
+  let jsonContent;
+  if (await exists(`${dir}/.zetarc`)) {
+    const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
+    jsonContent = JSON.parse(content);
 
-  if (appName.length > 0) {
-    jsonContent.appName = appName;
+    if (appName.length > 0) {
+      jsonContent.appName = appName;
+    } else {
+      delete jsonContent.appName;
+    }
   } else {
-    delete jsonContent.appName;
+    jsonContent = { appName };
   }
 
   await writeFile(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
@@ -254,16 +265,21 @@ const setAppNameToZetarc = async (dir, appName) => {
  * @param {string} password
  */
 const setAccountToZetarc = async (dir, login, password) => {
-  const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
-  let jsonContent = JSON.parse(content);
+  let jsonContent;
+  if (await exists(`${dir}/.zetarc`)) {
+    const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
+    jsonContent = JSON.parse(content);
+  } else {
+    jsonContent = {};
+  }
 
-  if (login.length > 0) {
+  if (login && login.length > 0) {
     jsonContent.developerLogin = login;
   } else {
     delete jsonContent.developerLogin;
   }
 
-  if (password.length > 0) {
+  if (password && password.length > 0) {
     jsonContent.developerPassword = password;
   } else {
     delete jsonContent.developerPassword;
@@ -279,8 +295,8 @@ const setAccountToZetarc = async (dir, login, password) => {
 const npmVersion = () => {
   console.log();
   console.log();
-  const { stdout } = execa.sync('npm', ['--version']);
   console.log('npmVersion() -> [npm --version]');
+  const { stdout } = execa.sync('npm', ['--version']);
   const [major, minor, patch] = stdout.split('.').map((v) => parseInt(v, 10));
   return { major, minor, patch };
 };
@@ -305,8 +321,8 @@ const npmInstall = async (dir, version) => {
   try {
     console.log();
     console.log();
-    execa.shellSync('npm install', { cwd: dir });
     console.log('npmInstall() -> [npm install]');
+    execa.shellSync('npm install', { cwd: dir });
     return 0;
   } catch (err) {
     console.error(err);
@@ -321,16 +337,16 @@ const npmInstallLatestVersion = async (dir) => {
   try {
     console.log();
     console.log();
-    execa.shellSync('npm install @zetapush/cli@canary --save', { cwd: dir });
     console.log(
       'npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save]',
+    );
+    execa.shellSync('npm install @zetapush/cli@canary --save', { cwd: dir });
+    console.log(
+      'npmInstallLatestVersion() -> [npm install @zetapush/platform@canary --save]',
     );
     execa.shellSync('npm install @zetapush/platform@canary --save', {
       cwd: dir,
     });
-    console.log(
-      'npmInstallLatestVersion() -> [npm install @zetapush/platform@canary --save]',
-    );
     return 0;
   } catch (err) {
     console.error(err);
@@ -369,17 +385,30 @@ const createZetarc = (developerLogin, developerPassword, dir) => {
 };
 
 const nukeApp = (dir) => {
+  console.log(`nukeApp(${dir})`);
   return new Promise(async (resolve, reject) => {
+    console.log(`nukeApp(${dir}) -> readZetarc(${dir})`);
     const creds = await readZetarc(dir);
     if (creds.appName != undefined) {
       try {
+        console.log(
+          `nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName}`,
+        );
         const res = await fetch({
           method: 'DELETE',
           config: creds,
           pathname: `orga/business/nuke/${creds.appName}`,
         });
+        console.log(
+          `nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName}`,
+          res,
+        );
         resolve(res);
       } catch (err) {
+        console.error(
+          `nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName}`,
+          err,
+        );
         resolve(err); //TODO : make reject when orga/business/nuke will send JSON response
       }
     } else {
@@ -450,8 +479,8 @@ class Runner {
   run(quiet = false) {
     console.log();
     console.log();
-    this.cmd = execa('npm', ['run', 'start', '--', '-vvv'], { cwd: this.dir });
     console.log('Runner:run() -> [npm run start -- -vvv]');
+    this.cmd = execa('npm', ['run', 'start', '--', '-vvv'], { cwd: this.dir });
     if (!quiet) {
       this.cmd.stdout.pipe(/*new IndentStream(*/ process.stdout /*)*/);
       this.cmd.stderr.pipe(/*new IndentStream(*/ process.stdout /*)*/);

@@ -2,8 +2,6 @@ const { fetch } = require('./network');
 const { log, error, info, warn, trace, debugObject } = require('./log');
 const ProgressBar = require('node-progress-bars');
 
-const { fetch } = require('./network');
-const { log, error, info, warn, trace } = require('./log');
 const errorsHandler = require('../errors/errors-handler');
 const troubleshooting = require('../errors/troubleshooting');
 
