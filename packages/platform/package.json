@@ -25,7 +25,7 @@
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
-    "injection-js": "^2.2.1"
+    "injection-js": "2.2.1"
   },
   "devDependencies": {
     "cross-env": "5.2.0",

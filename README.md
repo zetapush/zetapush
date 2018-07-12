@@ -110,8 +110,8 @@ const api = client.createProxyTaskService();
 const message = await api.hello();
 ```
 
-[npm-version-image]: http://img.shields.io/npm/v/@zetapush/core.svg?style=flat-square
-[npm-url]: https://npmjs.org/package/@zetapush/core
+[npm-version-image]: http://img.shields.io/npm/v/@zetapush/client.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/@zetapush/client
 
 [build-status-image]: http://img.shields.io/travis/zetapush/zetapush.svg?style=flat-square
 [build-status-url]: http://travis-ci.org/zetapush/zetapush

@@ -6,11 +6,11 @@
   },
   "dependencies": {
     "@zetapush/cometd": "*",
-    "@zetapush/core": "*",
-    "rimraf": "^2.6.2"
+    "@zetapush/client": "*",
+    "rimraf": "2.6.2"
   },
   "devDependencies": {
-    "jasmine": "^3.1.0",
-    "execa": "^0.10.0"
+    "jasmine": "3.1.0",
+    "execa": "0.10.0"
   }
 }

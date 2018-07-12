@@ -1,4 +1,4 @@
-import { Authentication, Client, uuid } from '@zetapush/core';
+import { Authentication, Client, uuid } from '@zetapush/client';
 import { Queue as Worker } from '@zetapush/platform';
 
 import { WorkerInstance } from '../utils/worker-instance';

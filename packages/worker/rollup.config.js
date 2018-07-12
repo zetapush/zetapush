@@ -24,7 +24,7 @@ const config = {
   output: {
     format: 'umd',
     globals: {
-      '@zetapush/core': 'ZetaPush',
+      '@zetapush/client': 'ZetaPush',
       '@zetapush/platform': 'ZetaPushPlatform'
     },
     name: 'ZetaPushWorker',

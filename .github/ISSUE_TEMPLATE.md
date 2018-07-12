@@ -12,7 +12,7 @@ IF YOU DON'T FILL OUT THE FOLLOWING INFORMATION WE MIGHT CLOSE YOUR ISSUE WITHOU
 ```
 [ ] @zetapush/cli
 [ ] @zetapush/cometd
-[ ] @zetapush/core
+[ ] @zetapush/client
 [ ] @zetapush/create
 [ ] @zetapush/platform
 [ ] @zetapush/worker
