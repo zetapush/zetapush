@@ -5,7 +5,7 @@ var WebSocketTransport = require('../WebSocketTransport');
 
 // Use node-fetch implementation
 exports.fetch = function() {
-  return fetch.apply(window, arguments);
+  return fetch.apply(self, arguments);
 };
 
 // Use node-websocket implementation
@@ -44,7 +44,7 @@ exports.ALL = ALL;
  * Get overloaded config from environement
  */
 var getOverloadedConfigFromEnvironement = function getOverloadedConfigFromEnvironement() {
-  var env = document.documentElement.dataset;
+  var env = typeof document === 'undefined' ? {} : document.documentElement.dataset;
   var platformUrl = env.zpPlatformUrl;
   var appName = env.zpSandboxid;
   return {
