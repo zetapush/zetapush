@@ -1,3 +1,4 @@
+const stream = require('stream');
 const execa = require('execa');
 const util = require('util');
 const fs = require('fs');
@@ -7,12 +8,12 @@ const rimraf = require('rimraf');
 const { fetch } = require('@zetapush/cli');
 const kill = require('tree-kill');
 
+const PLATFORM_URL = 'https://celtia.zetapush.com/zbo/pub/business';
+
 const rm = (path) =>
   new Promise((resolve, reject) =>
     rimraf(path, (failure) => (failure ? reject(failure) : resolve())),
   );
-
-const PLATFORM_URL = 'https://celtia.zetapush.com/zbo/pub/business';
 
 /**
  * Init a new application
@@ -24,6 +25,8 @@ const npmInit = (developerLogin, developerPassword, dir) => {
   if (npmVersion().major < 5) {
     throw new Error('Minimum required npm version is 5.6.0');
   }
+  console.log();
+  console.log();
   let cmd;
   if (process.env.TEST_RELEASE_VERSION) {
     if (npmVersion().major < 6) {
@@ -39,6 +42,9 @@ const npmInit = (developerLogin, developerPassword, dir) => {
         ],
         { cwd: '.generated-projects' },
       );
+      console.log(
+        '[npx @zetapush/create --developer-login xxx --developer-password xxx]',
+      );
     } else {
       cmd = execa(
         'npm',
@@ -52,6 +58,9 @@ const npmInit = (developerLogin, developerPassword, dir) => {
           developerPassword,
         ],
         { cwd: '.generated-projects' },
+      );
+      console.log(
+        '[npm init @zetapush --developer-login xxx --developer-password xxx]',
       );
     }
   } else {
@@ -68,12 +77,88 @@ const npmInit = (developerLogin, developerPassword, dir) => {
       ],
       { cwd: '.generated-projects' },
     );
+    console.log(
+      '[npx @zetapush/create@canary --force-current-version --developer-login xxx --developer-password xxx]',
+    );
   }
-  cmd.stdout.pipe(process.stdout);
-  cmd.stderr.pipe(process.stdout);
+  cmd.stdout.pipe(/*new IndentStream(*/ process.stdout /*)*/);
+  cmd.stderr.pipe(/*new IndentStream(*/ process.stdout /*)*/);
 
   return cmd;
 };
+
+class IndentStream {
+  constructor(delegate, indent = '      ') {
+    this.delegate = delegate;
+    this.indent = indent;
+  }
+
+  write(chunk, enc, next) {
+    return this.delegate.write(
+      chunk.toString().replace(/^/gm, this.indent),
+      enc,
+      next,
+    );
+  }
+  end(str, encoding, cb) {
+    this.delegate.end(str, encoding, cb);
+  }
+  addListener(event, listener) {
+    this.delegate.addListener(event, listener);
+    return this;
+  }
+  on(event, listener) {
+    this.delegate.on(event, listener);
+    return this;
+  }
+  once(event, listener) {
+    this.delegate.once(event, listener);
+    return this;
+  }
+  removeListener(event, listener) {
+    this.delegate.removeListener(event, listener);
+    return this;
+  }
+  off(event, listener) {
+    this.delegate.off(event, listener);
+    return this;
+  }
+  removeAllListeners(event) {
+    this.delegate.removeAllListeners(event);
+    return this;
+  }
+  setMaxListeners(n) {
+    this.delegate.setMaxListeners(n);
+    return this;
+  }
+  getMaxListeners() {
+    return this.delegate.getMaxListeners();
+  }
+  listeners(event) {
+    return this.delegate.listeners(event);
+  }
+  rawListeners(event) {
+    return this.delegate.rawListeners(event);
+  }
+  emit(event) {
+    return this.delegate.emit(event);
+  }
+  listenerCount(type) {
+    return this.delegate.listenerCount(type);
+  }
+  // Added in Node 6...
+  prependListener(event, listener) {
+    this.delegate.prependListener(event, listener);
+    return this;
+  }
+  prependOnceListener(event, listener) {
+    this.delegate.prependOnceListener(event, listener);
+    return this;
+  }
+  eventNames() {
+    return this.delegate.eventNames();
+  }
+}
 
 /**
  * Run 'zeta push' command
@@ -81,7 +166,10 @@ const npmInit = (developerLogin, developerPassword, dir) => {
  */
 const zetaPush = (dir) => {
   try {
+    console.log();
+    console.log();
     execa.shellSync('npm run deploy -- -vvv', { cwd: dir });
+    console.log('[npm run deploy -- -vvv]');
     return 0;
   } catch (err) {
     console.error(err);
@@ -95,7 +183,10 @@ const zetaPush = (dir) => {
  */
 const zetaRun = async (dir) => {
   try {
+    console.log();
+    console.log();
     execa.shellSync('npm run start -- -vvv', { cwd: dir });
+    console.log('[npm run start -- -vvv]');
     return 0;
   } catch (err) {
     console.error(err);
@@ -184,11 +275,77 @@ const setAccountToZetarc = async (dir, login, password) => {
 };
 
 const npmVersion = () => {
+  console.log();
+  console.log();
   const { stdout } = execa.sync('npm', ['--version']);
+  console.log('[npm --version]');
   const [major, minor, patch] = stdout.split('.').map((v) => parseInt(v, 10));
   return { major, minor, patch };
 };
 
+/**
+ * Update the package.json with latest version and install npm dependencies
+ * @param {string} dir Full path of the application folder
+ * @param {string} version Version of the ZetaPush dependency
+ */
+const npmInstall = async (dir, version) => {
+  await rm(`${dir}/node_modules/`);
+
+  const content = await readFile(`${dir}/package.json`, { encoding: 'utf-8' });
+  let jsonContent = JSON.parse(content);
+  jsonContent.dependencies['@zetapush/cli'] = version;
+  jsonContent.dependencies['@zetapush/platform'] = version;
+
+  await writeFile(`${dir}/package.json`, JSON.stringify(jsonContent), {
+    encoding: 'utf-8',
+  });
+
+  try {
+    console.log();
+    console.log();
+    execa.shellSync('npm install', { cwd: dir });
+    console.log('[npm install]');
+    return 0;
+  } catch (err) {
+    console.error(err);
+    return err.code;
+  }
+};
+
+const npmInstallLatestVersion = async (dir) => {
+  await rm(`${dir}/node_modules/`);
+  await clearDependencies(dir);
+
+  try {
+    console.log();
+    console.log();
+    execa.shellSync('npm install @zetapush/cli@canary --save', { cwd: dir });
+    console.log('[npm install @zetapush/cli@canary --save]');
+    execa.shellSync('npm install @zetapush/platform@canary --save', {
+      cwd: dir,
+    });
+    console.log('[npm install @zetapush/platform@canary --save]');
+    return 0;
+  } catch (err) {
+    console.error(err);
+    return err.code;
+  }
+};
+
+/**
+ * Remove all installed dependencies
+ * @param {string} dir Full path of the application
+ */
+const clearDependencies = async (dir) => {
+  const content = await readFile(`${dir}/package.json`, { encoding: 'utf-8' });
+
+  let jsonContent = JSON.parse(content);
+  delete jsonContent.dependencies;
+
+  await writeFile(`${dir}/package.json`, JSON.stringify(jsonContent), {
+    encoding: 'utf-8',
+  });
+};
 const createZetarc = (developerLogin, developerPassword, dir) => {
   fs.writeFileSync(
     dir + '/.zetarc',
@@ -282,73 +439,17 @@ class Runner {
   }
 
   run(quiet = false) {
-    this.cmd = execa('npm', ['run', 'start', '--', '-vvv'], {
-      cwd: '.generated-projects/' + this.dir,
-    });
+    console.log();
+    console.log();
+    this.cmd = execa('npm', ['run', 'start', '--', '-vvv'], { cwd: this.dir });
+    console.log('[npm run start -- -vvv]');
     if (!quiet) {
-      this.cmd.stdout.pipe(process.stdout);
-      this.cmd.stderr.pipe(process.stdout);
+      this.cmd.stdout.pipe(/*new IndentStream(*/ process.stdout /*)*/);
+      this.cmd.stderr.pipe(/*new IndentStream(*/ process.stdout /*)*/);
     }
     return this.cmd;
   }
 }
-
-/**
- * Update the package.json with latest version and install npm dependencies
- * @param {string} dir Full path of the application folder
- * @param {string} version Version of the ZetaPush dependency
- */
-const npmInstall = async (dir, version) => {
-  await rm(`${dir}/node_modules/`);
-
-  const content = await readFile(`${dir}/package.json`, { encoding: 'utf-8' });
-  let jsonContent = JSON.parse(content);
-  jsonContent.dependencies['@zetapush/cli'] = version;
-  jsonContent.dependencies['@zetapush/platform'] = version;
-
-  await writeFile(`${dir}/package.json`, JSON.stringify(jsonContent), {
-    encoding: 'utf-8',
-  });
-
-  try {
-    execa.shellSync('npm install', { cwd: dir });
-    return 0;
-  } catch (err) {
-    console.error(err);
-    return err.code;
-  }
-};
-
-const npmInstallLatestVersion = async (dir) => {
-  await rm(`${dir}/node_modules/`);
-  await clearDependencies(dir);
-
-  try {
-    execa.shellSync('npm install @zetapush/cli@canary --save', { cwd: dir });
-    execa.shellSync('npm install @zetapush/platform@canary --save', {
-      cwd: dir,
-    });
-    return 0;
-  } catch (err) {
-    console.error(err);
-    return err.code;
-  }
-};
-
-/**
- * Remove all installed dependencies
- * @param {string} dir Full path of the application
- */
-const clearDependencies = async (dir) => {
-  const content = await readFile(`${dir}/package.json`, { encoding: 'utf-8' });
-
-  let jsonContent = JSON.parse(content);
-  delete jsonContent.dependencies;
-
-  await writeFile(`${dir}/package.json`, JSON.stringify(jsonContent), {
-    encoding: 'utf-8',
-  });
-};
 
 module.exports = {
   rm,
@@ -359,9 +460,9 @@ module.exports = {
   zetaRun,
   setAppNameToZetarc,
   setAccountToZetarc,
-  Runner,
-  createZetarc,
   npmInstall,
-  nukeApp,
   npmInstallLatestVersion,
+  createZetarc,
+  nukeApp,
+  Runner,
 };

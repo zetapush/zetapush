@@ -4,6 +4,7 @@ const {
   setAppNameToZetarc,
   rm,
   npmInit,
+  nukeApp,
 } = require('../utils/commands');
 const { WeakClient } = require('@zetapush/client');
 const transports = require('@zetapush/cometd/lib/node/Transports');

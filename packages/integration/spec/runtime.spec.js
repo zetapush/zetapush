@@ -22,8 +22,6 @@ describe(`As developer with
       - valid account
       - no configured application
   `, () => {
-  const projectDir = 'project-nominal-case';
-
   beforeEach(async () => {
     this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
     this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
@@ -47,10 +45,10 @@ describe(`As developer with
         this.developerPassword,
         '.generated-projects/' + basicWorkerDir,
       );
-      const runner = new Runner(basicWorkerDir);
+      const runner = new Runner('.generated-projects/' + basicWorkerDir);
       runner.run((quiet = false));
       await runner.waitForWorkerUp();
-      const zetarc = await readZetarc(basicWorkerDir);
+      const zetarc = await readZetarc('.generated-projects/' + basicWorkerDir);
       this.client = new WeakClient({
         ...zetarc,
         transports,
@@ -64,7 +62,7 @@ describe(`As developer with
         failure = true;
       }
       await runner.stop();
-      await nukeApp(basicWorkerDir);
+      await nukeApp('.generated-projects/' + basicWorkerDir);
       expect(failure).toBe(false);
     },
     60 * 1000 * 10,
@@ -86,10 +84,10 @@ describe(`As developer with
         this.developerPassword,
         '.generated-projects/' + brokenWorkerDir,
       );
-      const runner = new Runner(brokenWorkerDir);
+      const runner = new Runner('.generated-projects/' + brokenWorkerDir);
       runner.run((quiet = false));
       await runner.waitForWorkerUp();
-      const zetarc = await readZetarc(brokenWorkerDir);
+      const zetarc = await readZetarc('.generated-projects/' + brokenWorkerDir);
       this.client = new WeakClient({
         ...zetarc,
         transports,
@@ -103,7 +101,7 @@ describe(`As developer with
         failure = true;
       }
       await runner.stop();
-      await nukeApp(brokenWorkerDir);
+      await nukeApp('.generated-projects/' + brokenWorkerDir);
       expect(failure).toBe(true);
     },
     60 * 1000 * 2,
@@ -125,7 +123,7 @@ describe(`As developer with
         this.developerPassword,
         '.generated-projects/' + brokenWorkerInitDir,
       );
-      const runner = new Runner(brokenWorkerInitDir);
+      const runner = new Runner('.generated-projects/' + brokenWorkerInitDir);
       let failure = false;
       try {
         await runner.run((quiet = false));
@@ -133,7 +131,7 @@ describe(`As developer with
         failure = true;
       }
       await runner.stop();
-      await nukeApp(brokenWorkerInitDir);
+      await nukeApp('.generated-projects/' + brokenWorkerInitDir);
       expect(failure).toBe(true);
     },
     60 * 1000 * 10,
@@ -155,10 +153,10 @@ describe(`As developer with
         this.developerPassword,
         '.generated-projects/' + exitWorkerDir,
       );
-      const runner = new Runner(exitWorkerDir);
+      const runner = new Runner('.generated-projects/' + exitWorkerDir);
       runner.run((quiet = false));
       await runner.waitForWorkerUp();
-      const zetarc = await readZetarc(exitWorkerDir);
+      const zetarc = await readZetarc('.generated-projects/' + exitWorkerDir);
       this.client = new WeakClient({
         ...zetarc,
         transports,
@@ -174,7 +172,7 @@ describe(`As developer with
       sendHello();
       await sleep(5000);
       await runner.stop();
-      await nukeApp(exitWorkerDir);
+      await nukeApp('.generated-projects/' + exitWorkerDir);
       expect(helloReceived).toBe(false);
     },
     60 * 1000 * 10,
@@ -184,41 +182,39 @@ describe(`As developer with
    * Clean shutdown on worker hello
    */
   const shutdownWorkerDir = 'shutdown_worker_hello';
-  it(
-    `Should be able to catch a shutowned worker `,
-    async () => {
-      copydir.sync(
-        'spec/templates/' + shutdownWorkerDir,
-        '.generated-projects/' + shutdownWorkerDir,
-      );
-      createZetarc(
-        this.developerLogin,
-        this.developerPassword,
-        '.generated-projects/' + shutdownWorkerDir,
-      );
-      await npmInstall(shutdownWorkerDir);
-      await zetaPush(shutdownWorkerDir);
-
-      zetarc = await readZetarc(shutdownWorkerDir);
-      this.client = new WeakClient({
-        ...zetarc,
-        transports,
-      });
-      await this.client.connect();
-      const api = this.client.createProxyTaskService();
-      const message = await api.hello();
-      sleep(1000 * 10);
-
-      let helloReceived = false;
-      const sendHello = async () => {
-        await api.hello();
-        helloReceived = true;
-      };
-      sendHello();
-      sleep(5 * 1000);
-      await nukeApp('.generated-projects/' + shutdownWorkerDir);
-      expect(helloReceived).toBe(false);
-    },
-    60 * 1000 * 30,
-  );
+  // it(
+  //   `Should be able to catch a shutowned worker `,
+  //   async () => {
+  //     copydir.sync(
+  //       'spec/templates/' + shutdownWorkerDir,
+  //       '.generated-projects/' + shutdownWorkerDir,
+  //     );
+  //     createZetarc(
+  //       this.developerLogin,
+  //       this.developerPassword,
+  //       '.generated-projects/' + shutdownWorkerDir,
+  //     );
+  //     await npmInstallLatestVersion('.generated-projects/' + shutdownWorkerDir);
+  //     await zetaPush('.generated-projects/' + shutdownWorkerDir);
+  //     zetarc = await readZetarc('.generated-projects/' + shutdownWorkerDir);
+  //     this.client = new WeakClient({
+  //       ...zetarc,
+  //       transports,
+  //     });
+  //     await this.client.connect();
+  //     const api = this.client.createProxyTaskService();
+  //     const message = await api.hello();
+  //     sleep(1000 * 10);
+  //     let helloReceived = false;
+  //     const sendHello = async () => {
+  //       await api.hello();
+  //       helloReceived = true;
+  //     };
+  //     sendHello();
+  //     sleep(5 * 1000);
+  //     await nukeApp('.generated-projects/' + shutdownWorkerDir);
+  //     expect(helloReceived).toBe(false);
+  //   },
+  //   60 * 1000 * 30,
+  // );
 });

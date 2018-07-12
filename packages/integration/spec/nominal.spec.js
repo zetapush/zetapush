@@ -1,6 +1,12 @@
 const { WeakClient } = require('@zetapush/client');
 const transports = require('@zetapush/cometd/lib/node/Transports');
-const { rm, npmInit, zetaPush, readZetarc } = require('./utils/commands');
+const {
+  rm,
+  npmInit,
+  zetaPush,
+  readZetarc,
+  nukeApp,
+} = require('./utils/commands');
 const PATTERN = /Hello World from JavaScript (\d+)/;
 
 describe(`As developer with
@@ -22,7 +28,7 @@ describe(`As developer with
   });
 
   it(
-    `should be able to 
+    `should be able to
       - have a new hello-world project
       - push hello-world
       - use published hello-world custom cloud services`,
@@ -36,14 +42,11 @@ describe(`As developer with
       let zetarc = await readZetarc(fullPathProject);
 
       expect(zetarc).toBeTruthy();
+      expect(zetarc.appName).toBeTruthy();
       expect(zetarc.developerLogin).toBe(this.developerLogin);
       expect(zetarc.developerPassword).toBe(this.developerPassword);
 
-      // 2) zeta push
-      await zetaPush(projectDir);
-
       // 3) check using a client
-      zetarc = await readZetarc(projectDir);
       this.client = new WeakClient({
         ...zetarc,
         transports,
@@ -53,6 +56,7 @@ describe(`As developer with
       const message = await api.hello();
       expect(typeof message).toBe('string');
       expect(PATTERN.test(message)).toBe(true);
+      await nukeApp(fullPathProject);
     },
     20 * 60 * 1000,
   );
