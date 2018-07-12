@@ -29,6 +29,8 @@ describe(`As developer with
     await rm('.generated-projects/*');
   });
 
+  afterEach(async () => {});
+
   /**
    * Functionnal local worker
    */

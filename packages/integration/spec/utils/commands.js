@@ -43,7 +43,7 @@ const npmInit = (developerLogin, developerPassword, dir) => {
         { cwd: '.generated-projects' },
       );
       console.log(
-        '[npx @zetapush/create --developer-login xxx --developer-password xxx]',
+        'npmInit() -> [npx @zetapush/create --developer-login xxx --developer-password xxx]',
       );
     } else {
       cmd = execa(
@@ -60,7 +60,7 @@ const npmInit = (developerLogin, developerPassword, dir) => {
         { cwd: '.generated-projects' },
       );
       console.log(
-        '[npm init @zetapush --developer-login xxx --developer-password xxx]',
+        'npmInit() -> [npm init @zetapush --developer-login xxx --developer-password xxx]',
       );
     }
   } else {
@@ -78,7 +78,7 @@ const npmInit = (developerLogin, developerPassword, dir) => {
       { cwd: '.generated-projects' },
     );
     console.log(
-      '[npx @zetapush/create@canary --force-current-version --developer-login xxx --developer-password xxx]',
+      'npmInit() -> [npx @zetapush/create@canary --force-current-version --developer-login xxx --developer-password xxx]',
     );
   }
   cmd.stdout.pipe(/*new IndentStream(*/ process.stdout /*)*/);
@@ -169,7 +169,7 @@ const zetaPush = (dir) => {
     console.log();
     console.log();
     execa.shellSync('npm run deploy -- -vvv', { cwd: dir });
-    console.log('[npm run deploy -- -vvv]');
+    console.log('zetaPush -> [npm run deploy -- -vvv]');
     return 0;
   } catch (err) {
     console.error(err);
@@ -186,7 +186,7 @@ const zetaRun = async (dir) => {
     console.log();
     console.log();
     execa.shellSync('npm run start -- -vvv', { cwd: dir });
-    console.log('[npm run start -- -vvv]');
+    console.log('zetaRun -> [npm run start -- -vvv]');
     return 0;
   } catch (err) {
     console.error(err);
@@ -199,9 +199,11 @@ const zetaRun = async (dir) => {
  * @param {string} dir Full path of the application folder
  */
 const readZetarc = async (dir) => {
+  console.log(`readZetarc(${dir})`);
   const content = await readFile(`${dir}/.zetarc`, {
     encoding: 'utf-8',
   });
+  console.log('readZetarc() -> ', content);
   return JSON.parse(content);
 };
 
@@ -278,7 +280,7 @@ const npmVersion = () => {
   console.log();
   console.log();
   const { stdout } = execa.sync('npm', ['--version']);
-  console.log('[npm --version]');
+  console.log('npmVersion() -> [npm --version]');
   const [major, minor, patch] = stdout.split('.').map((v) => parseInt(v, 10));
   return { major, minor, patch };
 };
@@ -304,7 +306,7 @@ const npmInstall = async (dir, version) => {
     console.log();
     console.log();
     execa.shellSync('npm install', { cwd: dir });
-    console.log('[npm install]');
+    console.log('npmInstall() -> [npm install]');
     return 0;
   } catch (err) {
     console.error(err);
@@ -320,11 +322,15 @@ const npmInstallLatestVersion = async (dir) => {
     console.log();
     console.log();
     execa.shellSync('npm install @zetapush/cli@canary --save', { cwd: dir });
-    console.log('[npm install @zetapush/cli@canary --save]');
+    console.log(
+      'npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save]',
+    );
     execa.shellSync('npm install @zetapush/platform@canary --save', {
       cwd: dir,
     });
-    console.log('[npm install @zetapush/platform@canary --save]');
+    console.log(
+      'npmInstallLatestVersion() -> [npm install @zetapush/platform@canary --save]',
+    );
     return 0;
   } catch (err) {
     console.error(err);
@@ -347,6 +353,7 @@ const clearDependencies = async (dir) => {
   });
 };
 const createZetarc = (developerLogin, developerPassword, dir) => {
+  console.log(`createZetarc(${developerLogin}, ${developerPassword}, ${dir})`);
   fs.writeFileSync(
     dir + '/.zetarc',
     JSON.stringify(
@@ -400,8 +407,10 @@ class Runner {
   }
 
   async waitForWorkerUp() {
+    console.log('Runner:waitForWorkerUp()');
     return new Promise((resolve, err) => {
       const getStatus = async () => {
+        console.log('Runner:waitForWorkerUp() -> getStatus()');
         const creds = await readZetarc(this.dir);
         if (creds.appName != undefined) {
           const res = await fetch({
@@ -442,7 +451,7 @@ class Runner {
     console.log();
     console.log();
     this.cmd = execa('npm', ['run', 'start', '--', '-vvv'], { cwd: this.dir });
-    console.log('[npm run start -- -vvv]');
+    console.log('Runner:run() -> [npm run start -- -vvv]');
     if (!quiet) {
       this.cmd.stdout.pipe(/*new IndentStream(*/ process.stdout /*)*/);
       this.cmd.stderr.pipe(/*new IndentStream(*/ process.stdout /*)*/);
