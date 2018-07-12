@@ -14,7 +14,7 @@ module.exports = function (config) {
     // list of files / patterns to load in the browser
     files: [
       '../platform/dist/zetapush-platform.js',
-      'dist/zetapush.js',
+      'dist/zetapush-client.js',
       'test/**/*.spec.js',
     ],
 
