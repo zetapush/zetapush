@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "@zetapush/cometd": "*",
-    "@zetapush/core": "*",
+    "@zetapush/client": "*",
     "rimraf": "^2.6.2"
   },
   "devDependencies": {
