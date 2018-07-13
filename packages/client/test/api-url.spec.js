@@ -5,11 +5,11 @@ describe('Client', () => {
   const platformUrl = 'http://zbo.zpush.io/zbo/pub/business/'
 
   describe('Correct API Url', () => {
-    const client = new ZetaPush.Client({
+    const client = new ZetaPushClient.Client({
       platformUrl,
       appName,
       authentication: () => {
-        return ZetaPush.Authentication.simple({
+        return ZetaPushClient.Authentication.simple({
           login: 'test',
           password: 'test'
         })
@@ -24,11 +24,11 @@ describe('Client', () => {
   })
 
   describe('Incorrect API Url', () => {
-    const client = new ZetaPush.Client({
+    const client = new ZetaPushClient.Client({
       platformUrl,
       appName,
       authentication: () => {
-        return ZetaPush.Authentication.simple({
+        return ZetaPushClient.Authentication.simple({
           login: 'test',
           password: 'test'
         })

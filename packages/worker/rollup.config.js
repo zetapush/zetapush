@@ -14,7 +14,7 @@ const config = {
       main: true,
     }),
     commonjs({
-      include: ['node_modules/**', '../cometd/**', '../core/**', '../platform/**']
+      include: ['node_modules/**', '../client/**', '../cometd/**', '../core/**', '../platform/**']
     }),
     ts({
       typescript
@@ -24,7 +24,7 @@ const config = {
   output: {
     format: 'umd',
     globals: {
-      '@zetapush/client': 'ZetaPush',
+      '@zetapush/client': 'ZetaPushClient',
       '@zetapush/platform': 'ZetaPushPlatform'
     },
     name: 'ZetaPushWorker',

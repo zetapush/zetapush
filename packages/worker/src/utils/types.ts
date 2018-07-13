@@ -1,4 +1,9 @@
 const TYPE_PATTERN = /^\[object (\w+)\]$/;
 const { toString } = {};
 
-export const getType = (value) => TYPE_PATTERN.exec(toString.apply(value))[1];
+const stringify = (value: any): string => toString.apply(value);
+
+export const getType = (value: any): string => {
+  const [type = ''] = TYPE_PATTERN.exec(stringify(value)) || [];
+  return type;
+};
