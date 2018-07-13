@@ -18,14 +18,14 @@ import { SessionPersistenceStrategy } from '../utils/session-persistence.js';
  * @extends {Client}
  * @example
  * // Create a new WeakClient
- * const client = new ZetaPush.WeakClient({
+ * const client = new ZetaPushClient.WeakClient({
  *   appName: '<YOUR-APP-NAME>'
  * })
  * @example
  * // Explicit deploymentId
  * // WeakClient provide optional deployment id, according to the following convention `${ServiceType.toLowerCase()_0}`
  * // deploymentId default value is weak_0
- * const client = new ZetaPush.WeakClient({
+ * const client = new ZetaPushClient.WeakClient({
  *   deploymentId: 'weak_0',
  *   appName: '<YOUR-APP-NAME>'
  * })

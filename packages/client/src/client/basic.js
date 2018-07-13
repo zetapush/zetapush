@@ -18,20 +18,20 @@ import { ConnectionStatusListener } from '../connection/connection-status.js';
  * @access public
  * @example
  * // Securized client with token based connection
- * const client = new ZetaPush.Client({
+ * const client = new ZetaPushClient.Client({
  *   appName: '<YOUR-APP-NAME>',
  *   authentication() {
- *     return ZetaPush.Authentication.weak({
+ *     return ZetaPushClient.Authentication.weak({
  *       token: null
  *    })
  *   }
  * })
  * @example
  * // Client with authentication based connection
- * const client = new ZetaPush.Client({
+ * const client = new ZetaPushClient.Client({
  *   appName: '<YOUR-APP-NAME>',
  *   authentication() {
- *     return ZetaPush.Authentication.simple({
+ *     return ZetaPushClient.Authentication.simple({
  *       login: '<USER-LOGIN>',
  *       password: '<USER-PASSWORD>'
  *    })
@@ -39,20 +39,20 @@ import { ConnectionStatusListener } from '../connection/connection-status.js';
  * })
  * @example
  * // Explicit deploymentId
- * const clientSimple = new ZetaPush.Client({
+ * const clientSimple = new ZetaPushClient.Client({
  *   appName: '<YOUR-APP-NAME>',
  *   authentication() {
- *     return ZetaPush.Authentication.simple({
+ *     return ZetaPushClient.Authentication.simple({
  *       deploymentId: '<YOUR-SIMPLE-AUTHENTICATION-DEPLOYMENT-ID>',
  *       login: '<USER-LOGIN>',
  *       password: '<USER-PASSWORD>'
  *    })
  *   }
  * })
- * const clientWeak = new ZetaPush.Client({
+ * const clientWeak = new ZetaPushClient.Client({
  *   appName: '<YOUR-APP-NAME>',
  *   authentication() {
- *     return ZetaPush.Authentication.weak({
+ *     return ZetaPushClient.Authentication.weak({
  *       deploymentId: '<YOUR-WEAK-AUTHENTICATION-DEPLOYMENT-ID>',
  *       token: '<SESSION-TOKEN>'
  *    })
@@ -261,7 +261,7 @@ export class Client {
    *       console.log('Stack push callback', message)
    *     }
    *   },
-   *   Type: ZetaPush.services.Stack
+   *   Type: ZetaPushClient.services.Stack
    * })
    * service.list({
    *   stack: '<STACK-ID>'
@@ -279,7 +279,7 @@ export class Client {
    *       console.log('Stack push callback', message)
    *     }
    *   },
-   *   Type: ZetaPush.services.Stack
+   *   Type: ZetaPushClient.services.Stack
    * })
    * service.list({
    *   stack: '<STACK-ID>'

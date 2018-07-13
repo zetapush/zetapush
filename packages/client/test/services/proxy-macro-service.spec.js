@@ -4,23 +4,23 @@ describe('Proxy Macro Service API', () => {
   const appName = 'bcu1JtRb'
 
   it('Client should have a createProxyMacroService method', () => {
-    expect(typeof ZetaPush.Client.prototype.createProxyMacroService).toBe('function')
+    expect(typeof ZetaPushClient.Client.prototype.createProxyMacroService).toBe('function')
   })
   it('WeakClient should have a createProxyMacroService method', () => {
-    expect(typeof ZetaPush.WeakClient.prototype.createProxyMacroService).toBe('function')
+    expect(typeof ZetaPushClient.WeakClient.prototype.createProxyMacroService).toBe('function')
   })
   it('SmartClient should have a createProxyMacroService method', () => {
-    expect(typeof ZetaPush.SmartClient.prototype.createProxyMacroService).toBe('function')
+    expect(typeof ZetaPushClient.SmartClient.prototype.createProxyMacroService).toBe('function')
   })
   it('createProxyMacroService method should return an object', () => {
-    const client = new ZetaPush.WeakClient({
+    const client = new ZetaPushClient.WeakClient({
       platformUrl, appName
     })
     const service = client.createProxyMacroService(ZetaPushPlatform.Macro.DEFAULT_DEPLOYMENT_ID)
     expect(typeof service).toBe('object')
   })
   it('createProxyMacroService returned object should support arbitrary properties as defined method', () => {
-    const client = new ZetaPush.WeakClient({
+    const client = new ZetaPushClient.WeakClient({
       platformUrl, appName
     })
     const service = client.createProxyMacroService(ZetaPushPlatform.Macro.DEFAULT_DEPLOYMENT_ID)
@@ -28,7 +28,7 @@ describe('Proxy Macro Service API', () => {
     expect(typeof service[method]).toBe('function')
   })
   it('Should correctly respond when call hello macro', (done) => {
-    const client = new ZetaPush.WeakClient({
+    const client = new ZetaPushClient.WeakClient({
       platformUrl, appName
     })
     const service = client.createProxyMacroService()

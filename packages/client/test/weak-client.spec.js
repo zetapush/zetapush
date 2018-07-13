@@ -5,7 +5,7 @@ describe('WeakClient', () => {
   const appName = 'bcu1JtRb'
 
   beforeEach(() => {
-    this.client = new ZetaPush.WeakClient({
+    this.client = new ZetaPushClient.WeakClient({
       platformUrl: platformUrl,
       appName: appName
     })
@@ -14,7 +14,7 @@ describe('WeakClient', () => {
   describe('Initial state', () => {
     it('Should correctly create a WeakClient object', () => {
       expect(typeof this.client).toBe('object')
-      expect(this.client instanceof ZetaPush.WeakClient).toBeTruthy()
+      expect(this.client instanceof ZetaPushClient.WeakClient).toBeTruthy()
     })
 
     it('Should not be connected', () => {

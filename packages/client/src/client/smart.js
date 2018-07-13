@@ -25,7 +25,7 @@ import { SessionPersistenceStrategy } from '../utils/session-persistence.js';
  * @extends {Client}
  * @example
  * // Create a new WeakClient
- * const client = new ZetaPush.SmartClient({
+ * const client = new ZetaPushClient.SmartClient({
  *   appName: '<YOUR-APP-NAME>'
  * })
  */

@@ -5,7 +5,7 @@ describe('WeakClient', () => {
   const appName = 'zetapush_v3_ic'
 
   beforeEach(() => {
-    this.client = new ZetaPush.WeakClient({
+    this.client = new ZetaPushClient.WeakClient({
       platformUrl: platformUrl,
       appName: appName
     })
