@@ -25,7 +25,7 @@
     "default-gateway": "2.7.2",
     "execa": "0.10.0",
     "find-free-port": "2.0.0",
-    "hot-module-replacement": "3.0.0",
+    "hot-module-replacement": "3.0.1",
     "node-progress-bars": "1.0.8",
     "ora": "2.1.0",
     "prompt-sync": "4.1.6",
