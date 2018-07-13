@@ -1,13 +1,4 @@
-const {
-  zetaPush,
-  readZetarc,
-  setAppNameToZetarc,
-  rm,
-  npmInit,
-  nukeApp,
-} = require('../utils/commands');
-const { WeakClient } = require('@zetapush/client');
-const transports = require('@zetapush/cometd/lib/node/Transports');
+const { zetaPush, readZetarc } = require('../utils/commands');
 const PATTERN = /Hello World from JavaScript (\d+)/;
 const {
   given,
@@ -20,50 +11,33 @@ describe(`As developer with
         - account exists
         - no appName
     `, () => {
-  const projectDir = 'project-nominal-case';
-  const fullPathProject = `.generated-projects/${projectDir}`;
-  const context = {};
-
-  beforeEach(async () => {
-    // this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
-    // this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
-    // clean
-    await rm(fullPathProject);
-  });
-
   afterEach(async () => {
-    await autoclean(context);
+    await autoclean(this);
   });
 
   it(
     "Should success with new appName for 'zeta push'",
     async () => {
       // Create the application
-      given()
+      await given()
         /**/ .credentials()
         /*   */ .fromEnv()
         /*   */ .and()
         /**/ .newApp()
+        /*   */ .dir('no-appname')
         /*   */ .setAppName('')
         /*   */ .and()
-        /**/ .apply(context);
-      // await npmInit(this.developerLogin, this.developerPassword, projectDir);
-      // // Delete the 'appName' from the .zetarc
-      // await setAppNameToZetarc(fullPathProject, '');
+        /**/ .apply(this);
+
       // zeta push
       await consoleUserAction('1) zeta push', async () => {
-        await zetaPush(fullPathProject);
+        await zetaPush(this.context.projectDir);
       });
+
       // Check the .zetarc file
-      let zetarc = await readZetarc(fullPathProject);
+      let zetarc = await readZetarc(this.context.projectDir);
       expect(zetarc.appName.length).toBeGreaterThan(0);
-      // check using a client
-      // this.client = new WeakClient({
-      //   ...zetarc,
-      //   transports,
-      // });
-      // await this.client.connect();
-      // const api = this.client.createProxyTaskService();
+
       await frontUserAction('2) call hello', { zetarc }, async (api) => {
         const message = await api.hello();
         expect(typeof message).toBe('string');

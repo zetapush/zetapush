@@ -12,8 +12,7 @@ describe(`As developer with
       - valid account
       - no configured application
   `, () => {
-  const projectDir = 'project-nominal-case';
-  const fullPathProject = `.generated-projects/${projectDir}`;
+  const fullPathProject = `.generated-projects/project-nominal-case`;
 
   beforeEach(async () => {
     this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
@@ -41,7 +40,11 @@ describe(`As developer with
     async () => {
       // 1) npm init
       await consoleUserAction('1) npm init', async () => {
-        await npmInit(this.developerLogin, this.developerPassword, projectDir);
+        await npmInit(
+          this.developerLogin,
+          this.developerPassword,
+          fullPathProject,
+        );
       });
 
       // 2) zeta push

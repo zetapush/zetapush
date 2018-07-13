@@ -7,7 +7,7 @@ function log(str) {
 
 SeparatorReporter = function() {
   var self = this;
-  const oldConsole = console.log;
+  // const oldConsole = console.log;
 
   self.jasmineStarted = function(summary) {};
   self.suiteStarted = function(suite) {
@@ -19,12 +19,12 @@ SeparatorReporter = function() {
   self.specStarted = function(spec) {
     log('');
     log('-'.repeat(20) + ' SPEC  ' + '-'.repeat(20));
-    console.log = (...args) => oldConsole('   ', ...args);
+    // console.log = (...args) => oldConsole('   ', ...args);
     log('');
   };
   self.specDone = function(spec) {
     log('');
-    console.log = oldConsole;
+    // console.log = oldConsole;
     log('-'.repeat(46));
     log('');
   };

@@ -8,7 +8,7 @@
     "start": "zeta run"
   },
   "dependencies": {
-    "@zetapush/cli": "^0.30.0-alpha.141d6471",
-    "@zetapush/platform": "^0.30.0-alpha.141d6471"
+    "@zetapush/cli": "^0.30.0-alpha.743bc6df",
+    "@zetapush/platform": "^0.30.0-alpha.743bc6df"
   }
 }

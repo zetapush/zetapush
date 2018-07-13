@@ -1,30 +1,12 @@
-const {
-  zetaPush,
-  zetaRun,
-  setAccountToZetarc,
-  npmInstallLatestVersion,
-} = require('../utils/commands');
+const { zetaPush, zetaRun } = require('../utils/commands');
+const { given, consoleUserAction } = require('../utils/tdd');
 
 describe(`As developer with
         - no developerPassword
     `, () => {
-  // const projectDir = 'testing-projects/empty-app';
-  const errorCode = 1;
-  const context = {};
+  const errorCode = 52;
 
   beforeEach(async () => {
-    // this.developerLogin = 'user@zetapush.com';
-    // this.developerPassword = '';
-
-    // // Install dependencies
-    // await npmInstallLatestVersion(projectDir);
-
-    // // Update zetarc with wrong account
-    // await setAccountToZetarc(
-    //   projectDir,
-    //   this.developerLogin,
-    //   this.developerPassword,
-    // );
     await given()
       /**/ .credentials()
       /*   */ .login('user@zetapush.com')
@@ -34,14 +16,14 @@ describe(`As developer with
       /*   */ .projectName('empty-app')
       /*   */ .latestVersion()
       /*   */ .and()
-      /**/ .apply(context);
+      /**/ .apply(this);
   }, 15 * 60 * 1000);
 
   it(
-    "Should failed with errorCode 'ACCOUNT-02' (52) for 'zeta push'",
+    "Should fail with errorCode 'ACCOUNT-02' (52) for 'zeta push'",
     async () => {
       await consoleUserAction('zeta push', async () => {
-        const code = await zetaPush(projectDir);
+        const code = await zetaPush(this.context.projectDir);
         expect(code).toBe(errorCode);
       });
     },
@@ -49,10 +31,10 @@ describe(`As developer with
   );
 
   it(
-    "Should failed with errorCode 'ACCOUNT-02' (52) for 'zeta run'",
+    "Should fail with errorCode 'ACCOUNT-02' (52) for 'zeta run'",
     async () => {
       await consoleUserAction('zeta run', async () => {
-        const code = await zetaRun(projectDir);
+        const code = await zetaRun(this.context.projectDir);
         expect(code).toBe(errorCode);
       });
     },

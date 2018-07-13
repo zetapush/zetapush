@@ -1,5 +1,3 @@
-const { WeakClient } = require('@zetapush/client');
-const transports = require('@zetapush/cometd/lib/node/Transports');
 const {
   rm,
   npmInit,
@@ -10,8 +8,6 @@ const {
   npmInstallLatestVersion,
   nukeApp,
 } = require('./utils/commands');
-const PATTERN = /Hello World from JavaScript (\d+)/;
-const fs = require('fs');
 const { given, frontUserAction, autoclean } = require('./utils/tdd');
 
 const sleep = (millis) => {
@@ -22,15 +18,8 @@ describe(`As developer with
       - valid account
       - no configured application
   `, () => {
-  const context = {};
-
-  beforeEach(async () => {
-    // clean
-    await rm('.generated-projects/*');
-  });
-
   afterEach(async () => {
-    await autoclean(context);
+    await autoclean(this);
   });
 
   /**
@@ -40,19 +29,6 @@ describe(`As developer with
   it(
     `Should be able to launch a local worker and call hello CCS`,
     async () => {
-      // copydir.sync(
-      //   'spec/templates/' + basicWorkerDir,
-      //   '.generated-projects/' + basicWorkerDir,
-      // );
-      // createZetarc(
-      //   this.developerLogin,
-      //   this.developerPassword,
-      //   '.generated-projects/' + basicWorkerDir,
-      // );
-      // const runner = new Runner('.generated-projects/' + basicWorkerDir);
-      // runner.run((quiet = false));
-      // await runner.waitForWorkerUp();
-      // const zetarc = await readZetarc('.generated-projects/' + basicWorkerDir);
       await given()
         /**/ .credentials()
         /*   */ .fromEnv()
@@ -63,25 +39,18 @@ describe(`As developer with
         /**/ .worker()
         /*   */ .up()
         /*   */ .and()
-        /**/ .apply(context);
+        /**/ .apply(this);
 
-      await frontUserAction('call hello', context, async (api) => {
-        // this.client = new WeakClient({
-        //   ...zetarc,
-        //   transports,
-        // });
-        // await this.client.connect();
-        // const api = this.client.createProxyTaskService();
+      await frontUserAction('call hello', this, async (api) => {
         let failure = false;
         try {
           await api.hello();
         } catch (error) {
           failure = true;
         }
-        await context.runner.stop();
+        await this.context.runner.stop();
         expect(failure).toBe(false);
       });
-      // await nukeApp('.generated-projects/' + basicWorkerDir);
     },
     60 * 1000 * 10,
   );
@@ -103,37 +72,18 @@ describe(`As developer with
         /**/ .worker()
         /*   */ .up()
         /*   */ .and()
-        /**/ .apply(context);
-      // copydir.sync(
-      //   'spec/templates/' + brokenWorkerDir,
-      //   '.generated-projects/' + brokenWorkerDir,
-      // );
-      // createZetarc(
-      //   this.developerLogin,
-      //   this.developerPassword,
-      //   '.generated-projects/' + brokenWorkerDir,
-      // );
-      // const runner = new Runner('.generated-projects/' + brokenWorkerDir);
-      // runner.run((quiet = false));
-      // await runner.waitForWorkerUp();
-      // const zetarc = await readZetarc('.generated-projects/' + brokenWorkerDir);
-      // this.client = new WeakClient({
-      //   ...zetarc,
-      //   transports,
-      // });
-      // await this.client.connect();
-      // const api = this.client.createProxyTaskService();
-      await frontUserAction('call hello', context, async (api) => {
+        /**/ .apply(this);
+
+      await frontUserAction('call hello', this, async (api) => {
         let failure = false;
         try {
           await api.hello();
         } catch (error) {
           failure = true;
         }
-        await context.runner.stop();
+        await this.context.runner.stop();
         expect(failure).toBe(true);
       });
-      // await nukeApp('.generated-projects/' + brokenWorkerDir);
     },
     60 * 1000 * 2,
   );
@@ -155,28 +105,16 @@ describe(`As developer with
         /**/ .worker()
         /*   */ .runner()
         /*   */ .and()
-        /**/ .apply(context);
-      // copydir.sync(
-      //   'spec/templates/' + brokenWorkerInitDir,
-      //   '.generated-projects/' + brokenWorkerInitDir,
-      // );
-      // createZetarc(
-      //   this.developerLogin,
-      //   this.developerPassword,
-      //   '.generated-projects/' + brokenWorkerInitDir,
-      // );
-      // const runner = new Runner('.generated-projects/' + brokenWorkerInitDir);
-      await frontUserAction('call hello', context, async (api) => {
-        let failure = false;
-        try {
-          await context.runner.run((quiet = false));
-        } catch (error) {
-          failure = true;
-        }
-        await context.runner.stop();
-        expect(failure).toBe(true);
-      });
-      // await nukeApp('.generated-projects/' + brokenWorkerInitDir);
+        /**/ .apply(this);
+
+      // worker can't start due to runtime error
+      let failure = false;
+      try {
+        await this.context.runner.run((quiet = false));
+      } catch (error) {
+        failure = true;
+      }
+      expect(failure).toBe(true);
     },
     60 * 1000 * 10,
   );
@@ -198,27 +136,9 @@ describe(`As developer with
         /**/ .worker()
         /*   */ .up()
         /*   */ .and()
-        /**/ .apply(context);
-      // copydir.sync(
-      //   'spec/templates/' + exitWorkerDir,
-      //   '.generated-projects/' + exitWorkerDir,
-      // );
-      // createZetarc(
-      //   this.developerLogin,
-      //   this.developerPassword,
-      //   '.generated-projects/' + exitWorkerDir,
-      // );
-      // const runner = new Runner('.generated-projects/' + exitWorkerDir);
-      // runner.run((quiet = false));
-      // await runner.waitForWorkerUp();
-      // const zetarc = await readZetarc('.generated-projects/' + exitWorkerDir);
-      // this.client = new WeakClient({
-      //   ...zetarc,
-      //   transports,
-      // });
-      // await this.client.connect();
-      // const api = this.client.createProxyTaskService();
-      await frontUserAction('call hello', context, async (api) => {
+        /**/ .apply(this);
+
+      await frontUserAction('call hello', this, async (api) => {
         let helloReceived = false;
         const sendHello = async () => {
           // hello function in worker exits the worker => no answer will be received so promise won't be resolved
@@ -228,10 +148,9 @@ describe(`As developer with
         };
         sendHello();
         await sleep(5000);
-        await context.runner.stop();
+        await this.context.runner.stop();
         expect(helloReceived).toBe(false);
       });
-      // await nukeApp('.generated-projects/' + exitWorkerDir);
     },
     60 * 1000 * 10,
   );

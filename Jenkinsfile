@@ -3,12 +3,12 @@ pipeline {
 
   options {
       timestamps()
-      timeout(time: 30, unit: 'MINUTES')
+      timeout(time: 60, unit: 'MINUTES')
   }
 
   environment {
     ZETAPUSH_DEVELOPER_ACCOUNT = credentials('jenkins-zetapush-celtia-account')
-    
+    ZETAPUSH_LOG_LEVEL = 'silly'
   }
 
   stages {

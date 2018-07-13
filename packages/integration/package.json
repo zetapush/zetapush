@@ -9,12 +9,14 @@
     "@zetapush/cometd": "*",
     "@zetapush/client": "*",
     "rimraf": "2.6.2",
-    "copy-dir": "^0.3.0",
-    "tree-kill": "^1.2.0",
+    "copy-dir": "0.3.0",
+    "tree-kill": "1.2.0",
     "jasmine-reporters": "2.3.1"
   },
   "devDependencies": {
+    "chalk": "2.4.1",
+    "execa": "0.10.0",
     "jasmine": "3.1.0",
-    "execa": "0.10.0"
+    "winston": "3.0.0"
   }
 }
