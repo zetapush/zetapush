@@ -1,3 +1,5 @@
+import { TaskRequest } from '@zetapush/platform';
+
 import { timeoutify } from './async';
 
 export class WorkerInstance {
@@ -12,7 +14,7 @@ export class WorkerInstance {
   /**
    *
    */
-  constructor({ timeout, worker }) {
+  constructor({ timeout, worker }: { timeout: number; worker: any }) {
     /**
      * @access private
      * @type {number}
@@ -24,7 +26,7 @@ export class WorkerInstance {
      */
     this.worker = worker;
   }
-  async dispatch({ data: { request, taskId } }) {
+  async dispatch({ data: { request, taskId } }: TaskRequest) {
     const { data, requestId, owner } = request;
     const { name, namespace, parameters } = data;
     console.log('WorkerInstance::dispatch', {
@@ -60,7 +62,7 @@ export class WorkerInstance {
       };
     }
   }
-  setWorker(worker) {
+  setWorker(worker: any) {
     console.log('WorkerInstance::setWorker', worker);
     this.worker = worker;
   }

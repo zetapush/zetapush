@@ -1,3 +1,5 @@
+# Generated documentation
+/.esdoc/
 # Generated sources
 /dist/
 /es/
@@ -8,5 +10,3 @@
 /lerna-*.log
 /npm-*.log
 /yarn-*.log
-# Editors
-/.vscode/

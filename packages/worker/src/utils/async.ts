@@ -1,10 +1,13 @@
 import { getType } from './types';
+
+type Task = Function;
+
 /**
  * Wrap async function execution in timeout
  * @param {() => Promise<any>} task
  * @param {number} timeout
  */
-export const timeoutify = (task, timeout = 1000) =>
+export const timeoutify = (task: Task, timeout = 1000) =>
   new Promise((resolve, reject) => {
     const timer = setTimeout(
       () =>
@@ -19,8 +22,8 @@ export const timeoutify = (task, timeout = 1000) =>
       const response = task();
       if (getType(response) === Promise.name) {
         return response.then(
-          (...success) => (clearInterval(timer), resolve(...success)),
-          (...failed) => (clearInterval(timer), reject(...failed)),
+          (...success: any[]) => (clearInterval(timer), resolve(...success)),
+          (...failed: any[]) => (clearInterval(timer), reject(...failed)),
         );
       } else {
         clearInterval(timer);

@@ -1,8 +1,8 @@
 {
-  "name": "@zetapush/platform",
+  "name": "@zetapush/core",
   "version": "0.30.0",
   "description": "Zeta Push Next",
-  "browser": "dist/zetapush-platform.js",
+  "browser": "dist/zetapush-core.js",
   "main": "lib/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
@@ -19,13 +19,10 @@
     "clean": "rimraf lib dist es .deploy .esdoc",
     "build:commonjs": "tsc --outDir lib",
     "build:es": "tsc --module ES2015 --moduleResolution Node --outDir es",
-    "build:umd": "cross-env NODE_ENV=development rollup -c -i src/index.ts -o dist/zetapush-platform.js",
-    "build:umd:min": "cross-env NODE_ENV=production rollup -c -i src/index.ts -o dist/zetapush-platform.min.js",
+    "build:umd": "cross-env NODE_ENV=development rollup -c -i src/index.ts -o dist/zetapush-core.js",
+    "build:umd:min": "cross-env NODE_ENV=production rollup -c -i src/index.ts -o dist/zetapush-core.min.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "prepublish": "npm run clean && npm run build"
-  },
-  "dependencies": {
-    "injection-js": "2.2.1"
   },
   "devDependencies": {
     "cross-env": "5.2.0",

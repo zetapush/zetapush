@@ -5,11 +5,11 @@ describe('Client', () => {
   const appName = 'NotAvailableAppName'
 
   beforeEach(() => {
-    this.client = new ZetaPush.Client({
+    this.client = new ZetaPushClient.Client({
       platformUrl: platformUrl,
       appName: appName,
       authentication: () => {
-        return ZetaPush.Authentication.simple({
+        return ZetaPushClient.Authentication.simple({
           login: 'root',
           password: 'root'
         })

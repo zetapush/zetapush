@@ -5,11 +5,11 @@ describe('Client', () => {
   const appName = 'bcu1JtRb'
 
   beforeEach(() => {
-    this.client = new ZetaPush.Client({
+    this.client = new ZetaPushClient.Client({
       platformUrl,
       appName,
       authentication: () => {
-        return ZetaPush.Authentication.simple({
+        return ZetaPushClient.Authentication.simple({
           login: 'test',
           password: 'test'
         })
@@ -20,7 +20,7 @@ describe('Client', () => {
   describe('Initial State', () => {
     it('Should correctly create a Client object', () => {
       expect(typeof this.client).toBe('object')
-      expect(this.client instanceof ZetaPush.Client).toBeTruthy()
+      expect(this.client instanceof ZetaPushClient.Client).toBeTruthy()
     })
 
     it('Should not be connected', () => {

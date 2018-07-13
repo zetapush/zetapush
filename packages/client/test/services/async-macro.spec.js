@@ -11,7 +11,7 @@ describe('AsyncMacro', () => {
   const appName = 'bcu1JtRb'
 
   beforeEach(() => {
-    this.client = new ZetaPush.WeakClient({
+    this.client = new ZetaPushClient.WeakClient({
       platformUrl: platformUrl,
       appName: appName
     })

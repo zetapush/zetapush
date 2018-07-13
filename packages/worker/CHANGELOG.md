@@ -3,12 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.29.0](https://github.com/zetapush/zetapush/compare/v0.28.0...v0.29.0) (2018-07-10)
+# [0.30.0](https://github.com/zetapush/zetapush/compare/v0.29.0...v0.30.0) (2018-07-13)
+
+
+### Code Refactoring
+
+* add an empty core package to avoid confusion with previous named package ([e7f2a4f](https://github.com/zetapush/zetapush/commit/e7f2a4f))
+
+
+### Features
+
+* rename [@zetapush](https://github.com/zetapush)/core to [@zetapush](https://github.com/zetapush)/client ([74f5151](https://github.com/zetapush/zetapush/commit/74f5151)), closes [#79](https://github.com/zetapush/zetapush/issues/79)
+
+
+### BREAKING CHANGES
+
+* @zetapush/core is now an empty package
+* Rename @zetapush/core to @zetapush/client
 
 
 
-
-**Note:** Version bump only for package @zetapush/worker
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

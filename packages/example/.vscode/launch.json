@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "zeta run", 
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/node_modules/.bin/zeta",
+      "stopOnEntry": false,
+      "sourceMaps": true,
+      "args": [ 
+        "run",
+        "--serve-front"
+      ],
+      "cwd": "${workspaceRoot}",
+      "console": "internalConsole"
+    }
+  ]
+}
