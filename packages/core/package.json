@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/core",
-  "version": "0.29.0",
+  "version": "0.30.0",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-core.js",
   "main": "lib/index.js",
@@ -24,7 +24,6 @@
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "prepublish": "npm run clean && npm run build"
   },
-  "dependencies": {},
   "devDependencies": {
     "cross-env": "5.2.0",
     "rimraf": "2.6.2",
