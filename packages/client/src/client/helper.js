@@ -9,16 +9,6 @@ import {
   uuid,
 } from '../utils/index.js';
 
-class ApiError extends Error {
-  constructor(message, code) {
-    super(message);
-    this.code = code;
-  }
-  toString() {
-    return `Message: ${this.message}, Code: ${this.code}`;
-  }
-}
-
 /**
  * CometD Messages enumeration
  * @type {Object}
@@ -502,50 +492,47 @@ export class ClientHelper {
       throw new Error('`Proxy` is not support in your environment');
     }
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
-    return new Proxy(
-      {},
-      {
-        get: (target, method) => {
-          return (parameters = null, namespace = '') => {
-            const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
-            const uniqRequestId = this.getUniqRequestId();
-            const subscriptions = {};
-            return new Promise((resolve, reject) => {
-              const onError = ({ data = {} }) => {
-                const { requestId, code, message } = data;
-                if (requestId === uniqRequestId) {
-                  reject(new ApiError(message, code));
-                  this.unsubscribe(subscriptions);
-                }
-              };
-              const onSuccess = ({ data = {} }) => {
-                const { result = {}, requestId } = data;
-                if (requestId === uniqRequestId) {
-                  resolve(result);
-                  this.unsubscribe(subscriptions);
-                }
-              };
-              // Create dynamic listener method
-              const listener = {
-                [DEFAULT_TASK_CHANNEL]: onSuccess,
-                [DEFAULT_ERROR_CHANNEL]: onError,
-              };
-              // Ad-Hoc subscription
-              this.subscribe(prefix, listener, subscriptions);
-              // Publish message on channel
-              this.publish(channel, {
-                data: {
-                  name: method,
-                  namespace,
-                  parameters,
-                },
-                requestId: uniqRequestId,
-              });
+    return new Proxy(Object.create(null), {
+      get: (target, method) => {
+        return (parameters = null, namespace = '') => {
+          const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
+          const uniqRequestId = this.getUniqRequestId();
+          const subscriptions = {};
+          return new Promise((resolve, reject) => {
+            const onError = ({ data = {} }) => {
+              const { requestId, code, message } = data;
+              if (requestId === uniqRequestId) {
+                reject({ message, code });
+                this.unsubscribe(subscriptions);
+              }
+            };
+            const onSuccess = ({ data = {} }) => {
+              const { result = {}, requestId } = data;
+              if (requestId === uniqRequestId) {
+                resolve(result);
+                this.unsubscribe(subscriptions);
+              }
+            };
+            // Create dynamic listener method
+            const listener = {
+              [DEFAULT_TASK_CHANNEL]: onSuccess,
+              [DEFAULT_ERROR_CHANNEL]: onError,
+            };
+            // Ad-Hoc subscription
+            this.subscribe(prefix, listener, subscriptions);
+            // Publish message on channel
+            this.publish(channel, {
+              data: {
+                name: method,
+                namespace,
+                parameters,
+              },
+              requestId: uniqRequestId,
             });
-          };
-        },
+          });
+        };
       },
-    );
+    });
   }
 
   /**
@@ -571,7 +558,7 @@ export class ClientHelper {
               const onError = ({ data = {} }) => {
                 const { requestId, code, message } = data;
                 if (requestId === uniqRequestId) {
-                  reject(new ApiError(message, code));
+                  reject({ message, code });
                   this.unsubscribe(subscriptions);
                 }
               };
@@ -692,7 +679,7 @@ export class ClientHelper {
         const onError = ({ data = {} }) => {
           const { requestId, code, message } = data;
           if (requestId === uniqRequestId) {
-            reject(new ApiError(message, code));
+            reject({ message, code });
             this.unsubscribe(subscriptions);
           }
         };
@@ -733,7 +720,7 @@ export class ClientHelper {
         const onError = ({ data = {} }) => {
           const { requestId, code, message } = data;
           if (requestId === uniqRequestId) {
-            reject(new ApiError(message, code));
+            reject({ message, code });
             this.unsubscribe(subscriptions);
           }
         };
