@@ -1,13 +1,8 @@
-import {
-  Credentials,
-  AccountCreationDetails,
-  ConfirmationRedirection,
-  Account,
-} from './standard-user-workflow/api';
+import { Credentials, AccountCreationDetails, ConfirmationRedirection, Account } from './standard-user-workflow/api';
 
 /**
  * The 'StandardUserWorkflow' is the standard process of users management in the application.
- * This interface exposes methods manage an user account on the application (sign up / login / logout ...)
+ * This interface exposes methods manage a user account on the application (sign up / login / logout / ...)
  *
  * 'StandardUserWorkflow' has many implementations, the first one is the 'DefaultStandardUserWorkflow'.
  * This is the default process for a web application to create an account (form + confirmation link in email),
@@ -19,6 +14,7 @@ import {
  * 3. The user click on the link in the email
  * 4. The user's account is validated and the user is redirected to a specific page in the application
  * 5. The user is automatically connected to the application
+ * @see {@link https://zetapush.github.io/documentation/#_standarduserworkflow|Documentation}
  */
 export interface StandardUserWorkflow {
   /**
@@ -33,6 +29,8 @@ export interface StandardUserWorkflow {
    * In the DefaultStandardUserWorkflow, the credentials are an username and a password.
    *
    * @example
+   * ```typescript
+   *
    * // 'DefaultStandardUserWorkflow' is the default implementation of 'StandardUserWorkflow'
    * import { DefaultStandardUserWorkflow } from "@zetapush/platform";
    *
@@ -41,8 +39,9 @@ export interface StandardUserWorkflow {
    * userManagement.login({ username: 'username', password: 'password'}).then((account) => {
    *  console.log('connectedUser', account);
    * });
+   * ```
    * @param credentials Credentials informations to login
-   * @returns {Account} ID + status of the account and user profile
+   * @returns ID + status of the account and user profile
    */
   login(credentials: Credentials): Account;
 
@@ -50,6 +49,8 @@ export interface StandardUserWorkflow {
    * The 'logout()' method allows the current user to disconnect from the application.
    *
    * @example
+   * ```typescript
+   *
    * // 'DefaultStandardUserWorkflow' is the default implementation of 'StandardUserWorkflow'
    * import { DefaultStandardUserWorkflow } from "@zetapush/platform";
    *
@@ -58,7 +59,7 @@ export interface StandardUserWorkflow {
    * userManagement.logout().then((account) => {
    *  console.log('UserDisconnected', account);
    * });
-   *
+   * ```
    * @returns {Account} ID, status of the account and user profile
    */
   logout(): Account;
@@ -77,6 +78,8 @@ export interface StandardUserWorkflow {
    * If the 'signup()' method return any error, the account creation is not effective.
    *
    * @example
+   * ```typescript
+   *
    * // Nominal example
    * // 'DefaultStandardUserWorkflow' is the default implementation of 'StandardUserWorkflow'
    * import { DefaultStandardUserWorkflow } from "@zetapush/platform";
@@ -86,8 +89,11 @@ export interface StandardUserWorkflow {
    * userManagement.signup(accountCreatienDetails: { username: 'username', email: 'username@mail.fr', password: 'password', passwordConfirmation: 'password'}).then((createdAccount) => {
    *  console.log('createdAccout', createdAccount);
    * });
+   * ```
    *
    * @example
+   * ```typescript
+   *
    * // Error example
    * // 'DefaultStandardUserWorkflow' is the default implementation of 'StandardUserWorkflow'
    * import { DefaultStandardUserWorkflow } from "@zetapush/platform";
@@ -103,13 +109,11 @@ export interface StandardUserWorkflow {
    *    // This will display this message for example
    *    // [ERR-PWD-DIFFERENT] - The 'password' and the 'passwordConfirmation' are differents
    *  });
+   * ```
    *
    * @param {AccountCreationDetails} accountCreationDetails Details of the account to be created (Credentials / properties / ...)
    * @param {ConfirmationDirection} confirmationRedirection Optional redirection when an account is confirmed
    * @returns {Account} ID, status of the account and user profile
    */
-  signup(
-    accountCreationDetails: AccountCreationDetails,
-    confirmationRedirection?: ConfirmationRedirection,
-  ): Account;
+  signup(accountCreationDetails: AccountCreationDetails, confirmationRedirection?: ConfirmationRedirection): Account;
 }
