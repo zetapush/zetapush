@@ -1,4 +1,12 @@
-const { trace, log, error, info, help, warn } = require('../utils/log');
+const {
+  trace,
+  log,
+  error,
+  info,
+  help,
+  warn,
+  debugObject,
+} = require('../utils/log');
 const { parse } = require('./asciidoc-parser');
 const chalk = require('chalk');
 const chalkTpl = require('chalk/templates');
@@ -9,6 +17,7 @@ const path = require('path');
 const process = require('process');
 const os = require('os');
 const ora = require('ora');
+const files = require('../utils/files');
 
 const DOC_BASE_URL =
   process.env.ZP_DOC_BASE_URL || 'https://zetapush.github.io/documentation';
@@ -180,11 +189,7 @@ class CacheErrorHelper extends ErrorHelper {
     }
   }
   getCachedFile(file) {
-    const p = path.normalize(
-      path.resolve(os.homedir(), '.zeta', 'cache', file),
-    );
-    mkdirs(p);
-    return p;
+    return files.getZetaFilePath('cache', file);
   }
   isExpired() {
     const lastUpdateFile = this.getCachedFile('.last-update');
@@ -210,22 +215,12 @@ const evaluate = (message, err) => {
   });
 };
 
-const mkdirs = (file) => {
-  let dirs = [];
-  for (let dir of path.parse(file).dir.split(path.sep)) {
-    dirs.push(dir);
-    let dirPath = dirs.join(path.sep);
-    if (dirPath) {
-      fs.existsSync(dirPath) || fs.mkdirSync(dirPath);
-    }
-  }
-};
-
 // Fill cache if necessary
 const errorHelper = new CacheErrorHelper(new HttpDownloadErrorHelper(), false);
 errorHelper.getMessages();
 
 const displayHelp = async (errorCtxt) => {
+  debugObject('displayHelp', { errorCtxt });
   const spinner = ora('Analyzing the error to provide you useful help... \n');
   try {
     spinner.start();

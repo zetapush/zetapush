@@ -1,0 +1,14 @@
+{
+  "name": "empty-project",
+  "version": "0.0.1",
+  "main": "worker/index.js",
+  "private": true,
+  "scripts": {
+    "deploy": "zeta push",
+    "start": "zeta run"
+  },
+  "dependencies": {
+    "@zetapush/cli": "^0.30.0-alpha.743bc6df",
+    "@zetapush/platform": "^0.30.0-alpha.743bc6df"
+  }
+}
