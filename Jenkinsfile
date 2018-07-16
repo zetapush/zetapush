@@ -3,11 +3,12 @@ pipeline {
 
   options {
       timestamps()
-      timeout(time: 30, unit: 'MINUTES')
+      timeout(time: 60, unit: 'MINUTES')
   }
 
   environment {
     ZETAPUSH_DEVELOPER_ACCOUNT = credentials('jenkins-zetapush-celtia-account')
+    ZETAPUSH_LOG_LEVEL = 'silly'
   }
 
   stages {
@@ -20,6 +21,7 @@ pipeline {
         }
       }
       steps {
+        echo "${ZETAPUSH_DEVELOPER_ACCOUNT}"
         sh 'npm cache clear --force'
         sh 'npm i'
         sh 'npm run lerna:clean -- --yes'
@@ -65,7 +67,7 @@ pipeline {
         }
       }
     }
-
+    
     stage('Clear again and fix permissions') {
       agent { 
         docker {
@@ -92,12 +94,15 @@ pipeline {
           }
           steps {
             dir('packages/integration') {
+              echo "${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}"
+              echo "${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}"
               sh 'npm i'
-              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' npm run test"
+              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' node node_modules/jasmine/bin/jasmine.js"
             }
           }
           post {
             always {
+              junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
               deleteDir()
             }
           }
@@ -112,13 +117,12 @@ pipeline {
           steps {
             dir('packages/integration') {
               bat 'npm i'
-              bat "set ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}'"
-              bat "set ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}'"
-              bat 'npm run test'
+              bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& node node_modules\\jasmine\\bin\\jasmine.js"
             }
           }
           post {
             always {
+              junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
               deleteDir()
             }
           }
@@ -133,13 +137,12 @@ pipeline {
           steps {
             dir('packages/integration') {
               bat 'npm i'
-              bat "set ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}'"
-              bat "set ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}'"
-              bat 'npm run test'
+              bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& node node_modules\\jasmine\\bin\\jasmine.js"
             }
           }
           post {
             always {
+              junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
               deleteDir()
             }
           }
@@ -154,11 +157,12 @@ pipeline {
           steps {
             dir('packages/integration') {
               sh 'npm i'
-              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' npm run test"
+              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' node node_modules/jasmine/bin/jasmine.js"
             }
           }
           post {
             always {
+              junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
               deleteDir()
             }
           }

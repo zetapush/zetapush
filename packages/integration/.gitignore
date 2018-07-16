@@ -6,3 +6,4 @@
 /lerna-*.log
 /npm-*.log
 /yarn-*.log
+/spec/helpers/junit-*.xml

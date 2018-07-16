@@ -1,38 +1,43 @@
-const { zetaPush, zetaRun, setAccountToZetarc } = require('../utils/commands');
+const { zetaPush, zetaRun } = require('../utils/commands');
+const { given, consoleUserAction } = require('../utils/tdd');
 
 describe(`As developer with
         - no developerLogin
     `, () => {
-  const projectDir = 'empty-app';
   const errorCode = 51;
 
   beforeEach(async () => {
-    this.developerLogin = '';
-    this.developerPassword = 'password';
-
-    // Update zetarc with wrong account
-    await setAccountToZetarc(
-      projectDir,
-      this.developerLogin,
-      this.developerPassword,
-    );
-  });
+    await given()
+      /**/ .credentials()
+      /*   */ .login('')
+      /*   */ .password('password')
+      /*   */ .and()
+      /**/ .testingApp()
+      /*   */ .projectName('empty-app')
+      /*   */ .latestVersion()
+      /*   */ .and()
+      /**/ .apply(this);
+  }, 15 * 60 * 1000);
 
   it(
-    "Should failed with errorCode 'ACCOUNT-01' (51) for 'zeta push'",
+    "Should fail with errorCode 'ACCOUNT-01' (51) for 'zeta push'",
     async () => {
-      const code = await zetaPush(projectDir);
-      expect(code).toBe(errorCode);
+      await consoleUserAction('zeta push', async () => {
+        const code = await zetaPush(this.context.projectDir);
+        expect(code).toBe(errorCode);
+      });
     },
-    10 * 60 * 1000,
+    15 * 60 * 1000,
   );
 
   it(
-    "Should failed with errorCode 'ACCOUNT-01' (51) for 'zeta run'",
+    "Should fail with errorCode 'ACCOUNT-01' (51) for 'zeta run'",
     async () => {
-      const code = await zetaRun(projectDir);
-      expect(code).toBe(errorCode);
+      await consoleUserAction('zeta run', async () => {
+        const code = await zetaRun(this.context.projectDir);
+        expect(code).toBe(errorCode);
+      });
     },
-    10 * 60 * 1000,
+    15 * 60 * 1000,
   );
 });
