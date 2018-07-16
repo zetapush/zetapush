@@ -1,0 +1,37 @@
+{
+	"tags":
+	{
+		"allowUnknownTags" : true
+	},
+	"plugins":[
+		 "plugins/markdown"
+		,"./node_modules/tsdoc/template/plugins/TSDoc.js"
+	],
+	"opts":
+	{
+		"template"	:"./node_modules/tsdoc/template",
+		"recurse"	:"true"
+	},
+	"templates" : {
+		"cleverLinks"     : false,
+		"monospaceLinks"  : false
+	},
+	"source":
+	{
+		"includePattern": "(\\.d)?\\.ts$"
+	},
+	"markdown"  : {
+		"parser"   : "gfm",
+		"hardwrap" : true
+	},
+	"tsdoc":{
+		"source"		:"./src/user-management/index.ts",
+		"destination"	:"./docs",
+		"tutorials"		:"",
+		"systemName"	: "platform",
+		"footer"		: "",
+		"copyright"		: "platform Copyright © 2018 ZetaPush.",
+		"outputSourceFiles" : true,
+		"commentsOnly": true
+	}
+}

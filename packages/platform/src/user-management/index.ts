@@ -4,9 +4,11 @@ import { Credentials, AccountCreationDetails, ConfirmationRedirection, Account }
  * The 'StandardUserWorkflow' is the standard process of users management in the application.
  * This interface exposes methods manage a user account on the application (sign up / login / logout / ...)
  *
- * 'StandardUserWorkflow' has many implementations, the first one is the 'DefaultStandardUserWorkflow'.
- * This is the default process for a web application to create an account (form + confirmation link in email),
- * login (with username/password credentials) and logout.
+ * 'StandardUserWorkflow' has many implementations, the first one (Default implementation) is the 'DefaultStandardUserWorkflow'.
+ * This is the default process for a web application to :
+ * 1. Create an account with a form and a confirmation link in email
+ * 2. Login with username/password credentials
+ * 3. Logout
  *
  * The 'StandardUserWorkflow' use the following process to create an account :
  * 1. The user fill the registration form
@@ -14,18 +16,18 @@ import { Credentials, AccountCreationDetails, ConfirmationRedirection, Account }
  * 3. The user click on the link in the email
  * 4. The user's account is validated and the user is redirected to a specific page in the application
  * 5. The user is automatically connected to the application
- * @see {@link https://zetapush.github.io/documentation/#_standarduserworkflow|Documentation}
+ * @see {@link https://zetapush.github.io/documentation/#_standarduserworkflow | Documentation}
  */
 export interface StandardUserWorkflow {
   /**
    * The 'login()' method allows an user to log into the application.
-   * The user need to have an 'active' account. So the account need to be validated if the workflow imply it.
+   * The user need to have an 'active' account (The account need to be confirmed if necessary).
    *
    * This method return an 'Account' object. This is the ID of the
    * account (unique ID on the application), his status ('active', 'waitingConfirmation' or 'disabled')
    * and the user profile (the username, email and other informations)
    *
-   * Credentials param can be in many forms.
+   * Credentials parameters can be in many forms.
    * In the DefaultStandardUserWorkflow, the credentials are an username and a password.
    *
    * @example
@@ -41,7 +43,7 @@ export interface StandardUserWorkflow {
    * });
    * ```
    * @param credentials Credentials informations to login
-   * @returns ID + status of the account and user profile
+   * @returns ID, account status and user profile
    */
   login(credentials: Credentials): Account;
 
@@ -60,7 +62,7 @@ export interface StandardUserWorkflow {
    *  console.log('UserDisconnected', account);
    * });
    * ```
-   * @returns {Account} ID, status of the account and user profile
+   * @returns {Account} ID, account status and user profile
    */
   logout(): Account;
 
@@ -72,7 +74,7 @@ export interface StandardUserWorkflow {
    * username, email, password and passwordConfirmation.
    *
    * If you use an account validation process, you can specify on which URL the
-   * user will be redirected after the account confirmation. By default this is : 'https://<urlofmyapp>/#/account-confirmation/<confirmation-token>.
+   * user will be redirected after the account confirmation. By default this is : `https://<urlofmyapp>/#/account-confirmation/<confirmation-token>`.
    * You can set this URL using the 'confirmationRedirection' parameter.
    *
    * If the 'signup()' method return any error, the account creation is not effective.
