@@ -15,7 +15,7 @@ import {
   getDeploymentIdList,
   getRuntimeProvision,
   equals,
-  fetch,
+  fetch
 } from '@zetapush/core';
 import { upload, filter, BLACKLIST } from '../utils/upload';
 import { EventEmitter } from 'events';
@@ -39,7 +39,7 @@ export enum WorkerRunnerEvents {
   RELOADED = 'reloaded',
 
   START_FAILED = 'start-failed',
-  RELOAD_FAILED = 'reload-failed',
+  RELOAD_FAILED = 'reload-failed'
 }
 
 export class WorkerConnectionError extends Error {
@@ -70,11 +70,7 @@ export class WorkerRunner extends EventEmitter {
   private currentDeclaration: WorkerDeclaration;
   private currentInstance?: WorkerInstance;
 
-  constructor(
-    private skipProvisioning: boolean,
-    private skipBootstrap: boolean,
-    private config: Config,
-  ) {
+  constructor(private skipProvisioning: boolean, private skipBootstrap: boolean, private config: Config) {
     super();
   }
 
@@ -84,15 +80,9 @@ export class WorkerRunner extends EventEmitter {
    * @param {Object} config
    * @param {Object} declaration
    */
-  private async start(
-    client: WorkerClient,
-    config: Config,
-    declaration: WorkerDeclaration,
-  ): Promise<WorkerInstance> {
-    return Promise.resolve(
-      instantiate(client, declaration, ReflectiveInjector),
-    ).then((declaration) =>
-      client.subscribeTaskWorker(declaration, config.workerServiceId),
+  private async start(client: WorkerClient, config: Config, declaration: WorkerDeclaration): Promise<WorkerInstance> {
+    return Promise.resolve(instantiate(client, declaration, ReflectiveInjector)).then((declaration) =>
+      client.subscribeTaskWorker(declaration, config.workerServiceId)
     );
   }
 
@@ -121,7 +111,7 @@ export class WorkerRunner extends EventEmitter {
 
     const client = new WorkerClient({
       ...config,
-      transports,
+      transports
     });
     this.client = client;
     this.currentDeclaration = declaration;
@@ -129,7 +119,7 @@ export class WorkerRunner extends EventEmitter {
     this.emit(WorkerRunnerEvents.BOOTSTRAPING, {
       client,
       config,
-      declaration,
+      declaration
     });
 
     // const onTerminalSignal = () => {
@@ -156,11 +146,7 @@ export class WorkerRunner extends EventEmitter {
           (deployed: boolean) =>
             !deployed
               ? this.cookWithOnlyQueueService(client, config, declaration)
-              : this.connectClientAndCreateServices(
-                  client,
-                  config,
-                  declaration,
-                ),
+              : this.connectClientAndCreateServices(client, config, declaration)
         );
 
     // // Progress
@@ -169,7 +155,7 @@ export class WorkerRunner extends EventEmitter {
     this.emit(WorkerRunnerEvents.STARTING, {
       client,
       config,
-      declaration,
+      declaration
     });
 
     /**
@@ -228,7 +214,7 @@ export class WorkerRunner extends EventEmitter {
               instance,
               client,
               config,
-              declaration,
+              declaration
             });
             // info('Worker is up!');
             // if (command.serveFront) {
@@ -240,7 +226,7 @@ export class WorkerRunner extends EventEmitter {
               failure: err,
               client,
               config,
-              declaration,
+              declaration
             });
           });
       })
@@ -253,7 +239,7 @@ export class WorkerRunner extends EventEmitter {
           failure,
           client,
           config,
-          declaration,
+          declaration
         });
       });
   }
@@ -261,14 +247,14 @@ export class WorkerRunner extends EventEmitter {
   async reload(reloaded: WorkerDeclaration) {
     if (!this.client || !this.currentInstance) {
       throw new IllegalStateError(
-        'No client or no current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method',
+        'No client or no current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
       );
     }
     let previous = getDeploymentIdList(this.currentDeclaration, [Queue]);
     this.emit(WorkerRunnerEvents.RELOADING, {
       client: this.client,
       config: this.config,
-      declaration: reloaded,
+      declaration: reloaded
     });
     let next = getDeploymentIdList(reloaded, [Queue]);
     const deploymentListHasChange = !equals(previous, next);
@@ -280,7 +266,7 @@ export class WorkerRunner extends EventEmitter {
       .then(() => {
         if (!this.currentInstance) {
           throw new IllegalStateError(
-            'No current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method',
+            'No current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
           );
         }
         // Create a new worker instance
@@ -295,7 +281,7 @@ export class WorkerRunner extends EventEmitter {
         this.emit(WorkerRunnerEvents.RELOADED, {
           instance: this.currentInstance,
           client: this.client,
-          config: this.config,
+          config: this.config
         });
       })
       .catch((failure) => {
@@ -306,7 +292,7 @@ export class WorkerRunner extends EventEmitter {
           failure,
           client: this.client,
           config: this.config,
-          declaration: reloaded,
+          declaration: reloaded
         });
       });
   }
@@ -322,7 +308,7 @@ export class WorkerRunner extends EventEmitter {
     recipe: any,
     client: WorkerClient,
     config: Config,
-    declaration: WorkerDeclaration,
+    declaration: WorkerDeclaration
   ): Promise<boolean> {
     console.log('###### D', config);
     const { recipeId } = recipe;
@@ -333,31 +319,25 @@ export class WorkerRunner extends EventEmitter {
       recipe,
       client,
       config,
-      declaration,
+      declaration
     });
     // log('Waiting Queue service deploying...');
-    return checkQueueServiceDeployed(config, recipeId).then(
-      (recipeId: string) => {
-        console.log('###### E', this.config);
-        this.emit(WorkerRunnerEvents.QUEUE_SERVICE_READY, {
-          recipe,
-          client,
-          config,
-          declaration,
-        });
-        return this.connectClientAndCreateServices(client, config, declaration);
-      },
-    );
+    return checkQueueServiceDeployed(config, recipeId).then((recipeId: string) => {
+      console.log('###### E', this.config);
+      this.emit(WorkerRunnerEvents.QUEUE_SERVICE_READY, {
+        recipe,
+        client,
+        config,
+        declaration
+      });
+      return this.connectClientAndCreateServices(client, config, declaration);
+    });
   }
 
-  private createServices(
-    client: WorkerClient,
-    config: Config,
-    declaration: WorkerDeclaration,
-  ) {
+  private createServices(client: WorkerClient, config: Config, declaration: WorkerDeclaration) {
     console.log('###### F', config);
     const api = client.createAsyncService({
-      Type: Queue,
+      Type: Queue
     });
 
     const { items } = getRuntimeProvision(config, declaration, [Queue]);
@@ -368,7 +348,7 @@ export class WorkerRunner extends EventEmitter {
       services,
       client,
       config,
-      declaration,
+      declaration
     });
     console.log('###### F:services', services);
 
@@ -378,12 +358,12 @@ export class WorkerRunner extends EventEmitter {
   private connectClientAndCreateServices(
     client: WorkerClient,
     config: Config,
-    declaration: WorkerDeclaration,
+    declaration: WorkerDeclaration
   ): Promise<boolean> {
     this.emit(WorkerRunnerEvents.CONNECTING, {
       client,
       config,
-      declaration,
+      declaration
     });
     return client
       .connect()
@@ -391,15 +371,15 @@ export class WorkerRunner extends EventEmitter {
         this.emit(WorkerRunnerEvents.CONNECTED, {
           client,
           config,
-          declaration,
-        }),
+          declaration
+        })
       )
       .then(() => this.createServices(client, config, declaration))
       .then(() => {
         this.emit(WorkerRunnerEvents.PLATFORM_SERVICES_READY, {
           client,
           config,
-          declaration,
+          declaration
         });
         return true;
       });
@@ -435,19 +415,19 @@ export class WorkerRunner extends EventEmitter {
     return fetch({
       config,
       method: 'GET',
-      pathname: `orga/item/list/${config.appName}`,
+      pathname: `orga/item/list/${config.appName}`
     }).then(({ content }) => content.length > 0);
   }
 
   private cookWithOnlyQueueService(
     client: WorkerClient,
     config: Config,
-    declaration: WorkerDeclaration,
+    declaration: WorkerDeclaration
   ): Promise<boolean> {
     this.emit(WorkerRunnerEvents.UPLOADING, {
       client,
       config,
-      declaration,
+      declaration
     });
 
     console.log('###### I', config);
@@ -457,7 +437,7 @@ export class WorkerRunner extends EventEmitter {
     const app = path.join(root, 'app');
 
     const options = {
-      filter: filter(BLACKLIST),
+      filter: filter(BLACKLIST)
     };
 
     return mkdir(root)
@@ -470,24 +450,19 @@ export class WorkerRunner extends EventEmitter {
               recipe,
               client,
               config,
-              declaration,
+              declaration
             });
-            return this.waitingQueueServiceDeployed(
-              recipe,
-              client,
-              config,
-              declaration,
-            );
+            return this.waitingQueueServiceDeployed(recipe, client, config, declaration);
           })
           .catch((failure) => {
             this.emit(WorkerRunnerEvents.UPLOAD_FAILED, {
               failure,
               client,
               config,
-              declaration,
+              declaration
             });
             return false;
-          }),
+          })
       );
 
     // try {

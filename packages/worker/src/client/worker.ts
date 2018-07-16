@@ -1,11 +1,4 @@
 import { Authentication, Client, uuid } from '@zetapush/client';
-import {
-  Queue as Worker,
-  QueueTask,
-  ConfigureTask,
-  TaskRequest,
-} from '@zetapush/platform';
-import { LogLevel, Logs, Context } from '@zetapush/platform';
 import { Queue, TaskRequest } from '@zetapush/platform';
 
 import { WorkerInstance } from '../utils/worker-instance';
@@ -32,7 +25,7 @@ interface WorkerClientOptions {
 export class Worker extends Queue {
   static get DEPLOYMENT_OPTIONS() {
     return {
-      queue_auth_id: 'developer',
+      queue_auth_id: 'developer'
     };
   }
 }
@@ -58,12 +51,12 @@ export class WorkerClient extends Client {
     developerPassword,
     resource = `node_js_worker_${uuid()}`,
     timeout = 60 * 1000,
-    capacity = 100,
+    capacity = 100
   }: WorkerClientOptions) {
     const authentication = () =>
       Authentication.developer({
         login: developerLogin,
-        password: developerPassword,
+        password: developerPassword
       });
     /**
      * Call Client constructor with specific parameters
@@ -74,7 +67,7 @@ export class WorkerClient extends Client {
       forceHttps,
       authentication,
       resource,
-      transports,
+      transports
     });
     /**
      * @access private
@@ -90,17 +83,14 @@ export class WorkerClient extends Client {
   /**
    * Subscribe a task worker
    */
-  subscribeTaskWorker(
-    worker: any,
-    deploymentId = Worker.DEFAULT_DEPLOYMENT_ID,
-  ) {
+  subscribeTaskWorker(worker: any, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
     const instance = new WorkerInstance({
       timeout: this.timeout,
       worker,
-      bootLayers: worker.bootLayers,
+      bootLayers: worker.bootLayers
     });
     const logs = this.createService<Logs>({
-      Type: Logs,
+      Type: Logs
     });
     const queue = this.createService<Worker>({
       deploymentId,
@@ -117,7 +107,7 @@ export class WorkerClient extends Client {
               ...response,
               taskId,
               contextId: request.contextId,
-              requestId: request.requestId,
+              requestId: request.requestId
             });
           } else {
             // Unable to dispatch task
@@ -128,75 +118,70 @@ export class WorkerClient extends Client {
           queue.done({
             result: res.result,
             taskId: task.data.taskId,
-            success: res.success,
+            success: res.success
           });
-        },
+        }
       },
-      Type: Worker,
+      Type: Worker
     });
     queue.register({
-      capacity: this.capacity,
+      capacity: this.capacity
     });
     return instance;
   }
-  private getRequestContext(
-    request: TaskRequest,
-    logs: Logs,
-    deploymentId: string,
-  ): Context {
+  private getRequestContext(request: TaskRequest, logs: Logs, deploymentId: string): Context {
     const { contextId, data, owner = '', originator } = request;
     const { name } = data;
-    const namespace = () =>
-      data.namespace === DEFAULT_NAMESPACE ? 'default' : data.namespace;
+    const namespace = () => (data.namespace === DEFAULT_NAMESPACE ? 'default' : data.namespace);
     // Base log options
     const options = {
       contextId,
       custom: {},
       owner: originator ? originator.owner : '',
       resource: originator ? originator.resource : '',
-      logger: `${deploymentId}.${namespace()}.${name}`,
+      logger: `${deploymentId}.${namespace()}.${name}`
     };
     const logger = Object.freeze({
       trace(...messages: any[]) {
         logs.log({
           ...options,
           data: { messages },
-          level: LogLevel.TRACE,
+          level: LogLevel.TRACE
         });
       },
       debug(...messages: any[]) {
         logs.log({
           ...options,
           data: { messages },
-          level: LogLevel.DEBUG,
+          level: LogLevel.DEBUG
         });
       },
       info(...messages: any[]) {
         logs.log({
           ...options,
           data: { messages },
-          level: LogLevel.INFO,
+          level: LogLevel.INFO
         });
       },
       warn(...messages: any[]) {
         logs.log({
           ...options,
           data: { messages },
-          level: LogLevel.WARN,
+          level: LogLevel.WARN
         });
       },
       error(...messages: any[]) {
         logs.log({
           ...options,
           data: { messages },
-          level: LogLevel.ERROR,
+          level: LogLevel.ERROR
         });
-      },
+      }
     });
     return Object.freeze({
       contextId,
       owner,
-      logger,
+      logger
     });
   }
 }
