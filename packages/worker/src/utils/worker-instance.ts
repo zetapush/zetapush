@@ -1,6 +1,11 @@
-import { TaskRequest } from '@zetapush/platform';
+import { TaskRequest, onApplicationBootstrap } from '@zetapush/platform';
 
 import { timeoutify } from './async';
+
+interface configureResult {
+  succes: boolean;
+  result: any;
+}
 
 export class WorkerInstance {
   /**
@@ -26,6 +31,29 @@ export class WorkerInstance {
      */
     this.worker = worker;
   }
+
+  async configure() {
+    for (let namespace in this.worker) {
+      if (
+        typeof this.worker[namespace][onApplicationBootstrap] === 'undefined'
+      ) {
+        continue;
+      }
+      try {
+        await this.worker[namespace][onApplicationBootstrap]();
+      } catch (error) {
+        return {
+          success: false,
+          result: error,
+        };
+      }
+    }
+    return {
+      success: true,
+      result: '',
+    };
+  }
+
   async dispatch({ data: { request, taskId } }: TaskRequest) {
     const { data, requestId, owner } = request;
     const { name, namespace, parameters } = data;

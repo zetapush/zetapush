@@ -1,3 +1,5 @@
+export const onApplicationBootstrap = Symbol('onApplicationBootstrap');
+
 export * from './Core/index';
 export * from './Metadata/index';
 export * from './CommonTypes';
