@@ -2,6 +2,11 @@ import { TaskRequest } from '@zetapush/platform';
 
 import { timeoutify } from './async';
 
+/**
+ * Default error code
+ */
+const DEFAULT_ERROR_CODE = 'API_ERROR';
+
 export class WorkerInstance {
   /**
    * Worker instance timeout
@@ -52,10 +57,10 @@ export class WorkerInstance {
         requestId,
         success: true,
       };
-    } catch (error) {
-      console.error('WorkerInstance::error', error);
+    } catch ({ code = DEFAULT_ERROR_CODE, message }) {
+      console.error('WorkerInstance::error', { code, message });
       return {
-        result: error,
+        result: { code, message },
         taskId,
         requestId,
         success: false,
