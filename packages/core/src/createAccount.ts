@@ -1,12 +1,14 @@
-const { fetch } = require('./network');
-const { todo } = require('./log');
+import { fetch } from './utils/network';
+import { todo } from './utils/log';
+
+import { Config } from './common-types';
 
 /**
  * Create a new ZetaPush account and returns a valid ZetaPushConfig file
  * @todo Support mandatory fields
  * @param {Object} config
  */
-const createAccount = (config) =>
+export const createAccount = (config: Config) =>
   fetch({
     anonymous: true,
     config,
@@ -29,12 +31,12 @@ const createAccount = (config) =>
       },
     }),
   })
-    .then((business) => ({
+    .then((business: any) => ({
       ...config,
       appName: business.businessId,
       envName: '',
     }))
-    .catch((failure) => {
+    .catch((failure: any) => {
       try {
         const body = JSON.parse(failure.body);
         if (body.code !== 'EMAIL_EXISTS') {
@@ -47,7 +49,3 @@ const createAccount = (config) =>
         ...config,
       };
     });
-
-module.exports = {
-  createAccount,
-};

@@ -3,7 +3,7 @@
  * @param {Array} from
  * @param {Array} target
  */
-const includes = (from, target) =>
+export const includes = (from: any[], target: any[]) =>
   from.every((value) => target.indexOf(value) >= -1);
 
 /**
@@ -11,9 +11,7 @@ const includes = (from, target) =>
  * @param {Array} from
  * @param {Array} target
  */
-const equals = (from, target) =>
+export const equals = (from: any[], target: any[]) =>
   from.length === target.length &&
   includes(from, target) &&
   includes(target, from);
-
-module.exports = { equals, includes };

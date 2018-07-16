@@ -25,6 +25,8 @@
     "prepublish": "npm run clean && npm run build"
   },
   "devDependencies": {
+    "@types/core-js": "^2.5.0",
+    "@types/request": "^2.47.1",
     "cross-env": "5.2.0",
     "rimraf": "2.6.2",
     "rollup": "0.62.0",
@@ -36,6 +38,12 @@
     "rollup-watch": "4.3.1",
     "typescript": "2.9.2",
     "uglify-es": "3.3.9"
+  },
+  "dependencies": {
+    "core-js": "^2.5.7",
+    "chalk": "2.4.1",
+    "reflect-metadata": "0.1.12",
+    "request": "2.87.0"
   },
   "publishConfig": {
     "access": "public"

@@ -1,0 +1,42 @@
+DEBUG   2018-07-13T16:26:55.378Z - GIVEN              | >> Apply Given 
+INFO    2018-07-13T16:26:55.384Z - COMMAND            | npmInstallLatestVersion(testing-projects/empty-app) 
+INFO    2018-07-13T16:26:55.383Z - GIVEN              | >>> Given testing application: testing-projects/empty-app 
+SILLY   2018-07-13T16:26:55.384Z - GIVEN              | GivenTestingApp:execute -> npmInstallLatestVersion(testing-projects/empty-app) 
+SILLY   2018-07-13T16:26:55.750Z - COMMAND            | npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save] 
+SILLY   2018-07-13T16:27:00.522Z - PROCESS STDOUT/STD | 
+
+> get-cursor-position@1.0.5 install /mnt/data/developpement/zetapush-celtia/zetapush-js-sdk/packages/integration/testing-projects/empty-app/node_modules/get-cursor-position
+> node-gyp rebuild
+
+make : on entre dans le répertoire « /mnt/data/developpement/zetapush-celtia/zetapush-js-sdk/packages/integration/testing-projects/empty-app/node_modules/get-cursor-position/build »
+  CXX(target) Release/obj.target/pos/src/pos.o
+  SOLINK_MODULE(target) Release/obj.target/pos.node
+  COPY Release/pos.node
+make : on quitte le répertoire « /mnt/data/developpement/zetapush-celtia/zetapush-js-sdk/packages/integration/testing-projects/empty-app/node_modules/get-cursor-position/build »
+
+> bufferutil@3.0.5 install /mnt/data/developpement/zetapush-celtia/zetapush-js-sdk/packages/integration/testing-projects/empty-app/node_modules/bufferutil
+> prebuild-install || node-gyp rebuild
+
+
+> utf-8-validate@4.0.2 install /mnt/data/developpement/zetapush-celtia/zetapush-js-sdk/packages/integration/testing-projects/empty-app/node_modules/utf-8-validate
+> prebuild-install || node-gyp rebuild
+
++ @zetapush/cli@0.30.0-alpha.743bc6df
+added 209 packages in 4.356s 
+SILLY   2018-07-13T16:27:00.521Z - COMMAND            | npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save] ->  
+SILLY   2018-07-13T16:27:00.524Z - COMMAND            | npmInstallLatestVersion() -> [npm install @zetapush/platform@canary --save] 
+SILLY   2018-07-13T16:27:02.397Z - COMMAND            | npmInstallLatestVersion() -> [npm install @zetapush/platform@canary --save] ->  
+SILLY   2018-07-13T16:27:02.399Z - COMMAND            | symlinkLocalDependencies(testing-projects/empty-app) 
+WARN    2018-07-13T16:27:00.523Z - PROCESS STDOUT/STD | 
+../src/pos.cc: In function ‘void Method(const v8::FunctionCallbackInfo<v8::Value>&)’:
+../src/pos.cc:243:6: warning: variable ‘ret’ set but not used [-Wunused-but-set-variable]
+  int ret, row, col;
+      ^ 
+SILLY   2018-07-13T16:27:02.398Z - PROCESS STDOUT/STD | 
++ @zetapush/platform@0.30.0-alpha.743bc6df
+updated 1 package in 1.498s 
+WARN    2018-07-13T16:27:02.398Z - PROCESS STDOUT/STD | 
+ 
+SILLY   2018-07-13T16:27:02.700Z - GIVEN              | GivenTestingApp:execute -> setAccountToZetarc(testing-projects/empty-app, {"developerLogin":"accountnotvalidated@zetapush.com","developerPassword":"password"}) 
+DEBUG   2018-07-13T16:27:02.703Z - COMMAND            | readZetarc(testing-projects/empty-app) 
+DEBUG   2018-07-13T16:27:02.704Z - COMMAND            | readZetarc(testing-projects/empty-app) ->  {"content":"{\"platformUrl\":\"https://celtia.zetapush.com/zbo/pub/business\",\"developerLogin\":\"accountnotvalidated@zetapush.com\",\"developerPassword\":\"password\"}"}

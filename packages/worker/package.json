@@ -25,10 +25,14 @@
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
+    "@zetapush/core": "^0.31.4",
+    "@zetapush/cometd": "^0.31.4",
     "@zetapush/client": "^0.31.4",
-    "@zetapush/platform": "^0.31.4"
+    "@zetapush/platform": "^0.31.4",
+    "request": "2.87.0"
   },
   "devDependencies": {
+    "@types/request": "^2.47.1",
     "cross-env": "5.2.0",
     "rimraf": "2.6.2",
     "rollup": "0.62.0",
@@ -39,7 +43,8 @@
     "rollup-plugin-uglify": "4.0.0",
     "rollup-watch": "4.3.1",
     "typescript": "2.9.2",
-    "uglify-es": "3.3.9"
+    "uglify-es": "3.3.9",
+    "zip-dir": "1.0.2"
   },
   "publishConfig": {
     "access": "public"

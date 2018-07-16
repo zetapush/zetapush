@@ -1,11 +1,10 @@
 const path = require('path');
 const os = require('os');
 
-const compress = require('../utils/compress');
-const { log, error } = require('../utils/log');
-const { getProgression } = require('../utils/progression');
+const { compress, upload, filter, BLACKLIST } = require('@zetapush/worker');
+const { log, error, mkdir } = require('@zetapush/core');
 const { generateProvisioningFile } = require('../utils/provisioning');
-const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
+const { getProgression } = require('../utils/progression');
 const troubleshooting = require('../errors/troubleshooting');
 
 /**

@@ -1,14 +1,16 @@
-const { log, trace } = require('./log');
-const fs = require('fs');
+import { log, trace, Config } from '@zetapush/core';
+import * as fs from 'fs';
+import { PathLike, Stats } from 'fs';
 const request = require('request');
-const { URL } = require('url');
+import { Response } from 'request';
+import { URL } from 'url';
 
 /**
  * Upload user code archive on ZetaPush platform
  * @param {String} archived
  * @param {Object} config
  */
-const upload = (archived, config) =>
+export const upload = (archived: PathLike, config: Config) =>
   new Promise((resolve, reject) => {
     log(`Uploading`, archived);
 
@@ -38,7 +40,7 @@ const upload = (archived, config) =>
       platformUrl,
       appName,
     );
-    request(options, (failure, response, body) => {
+    request(options, (failure: any, response: Response, body: any) => {
       if (failure) {
         trace('Upload failed:', failure);
         return reject({ failure, request: options, config });
@@ -66,25 +68,17 @@ const upload = (archived, config) =>
     });
   });
 
-const BLACKLIST = ['node_modules', '.DS_Store', '.git'];
+export const BLACKLIST = ['node_modules', '.DS_Store', '.git'];
+
 /**
  * Get a blacklist based filter function
  * @param {String[]} blacklist
  */
-const filter = (blacklist) => (filepath, stat) =>
+export const filter = (blacklist: string[]) => (
+  filepath: string,
+  stat: Stats,
+) =>
   blacklist.reduce(
     (filtered, check) => filtered && !filepath.includes(check),
     true,
   );
-
-const mkdir = (root) =>
-  new Promise((resolve, reject) => {
-    fs.mkdir(root, (failure) => {
-      if (failure) {
-        return reject(failure);
-      }
-      resolve(root);
-    });
-  });
-
-module.exports = { upload, filter, BLACKLIST, mkdir };

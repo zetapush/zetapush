@@ -1,6 +1,5 @@
 const { ErrorAnalyzer } = require('./troubleshooting');
-const { trace } = require('../utils/log');
-const { fetch } = require('../utils/network');
+const { trace, fetch } = require('@zetapush/core');
 
 class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
   hasDeveloperLogin(err) {

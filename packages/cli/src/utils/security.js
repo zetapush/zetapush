@@ -2,7 +2,7 @@
 const chalk = require('chalk');
 const prompt = require('prompt-sync')();
 const process = require('process');
-const { log, error, warn } = require('./log');
+const { error } = require('@zetapush/core');
 
 const getDeveloperLogin = () => {
   try {
@@ -10,7 +10,7 @@ const getDeveloperLogin = () => {
       ask: chalk`[{green.bold SECURITY}] {bold Developer login ?}:`,
     });
   } catch (e) {
-    if (!process.stdout.isTTY) {
+    if (!process.stdout.isTTY || !process.stdin.setRawMode) {
       error(
         "Process is not run in a terminal (no TTY available). Can't prompt for developer login",
         e,
@@ -28,7 +28,7 @@ const getDeveloperPassword = () => {
       echo: '*',
     });
   } catch (e) {
-    if (!process.stdout.isTTY) {
+    if (!process.stdout.isTTY || !process.stdin.setRawMode) {
       error(
         "Process is not run in a terminal (no TTY available). Can't prompt for developer password",
         e,

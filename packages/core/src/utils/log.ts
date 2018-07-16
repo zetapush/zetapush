@@ -1,23 +1,20 @@
-const chalk = require('chalk');
-const fs = require('fs');
-const path = require('path');
-const process = require('process');
-const os = require('os');
-const files = require('./files');
+import chalk from 'chalk';
+import fs from 'fs';
+import { getZetaFilePath } from './files';
 
-const setVerbosity = (verbosity) => {
-  global.loggerVerbosity = verbosity;
+export const setVerbosity = (verbosity: number) => {
+  (<any>global).loggerVerbosity = verbosity;
 };
 
-const debugObject = (what, ...objects) => {
-  if (global.loggerVerbosity < 4) return;
+export const debugObject = (what: string, ...objects: any[]) => {
+  if ((<any>global).loggerVerbosity < 4) return;
   for (let obj of objects) {
     for (let name in obj) {
+      let file = getZetaFilePath(
+        'zeta-debug',
+        `${Date.now()}-${what}-${name}.json`,
+      );
       try {
-        let file = files.getZetaFilePath(
-          'zeta-debug',
-          `${Date.now()}-${what}-${name}.json`,
-        );
         fs.writeFileSync(file, JSON.stringify(obj[name], null, 2));
         console.debug(chalk`{gray [TRACE] ${what}-${name} written in ${file}}`);
       } catch (e) {
@@ -31,8 +28,8 @@ const debugObject = (what, ...objects) => {
   }
 };
 
-const trace = (message, ...messages) => {
-  if (global.loggerVerbosity < 3) return;
+export const trace = (message: any, ...messages: any[]) => {
+  if ((<any>global).loggerVerbosity < 3) return;
   console.debug(
     chalk`{gray [TRACE] ${message}}`,
     messages.length > 0 ? messages : '',
@@ -40,8 +37,8 @@ const trace = (message, ...messages) => {
   );
 };
 
-const log = (message, ...messages) => {
-  if (global.loggerVerbosity < 2) return;
+export const log = (message: any, ...messages: any[]) => {
+  if ((<any>global).loggerVerbosity < 2) return;
   console.log(
     chalk`[{cyan.bold LOG}] ${message}`,
     messages.length > 0 ? messages : '',
@@ -49,8 +46,8 @@ const log = (message, ...messages) => {
   );
 };
 
-const info = (message, ...messages) => {
-  if (global.loggerVerbosity < 1) return;
+export const info = (message: any, ...messages: any[]) => {
+  if ((<any>global).loggerVerbosity < 1) return;
   console.info(
     chalk`[{cyan.bold INFO}] {bold ${message}}`,
     messages.length > 0 ? messages : '',
@@ -58,7 +55,7 @@ const info = (message, ...messages) => {
   );
 };
 
-const help = (message, ...messages) => {
+export const help = (message: any, ...messages: any[]) => {
   console.info(
     chalk`{blue.bold (?)} ${message}`,
     messages.length > 0 ? messages : '',
@@ -66,45 +63,45 @@ const help = (message, ...messages) => {
   );
 };
 
-const error = (message, ...messages) =>
+export const error = (message: any, ...messages: any[]) =>
   console.error(
     chalk`[{red.bold ERROR}] {bold ${message}}`,
     messages.length > 0 ? messages : '',
     '\u200C',
   );
 
-const todo = (message, ...messages) =>
+export const todo = (message: any, ...messages: any[]) =>
   console.warn(
     chalk`[{keyword('orange').bold TODO}] {bold ${message}}`,
     messages.length > 0 ? messages : '',
     '\u200C',
   );
 
-const experimental = (message, ...messages) =>
+export const experimental = (message: any, ...messages: any[]) =>
   console.warn(
     chalk`[{keyword('magenta').bold EXPERIMENTAL}] {bold ${message}}`,
     messages.length > 0 ? messages : '',
     '\u200C',
   );
 
-const warn = (message, ...messages) =>
+export const warn = (message: any, ...messages: any[]) =>
   console.warn(
     chalk`[{yellow.bold WARN}] {bold ${message}}`,
     messages.length > 0 ? messages : '',
     '\u200C',
   );
 
-setVerbosity(1);
-
-module.exports = {
+export const logger = {
   trace,
   log,
   info,
+  warn,
   error,
   todo,
-  warn,
-  help,
   experimental,
-  setVerbosity,
+  help,
   debugObject,
+  setVerbosity,
 };
+
+setVerbosity(1);

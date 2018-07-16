@@ -1,11 +1,25 @@
-const { URL } = require('url');
-const request = require('request');
+import { URL } from 'url';
+import request, { Response } from 'request';
 
-const { log, debugObject } = require('./log');
+import { log, debugObject } from './log';
 
-const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
+import { Config } from '../common-types';
+
+export const fetch = ({
+  anonymous = false,
+  body,
+  config,
+  method = 'GET',
+  pathname,
+}: {
+  anonymous?: boolean;
+  body?: any;
+  config: Config;
+  pathname: string;
+  method?: string;
+}): Promise<any> =>
   new Promise((resolve, reject) => {
-    const headers = {
+    const headers: any = {
       'Content-Type': 'application/json;charset=UTF-8',
     };
     if (!anonymous) {
@@ -25,7 +39,7 @@ const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
       url,
     };
     log(method, url, body);
-    request(options, (failure, response, body) => {
+    request(options, (failure: any, response: Response, body: any) => {
       debugObject(
         'fetch',
         { request: options },
@@ -62,5 +76,3 @@ const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
       }
     });
   });
-
-module.exports = { fetch };
