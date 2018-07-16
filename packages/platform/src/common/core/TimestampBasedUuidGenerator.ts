@@ -1,4 +1,5 @@
-import { UuidGenerator, Uuid } from '../api';
+import { UuidGenerator, Uuid, IllegalArgumentError } from '../api';
+import { Injectable } from 'injection-js';
 
 /**
  * Generate a unique identifier based on two factors:
@@ -10,14 +11,26 @@ import { UuidGenerator, Uuid } from '../api';
  *
  * The '0.' characters are removed.
  */
-export class TimestampBasedUuidGenerator implements UuidGenerator {
+@Injectable()
+export class TimestampBasedUuidGenerator extends UuidGenerator {
+  constructor(private length: number = 20) {
+    super();
+    if (length <= 0) {
+      throw new IllegalArgumentError('Uuid size must contain at least one character', 'length');
+    }
+  }
+
   async generate(): Promise<Uuid> {
     const ts = new Date().valueOf();
+    let asStr = '' + ts;
     let rand;
     do {
       rand = Math.random();
-    } while (rand === 1 || rand === 0);
-    const asStr = '' + ts + ('' + rand).substr(2);
-    return { value: asStr };
+      const randStr = '' + rand;
+      if (randStr.startsWith('0.')) {
+        asStr += randStr.substr(2);
+      }
+    } while (asStr.length < this.length);
+    return { value: asStr.substr(0, this.length) };
   }
 }

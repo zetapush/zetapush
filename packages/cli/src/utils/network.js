@@ -1,18 +1,18 @@
 const { URL } = require('url');
 const request = require('request');
 
-const { log, error } = require('./log');
+const { log, debugObject } = require('./log');
 
 const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
   new Promise((resolve, reject) => {
     const headers = {
-      'Content-Type': 'application/json;charset=UTF-8',
+      'Content-Type': 'application/json;charset=UTF-8'
     };
     if (!anonymous) {
       const { developerLogin, developerPassword } = config;
       headers['X-Authorization'] = JSON.stringify({
         username: developerLogin,
-        password: developerPassword,
+        password: developerPassword
       });
     }
     const { platformUrl } = config;
@@ -22,10 +22,11 @@ const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
       body,
       headers,
       method,
-      url,
+      url
     };
     log(method, url, body);
     request(options, (failure, response, body) => {
+      debugObject('fetch', { request: options }, { failure }, { response }, { body });
       if (failure) {
         log(method, url, failure);
         return reject({ failure, request: options });
@@ -37,7 +38,7 @@ const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
           statusCode: response.statusCode,
           body,
           request: options,
-          config,
+          config
         });
       }
       try {
@@ -50,7 +51,7 @@ const fetch = ({ anonymous = false, body, config, method = 'GET', pathname }) =>
           statusCode: response.statusCode,
           body,
           request: options,
-          config,
+          config
         });
       }
     });

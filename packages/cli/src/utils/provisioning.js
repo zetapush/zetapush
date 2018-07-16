@@ -5,49 +5,55 @@ const { Queue, Weak } = require('@zetapush/platform');
 const { log, error } = require('./log');
 const { analyze } = require('./di');
 
+class Worker extends Queue {
+  static get DEPLOYMENT_OPTIONS() {
+    return {
+      queue_auth_id: 'developer'
+    };
+  }
+}
+
+/**
+ * Get deployment service list from injected service to provisioning items
+ * @param {WorkerDeclaration} declaration
+ * @return {Function[]}
+ */
+const getDeploymentServiceList = (declaration) => {
+  // Ignore specific platform services
+  const ignored = [Queue].map((Service) => Service.DEPLOYMENT_TYPE);
+  const { platform } = analyze(declaration);
+  return Array.from(new Set(platform.filter((Service) => ignored.indexOf(Service.DEPLOYMENT_TYPE) === -1)));
+};
+
 /**
  * Get deployment id list from injected service to provisioning items
  * @param {WorkerDeclaration} declaration
- * @return {String[]}
+ * @return {string[]}
  */
-const getDeploymentIdList = (declaration) => {
-  const { platform } = analyze(declaration);
-  return Array.from(
-    new Set(platform.map((Service) => Service.DEPLOYMENT_TYPE)),
-  );
-};
+const getDeploymentIdList = (declaration) =>
+  getDeploymentServiceList(declaration).map((Service) => Service.DEPLOYMENT_TYPE);
 
 /**
  * Get bootstrap provisioning items
  * @param {ZetaPushConfig} config
  */
 const getBootstrapProvision = (config) => {
-  const types = [
-    {
-      type: Queue.DEPLOYMENT_TYPE,
-      options: {
-        queue_auth_id: 'developer',
-      },
-    },
-    {
-      type: Weak.DEPLOYMENT_TYPE,
-    },
-  ];
+  const services = [Worker, Weak];
   return {
     businessId: config.appName,
-    items: types.map(({ type, options = {} }) => ({
-      name: type,
+    items: services.map((Service) => ({
+      name: Service.DEPLOYMENT_TYPE,
       item: {
-        itemId: type,
+        itemId: Service.DEPLOYMENT_TYPE,
         businessId: config.appName,
-        deploymentId: `${type}_0`,
-        description: `${type}(${type}:${type}_0)`,
-        options,
+        deploymentId: `${Service.DEPLOYMENT_TYPE}_0`,
+        description: `${Service.DEPLOYMENT_TYPE}`,
+        options: Service.DEPLOYMENT_OPTIONS || {},
         forbiddenVerbs: [],
-        enabled: true,
-      },
+        enabled: true
+      }
     })),
-    calls: [],
+    calls: []
   };
 };
 
@@ -57,23 +63,23 @@ const getBootstrapProvision = (config) => {
  * @param {WorkerDeclaration} declaration
  */
 const getRuntimeProvision = (config, declaration) => {
-  const list = getDeploymentIdList(declaration);
-  log(`Provisioning`, ...list);
+  const services = getDeploymentServiceList(declaration);
+  log(`Provisioning`, ...services);
   return {
     businessId: config.appName,
-    items: list.map((type) => ({
-      name: type,
+    items: services.map((Service) => ({
+      name: Service.DEPLOYMENT_TYPE,
       item: {
-        itemId: type,
+        itemId: Service.DEPLOYMENT_TYPE,
         businessId: config.appName,
-        deploymentId: `${type}_0`,
-        description: `${type}(${type}:${type}_0)`,
-        options: {},
+        deploymentId: `${Service.DEPLOYMENT_TYPE}_0`,
+        description: `${Service.DEPLOYMENT_TYPE}`,
+        options: Service.DEPLOYMENT_OPTIONS || {},
         forbiddenVerbs: [],
-        enabled: true,
-      },
+        enabled: true
+      }
     })),
-    calls: [],
+    calls: []
   };
 };
 
@@ -99,5 +105,5 @@ module.exports = {
   generateProvisioningFile,
   getBootstrapProvision,
   getDeploymentIdList,
-  getRuntimeProvision,
+  getRuntimeProvision
 };

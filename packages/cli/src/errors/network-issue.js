@@ -3,7 +3,7 @@ const dns = require('dns');
 const os = require('os');
 const process = require('process');
 const gateway = require('default-gateway');
-const { trace, log, error, info, help } = require('../utils/log');
+const { trace } = require('../utils/log');
 const execa = require('execa');
 
 class NetworkIssueAnalyzer extends ErrorAnalyzer {
@@ -86,18 +86,13 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
 
   isBehindProxy(err) {
     const code = err.failure && err.failure.code;
-    return (
-      code == 'ENETUNREACH' ||
-      (code == 'ECONNREFUSED' && !err.request.url.includes(err.failure.address))
-    ); // if address different from URL, request goes through a proxy (TODO: is always working?)
+    return code == 'ENETUNREACH' || (code == 'ECONNREFUSED' && !err.request.url.includes(err.failure.address)); // if address different from URL, request goes through a proxy (TODO: is always working?)
   }
 
   hasActiveExternalNetworkInterface() {
     const interfaces = os.networkInterfaces();
     for (let networkInterface in interfaces) {
-      let externalInterfaces = interfaces[networkInterface].filter(
-        (n) => !n.internal,
-      );
+      let externalInterfaces = interfaces[networkInterface].filter((n) => !n.internal);
       if (externalInterfaces.length > 0) {
         trace('at least one external interface');
         return true;
@@ -114,12 +109,7 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
   getConfiguredProxy() {
     // TODO: handle windows
     // TODO: handle pac
-    return (
-      process.env.HTTP_PROXY ||
-      process.env.http_proxy ||
-      process.env.HTTPS_PROXY ||
-      process.env.https_proxy
-    );
+    return process.env.HTTP_PROXY || process.env.http_proxy || process.env.HTTPS_PROXY || process.env.https_proxy;
   }
 
   getConfiguredNpmProxy() {
@@ -140,10 +130,7 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
     }
     try {
       trace('this is a network error');
-      if (
-        !this.hasActiveExternalNetworkInterface() ||
-        !(await this.canReachLocalNetwork(err))
-      ) {
+      if (!this.hasActiveExternalNetworkInterface() || !(await this.canReachLocalNetwork(err))) {
         trace('local network not available');
         if (this.isProxyConfigured()) {
           trace('a proxy is configured but unreachable');
@@ -152,10 +139,7 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
         trace('no proxy');
         return { code: 'NET-01' };
       }
-      if (
-        !(await this.canAccessDnsServer()) ||
-        !(await this.canReachGoogle())
-      ) {
+      if (!(await this.canAccessDnsServer()) || !(await this.canReachGoogle())) {
         trace('local network available but not internet');
         if (!this.isBehindProxy(err) && !this.isProxyConfigured()) {
           trace('not behind proxy');

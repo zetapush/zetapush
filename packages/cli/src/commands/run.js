@@ -14,11 +14,7 @@ const { createServer } = require('../utils/http-server');
 const { log, error, warn, info } = require('../utils/log');
 const { fetch } = require('../utils/network');
 const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
-const {
-  generateProvisioningFile,
-  getDeploymentIdList,
-  getRuntimeProvision,
-} = require('../utils/provisioning');
+const { generateProvisioningFile, getDeploymentIdList, getRuntimeProvision } = require('../utils/provisioning');
 const { checkQueueServiceDeployed } = require('../utils/progression');
 
 /**
@@ -29,7 +25,7 @@ const { checkQueueServiceDeployed } = require('../utils/progression');
  */
 const start = (client, config, declaration) =>
   Promise.resolve(instanciate(client, declaration)).then((declaration) =>
-    client.subscribeTaskWorker(declaration, config.workerServiceId),
+    client.subscribeTaskWorker(declaration, config.workerServiceId)
   );
 
 /**
@@ -41,7 +37,7 @@ const start = (client, config, declaration) =>
 const run = (command, config, declaration) => {
   const client = new WorkerClient({
     ...config,
-    transports,
+    transports
   });
 
   const onTerminalSignal = () => {
@@ -68,7 +64,7 @@ const run = (command, config, declaration) => {
         (deployed) =>
           !deployed
             ? cookWithOnlyQueueService(client, config, declaration)
-            : connectClientAndCreateServices(client, config, declaration),
+            : connectClientAndCreateServices(client, config, declaration)
       );
 
   // Progress
@@ -138,13 +134,13 @@ const waitingQueueServiceDeployed = (recipe, client, config, declaration) => {
 
 const createServices = (client, config, declaration) => {
   const api = client.createAsyncService({
-    Type: Queue,
+    Type: Queue
   });
 
   const { items } = getRuntimeProvision(config, declaration);
   const services = items.map(({ item }) => item);
 
-  info(`Create services`);
+  info(`Create services`, services);
 
   return api.createServices({ services });
 };
@@ -160,7 +156,7 @@ const checkServicesAlreadyDeployed = (config) =>
   fetch({
     config,
     method: 'GET',
-    pathname: `orga/item/list/${config.appName}`,
+    pathname: `orga/item/list/${config.appName}`
   }).then(({ content }) => content.length > 0);
 
 const cookWithOnlyQueueService = (client, config, declaration) => {
@@ -170,7 +166,7 @@ const cookWithOnlyQueueService = (client, config, declaration) => {
   const app = path.join(root, 'app');
 
   const options = {
-    filter: filter(BLACKLIST),
+    filter: filter(BLACKLIST)
   };
 
   return mkdir(root)
@@ -178,10 +174,8 @@ const cookWithOnlyQueueService = (client, config, declaration) => {
     .then(() => compress(root, { ...options, ...{ saveTo: rootArchive } }))
     .then(() =>
       upload(rootArchive, config)
-        .then((recipe) =>
-          waitingQueueServiceDeployed(recipe, client, config, declaration),
-        )
-        .catch((failure) => error('Upload failed', failure)),
+        .then((recipe) => waitingQueueServiceDeployed(recipe, client, config, declaration))
+        .catch((failure) => error('Upload failed', failure))
     );
 };
 

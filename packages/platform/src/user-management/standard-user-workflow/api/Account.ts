@@ -40,7 +40,7 @@ export interface AccountCreationManager {
    * @returns information about the created account or null if account couldn't be handled
    * @throws {AccountCreationError} when creation couldn't be created
    */
-  signup(accountCreationDetails: AccountCreationDetails): Promise<Account>;
+  createAccount(accountCreationDetails: AccountCreationDetails): Promise<Account>;
 }
 
 export class AccountCreationError extends Error {
@@ -68,9 +68,7 @@ export interface AccountDetailsProvider {
 }
 
 export interface AccountConfirmationManager {
-  askConfirmation(
-    accountToConfirm: Account,
-  ): Promise<PendingAccountConfirmation>;
+  askConfirmation(accountToConfirm: Account): Promise<PendingAccountConfirmation>;
   confirm(token: Token): Promise<ConfirmedAccount>;
 }
 
@@ -98,15 +96,28 @@ export interface Account {
   userProfile: UserProfile;
 }
 
+/**
+ * Interface used to provide a status for the user account.
+ *
+ * The status is used to know if the account is currently
+ * active (the user is able to login to the application) or
+ * not. Other statuses are used to indicate the reason why
+ * the user is not allowed to login (the account may not
+ * have been confirmed yet or the account has been disabled).
+ *
+ */
 export interface AccountStatusProvider {
+  /**
+   * Provide a status for the user account. The account status
+   * is used to manage the validity of the account.
+   *
+   * If you don't need account validity management, you can
+   * return null.
+   */
   getStatus(): Promise<AccountStatus>;
 }
 
-export enum AccountStatus {
-  active = 'ACTIVE',
-  waitingConfirmation = 'WAITING_FOR_CONFIRMATION',
-  disabled = 'DISABLED',
-}
+export type AccountStatus = string;
 
 export interface UserProfile {}
 

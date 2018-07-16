@@ -1,9 +1,5 @@
-const {
-  IllegalArgumentError,
-} = require('../../../../lib/common/api/exception');
-const {
-  Base36RandomTokenGenerator,
-} = require('../../../../lib/common/core/Base36RandomTokenGenerator');
+const { IllegalArgumentError } = require('../../../../lib/common/api/exception');
+const { Base36RandomTokenGenerator } = require('../../../../lib/common/core/Base36RandomTokenGenerator');
 
 describe(`Base36RandomTokenGenerator`, () => {
   it(`configured with
@@ -31,9 +27,6 @@ describe(`Base36RandomTokenGenerator`, () => {
     expect(() => {
       const generator = new Base36RandomTokenGenerator(0);
       generator.generate();
-    }).toThrowError(
-      IllegalArgumentError,
-      'Token size must contain at least one character',
-    );
+    }).toThrowError(IllegalArgumentError, 'Token size must contain at least one character');
   });
 });

@@ -1,5 +1,5 @@
 const { ErrorAnalyzer } = require('./troubleshooting');
-const { log, error, warn, info, trace } = require('../utils/log');
+const { log, trace } = require('../utils/log');
 
 class CustomCloudServiceStartErrorAnalyzer extends ErrorAnalyzer {
   hasWorkerStartNpmErr(progress) {
@@ -14,11 +14,7 @@ class CustomCloudServiceStartErrorAnalyzer extends ErrorAnalyzer {
   getWorkerStartLogs(progress) {
     return progress.logs
       .filter((l) => l.category == 'WORKER_START')
-      .map(
-        (l) =>
-          `${formatDate(l.timestamp)} [${l.level.name}] ${log.category
-            .context || ''} ${log.message}`,
-      )
+      .map((l) => `${formatDate(l.timestamp)} [${l.level.name}] ${log.category.context || ''} ${log.message}`)
       .join('\n');
   }
 

@@ -8,7 +8,7 @@ const http = require('http');
 const handler = require('serve-handler');
 const findFreePort = util.promisify(require('find-free-port'));
 // Other
-const { experimental } = require('../utils/log');
+const { info } = require('../utils/log');
 
 /**
  * Create and run http server
@@ -16,16 +16,14 @@ const { experimental } = require('../utils/log');
  * @param {Object} config
  */
 const createServer = (command, config) => {
-  const injected = ` data-zp-sandboxid="${
-    config.appName
-  }" data-zp-platform-url="${config.platformUrl}"`;
-  experimental('Create HTTP Server');
+  const injected = ` data-zp-sandboxid="${config.appName}" data-zp-platform-url="${config.platformUrl}"`;
+  info('Create HTTP Server');
   const server = http.createServer((request, response) => {
     return handler(
       request,
       response,
       {
-        public: command.front,
+        public: command.front
       },
       {
         stat: (filepath) =>
@@ -33,9 +31,9 @@ const createServer = (command, config) => {
             (stats) =>
               filepath.endsWith('.html')
                 ? Object.assign(stats, {
-                    size: stats.size + injected.length,
+                    size: stats.size + injected.length
                   })
-                : stats,
+                : stats
           ),
         createReadStream(filepath) {
           const stream = fs.createReadStream(filepath);
@@ -46,17 +44,16 @@ const createServer = (command, config) => {
               if (filepath.endsWith('.html') && HTML_PATTERN.test(content)) {
                 content = content.replace(
                   HTML_PATTERN,
-                  (markup, attributes, position, html) =>
-                    `<html${attributes}${injected}>`,
+                  (markup, attributes, position, html) => `<html${attributes}${injected}>`
                 );
               }
               this.push(content);
               callback();
-            },
+            }
           });
           return stream.pipe(template);
-        },
-      },
+        }
+      }
     );
   });
   return findFreePort(3000).then(
@@ -64,13 +61,13 @@ const createServer = (command, config) => {
       new Promise((resolve, reject) => {
         try {
           server.listen(port, () => {
-            experimental(`Running at http://localhost:${port}`);
+            info(`Running at http://localhost:${port}`);
             resolve();
           });
         } catch (failure) {
           reject(failure);
         }
-      }),
+      })
   );
 };
 

@@ -2,7 +2,6 @@ const path = require('path');
 const os = require('os');
 
 const compress = require('../utils/compress');
-const DEFAULTS = require('../utils/defaults');
 const { log, error } = require('../utils/log');
 const { getProgression } = require('../utils/progression');
 const { generateProvisioningFile } = require('../utils/provisioning');
@@ -24,16 +23,12 @@ const archive = (command, config, declaration) => {
   const frontArchive = path.join(root, `front.zip`);
 
   const options = {
-    filter: filter(BLACKLIST),
+    filter: filter(BLACKLIST)
   };
 
   return mkdir(root)
-    .then(() =>
-      compress(command.front, { ...options, ...{ saveTo: frontArchive } }),
-    )
-    .then(() =>
-      compress(command.worker, { ...options, ...{ saveTo: workerArchive } }),
-    )
+    .then(() => compress(command.front, { ...options, ...{ saveTo: frontArchive } }))
+    .then(() => compress(command.worker, { ...options, ...{ saveTo: workerArchive } }))
     .then(() => generateProvisioningFile(app, config))
     .then(() => compress(root, { ...options, ...{ saveTo: rootArchive } }))
     .then(() => rootArchive);

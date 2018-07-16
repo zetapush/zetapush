@@ -1,7 +1,8 @@
-import babel from 'rollup-plugin-babel';
+import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
-import resolve from 'rollup-plugin-node-resolve';
+import ts from 'rollup-plugin-typescript';
+import typescript from 'typescript'
 import { uglify } from 'rollup-plugin-uglify';
 import { minify as minifier } from 'uglify-es';
 
@@ -15,8 +16,8 @@ const config = {
     commonjs({
       include: ['node_modules/**', '../cometd/**', '../core/**', '../platform/**']
     }),
-    babel({
-      exclude: 'node_modules/**',
+    ts({
+      typescript
     }),
     json(),
   ],

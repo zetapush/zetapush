@@ -3,15 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.28.0](https://github.com/zetapush/zetapush/compare/v0.27.14...v0.28.0) (2018-06-29)
-
-
-### Features
-
-* **worker:** increase worker timeout to 60000ms ([b4399b8](https://github.com/zetapush/zetapush/commit/b4399b8))
+# [0.29.0](https://github.com/zetapush/zetapush/compare/v0.28.0...v0.29.0) (2018-07-10)
 
 
 
+
+**Note:** Version bump only for package @zetapush/worker
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

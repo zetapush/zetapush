@@ -1,7 +1,6 @@
 const { ErrorAnalyzer } = require('./troubleshooting');
-const { trace, log, error, info, help } = require('../utils/log');
+const { trace } = require('../utils/log');
 const { fetch } = require('../utils/network');
-const request = require('request');
 
 class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
   hasDeveloperLogin(err) {
@@ -18,14 +17,14 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
 
   async isDeveloperAccountExists(config) {
     try {
-      const account = await fetch({
+      await fetch({
         config,
         method: 'POST',
         pathname: '/auth/login',
         body: JSON.stringify({
           username: config.developerLogin,
-          password: config.developerPassword,
-        }),
+          password: config.developerPassword
+        })
       });
       return true;
     } catch (e) {
@@ -38,11 +37,9 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
     try {
       const { content } = await fetch({
         config,
-        pathname: '/orga/business/list',
+        pathname: '/orga/business/list'
       });
-      return (
-        content.filter((app) => app.businessId == config.appName).length > 0
-      );
+      return content.filter((app) => app.businessId == config.appName).length > 0;
     } catch (e) {
       trace('get apps for orga failed', e);
       return false;
