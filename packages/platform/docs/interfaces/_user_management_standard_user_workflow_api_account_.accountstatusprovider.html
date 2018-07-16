@@ -69,6 +69,18 @@
 <div class="container container-main">
 	<div class="row">
 		<div class="col-8 col-content">
+			<section class="tsd-panel tsd-comment">
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>Interface used to provide a status for the user account.</p>
+					</div>
+					<p>The status is used to know if the account is currently
+						active (the user is able to login to the application) or
+						not. Other statuses are used to indicate the reason why
+						the user is not allowed to login (the account may not
+					have been confirmed yet or the account has been disabled).</p>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-hierarchy">
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
@@ -96,16 +108,24 @@
 					<a name="getstatus" class="tsd-anchor"></a>
 					<h3>get<wbr>Status</h3>
 					<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-interface tsd-is-external">
-						<li class="tsd-signature tsd-kind-icon">get<wbr>Status<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/_user_management_standard_user_workflow_api_account_.accountstatus.html" class="tsd-signature-type">AccountStatus</a><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">get<wbr>Status<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_user_management_standard_user_workflow_api_account_.html#accountstatus" class="tsd-signature-type">AccountStatus</a><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/zetapush/zetapush/blob/8887819/packages/platform/src/user-management/standard-user-workflow/api/Account.ts#L102">user-management/standard-user-workflow/api/Account.ts:102</a></li>
+									<li>Defined in <a href="https://github.com/zetapush/zetapush/blob/e88fb71/packages/platform/src/user-management/standard-user-workflow/api/Account.ts#L117">user-management/standard-user-workflow/api/Account.ts:117</a></li>
 								</ul>
 							</aside>
-							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../enums/_user_management_standard_user_workflow_api_account_.accountstatus.html" class="tsd-signature-type">AccountStatus</a><span class="tsd-signature-symbol">&gt;</span></h4>
+							<div class="tsd-comment tsd-typography">
+								<div class="lead">
+									<p>Provide a status for the user account. The account status
+									is used to manage the validity of the account.</p>
+								</div>
+								<p>If you don&#39;t need account validity management, you can
+								return null.</p>
+							</div>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_user_management_standard_user_workflow_api_account_.html#accountstatus" class="tsd-signature-type">AccountStatus</a><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
 				</section>
@@ -169,9 +189,6 @@
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-enum tsd-parent-kind-external-module tsd-is-external">
-						<a href="../enums/_user_management_standard_user_workflow_api_account_.accountstatus.html" class="tsd-kind-icon">Account<wbr>Status</a>
-					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-is-external">
 						<a href="../classes/_user_management_standard_user_workflow_api_account_.accountcreationerror.html" class="tsd-kind-icon">Account<wbr>Creation<wbr>Error</a>
 					</li>
@@ -213,6 +230,9 @@
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-is-external">
 						<a href="_user_management_standard_user_workflow_api_account_.userprofile.html" class="tsd-kind-icon">User<wbr>Profile</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module tsd-is-external">
+						<a href="../modules/_user_management_standard_user_workflow_api_account_.html#accountstatus" class="tsd-kind-icon">Account<wbr>Status</a>
 					</li>
 				</ul>
 			</nav>
