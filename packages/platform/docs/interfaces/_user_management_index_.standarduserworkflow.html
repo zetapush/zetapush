@@ -75,9 +75,13 @@
 						<p>The &#39;StandardUserWorkflow&#39; is the standard process of users management in the application.
 						This interface exposes methods manage a user account on the application (sign up / login / logout / ...)</p>
 					</div>
-					<p>&#39;StandardUserWorkflow&#39; has many implementations, the first one is the &#39;DefaultStandardUserWorkflow&#39;.
-						This is the default process for a web application to create an account (form + confirmation link in email),
-					login (with username/password credentials) and logout.</p>
+					<p>&#39;StandardUserWorkflow&#39; has many implementations, the first one (Default implementation) is the &#39;DefaultStandardUserWorkflow&#39;.
+					This is the default process for a web application to :</p>
+					<ol>
+						<li>Create an account with a form and a confirmation link in email</li>
+						<li>Login with username/password credentials</li>
+						<li>Logout</li>
+					</ol>
 					<p>The &#39;StandardUserWorkflow&#39; use the following process to create an account :</p>
 					<ol>
 						<li>The user fill the registration form</li>
@@ -88,7 +92,7 @@
 					</ol>
 					<dl class="tsd-comment-tags">
 						<dt>see</dt>
-						<dd><p><a href="https://zetapush.github.io/documentation/#_standarduserworkflow" class="external">Documentation</a></p>
+						<dd><p><a href="https://zetapush.github.io/documentation/#_standarduserworkflow " class="external"> Documentation</a></p>
 						</dd>
 					</dl>
 				</div>
@@ -128,18 +132,18 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/zetapush/zetapush/blob/8887819/packages/platform/src/user-management/index.ts#L52">user-management/index.ts:52</a></li>
+									<li>Defined in <a href="https://github.com/zetapush/zetapush/blob/e88fb71/packages/platform/src/user-management/index.ts#L49">user-management/index.ts:49</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
 									<p>The &#39;login()&#39; method allows an user to log into the application.
-									The user need to have an &#39;active&#39; account. So the account need to be validated if the workflow imply it.</p>
+									The user need to have an &#39;active&#39; account (The account need to be confirmed if necessary).</p>
 								</div>
 								<p>This method return an &#39;Account&#39; object. This is the ID of the
 									account (unique ID on the application), his status (&#39;active&#39;, &#39;waitingConfirmation&#39; or &#39;disabled&#39;)
 								and the user profile (the username, email and other informations)</p>
-								<p>Credentials param can be in many forms.
+								<p>Credentials parameters can be in many forms.
 								In the DefaultStandardUserWorkflow, the credentials are an username and a password.</p>
 								<dl class="tsd-comment-tags">
 									<dt>example</dt>
@@ -154,9 +158,6 @@ userManagement.login({ username: <span class="hljs-string">'username'</span>, pa
 });
 </code></pre>
 									</dd>
-									<dt>throws</dt>
-									<dd><p>{Credentials}</p>
-									</dd>
 								</dl>
 							</div>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -169,7 +170,7 @@ userManagement.login({ username: <span class="hljs-string">'username'</span>, pa
 								</li>
 							</ul>
 							<h4 class="tsd-returns-title">Returns <a href="_user_management_standard_user_workflow_api_account_.account.html" class="tsd-signature-type">Account</a></h4>
-							<p>ID + status of the account and user profile</p>
+							<p>ID, account status and user profile</p>
 						</li>
 					</ul>
 				</section>
@@ -183,7 +184,7 @@ userManagement.login({ username: <span class="hljs-string">'username'</span>, pa
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/zetapush/zetapush/blob/8887819/packages/platform/src/user-management/index.ts#L71">user-management/index.ts:71</a></li>
+									<li>Defined in <a href="https://github.com/zetapush/zetapush/blob/e88fb71/packages/platform/src/user-management/index.ts#L68">user-management/index.ts:68</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -206,7 +207,7 @@ userManagement.logout().then(<span class="hljs-function">(<span class="hljs-para
 								</dl>
 							</div>
 							<h4 class="tsd-returns-title">Returns <a href="_user_management_standard_user_workflow_api_account_.account.html" class="tsd-signature-type">Account</a></h4>
-							<p>ID, status of the account and user profile</p>
+							<p>ID, account status and user profile</p>
 						</li>
 					</ul>
 				</section>
@@ -220,7 +221,7 @@ userManagement.logout().then(<span class="hljs-function">(<span class="hljs-para
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/zetapush/zetapush/blob/8887819/packages/platform/src/user-management/index.ts#L124">user-management/index.ts:124</a></li>
+									<li>Defined in <a href="https://github.com/zetapush/zetapush/blob/e88fb71/packages/platform/src/user-management/index.ts#L121">user-management/index.ts:121</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
@@ -231,7 +232,7 @@ userManagement.logout().then(<span class="hljs-function">(<span class="hljs-para
 								<p>The &#39;accountCreationDetails&#39; can take many differents paramaters. In the &#39;DefaultStandardUserWorkflow&#39; context, you need to pass
 								username, email, password and passwordConfirmation.</p>
 								<p>If you use an account validation process, you can specify on which URL the
-									user will be redirected after the account confirmation. By default this is : &#39;https://<urlofmyapp>/#/account-confirmation/<confirmation-token>.
+									user will be redirected after the account confirmation. By default this is : <code>https://&lt;urlofmyapp&gt;/#/account-confirmation/&lt;confirmation-token&gt;</code>.
 								You can set this URL using the &#39;confirmationRedirection&#39; parameter.</p>
 								<p>If the &#39;signup()&#39; method return any error, the account creation is not effective.</p>
 								<dl class="tsd-comment-tags">
