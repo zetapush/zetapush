@@ -6,7 +6,7 @@ const {
   help,
   warn,
   debugObject,
-} = require('../utils/log');
+} = require('@zetapush/core');
 const { parse } = require('./asciidoc-parser');
 const chalk = require('chalk');
 const chalkTpl = require('chalk/templates');
@@ -17,7 +17,7 @@ const path = require('path');
 const process = require('process');
 const os = require('os');
 const ora = require('ora');
-const files = require('../utils/files');
+const files = require('@zetapush/core');
 
 const DOC_BASE_URL =
   process.env.ZP_DOC_BASE_URL || 'https://zetapush.github.io/documentation';

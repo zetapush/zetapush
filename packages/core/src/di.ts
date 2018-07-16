@@ -1,14 +1,20 @@
-require('reflect-metadata');
+import 'reflect-metadata';
 
-const {
-  CloudServiceInstance,
-  ReflectiveInjector,
-} = require('@zetapush/platform');
+import { DEFAULTS } from './defaults';
+import { log, error } from './utils/log';
 
-const DEFAULTS = require('./defaults');
-const { log, error, info, warn } = require('./log');
+import {
+  CustomCloudService,
+  Injector,
+  WorkerDeclaration,
+  Service,
+  ServerClient,
+} from './common-types';
 
 class ScanOutput {
+  public custom: Array<CustomCloudService>;
+  public platform: Array<Service>;
+
   constructor() {
     this.custom = [];
     this.platform = [];
@@ -16,15 +22,19 @@ class ScanOutput {
   }
 }
 
-const getInjectionMetadata = (target) =>
+const getInjectionMetadata = (target: any) =>
   Reflect.hasMetadata('design:paramtypes', target)
     ? Reflect.getMetadata('design:paramtypes', target)
     : target.parameters;
 
-const isToken = (provider) =>
+const isToken = (provider: any) =>
   Boolean(provider) && provider.toString() === '@Inject';
 
-const scan = (CustomCloudService, output = new ScanOutput(), layer = 0) => {
+const scan = (
+  CustomCloudService: CustomCloudService,
+  output = new ScanOutput(),
+  layer = 0,
+) => {
   if (isFunction(CustomCloudService)) {
     const metadata = getInjectionMetadata(CustomCloudService);
     if (Array.isArray(metadata)) {
@@ -68,7 +78,7 @@ const scan = (CustomCloudService, output = new ScanOutput(), layer = 0) => {
  * @param {WorkerDeclaration} declaration
  * @return {ScanOutput}
  */
-const analyze = (declaration) => {
+export const analyze = (declaration: WorkerDeclaration) => {
   const cleaned = clean(declaration);
   const output = new ScanOutput();
   const baseApi = [];
@@ -130,12 +140,12 @@ const createAsyncService = (client, Type) => {
  * @param {ServerClient} client
  * @param {ScanOutput} output
  */
-const resolve = (client, output) => [
-  ...output.platform.map((PlatformService) => ({
+export const resolve = (client: ServerClient, output: ScanOutput) => [
+  ...output.platform.map((PlatformService: Service) => ({
     provide: PlatformService,
     useValue: createAsyncService(client, PlatformService),
   })),
-  ...output.custom.map((CustomCloudService) => ({
+  ...output.custom.map((CustomCloudService: CustomCloudService) => ({
     provide: CustomCloudService,
     useClass: CustomCloudService,
   })),
@@ -146,17 +156,19 @@ const resolve = (client, output) => [
  * @param {Object} value
  * @returns {Boolean}
  */
-const isFunction = (value) => typeof value === Function.name.toLowerCase();
+const isFunction = (value: any) => typeof value === Function.name.toLowerCase();
 
 /**
  * Return a cleaned WorkerDecleration
  * @param {WorkerDeclaration} declaration
  */
-const clean = (declaration) =>
+export const clean = (declaration: WorkerDeclaration) =>
   Object.entries(normalize(declaration))
-    .filter(([namespace, CustomCloudService]) => isFunction(CustomCloudService))
+    .filter(([namespace, CustomCloudService]: any[]) =>
+      isFunction(CustomCloudService),
+    )
     .reduce(
-      (cleaned, [namespace, CustomCloudService]) => ({
+      (cleaned: any, [namespace, CustomCloudService]: any[]) => ({
         ...cleaned,
         [namespace]: CustomCloudService,
       }),
@@ -168,7 +180,7 @@ const clean = (declaration) =>
  * @param {Object} declaration
  * @return {WorkerDeclaration}
  */
-const normalize = (declaration) => {
+export const normalize = (declaration: WorkerDeclaration) => {
   if (isFunction(declaration)) {
     return {
       [DEFAULTS.DEFAULT_NAMESPACE]: declaration,
@@ -198,7 +210,11 @@ const normalize = (declaration) => {
  * @param {ServerClient} client
  * @param {WorkerDeclaration} declaration
  */
-const instanciate = (client, declaration) => {
+export const instantiate = (
+  client: ServerClient,
+  declaration: WorkerDeclaration,
+  ReflectiveInjector: Injector,
+) => {
   let singleton;
   let output;
   try {
@@ -220,24 +236,16 @@ const instanciate = (client, declaration) => {
     });
     // Reduce singleton from namespaced
     singleton = Object.entries(cleaned).reduce(
-      (instance, [namespace, CustomCloudService]) => {
+      (instance: any, [namespace, CustomCloudService]: any[]) => {
         instance[namespace] = injector.get(CustomCloudService);
         return instance;
       },
       {},
     );
   } catch (ex) {
-    error('instanciate', ex);
+    error('instantiate', ex);
   }
   log('instanciate', singleton);
   singleton.bootLayers = output.bootLayer;
   return singleton;
-};
-
-module.exports = {
-  analyze,
-  clean,
-  instanciate,
-  normalize,
-  resolve,
 };

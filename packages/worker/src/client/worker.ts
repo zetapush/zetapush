@@ -6,6 +6,7 @@ import {
   TaskRequest,
 } from '@zetapush/platform';
 import { LogLevel, Logs, Context } from '@zetapush/platform';
+import { Queue, TaskRequest } from '@zetapush/platform';
 
 import { WorkerInstance } from '../utils/worker-instance';
 
@@ -26,6 +27,14 @@ interface WorkerClientOptions {
   resource: string;
   timeout: number;
   capacity: number;
+}
+
+export class Worker extends Queue {
+  static get DEPLOYMENT_OPTIONS() {
+    return {
+      queue_auth_id: 'developer',
+    };
+  }
 }
 
 export class WorkerClient extends Client {

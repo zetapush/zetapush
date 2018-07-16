@@ -48,7 +48,6 @@ const frontUserAction = async (name, testOrContext, func) => {
     let client;
     try {
       const zetarc = testOrContext.zetarc || testOrContext.context.zetarc;
-      if (!zetarc.appName) debugger;
       client = new WeakClient({
         ...zetarc,
         transports,
@@ -159,6 +158,7 @@ class Given {
         `Current zetapush modules versions:`,
         getCurrentEnv(projectDir),
       );
+      givenLogger.debug(`>> Apply Given DONE`);
       return {
         zetarc,
         projectDir,
@@ -398,8 +398,9 @@ class GivenWorker extends Parent {
     return this;
   }
 
-  up() {
+  up(timeout) {
     this.workerUp = true;
+    this.timeout = timeout;
     return this;
   }
 
@@ -417,7 +418,7 @@ class GivenWorker extends Parent {
         givenLogger.info(
           `>>> Given worker: run and wait for worker up ${currentDir}`,
         );
-        const runner = new Runner(currentDir);
+        const runner = new Runner(currentDir, this.timeout);
         runner.run(this.isQuiet);
         await runner.waitForWorkerUp();
         return runner;

@@ -4,8 +4,7 @@ const path = require('path');
 // Packages
 const cosmiconfig = require('cosmiconfig');
 // Local
-const DEFAULTS = require('../utils/defaults');
-const { log, error, warn, trace } = require('../utils/log');
+const { DEFAULTS, log, error, warn, trace } = require('@zetapush/core');
 const { getDeveloperPassword } = require('../utils/security');
 const explorer = cosmiconfig('zeta');
 

@@ -1,0 +1,25 @@
+INFO    2018-07-13T18:26:45.918Z - USER ACTION        | >>> User action: 1) npm init from console 
+INFO    2018-07-13T18:26:45.921Z - COMMAND            | npmInit(aurelien.baudet+celtia@zetapush.com, password, .generated-projects/project-nominal-case) 
+DEBUG   2018-07-13T18:26:45.922Z - COMMAND            | npmVersion() -> [npm --version] 
+DEBUG   2018-07-13T18:26:46.105Z - COMMAND            | npmInit() -> [npx @zetapush/create@canary project-nominal-case --force-current-version --developer-login xxx --developer-password xxx] 
+WARN    2018-07-13T18:27:39.616Z - PROCESS STDOUT/STD | 
+../src/pos.cc: In function ‘void Method(const v8::FunctionCallbackInfo<v8::Value>&)’:
+../src/pos.cc:243:6: warning: variable ‘ret’ set but not used [-Wunused-but-set-variable]
+  int ret, row, col;
+      ^
+ 
+SILLY   2018-07-13T18:27:40.257Z - PROCESS STDOUT/STD | 
+__dirname= /home/aurelien/.npm/_npx/22394/lib/node_modules/@zetapush/create
+ 
+SILLY   2018-07-13T18:27:40.684Z - PROCESS STDOUT/STD | 
+
+ 
+SILLY   2018-07-13T18:27:40.686Z - PROCESS STDOUT/STD | 
+Creating a new ZetaPush app in /mnt/data/developpement/zetapush-celtia/zetapush-js-sdk/packages/integration/.generated-projects/project-nominal-case.
+
+ 
+SILLY   2018-07-13T18:27:40.694Z - PROCESS STDOUT/STD | 
+Installing packages. This might take a couple of minutes.
+Installing @zetapush/cli@0.31.0-alpha.7aec656b, @zetapush/platform@0.31.0-alpha.7aec656b, typescript@latest.
+
+ 

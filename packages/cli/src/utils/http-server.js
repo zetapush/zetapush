@@ -8,7 +8,7 @@ const http = require('http');
 const handler = require('serve-handler');
 const findFreePort = util.promisify(require('find-free-port'));
 // Other
-const { info } = require('../utils/log');
+const { info } = require('@zetapush/core');
 
 /**
  * Create and run http server

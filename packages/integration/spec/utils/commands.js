@@ -508,10 +508,10 @@ class Runner {
     return new Promise((resolve, reject) => {
       const getStatus = async () => {
         if (Date.now() - start > this.timeout) {
+          commandLogger.error('Runner:waitForWorkerUp() -> timeout');
           reject(
             new Error(`Worker for ${this.dir} not up after ${this.timeout}ms`),
           );
-          commandLogger.error('Runner:waitForWorkerUp() -> timeout');
           return;
         }
         commandLogger.silly('Runner:waitForWorkerUp() -> getStatus()');
