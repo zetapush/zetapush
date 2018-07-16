@@ -1,11 +1,6 @@
 const { zetaPush, readZetarc } = require('../utils/commands');
 const PATTERN = /Hello World from JavaScript (\d+)/;
-const {
-  given,
-  consoleUserAction,
-  frontUserAction,
-  autoclean,
-} = require('../utils/tdd');
+const { given, consoleUserAction, frontUserAction, autoclean } = require('../utils/tdd');
 
 describe(`As developer with
         - account exists
@@ -47,6 +42,6 @@ describe(`As developer with
         expect(PATTERN.test(message)).toBe(true);
       });
     },
-    15 * 60 * 1000,
+    15 * 60 * 1000
   );
 });

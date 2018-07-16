@@ -14,34 +14,20 @@ const { log, error, warn, info, trace } = require('@zetapush/core');
  * @param {WorkerDeclaration} declaration
  */
 const run = (command, config, declaration) => {
-  const runner = new WorkerRunner(
-    command.skipProvisionning,
-    command.skipBootstrap,
-    config,
-  );
+  const runner = new WorkerRunner(command.skipProvisionning, command.skipBootstrap, config);
   const spinner = ora('Starting worker... \n');
 
   runner.on(WorkerRunnerEvents.BOOTSTRAPING, ({ client }) => {
     trace('Bootstraping worker...');
     listenTerminalSignals(client, runner);
   });
-  runner.on(WorkerRunnerEvents.UPLOADED, ({ recipe }) =>
-    log('Uploaded', recipe.recipeId),
-  );
-  runner.on(WorkerRunnerEvents.QUEUE_SERVICE_DEPLOYING, () =>
-    log('Waiting Queue service deploying...'),
-  );
-  runner.on(WorkerRunnerEvents.QUEUE_SERVICE_READY, ({ recipe }) =>
-    log(`Queue service ready on ${recipe.recipeId}`),
-  );
+  runner.on(WorkerRunnerEvents.UPLOADED, ({ recipe }) => log('Uploaded', recipe.recipeId));
+  runner.on(WorkerRunnerEvents.QUEUE_SERVICE_DEPLOYING, () => log('Waiting Queue service deploying...'));
+  runner.on(WorkerRunnerEvents.QUEUE_SERVICE_READY, ({ recipe }) => log(`Queue service ready on ${recipe.recipeId}`));
   // runner.on(WorkerRunnerEvents.CONNECTING);
   runner.on(WorkerRunnerEvents.CONNECTED, () => log(`Connected`));
-  runner.on(WorkerRunnerEvents.CREATED_SERVICES, ({ services }) =>
-    info(`Create services`, services),
-  );
-  runner.on(WorkerRunnerEvents.PLATFORM_SERVICES_READY, () =>
-    log(`Platform services created`),
-  );
+  runner.on(WorkerRunnerEvents.CREATED_SERVICES, ({ services }) => info(`Create services`, services));
+  runner.on(WorkerRunnerEvents.PLATFORM_SERVICES_READY, () => log(`Platform services created`));
   runner.on(WorkerRunnerEvents.STARTING, () => {
     trace('Starting worker...');
     spinner.start();

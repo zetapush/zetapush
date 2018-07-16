@@ -20,21 +20,15 @@ const archive = (command, config, declaration) => {
   const rootArchive = `${root}.zip`;
   const workerArchive = path.join(root, `worker.zip`);
   const frontArchive = path.join(root, `front.zip`);
-  trace(
-    `zipping worker (${workerArchive}) and front (${frontArchive}) into ${rootArchive}...`,
-  );
+  trace(`zipping worker (${workerArchive}) and front (${frontArchive}) into ${rootArchive}...`);
 
   const options = {
-    filter: filter(BLACKLIST),
+    filter: filter(BLACKLIST)
   };
 
   return mkdir(root)
-    .then(() =>
-      compress(command.front, { ...options, ...{ saveTo: frontArchive } }),
-    )
-    .then(() =>
-      compress(command.worker, { ...options, ...{ saveTo: workerArchive } }),
-    )
+    .then(() => compress(command.front, { ...options, ...{ saveTo: frontArchive } }))
+    .then(() => compress(command.worker, { ...options, ...{ saveTo: workerArchive } }))
     .then(() => generateProvisioningFile(app, config))
     .then(() => compress(root, { ...options, ...{ saveTo: rootArchive } }))
     .then(() => rootArchive);
