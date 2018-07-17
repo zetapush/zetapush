@@ -1,4 +1,4 @@
-import {onApplicationBootstrap} from "@zetapush/platform";
+const { onApplicationBootstrap } = require('@zetapush/platform');
 module.exports = class Api {
 
   async [onApplicationBootstrap](){
