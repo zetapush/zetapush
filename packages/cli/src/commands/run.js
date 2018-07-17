@@ -110,7 +110,7 @@ const run = (command, config, declaration) => {
       });
       const checkBoostrap = () => {
         return new Promise((resolve, reject) => {
-          if (command.bootstrap) {
+          if (!command.skipProvisioning) {
             instance.configure().then(() => {
               resolve();
             });
