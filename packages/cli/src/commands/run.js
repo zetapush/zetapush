@@ -108,10 +108,23 @@ const run = (command, config, declaration) => {
             warn('Fail to reload worker');
           });
       });
-      info('Worker is up!');
-      if (command.serveFront) {
-        return createServer(command, config);
-      }
+      const checkBoostrap = () => {
+        return new Promise((resolve, reject) => {
+          if (command.bootstrap) {
+            instance.configure().then(() => {
+              resolve();
+            });
+          } else {
+            resolve();
+          }
+        });
+      };
+      checkBoostrap().then(() => {
+        info('Worker is up!');
+        if (command.serveFront) {
+          createServer(command, config);
+        }
+      });
     })
     .catch((failure) => {
       spinner.stop();

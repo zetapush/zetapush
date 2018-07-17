@@ -95,6 +95,12 @@ program
     () => true,
     false,
   )
+  .option(
+    '--bootstrap',
+    'Run [onApplicationBoostrap] on startup',
+    () => true,
+    false,
+  )
   .description('Run your code')
   .action((command) =>
     createApp(command)
