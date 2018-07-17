@@ -22,7 +22,8 @@
     "build:umd": "cross-env NODE_ENV=development rollup -c -i src/index.ts -o dist/zetapush-platform.js",
     "build:umd:min": "cross-env NODE_ENV=production rollup -c -i src/index.ts -o dist/zetapush-platform.min.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
-    "prepublish": "npm run clean && npm run build"
+    "prepublish": "npm run clean && npm run build",
+    "build:api-doc": "typedoc --out ./docs ./src/user-management/index.ts"
   },
   "dependencies": {
     "injection-js": "2.2.1"
