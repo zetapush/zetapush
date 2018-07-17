@@ -35,12 +35,13 @@ export class WorkerInstance {
   async configure() {
     for (let namespace in this.worker) {
       if (
-        typeof this.worker[namespace][onApplicationBootstrap] === 'undefined'
+        typeof this.worker[namespace][Symbol.for('onApplicationBootstrap')] ===
+        'undefined'
       ) {
         continue;
       }
       try {
-        await this.worker[namespace][onApplicationBootstrap]();
+        await this.worker[namespace][Symbol.for('onApplicationBootstrap')]();
       } catch (error) {
         return {
           success: false,
@@ -50,7 +51,7 @@ export class WorkerInstance {
     }
     return {
       success: true,
-      result: '',
+      result: 'ok',
     };
   }
 

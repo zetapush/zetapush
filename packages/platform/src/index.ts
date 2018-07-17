@@ -1,4 +1,4 @@
-export const onApplicationBootstrap = Symbol('onApplicationBootstrap');
+export const onApplicationBootstrap = Symbol.for('onApplicationBootstrap');
 
 export * from './Core/index';
 export * from './Metadata/index';
