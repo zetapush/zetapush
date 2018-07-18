@@ -1,4 +1,4 @@
-import { TaskRequest } from '@zetapush/platform';
+import { TaskRequest, onApplicationBootstrap } from '@zetapush/platform';
 
 import { timeoutify } from './async';
 
@@ -55,8 +55,8 @@ export class WorkerInstance {
       for (let layerIndex in this.bootLayers) {
         for (let apiIndex in this.bootLayers[layerIndex]) {
           const api = this.bootLayers[layerIndex][apiIndex];
-          if (typeof api[Symbol.for('onApplicationBootstrap')] === 'function') {
-            await api[Symbol.for('onApplicationBootstrap')]();
+          if (typeof api[onApplicationBootstrap] === 'function') {
+            await api[onApplicationBootstrap]();
           }
         }
       }
