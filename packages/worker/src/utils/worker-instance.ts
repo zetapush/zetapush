@@ -51,26 +51,24 @@ export class WorkerInstance {
   }
 
   async configure() {
-    console.log('Layers : ', this.bootLayers);
-    for (let namespace in this.worker) {
-      if (
-        typeof this.worker[namespace][Symbol.for('onApplicationBootstrap')] ===
-        'undefined'
-      ) {
-        continue;
+    try {
+      for (let layerIndex in this.bootLayers) {
+        for (let apiIndex in this.bootLayers[layerIndex]) {
+          const api = this.bootLayers[layerIndex][apiIndex];
+          if (typeof api[Symbol.for('onApplicationBootstrap')] === 'function') {
+            await api[Symbol.for('onApplicationBootstrap')]();
+          }
+        }
       }
-      try {
-        await this.worker[namespace][Symbol.for('onApplicationBootstrap')]();
-      } catch (error) {
-        return {
-          success: false,
-          result: error,
-        };
-      }
+    } catch (error) {
+      return {
+        success: false,
+        result: error,
+      };
     }
     return {
       success: true,
-      result: 'ok',
+      result: {},
     };
   }
 

@@ -82,7 +82,6 @@ const analyze = (declaration) => {
       seens.push(output.bootLayer[layer][api]);
     }
   }
-  console.log('Bootlayers : ', output.bootLayer);
   // Unicity
   output.custom = Array.from(new Set(output.custom));
   output.platform = Array.from(new Set(output.platform));
