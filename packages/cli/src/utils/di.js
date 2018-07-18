@@ -9,6 +9,7 @@ class ScanOutput {
   constructor() {
     this.custom = [];
     this.platform = [];
+    this.bootLayer = [];
   }
 }
 
@@ -20,26 +21,34 @@ const getInjectionMetadata = (target) =>
 const isToken = (provider) =>
   Boolean(provider) && provider.toString() === '@Inject';
 
-const scan = (CustomCloudService, output = new ScanOutput()) => {
+const scan = (CustomCloudService, output = new ScanOutput(), layer = 0) => {
   if (isFunction(CustomCloudService)) {
     const metadata = getInjectionMetadata(CustomCloudService);
     if (Array.isArray(metadata)) {
+      const toScan = [];
+      const addToScan = [];
       metadata.forEach((injected) => {
         const provider = isToken(injected) ? injected.token : injected;
         if (isFunction(provider)) {
           if (Array.isArray(getInjectionMetadata(provider))) {
             // CustomCloudService with DI
-            scan(provider, output);
+            toScan.push({ provider, output });
             output.custom.push(provider);
+            addToScan.push(provider);
           } else if (provider.DEFAULT_DEPLOYMENT_ID) {
             // Platform CloudService
             output.platform.push(provider);
           } else {
             // CustomCloudService without DI
             output.custom.push(provider);
+            addToScan.push(provider);
           }
         }
       });
+      output.bootLayer.push(addToScan);
+      for (let sc of toScan) {
+        scan(sc.provider, sc.output, layer + 1);
+      }
     }
     // Add CustomCloudService
     output.custom.push(CustomCloudService);
@@ -55,9 +64,25 @@ const scan = (CustomCloudService, output = new ScanOutput()) => {
 const analyze = (declaration) => {
   const cleaned = clean(declaration);
   const output = new ScanOutput();
-  Object.values(cleaned).map((CustomCloudService) =>
+  Object.values(cleaned).map((CustomCloudService) => {
     scan(CustomCloudService, output),
-  );
+      output.bootLayer.unshift([CustomCloudService]);
+    output.bootLayer.reverse();
+  });
+
+  // Removing duplicate of bootlayer
+  let seens = [];
+  for (let layer in output.bootLayer) {
+    for (let api in output.bootLayer[layer]) {
+      for (let seen of seens) {
+        if (seen == output.bootLayer[layer][api]) {
+          output.bootLayer[layer].splice(api, 1);
+        }
+      }
+      seens.push(output.bootLayer[layer][api]);
+    }
+  }
+  console.log('Bootlayers : ', output.bootLayer);
   // Unicity
   output.custom = Array.from(new Set(output.custom));
   output.platform = Array.from(new Set(output.platform));
