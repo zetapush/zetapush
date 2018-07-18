@@ -3,32 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.30.0](https://github.com/zetapush/zetapush/compare/v0.29.0...v0.30.0) (2018-07-13)
+## [0.30.1](https://github.com/zetapush/zetapush/compare/v0.30.0...v0.30.1) (2018-07-18)
 
 
 ### Bug Fixes
 
-* **cometd:** support ServiceWorker execution context ([dd050d0](https://github.com/zetapush/zetapush/commit/dd050d0)), closes [#78](https://github.com/zetapush/zetapush/issues/78)
-* **test:** update karma conf with the new package name ([677bd28](https://github.com/zetapush/zetapush/commit/677bd28))
-
-
-### Code Refactoring
-
-* add an empty core package to avoid confusion with previous named package ([e7f2a4f](https://github.com/zetapush/zetapush/commit/e7f2a4f))
+* **testing:** update utils functions (testing) ([b08c8b2](https://github.com/zetapush/zetapush/commit/b08c8b2))
 
 
 ### Features
 
-* rename [@zetapush](https://github.com/zetapush)/core to [@zetapush](https://github.com/zetapush)/client ([74f5151](https://github.com/zetapush/zetapush/commit/74f5151)), closes [#79](https://github.com/zetapush/zetapush/issues/79)
-* **cli:** bump hot-module-replacement version ([40ff57a](https://github.com/zetapush/zetapush/commit/40ff57a)), closes [#56](https://github.com/zetapush/zetapush/issues/56)
-* **create:** enable sourceMap option by default for TypeScript project ([1cd52fc](https://github.com/zetapush/zetapush/commit/1cd52fc)), closes [#75](https://github.com/zetapush/zetapush/issues/75)
-* **platform-strict-config:** improve TypeScript check for platform package ([b30320d](https://github.com/zetapush/zetapush/commit/b30320d))
-
-
-### BREAKING CHANGES
-
-* @zetapush/core is now an empty package
-* Rename @zetapush/core to @zetapush/client
+* **configure-compatibility:** add a synchronous succcessfull done result for server futurproof comp ([d4d491d](https://github.com/zetapush/zetapush/commit/d4d491d))
+* **example:** add vscode config file ([83c53e2](https://github.com/zetapush/zetapush/commit/83c53e2))
+* **worker:** improve error message on error from server ([1669533](https://github.com/zetapush/zetapush/commit/1669533))
 
 
 

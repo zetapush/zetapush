@@ -3,15 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.30.0](https://github.com/zetapush/zetapush/compare/v0.29.0...v0.30.0) (2018-07-13)
-
-
-### Features
-
-* **platform-strict-config:** improve TypeScript check for platform package ([b30320d](https://github.com/zetapush/zetapush/commit/b30320d))
+## [0.30.1](https://github.com/zetapush/zetapush/compare/v0.30.0...v0.30.1) (2018-07-18)
 
 
 
+
+**Note:** Version bump only for package @zetapush/platform
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

@@ -3,15 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.30.0](https://github.com/zetapush/zetapush/compare/v0.29.0...v0.30.0) (2018-07-13)
-
-
-### Bug Fixes
-
-* **cometd:** support ServiceWorker execution context ([dd050d0](https://github.com/zetapush/zetapush/commit/dd050d0)), closes [#78](https://github.com/zetapush/zetapush/issues/78)
+## [0.30.1](https://github.com/zetapush/zetapush/compare/v0.30.0...v0.30.1) (2018-07-18)
 
 
 
+
+**Note:** Version bump only for package @zetapush/cometd
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
