@@ -49,7 +49,19 @@ const getCurrentEnv = (dir) => {
   } catch (error) {
     versions['*'] = { message: 'unreadable', error };
   }
-  return versions;
+  let nodeVer = null;
+  try {
+    nodeVer = nodeVersion().str;
+  } catch (error) {
+    nodeVer = 'unknown';
+  }
+  let npmVer = null;
+  try {
+    npmVer = npmVersion().str;
+  } catch (error) {
+    npmVer = 'unknown';
+  }
+  return { modules: versions, npm: npmVer, node: nodeVer };
 };
 
 /**
@@ -58,9 +70,9 @@ const getCurrentEnv = (dir) => {
  * @param {string} developerPassword
  * @param {string} dir Name of the application folder
  */
-const npmInit = (developerLogin, developerPassword, dir) => {
+const npmInit = (developerLogin, developerPassword, dir, platformUrl) => {
   commandLogger.info(
-    `npmInit(${developerLogin}, ${developerPassword}, ${dir})`,
+    `npmInit(${developerLogin}, ${developerPassword}, ${dir}, ${platformUrl})`,
   );
   if (npmVersion().major < 5) {
     throw new Error('Minimum required npm version is 5.6.0');
@@ -70,7 +82,9 @@ const npmInit = (developerLogin, developerPassword, dir) => {
   if (process.env.TEST_RELEASE_VERSION) {
     if (npmVersion().major < 6) {
       commandLogger.debug(
-        `npmInit() -> [npx @zetapush/create ${relativeDir} --developer-login xxx --developer-password xxx]`,
+        `npmInit() -> [npx @zetapush/create ${relativeDir} --developer-login xxx --developer-password xxx ${
+          platformUrl ? '--platform-url' + platformUrl : ''
+        }]`,
       );
       cmd = execa(
         'npx',
@@ -81,12 +95,15 @@ const npmInit = (developerLogin, developerPassword, dir) => {
           developerLogin,
           '--developer-password',
           developerPassword,
+          ...(platformUrl ? ['--platform-url', platformUrl] : []),
         ],
         { cwd: '.generated-projects' },
       );
     } else {
       commandLogger.debug(
-        `npmInit() -> [npm init @zetapush ${relativeDir} --developer-login xxx --developer-password xxx]`,
+        `npmInit() -> [npm init @zetapush ${relativeDir} --developer-login xxx --developer-password xxx ${
+          platformUrl ? '--platform-url' + platformUrl : ''
+        }]`,
       );
       cmd = execa(
         'npm',
@@ -98,13 +115,16 @@ const npmInit = (developerLogin, developerPassword, dir) => {
           developerLogin,
           '--developer-password',
           developerPassword,
+          ...(platformUrl ? ['--platform-url', platformUrl] : []),
         ],
         { cwd: '.generated-projects' },
       );
     }
   } else {
     commandLogger.debug(
-      `npmInit() -> [npx @zetapush/create@canary ${relativeDir} --force-current-version --developer-login xxx --developer-password xxx]`,
+      `npmInit() -> [npx @zetapush/create@canary ${relativeDir} --force-current-version --developer-login xxx --developer-password xxx ${
+        platformUrl ? '--platform-url' + platformUrl : ''
+      }]`,
     );
     cmd = execa(
       'npx',
@@ -116,6 +136,7 @@ const npmInit = (developerLogin, developerPassword, dir) => {
         developerLogin,
         '--developer-password',
         developerPassword,
+        ...(platformUrl ? ['--platform-url', platformUrl] : []),
       ],
       { cwd: '.generated-projects' },
     );
@@ -281,11 +302,51 @@ const setAccountToZetarc = async (dir, login, password) => {
   return jsonContent;
 };
 
+/**
+ * Update ZetaPush account in the .zetarc
+ * @param {string} dir Full path of the application folder
+ * @param {string} login
+ * @param {string} password
+ */
+const setPlatformUrlToZetarc = async (dir, platformUrl) => {
+  commandLogger.debug(`setPlatformUrlToZetarc(${dir}, ${platformUrl})`);
+
+  let jsonContent;
+  if (await exists(`${dir}/.zetarc`)) {
+    const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
+    jsonContent = JSON.parse(content);
+  } else {
+    jsonContent = {};
+  }
+
+  if (platformUrl && platformUrl.length > 0) {
+    jsonContent.platformUrl = platformUrl;
+  } else {
+    delete jsonContent.platformUrl;
+  }
+
+  await writeFile(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
+    encoding: 'utf-8',
+  });
+
+  return jsonContent;
+};
+
+const nodeVersion = () => {
+  commandLogger.debug('nodeVersion() -> [node --version]');
+  const { stdout } = execa.sync('node', ['--version']);
+  const [major, minor, patch] = stdout
+    .replace('v', '')
+    .split('.')
+    .map((v) => parseInt(v, 10));
+  return { major, minor, patch, str: stdout };
+};
+
 const npmVersion = () => {
   commandLogger.debug('npmVersion() -> [npm --version]');
   const { stdout } = execa.sync('npm', ['--version']);
   const [major, minor, patch] = stdout.split('.').map((v) => parseInt(v, 10));
-  return { major, minor, patch };
+  return { major, minor, patch, str: stdout };
 };
 
 /**
@@ -332,6 +393,7 @@ const npmInstall = async (dir, version) => {
 const npmInstallLatestVersion = async (dir) => {
   commandLogger.info(`npmInstallLatestVersion(${dir})`);
   await rm(`${dir}/node_modules/`);
+  await rm(`${dir}/package-lock.json`);
   await clearDependencies(dir);
 
   try {
@@ -432,15 +494,16 @@ const clearDependencies = async (dir) => {
     encoding: 'utf-8',
   });
 };
-const createZetarc = (developerLogin, developerPassword, dir) => {
+
+const createZetarc = (developerLogin, developerPassword, dir, platformUrl) => {
   commandLogger.debug(
-    `createZetarc(${developerLogin}, ${developerPassword}, ${dir})`,
+    `createZetarc(${developerLogin}, ${developerPassword}, ${dir}, ${platformUrl})`,
   );
   fs.writeFileSync(
     dir + '/.zetarc',
     JSON.stringify(
       {
-        platformUrl: PLATFORM_URL,
+        platformUrl: platformUrl || PLATFORM_URL,
         developerLogin,
         developerPassword,
       },
@@ -496,7 +559,7 @@ const nukeApp = (dir) => {
  *
  */
 class Runner {
-  constructor(dir, timeout = 60000) {
+  constructor(dir, timeout = 300000) {
     this.dir = dir;
     this.timeout = timeout;
     this.cmd = null;
@@ -577,4 +640,5 @@ module.exports = {
   nukeApp,
   Runner,
   getCurrentEnv,
+  setPlatformUrlToZetarc,
 };

@@ -17,6 +17,7 @@ describe(`As developer with
   beforeEach(async () => {
     this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
     this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
+    this.platformUrl = process.env.ZETAPUSH_PLATFORM_URL;
     // clean
     await rm(fullPathProject);
   });
@@ -44,6 +45,7 @@ describe(`As developer with
           this.developerLogin,
           this.developerPassword,
           fullPathProject,
+          this.platformUrl
         );
       });
 

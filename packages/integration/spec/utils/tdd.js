@@ -11,6 +11,7 @@ const {
   setAccountToZetarc,
   setAppNameToZetarc,
   getCurrentEnv,
+  setPlatformUrlToZetarc
 } = require('./commands');
 const { WeakClient } = require('@zetapush/client');
 const transports = require('@zetapush/cometd/lib/node/Transports');
@@ -94,7 +95,7 @@ const autoclean = async (testOrContext) => {
 
 class Given {
   constructor() {
-    this.creds = {};
+    this.sharedCredentials = {};
   }
 
   credentials() {
@@ -103,17 +104,17 @@ class Given {
   }
 
   newApp() {
-    this.givenNewApp = new GivenNewApp(this, this.creds);
+    this.givenNewApp = new GivenNewApp(this, this.sharedCredentials);
     return this.givenNewApp;
   }
 
   testingApp() {
-    this.givenTestingApp = new GivenTestingApp(this, this.creds);
+    this.givenTestingApp = new GivenTestingApp(this, this.sharedCredentials);
     return this.givenTestingApp;
   }
 
   templatedApp() {
-    this.givenTemplate = new GivenTemplatedApp(this, this.creds);
+    this.givenTemplate = new GivenTemplatedApp(this, this.sharedCredentials);
     return this.givenTemplate;
   }
 
@@ -126,9 +127,7 @@ class Given {
     try {
       givenLogger.debug(`>> Apply Given`);
       if (this.givenCredentials) {
-        const creds = await this.givenCredentials.execute();
-        this.creds.developerLogin = creds.developerLogin;
-        this.creds.developerPassword = creds.developerPassword;
+        Object.assign(this.sharedCredentials, await this.givenCredentials.execute());
       }
       let projectDir;
       if (this.givenNewApp) {
@@ -155,7 +154,7 @@ class Given {
         });
       }
       envLogger.silly(
-        `Current zetapush modules versions:`,
+        `Current environment:`,
         getCurrentEnv(projectDir),
       );
       givenLogger.debug(`>> Apply Given DONE`);
@@ -184,11 +183,14 @@ class Parent {
 class GivenCredentials extends Parent {
   constructor(parent) {
     super(parent);
+    // default behavior uses the env variables
+    this.url = process.env.ZETAPUSH_PLATFORM_URL;
   }
 
   fromEnv() {
     this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
     this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
+    this.url = process.env.ZETAPUSH_PLATFORM_URL;
     return this;
   }
 
@@ -202,10 +204,16 @@ class GivenCredentials extends Parent {
     return this;
   }
 
+  platformUrl(url) {
+    this.url = url;
+    return this;
+  }
+
   async execute() {
     return {
       developerLogin: this.developerLogin,
       developerPassword: this.developerPassword,
+      platformUrl: this.url
     };
   }
 }
@@ -249,6 +257,7 @@ class GivenNewApp extends Parent {
         this.credentials.developerLogin,
         this.credentials.developerPassword,
         projectDir,
+        this.credentials.platformUrl
       );
       if (this.setNewAppName) {
         givenLogger.silly(
@@ -312,8 +321,9 @@ class GivenTestingApp extends Parent {
         await setAccountToZetarc(
           `testing-projects/${this.projectDirName}`,
           this.credentials.developerLogin,
-          this.credentials.developerPassword,
+          this.credentials.developerPassword
         );
+        await setPlatformUrlToZetarc(`testing-projects/${this.projectDirName}`, this.credentials.platformUrl);
       }
       return `testing-projects/${this.projectDirName}`;
     } catch (e) {
@@ -373,6 +383,7 @@ class GivenTemplatedApp extends Parent {
           this.credentials.developerLogin,
           this.credentials.developerPassword,
           '.generated-projects/' + this.templateApp,
+          this.credentials.platformUrl,
         );
       }
       return '.generated-projects/' + this.templateApp;
