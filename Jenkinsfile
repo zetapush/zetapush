@@ -7,8 +7,10 @@ pipeline {
   }
 
   environment {
-    ZETAPUSH_DEVELOPER_ACCOUNT = credentials('jenkins-zetapush-celtia-account')
+    ZETAPUSH_DEVELOPER_ACCOUNT = credentials('jenkins-zp-account')
     ZETAPUSH_LOG_LEVEL = 'silly'
+    ZETAPUSH_PLATFORM_URL = 'http://hq.zpush.io:9080/zbo/pub/business/'
+    ZETAPUSH_LOCAL_DEV = 'true'
   }
 
   stages {
@@ -21,7 +23,6 @@ pipeline {
         }
       }
       steps {
-        echo "${ZETAPUSH_DEVELOPER_ACCOUNT}"
         sh 'npm cache clear --force'
         sh 'npm i'
         sh 'npm run lerna:clean -- --yes'
@@ -42,47 +43,47 @@ pipeline {
       }
     }
 
-    stage('Publish on private registry') {
-      agent { 
-        docker {
-          image 'node:10.4.1'
-          label 'docker'
-          args '-u 0:0'
-        }
-      }
-      steps {
-        withCredentials([usernamePassword(credentialsId: 'npm-publish-on-public-registry', usernameVariable: 'NPM_USER', passwordVariable: 'NPM_PASS')]) {
-          script {
-            def response = httpRequest(
-              url: "https://registry.npmjs.org/-/user/org.couchdb.user:${env.NPM_USER}",
-              contentType: 'APPLICATION_JSON',
-              acceptType: 'APPLICATION_JSON',
-              httpMode: 'PUT',
-              requestBody: "{\"name\":\"${env.NPM_USER}\", \"password\": \"${env.NPM_PASS}\"}"
-            )
-            def json = readJSON(text: response.content)
-            sh "npm set //registry.npmjs.org/:_authToken ${json.token}"
-          }
-          sh 'npm run lerna:publish:canary -- --yes'
-        }
-      }
-    }
+    // stage('Publish on private registry') {
+    //   agent { 
+    //     docker {
+    //       image 'node:10.4.1'
+    //       label 'docker'
+    //       args '-u 0:0'
+    //     }
+    //   }
+    //   steps {
+    //     withCredentials([usernamePassword(credentialsId: 'npm-publish-on-public-registry', usernameVariable: 'NPM_USER', passwordVariable: 'NPM_PASS')]) {
+    //       script {
+    //         def response = httpRequest(
+    //           url: "https://registry.npmjs.org/-/user/org.couchdb.user:${env.NPM_USER}",
+    //           contentType: 'APPLICATION_JSON',
+    //           acceptType: 'APPLICATION_JSON',
+    //           httpMode: 'PUT',
+    //           requestBody: "{\"name\":\"${env.NPM_USER}\", \"password\": \"${env.NPM_PASS}\"}"
+    //         )
+    //         def json = readJSON(text: response.content)
+    //         sh "npm set //registry.npmjs.org/:_authToken ${json.token}"
+    //       }
+    //       sh 'npm run lerna:publish:canary -- --yes'
+    //     }
+    //   }
+    // }
     
-    stage('Clear again and fix permissions') {
-      agent { 
-        docker {
-          image 'node:10.4.1'
-          label 'docker'
-          args '-u 0:0'
-        }
-      }
-      steps {
-        sh 'npm cache clear --force'
-        sh 'npm i'
-        sh 'npm run lerna:clean -- --yes'
-        sh "chown -R ${env.JENKINS_UID}:${env.JENKINS_GID} ."
-      }
-    }
+    // stage('fix permissions') {
+    //   agent { 
+    //     docker {
+    //       image 'node:10.4.1'
+    //       label 'docker'
+    //       args '-u 0:0'
+    //     }
+    //   }
+    //   steps {
+    //     sh 'npm cache clear --force'
+    //     sh 'npm i'
+    //     sh 'npm run lerna:clean -- --yes'
+    //     sh "chown -R ${env.JENKINS_UID}:${env.JENKINS_GID} ."
+    //   }
+    // }
 
     stage('Integration Tests') {
       parallel {
@@ -93,10 +94,13 @@ pipeline {
             }
           }
           steps {
+            // sh 'npm cache clear --force'
+            sh 'npm i'
+            sh 'npm run lerna:clean -- --yes'
+            sh 'npm run lerna:bootstrap'
             dir('packages/integration') {
-              echo "${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}"
-              echo "${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}"
-              sh 'npm i'
+              // sh 'npm cache clear --force'
+              // sh 'npm i'
               sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' node node_modules/jasmine/bin/jasmine.js"
             }
           }
@@ -115,8 +119,13 @@ pipeline {
             }
           }
           steps {
+            // bat 'npm cache clear --force'
+            bat 'npm i'
+            bat 'npm run lerna:clean -- --yes'
+            bat 'npm run lerna:bootstrap'
             dir('packages/integration') {
-              bat 'npm i'
+              // bat 'npm cache clear --force'
+              // bat 'npm i'
               bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& node node_modules\\jasmine\\bin\\jasmine.js"
             }
           }
@@ -135,8 +144,13 @@ pipeline {
             }
           }
           steps {
+            // bat 'npm cache clear --force'
+            bat 'npm i'
+            bat 'npm run lerna:clean -- --yes'
+            bat 'npm run lerna:bootstrap'
             dir('packages/integration') {
-              bat 'npm i'
+              // bat 'npm cache clear --force'
+              // bat 'npm i'
               bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& node node_modules\\jasmine\\bin\\jasmine.js"
             }
           }
@@ -155,8 +169,13 @@ pipeline {
             }
           }
           steps {
+            // sh 'npm cache clear --force'
+            sh 'npm i'
+            sh 'npm run lerna:clean -- --yes'
+            sh 'npm run lerna:bootstrap'
             dir('packages/integration') {
-              sh 'npm i'
+              // sh 'npm cache clear --force'
+              // sh 'npm i'
               sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' node node_modules/jasmine/bin/jasmine.js"
             }
           }
@@ -204,7 +223,7 @@ pipeline {
   post {
     failure {
       slackSend(
-          message: """ZetaPush celtia client : ${env.BRANCH_NAME} failed to build
+          message: """ZetaPush celtia client: ${env.BRANCH_NAME} failed to build
                       - <${env.BUILD_URL}/consoleFull|View logs>""",
           color: '#ff0000'
       )
@@ -217,7 +236,7 @@ pipeline {
     }      
     success {
       slackSend(
-          message: """ZetaPush celtia client : ${env.BRANCH_NAME} success
+          message: """ZetaPush celtia client: ${env.BRANCH_NAME} success
                       - <${env.BUILD_URL}/consoleFull|View logs>""",
           color: '#00ff00'
       )

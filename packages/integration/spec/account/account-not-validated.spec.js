@@ -9,7 +9,7 @@ describe(`As developer with
   beforeEach(async () => {
     await given()
       /**/ .credentials()
-      /*   */ .login('accountnotvalidated@zetapush.com')
+      /*   */ .login('ci+notvalidated@zetapush.com')
       /*   */ .password('password')
       /*   */ .and()
       /**/ .testingApp()

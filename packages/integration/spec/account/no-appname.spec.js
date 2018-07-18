@@ -37,6 +37,8 @@ describe(`As developer with
       // Check the .zetarc file
       let zetarc = await readZetarc(this.context.projectDir);
       this.context.zetarc = zetarc;
+      expect(zetarc).toBeDefined();
+      expect(zetarc.appName).toBeDefined();
       expect(zetarc.appName.length).toBeGreaterThan(0);
 
       await frontUserAction('2) call hello', { zetarc }, async (api) => {
