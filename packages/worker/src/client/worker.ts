@@ -85,6 +85,14 @@ export class WorkerClient extends Client {
           // Notify platforme job is done
           queue.done(response);
         },
+        async configure(task: TaskRequest) {
+          // Return a synchronous succcessfull done result
+          queue.done({
+            result: {},
+            taskId: task.data.taskId,
+            success: true,
+          });
+        },
       },
       Type: Worker,
     });
