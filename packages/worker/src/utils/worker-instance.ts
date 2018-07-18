@@ -1,4 +1,4 @@
-import { TaskRequest, onApplicationBootstrap } from '@zetapush/platform';
+import { TaskRequest } from '@zetapush/platform';
 
 import { timeoutify } from './async';
 
@@ -17,9 +17,22 @@ export class WorkerInstance {
    */
   private worker: any;
   /**
+   * Bootstraps layers
+   */
+  private bootLayers: any;
+
+  /**
    *
    */
-  constructor({ timeout, worker }: { timeout: number; worker: any }) {
+  constructor({
+    timeout,
+    worker,
+    bootLayers,
+  }: {
+    timeout: number;
+    worker: any;
+    bootLayers: any;
+  }) {
     /**
      * @access private
      * @type {number}
@@ -30,9 +43,15 @@ export class WorkerInstance {
      * @type {Object}
      */
     this.worker = worker;
+    /**
+     * @access private
+     * @type {Listà}
+     */
+    this.bootLayers = bootLayers;
   }
 
   async configure() {
+    console.log('Layers : ', this.bootLayers);
     for (let namespace in this.worker) {
       if (
         typeof this.worker[namespace][Symbol.for('onApplicationBootstrap')] ===

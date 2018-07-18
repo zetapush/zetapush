@@ -167,11 +167,19 @@ const normalize = (declaration) => {
  */
 const instanciate = (client, declaration) => {
   let singleton;
+  let output;
   try {
     const cleaned = clean(declaration);
-    const output = analyze(cleaned);
+    output = analyze(cleaned);
     const providers = resolve(client, output);
     const injector = ReflectiveInjector.resolveAndCreate(providers);
+    // convert bootlayer declaration to instances
+    for (let lay in output.bootLayer) {
+      for (let cus in output.bootLayer[lay]) {
+        const tmp = output.bootLayer[lay][cus];
+        output.bootLayer[lay][cus] = injector.get(tmp);
+      }
+    }
     singleton = Object.entries(cleaned).reduce(
       (instance, [namespace, CustomCloudService]) => {
         instance[namespace] = injector.get(CustomCloudService);
@@ -183,6 +191,7 @@ const instanciate = (client, declaration) => {
     error('instanciate', ex);
   }
   log('instanciate', singleton);
+  singleton.bootLayers = output.bootLayer;
   return singleton;
 };
 

@@ -75,6 +75,7 @@ export class WorkerClient extends Client {
     const instance = new WorkerInstance({
       timeout: this.timeout,
       worker,
+      bootLayers: worker.bootLayers,
     });
     const queue = this.createService<Worker>({
       deploymentId,
