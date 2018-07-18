@@ -7,7 +7,7 @@ const {
   trace,
   getDeploymentProgression,
   ProgressEvents,
-  ProgressFailureCauses,
+  ProgressFailureCauses
 } = require('@zetapush/core');
 const ProgressBar = require('node-progress-bars');
 
@@ -29,12 +29,10 @@ const displayProgress = (progress, steps) => {
           total: 100,
           width: 20,
           schema: `:bar.${getProgressionColor(step)} ${step.name}`,
-          blank: '░',
+          blank: '░'
         });
       }
-      progress[step.id].setSchema(
-        `:bar.${getProgressionColor(step)} ${step.name}`,
-      );
+      progress[step.id].setSchema(`:bar.${getProgressionColor(step)} ${step.name}`);
       progress[step.id].update(step.progress / 100);
     });
   } catch (e) {
@@ -43,11 +41,7 @@ const displayProgress = (progress, steps) => {
     steps.forEach((step) => {
       const progressChars = Math.floor((step.progress * 20) / 100);
       const blankChars = 20 - progressChars;
-      console.log(
-        `${''.padEnd(progressChars, '▇')}${''.padEnd(blankChars, '░')} ${
-          step.name
-        }`,
-      );
+      console.log(`${''.padEnd(progressChars, '▇')}${''.padEnd(blankChars, '░')} ${step.name}`);
     });
   }
 };
@@ -62,38 +56,31 @@ const getProgression = (config, recipeId) => {
   events.on(ProgressEvents.SUCCESS, async ({ fronts }) => {
     log(`Application status`);
     Object.entries(fronts).forEach(([name, urls]) => {
-      info(
-        `Your frontend application ${name} is available at ${
-          urls[urls.length - 1]
-        }`,
-      );
+      info(`Your frontend application ${name} is available at ${urls[urls.length - 1]}`);
     });
   });
-  events.on(
-    ProgressEvents.FAILED,
-    async ({ progressDetail, config, cause, failure }) => {
-      if (cause === ProgressFailureCauses.PROGRESSION_RETRYING) {
-        warn('Failed to get progression. Retrying...', failure);
-      } else if (cause === ProgressFailureCauses.LIVE_STATUS_FAILED) {
-        error(`Unable to get Application status`, failure);
-        await troubleshooting.displayHelp(failure);
-      } else if (cause === ProgressFailureCauses.PROGRESSION_UNAVAILABLE) {
-        error('Failed to get progression', failure);
-        await troubleshooting.displayHelp(failure);
-      } else {
-        const { steps, logs } = progressDetail;
-        process.stdout.removeAllListeners('before:newlines'); // FIXME: ugly hack required to avoid duplication of unfinished progressbars
-        console.log();
-        // display errors in console
-        errorsHandler.displayError(steps);
-        // write logs in a file for debugging
-        const logFile = errorsHandler.writeLogs(config, logs, steps);
-        info(`A complete log of this run can be found in:
+  events.on(ProgressEvents.FAILED, async ({ progressDetail, config, cause, failure }) => {
+    if (cause === ProgressFailureCauses.PROGRESSION_RETRYING) {
+      warn('Failed to get progression. Retrying...', failure);
+    } else if (cause === ProgressFailureCauses.LIVE_STATUS_FAILED) {
+      error(`Unable to get Application status`, failure);
+      await troubleshooting.displayHelp(failure);
+    } else if (cause === ProgressFailureCauses.PROGRESSION_UNAVAILABLE) {
+      error('Failed to get progression', failure);
+      await troubleshooting.displayHelp(failure);
+    } else {
+      const { steps, logs } = progressDetail;
+      process.stdout.removeAllListeners('before:newlines'); // FIXME: ugly hack required to avoid duplication of unfinished progressbars
+      console.log();
+      // display errors in console
+      errorsHandler.displayError(steps);
+      // write logs in a file for debugging
+      const logFile = errorsHandler.writeLogs(config, logs, steps);
+      info(`A complete log of this run can be found in:
             ${logFile}`);
-        await troubleshooting.displayHelp(progressDetail);
-      }
-    },
-  );
+      await troubleshooting.displayHelp(progressDetail);
+    }
+  });
 };
 
 module.exports = { getProgression };
