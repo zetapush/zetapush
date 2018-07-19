@@ -1,7 +1,7 @@
 {
   "spec_dir": "spec",
   "spec_files": [
-    "**/ScanAnnotationValidation.[sS]pec.ts"
+    "**/ValidationAccountCreationManager.[sS]pec.ts"
   ],
   "helpers": [
     "helpers/**/*.js", 
