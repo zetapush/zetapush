@@ -45,7 +45,11 @@ const scan = (CustomCloudService, output = new ScanOutput(), layer = 0) => {
           }
         }
       });
-      output.bootLayer.push(addToScan);
+      if (output.bootLayer[layer] === undefined) {
+        output.bootLayer.push(addToScan);
+      } else {
+        output.bootLayer[layer] = output.bootLayer[layer].concat(addToScan);
+      }
       for (let sc of toScan) {
         scan(sc.provider, sc.output, layer + 1);
       }
@@ -67,9 +71,8 @@ const analyze = (declaration) => {
   Object.values(cleaned).map((CustomCloudService) => {
     scan(CustomCloudService, output),
       output.bootLayer.unshift([CustomCloudService]);
-    output.bootLayer.reverse();
   });
-
+  output.bootLayer.reverse();
   // Removing duplicate of bootlayer
   let seens = [];
   for (let layer in output.bootLayer) {
