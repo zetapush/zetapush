@@ -1,5 +1,5 @@
-const { rm, npmInit, zetaPush, readZetarc, nukeApp } = require('./utils/commands');
-const { consoleUserAction, frontUserAction } = require('./utils/tdd');
+const { rm, npmInit, zetaPush, readZetarc, nukeApp } = require('@zetapush/testing');
+const { consoleUserAction, frontUserAction } = require('@zetapush/testing');
 const PATTERN = /Hello World from JavaScript (\d+)/;
 
 describe(`As developer with

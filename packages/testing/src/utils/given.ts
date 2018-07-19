@@ -15,85 +15,15 @@ const {
 } = require('./commands');
 const { WeakClient } = require('@zetapush/client');
 const transports = require('@zetapush/cometd/lib/node/Transports');
-const {
-  userActionLogger,
-  givenLogger,
-  frontUserActionLogger,
-  cleanLogger,
-  envLogger,
-} = require('./logger');
+const { userActionLogger, givenLogger, frontUserActionLogger, cleanLogger, envLogger } = require('./logger');
 
 const given = () => {
   return new Given();
 };
 
-const userAction = async (name, func) => {
-  try {
-    userActionLogger.info(`>>> User action: ${name}`);
-    const res = await func();
-    userActionLogger.info(`>>> User action DONE: ${name}`);
-    return res;
-  } catch (e) {
-    userActionLogger.error(`>>> User action FAILED: ${name}`, e);
-    throw e;
-  }
-};
-
-const consoleUserAction = async (name, func) => {
-  return await userAction(name + ' from console', func);
-};
-
-const frontUserAction = async (name, testOrContext, func) => {
-  return await userAction(name + ' from front', async () => {
-    let api;
-    let client;
-    try {
-      const zetarc = testOrContext.zetarc || testOrContext.context.zetarc;
-      client = new WeakClient({
-        ...zetarc,
-        transports,
-      });
-      frontUserActionLogger.debug('Connecting to worker...');
-      await client.connect();
-      frontUserActionLogger.debug('Connected to worker');
-      api = client.createProxyTaskService();
-      frontUserActionLogger.debug('Api instance created');
-    } catch (e) {
-      frontUserActionLogger.error(
-        "Connection from client failed. Cloud service won't be called",
-        e,
-      );
-      throw e;
-    }
-    try {
-      return await func(api, client);
-    } catch (e) {
-      frontUserActionLogger.error(
-        `>>> Front user action FAILED: ${name}`,
-        testOrContext.context || testOrContext,
-        e,
-      );
-      throw e;
-    }
-  });
-};
-
-const autoclean = async (testOrContext) => {
-  const context = testOrContext.projectDir
-    ? testOrContext
-    : testOrContext.context;
-  if (context && context.projectDir) {
-    try {
-      return await nukeApp(context.projectDir);
-    } catch (e) {
-      cleanLogger.warn('Failed to autoclean (nukeApp). Skipping the error.', e);
-    }
-  } else {
-    cleanLogger.debug('Skipping autoclean (nukeApp).', testOrContext);
-  }
-};
-
 class Given {
+  private creds;
+
   constructor() {
     this.sharedCredentials = {};
   }
@@ -149,19 +79,16 @@ class Given {
           context: {
             zetarc,
             projectDir,
-            runner,
-          },
+            runner
+          }
         });
       }
-      envLogger.silly(
-        `Current environment:`,
-        getCurrentEnv(projectDir),
-      );
+      envLogger.silly(`Current environment:`, getCurrentEnv(projectDir));
       givenLogger.debug(`>> Apply Given DONE`);
       return {
         zetarc,
         projectDir,
-        runner,
+        runner
       };
     } catch (e) {
       givenLogger.error(`>> Apply Given FAILED`, e);
@@ -237,21 +164,15 @@ class GivenNewApp extends Parent {
 
   async execute() {
     try {
-      givenLogger.info(
-        `>>> Given new application: .generated-projects/${this.dirName}`,
-      );
+      givenLogger.info(`>>> Given new application: .generated-projects/${this.dirName}`);
 
-      givenLogger.silly(
-        `GivenNewApp:execute -> rm(.generated-projects/${this.dirName})`,
-      );
+      givenLogger.silly(`GivenNewApp:execute -> rm(.generated-projects/${this.dirName})`);
       await rm(`.generated-projects/${this.dirName}`);
 
       const projectDir = `.generated-projects/${this.dirName}`;
       givenLogger.silly(
         `GivenNewApp:execute -> npmInit(${this.credentials.developerLogin},
-          ${this.credentials.developerPassword}, .generated-projects/${
-          this.dirName
-        })`,
+          ${this.credentials.developerPassword}, .generated-projects/${this.dirName})`
       );
       await npmInit(
         this.credentials.developerLogin,
@@ -261,18 +182,13 @@ class GivenNewApp extends Parent {
       );
       if (this.setNewAppName) {
         givenLogger.silly(
-          `GivenNewApp:execute -> setAppNameToZetarc(.generated-projects/${
-            this.dirName
-          }, ${this.newAppName})`,
+          `GivenNewApp:execute -> setAppNameToZetarc(.generated-projects/${this.dirName}, ${this.newAppName})`
         );
         await setAppNameToZetarc(projectDir, this.newAppName);
       }
       return projectDir;
     } catch (e) {
-      givenLogger.error(
-        `>>> Given new application FAILED: .generated-projects/${this.dirName}`,
-        e,
-      );
+      givenLogger.error(`>>> Given new application FAILED: .generated-projects/${this.dirName}`, e);
       throw e;
     }
   }
@@ -296,27 +212,19 @@ class GivenTestingApp extends Parent {
 
   async execute() {
     try {
-      givenLogger.info(
-        `>>> Given testing application: testing-projects/${
-          this.projectDirName
-        }`,
-      );
+      givenLogger.info(`>>> Given testing application: testing-projects/${this.projectDirName}`);
 
       if (this.projectDirName && this.installLatestDependencies) {
         givenLogger.silly(
-          `GivenTestingApp:execute -> npmInstallLatestVersion(testing-projects/${
-            this.projectDirName
-          })`,
+          `GivenTestingApp:execute -> npmInstallLatestVersion(testing-projects/${this.projectDirName})`
         );
-        await npmInstallLatestVersion(
-          `testing-projects/${this.projectDirName}`,
-        );
+        await npmInstallLatestVersion(`testing-projects/${this.projectDirName}`);
       }
       if (this.credentials) {
         givenLogger.silly(
-          `GivenTestingApp:execute -> setAccountToZetarc(testing-projects/${
-            this.projectDirName
-          }, ${JSON.stringify(this.credentials)})`,
+          `GivenTestingApp:execute -> setAccountToZetarc(testing-projects/${this.projectDirName}, ${JSON.stringify(
+            this.credentials
+          )})`
         );
         await setAccountToZetarc(
           `testing-projects/${this.projectDirName}`,
@@ -327,12 +235,7 @@ class GivenTestingApp extends Parent {
       }
       return `testing-projects/${this.projectDirName}`;
     } catch (e) {
-      givenLogger.error(
-        `>>> Given testing application FAILED: testing-projects/${
-          this.projectDirName
-        }`,
-        e,
-      );
+      givenLogger.error(`>>> Given testing application FAILED: testing-projects/${this.projectDirName}`, e);
       throw e;
     }
   }
@@ -351,49 +254,33 @@ class GivenTemplatedApp extends Parent {
 
   async execute() {
     try {
-      givenLogger.info(
-        `>>> Given templated application: testing-projects/${this.templateApp}`,
-      );
+      givenLogger.info(`>>> Given templated application: testing-projects/${this.templateApp}`);
 
-      givenLogger.silly(
-        `GivenTemplatedApp:execute -> rm(.generated-projects/${
-          this.templateApp
-        })`,
-      );
+      givenLogger.silly(`GivenTemplatedApp:execute -> rm(.generated-projects/${this.templateApp})`);
       await rm(`.generated-projects/${this.templateApp}`);
 
       givenLogger.silly(
-        `GivenTemplatedApp:execute -> copydir.sync(spec/templates/${
+        `GivenTemplatedApp:execute -> copydir.sync(spec/templates/${this.templateApp}, .generated-projects/${
           this.templateApp
-        }, .generated-projects/${this.templateApp})`,
+        })`
       );
-      copydir.sync(
-        'spec/templates/' + this.templateApp,
-        '.generated-projects/' + this.templateApp,
-      );
+      copydir.sync('spec/templates/' + this.templateApp, '.generated-projects/' + this.templateApp);
       if (this.credentials) {
         givenLogger.silly(
-          `GivenTemplatedApp:execute -> createZetarc(${
-            this.credentials.developerLogin
-          }, ${this.credentials.developerPassword}, .generated-projects/${
-            this.templateApp
-          })`,
+          `GivenTemplatedApp:execute -> createZetarc(${this.credentials.developerLogin}, ${
+            this.credentials.developerPassword
+          }, .generated-projects/${this.templateApp})`
         );
         createZetarc(
           this.credentials.developerLogin,
           this.credentials.developerPassword,
           '.generated-projects/' + this.templateApp,
-          this.credentials.platformUrl,
+          this.credentials.platformUrl
         );
       }
       return '.generated-projects/' + this.templateApp;
     } catch (e) {
-      givenLogger.error(
-        `>>> Given templated application FAILED: testing-projects/${
-          this.templateApp
-        }`,
-        e,
-      );
+      givenLogger.error(`>>> Given templated application FAILED: testing-projects/${this.templateApp}`, e);
       throw e;
     }
   }
@@ -426,9 +313,7 @@ class GivenWorker extends Parent {
         return new Runner(currentDir);
       }
       if (this.workerUp) {
-        givenLogger.info(
-          `>>> Given worker: run and wait for worker up ${currentDir}`,
-        );
+        givenLogger.info(`>>> Given worker: run and wait for worker up ${currentDir}`);
         const runner = new Runner(currentDir, this.timeout);
         runner.run(this.isQuiet);
         await runner.waitForWorkerUp();
@@ -440,11 +325,3 @@ class GivenWorker extends Parent {
     }
   }
 }
-
-module.exports = {
-  given,
-  userAction,
-  autoclean,
-  consoleUserAction,
-  frontUserAction,
-};

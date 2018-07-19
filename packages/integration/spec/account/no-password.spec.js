@@ -1,5 +1,5 @@
-const { zetaPush, zetaRun } = require('../utils/commands');
-const { given, consoleUserAction } = require('../utils/tdd');
+const { zetaPush, zetaRun } = require('@zetapush/testing');
+const { given, consoleUserAction } = require('@zetapush/testing');
 
 describe(`As developer with
         - no developerPassword
