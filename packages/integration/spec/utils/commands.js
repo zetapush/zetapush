@@ -15,6 +15,7 @@ const {
   SubProcessLoggerStream,
   subProcessLogger,
 } = require('./logger');
+const { PassThrough } = require('stream');
 
 const PLATFORM_URL = 'https://celtia.zetapush.com/zbo/pub/business';
 
@@ -120,6 +121,26 @@ const npmInit = (developerLogin, developerPassword, dir, platformUrl) => {
         { cwd: '.generated-projects' },
       );
     }
+  } else if (useSymlinkedDependencies()) {
+    const createPath = path.join(__dirname, '../../..', 'create', 'index.js');
+    commandLogger.debug(
+      `npmInit() -> [node ${createPath} ${relativeDir} --developer-login xxx --developer-password xxx ${
+        platformUrl ? '--platform-url' + platformUrl : ''
+      }]`,
+    );
+    cmd = execa(
+      'node',
+      [
+        createPath,
+        relativeDir,
+        '--developer-login',
+        developerLogin,
+        '--developer-password',
+        developerPassword,
+        ...(platformUrl ? ['--platform-url', platformUrl] : []),
+      ],
+      { cwd: '.generated-projects' },
+    );
   } else {
     commandLogger.debug(
       `npmInit() -> [npx @zetapush/create@canary ${relativeDir} --force-current-version --developer-login xxx --developer-password xxx ${
@@ -143,6 +164,9 @@ const npmInit = (developerLogin, developerPassword, dir, platformUrl) => {
   }
   cmd.stdout.pipe(new SubProcessLoggerStream('silly'));
   cmd.stderr.pipe(new SubProcessLoggerStream('warn'));
+  cmd.on('exit', (code, signal) => {
+    subProcessLogger.silly(`npmInit() -> exited`, { code, signal });
+  });
 
   // replace dependencies in node_modules with symlink to local dependencies
   if (useSymlinkedDependencies()) {
@@ -159,23 +183,35 @@ const npmInit = (developerLogin, developerPassword, dir, platformUrl) => {
  * @param {string} dir Full path of the application folder
  */
 const zetaPush = (dir) => {
-  try {
+  return new Promise((resolve, reject) => {
     commandLogger.info(`zetaPush(${dir}) -> [npm run deploy -- -vvv]`);
-    const res = execa.shellSync('npm run deploy -- -vvv', { cwd: dir });
-    commandLogger.silly(`zetaRun(${dir}) -> [npm run deploy -- -vvv] -> `, {
-      exitCode: res.status,
+    const stdout = [];
+    const stderr = [];
+    const cmd = execa.shell('npm run deploy -- -vvv', { cwd: dir });
+    const out = new PassThrough();
+    const err = new PassThrough();
+    out.on('data', (chunk) => stdout.push(chunk));
+    err.on('data', (chunk) => stderr.push(chunk));
+    cmd.stdout.pipe(out).pipe(new SubProcessLoggerStream('silly'));
+    cmd.stderr.pipe(err).pipe(new SubProcessLoggerStream('warn'));
+    cmd.on('exit', (code, signal) => {
+      const res = {
+        cmd,
+        code,
+        signal,
+        stdout: stdout.join('\n'),
+        stderr: stderr.join('\n'),
+      };
+      subProcessLogger.silly(
+        `zetaPush(${dir}) -> [npm run deploy -- -vvv] -> `,
+        {
+          code,
+          signal,
+        },
+      );
+      resolve(res);
     });
-    subProcessLogger.silly('\n' + res.stdout);
-    subProcessLogger.warn('\n' + res.stderr);
-    return 0;
-  } catch (err) {
-    subProcessLogger.error('\n' + err.stdout);
-    subProcessLogger.error('\n' + err.stderr);
-    commandLogger.error(`zetaPush(${dir}) -> [npm run deploy -- -vvv]`, {
-      exitCode: err.code,
-    });
-    return err.code;
-  }
+  });
 };
 
 /**
@@ -183,21 +219,32 @@ const zetaPush = (dir) => {
  * @param {string} dir Full path of the application folder
  */
 const zetaRun = async (dir) => {
-  try {
+  return new Promise((resolve, reject) => {
     commandLogger.info(`zetaRun(${dir}) -> [npm run start -- -vvv]`);
-    const res = execa.shellSync('npm run start -- -vvv', { cwd: dir });
-    commandLogger.silly(`zetaRun(${dir}) -> [npm run start -- -vvv] -> `);
-    subProcessLogger.silly('\n' + res.stdout);
-    subProcessLogger.warn('\n' + res.stderr);
-    return 0;
-  } catch (err) {
-    subProcessLogger.error('\n' + err.stdout);
-    subProcessLogger.error('\n' + err.stderr);
-    commandLogger.error(`zetaRun(${dir}) -> [npm run start -- -vvv]`, {
-      exitCode: err.code,
+    const stdout = [];
+    const stderr = [];
+    const cmd = execa.shell('npm run start -- -vvv', { cwd: dir });
+    const out = new PassThrough();
+    const err = new PassThrough();
+    out.on('data', (chunk) => stdout.push(chunk));
+    err.on('data', (chunk) => stderr.push(chunk));
+    cmd.stdout.pipe(out).pipe(new SubProcessLoggerStream('silly'));
+    cmd.stderr.pipe(err).pipe(new SubProcessLoggerStream('warn'));
+    cmd.on('exit', (code, signal) => {
+      const res = {
+        cmd,
+        code,
+        signal,
+        stdout: stdout.join('\n'),
+        stderr: stderr.join('\n'),
+      };
+      subProcessLogger.silly(`zetaRun(${dir}) -> [npm run start -- -vvv] -> `, {
+        code,
+        signal,
+      });
+      resolve(res);
     });
-    return err.code;
-  }
+  });
 };
 
 /**
@@ -449,6 +496,11 @@ const symlinkLocalDependencies = async (dir) => {
   try {
     commandLogger.silly(`symlinkLocalDependencies(${dir})`);
     await rm(`${dir}/node_modules/@zetapush/*`);
+    fs.symlinkSync(
+      path.resolve(__dirname, '../../..', 'core'),
+      `${dir}/node_modules/@zetapush/core`,
+      'dir',
+    );
     fs.symlinkSync(
       path.resolve(__dirname, '../../..', 'cli'),
       `${dir}/node_modules/@zetapush/cli`,

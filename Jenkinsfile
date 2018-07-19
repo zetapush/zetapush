@@ -67,23 +67,28 @@ pipeline {
     //       sh 'npm run lerna:publish:canary -- --yes'
     //     }
     //   }
-    // }
+    // }*
     
-    // stage('fix permissions') {
-    //   agent { 
-    //     docker {
-    //       image 'node:10.4.1'
-    //       label 'docker'
-    //       args '-u 0:0'
-    //     }
-    //   }
-    //   steps {
-    //     sh 'npm cache clear --force'
-    //     sh 'npm i'
-    //     sh 'npm run lerna:clean -- --yes'
-    //     sh "chown -R ${env.JENKINS_UID}:${env.JENKINS_GID} ."
-    //   }
-    // }
+    /**
+     * This stage is needed for Ubuntu slave because
+     * Original build is node in Docker and may be executed on same Unbuntu slave
+     * as Ubuntu slave (without Docker this time).
+     */
+    stage('Clear again and fix permissions') {
+      agent { 
+        docker {
+          image 'node:10.4.1'
+          label 'docker'
+          args '-u 0:0'
+        }
+      }
+      steps {
+        sh 'npm cache clear --force'
+        sh 'npm i'
+        sh 'npm run lerna:clean -- --yes'
+        sh "chown -R ${env.JENKINS_UID}:${env.JENKINS_GID} ."
+      }
+    }
 
     stage('Integration Tests') {
       parallel {

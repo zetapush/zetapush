@@ -23,7 +23,7 @@ describe(`As developer with
     "Should fail with errorCode 'ACCOUNT-03' (53) for 'zeta push'",
     async () => {
       await consoleUserAction('zeta push', async () => {
-        const code = await zetaPush(this.context.projectDir);
+        const { code } = await zetaPush(this.context.projectDir);
         expect(code).toBe(errorCode);
       });
     },
@@ -34,7 +34,7 @@ describe(`As developer with
     "Should fail with errorCode 'ACCOUNT-03' (53) for 'zeta run'",
     async () => {
       await consoleUserAction('zeta run', async () => {
-        const code = await zetaRun(this.context.projectDir);
+        const { code } = await zetaRun(this.context.projectDir);
         expect(code).toBe(errorCode);
       });
     },
