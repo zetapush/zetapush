@@ -7,8 +7,8 @@ const {
   createZetarc,
   npmInstallLatestVersion,
   nukeApp,
-} = require('./utils/commands');
-const { given, frontUserAction, autoclean } = require('./utils/tdd');
+} = require('@zetapush/testing');
+const { given, frontUserAction, autoclean } = require('@zetapush/testing');
 
 const sleep = (millis) => {
   return new Promise((resolve) => setTimeout(resolve, millis));

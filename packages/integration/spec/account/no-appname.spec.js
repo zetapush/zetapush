@@ -1,6 +1,6 @@
-const { zetaPush, readZetarc } = require('../utils/commands');
+const { zetaPush, readZetarc } = require('@zetapush/testing');
 const PATTERN = /Hello World from JavaScript (\d+)/;
-const { given, consoleUserAction, frontUserAction, autoclean } = require('../utils/tdd');
+const { given, consoleUserAction, frontUserAction, autoclean } = require('@zetapush/testing');
 
 describe(`As developer with
         - account exists
