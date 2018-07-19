@@ -13,17 +13,17 @@ export const timeoutify = (task: Task, timeout = 1000) =>
       () =>
         reject(
           Object.assign(new Error(`Timeout reached after ${timeout}ms`), {
-            code: 'TIMEOUT',
-          }),
+            code: 'TIMEOUT'
+          })
         ),
-      timeout,
+      timeout
     );
     try {
       const response = task();
       if (getType(response) === Promise.name) {
         return response.then(
           (...success: any[]) => (clearInterval(timer), resolve(...success)),
-          (...failed: any[]) => (clearInterval(timer), reject(...failed)),
+          (...failed: any[]) => (clearInterval(timer), reject(...failed))
         );
       } else {
         clearInterval(timer);

@@ -36,12 +36,12 @@ export class WorkerClient extends Client {
     developerPassword,
     resource = `node_js_worker_${uuid()}`,
     timeout = 60 * 1000,
-    capacity = 100,
+    capacity = 100
   }: WorkerClientOptions) {
     const authentication = () =>
       Authentication.developer({
         login: developerLogin,
-        password: developerPassword,
+        password: developerPassword
       });
     /**
      * Call Client constructor with specific parameters
@@ -52,7 +52,7 @@ export class WorkerClient extends Client {
       forceHttps,
       authentication,
       resource,
-      transports,
+      transports
     });
     /**
      * @access private
@@ -68,13 +68,10 @@ export class WorkerClient extends Client {
   /**
    * Subscribe a task worker
    */
-  subscribeTaskWorker(
-    worker: any,
-    deploymentId = Worker.DEFAULT_DEPLOYMENT_ID,
-  ) {
+  subscribeTaskWorker(worker: any, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
     const instance = new WorkerInstance({
       timeout: this.timeout,
-      worker,
+      worker
     });
     const queue = this.createService<Worker>({
       deploymentId,
@@ -84,12 +81,12 @@ export class WorkerClient extends Client {
           const response = await instance.dispatch(task);
           // Notify platforme job is done
           queue.done(response);
-        },
+        }
       },
-      Type: Worker,
+      Type: Worker
     });
     queue.register({
-      capacity: this.capacity,
+      capacity: this.capacity
     });
     return instance;
   }

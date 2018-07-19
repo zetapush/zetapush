@@ -10,7 +10,7 @@ import {
   ImpersonatedTraceableRequest,
   ResetInfo,
   ResetRequest,
-  UserLoginchange,
+  UserLoginchange
 } from './SimpleTypes';
 
 /**

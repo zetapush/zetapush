@@ -5,7 +5,7 @@ import {
   CronTaskListRequest,
   CronTaskRequest,
   TimerRequest,
-  TimerResult,
+  TimerResult
 } from './CronTypes';
 
 /**

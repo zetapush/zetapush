@@ -1,9 +1,4 @@
-import {
-  PageContent,
-  PageDirection,
-  Pagination,
-  StringAnyMap,
-} from '../CommonTypes';
+import { PageContent, PageDirection, Pagination, StringAnyMap } from '../CommonTypes';
 
 export interface CronPlanning {
   /**Cron planning request*/

@@ -5,7 +5,7 @@ import {
   TaskRequest,
   WorkerAdminBulkRequest,
   WorkerAdminBulkResponse,
-  WorkerAdminBulkServiceCreation,
+  WorkerAdminBulkServiceCreation
 } from './QueueTypes';
 
 /**
@@ -63,9 +63,7 @@ export class Queue extends Service {
   admin(body: WorkerAdminBulkRequest): Promise<WorkerAdminBulkResponse> {
     return this.$publish('admin', body);
   }
-  createServices(
-    body: WorkerAdminBulkServiceCreation,
-  ): Promise<WorkerAdminBulkResponse> {
+  createServices(body: WorkerAdminBulkServiceCreation): Promise<WorkerAdminBulkResponse> {
     return this.$publish('createServices', body);
   }
 }

@@ -1,10 +1,4 @@
-import {
-  Base64EncodedBytes,
-  PageContent,
-  PageDirection,
-  Pagination,
-  StringAnyMap,
-} from '../CommonTypes';
+import { Base64EncodedBytes, PageContent, PageDirection, Pagination, StringAnyMap } from '../CommonTypes';
 
 export interface StackItem {
   /**Server-generated GUID*/

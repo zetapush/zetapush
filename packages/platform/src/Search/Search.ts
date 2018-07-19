@@ -1,10 +1,5 @@
 import { Service } from '../Core/index';
-import {
-  SearchData,
-  SearchDocumentId,
-  SearchRequest,
-  SearchResults,
-} from './SearchTypes';
+import { SearchData, SearchDocumentId, SearchRequest, SearchResults } from './SearchTypes';
 
 /**
  * Search engine

@@ -23,8 +23,8 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
         pathname: '/auth/login',
         body: JSON.stringify({
           username: config.developerLogin,
-          password: config.developerPassword,
-        }),
+          password: config.developerPassword
+        })
       });
       return true;
     } catch (e) {
@@ -37,11 +37,9 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
     try {
       const { content } = await fetch({
         config,
-        pathname: '/orga/business/list',
+        pathname: '/orga/business/list'
       });
-      return (
-        content.filter((app) => app.businessId == config.appName).length > 0
-      );
+      return content.filter((app) => app.businessId == config.appName).length > 0;
     } catch (e) {
       trace('get apps for orga failed', e);
       return false;

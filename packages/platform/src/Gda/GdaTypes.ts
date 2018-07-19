@@ -1,10 +1,4 @@
-import {
-  Idempotence,
-  PageContent,
-  PageDirection,
-  Pagination,
-  StringAnyMap,
-} from '../CommonTypes';
+import { Idempotence, PageContent, PageDirection, Pagination, StringAnyMap } from '../CommonTypes';
 
 export interface GdaCellRequest {
   /**User field for traceability of requests. Synchronous SDK APIs use this field for you.*/
@@ -70,7 +64,7 @@ export enum GdaDataType {
   /**Floating point number*/
   DOUBLE = 'DOUBLE',
   /**Complex object*/
-  OBJECT = 'OBJECT',
+  OBJECT = 'OBJECT'
 }
 export interface GdaFilterRequest {
   /**Optional column/cell specifications of the columns/cells to retrieve*/

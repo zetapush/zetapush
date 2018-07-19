@@ -21,5 +21,5 @@ import {
   StringStringMap,
   UploadedFile,
   ZpfsDiskUsage,
-  ZpfsRequest,
+  ZpfsRequest
 } from '../CommonTypes';

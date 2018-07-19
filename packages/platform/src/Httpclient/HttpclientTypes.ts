@@ -3,7 +3,7 @@ import {
   MacroScriptParamConstraint,
   MacroTypeDefinition,
   PageContent,
-  StringAnyMap,
+  StringAnyMap
 } from '../CommonTypes';
 
 export interface HttpClientCall {
@@ -24,7 +24,7 @@ export enum HttpClientParseMode {
   /**Content is parsed as UTF8 JSON*/
   OBJECT = 'OBJECT',
   /**Content is not interpreted, but available as a raw array of bytes*/
-  BYTES = 'BYTES',
+  BYTES = 'BYTES'
 }
 export interface HttpClientRequest {
   /**Request body. String (passed as is) or complex object (serialized to json)*/

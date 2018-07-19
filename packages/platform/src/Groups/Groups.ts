@@ -24,7 +24,7 @@ import {
   TraceablePaginatedImpersonatedRequest,
   UserGroup,
   UserGroupMembership,
-  UserMembership,
+  UserMembership
 } from './GroupsTypes';
 
 /**
@@ -96,9 +96,7 @@ export class Groups extends Service {
   groups(body: ImpersonatedRequest): Promise<GroupInfo[]> {
     return this.$publish('groups', body);
   }
-  listDetailedOwnedGroups(
-    body: TraceablePaginatedImpersonatedRequest,
-  ): Promise<OwnedGroupsWithDetails> {
+  listDetailedOwnedGroups(body: TraceablePaginatedImpersonatedRequest): Promise<OwnedGroupsWithDetails> {
     return this.$publish('listDetailedOwnedGroups', body);
   }
   listGrants(body: GroupRelated): Promise<GrantList> {
@@ -110,14 +108,10 @@ export class Groups extends Service {
   listGroupPresences(body: GroupRelatedAndPaged): Promise<PagedGroupPresence> {
     return this.$publish('listGroupPresences', body);
   }
-  listJoinedGroups(
-    body: TraceablePaginatedImpersonatedRequest,
-  ): Promise<JoinedGroups> {
+  listJoinedGroups(body: TraceablePaginatedImpersonatedRequest): Promise<JoinedGroups> {
     return this.$publish('listJoinedGroups', body);
   }
-  listOwnedGroups(
-    body: TraceablePaginatedImpersonatedRequest,
-  ): Promise<OwnedGroups> {
+  listOwnedGroups(body: TraceablePaginatedImpersonatedRequest): Promise<OwnedGroups> {
     return this.$publish('listOwnedGroups', body);
   }
   listPresences(body: GroupRelated): Promise<GroupPresence> {

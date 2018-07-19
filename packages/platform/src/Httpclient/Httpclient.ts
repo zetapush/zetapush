@@ -4,7 +4,7 @@ import {
   HttpClientRequest,
   HttpClientResponse,
   HttpClientSOAPRequest,
-  HttpClientSOAPResponse,
+  HttpClientSOAPResponse
 } from './HttpclientTypes';
 
 /**

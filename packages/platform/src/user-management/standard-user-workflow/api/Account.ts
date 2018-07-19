@@ -40,9 +40,7 @@ export interface AccountCreationManager {
    * @returns information about the created account or null if account couldn't be handled
    * @throws {AccountCreationError} when creation couldn't be created
    */
-  createAccount(
-    accountCreationDetails: AccountCreationDetails,
-  ): Promise<Account>;
+  createAccount(accountCreationDetails: AccountCreationDetails): Promise<Account>;
 }
 
 export class AccountCreationError extends Error {
@@ -70,9 +68,7 @@ export interface AccountDetailsProvider {
 }
 
 export interface AccountConfirmationManager {
-  askConfirmation(
-    accountToConfirm: Account,
-  ): Promise<PendingAccountConfirmation>;
+  askConfirmation(accountToConfirm: Account): Promise<PendingAccountConfirmation>;
   confirm(token: Token): Promise<ConfirmedAccount>;
 }
 

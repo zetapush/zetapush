@@ -1,9 +1,5 @@
 import { Service } from '../Core/index';
-import {
-  NotifiableDeviceRegistration,
-  NotificationMessage,
-  NotificationSendStatus,
-} from './NotifTypes';
+import { NotifiableDeviceRegistration, NotificationMessage, NotificationSendStatus } from './NotifTypes';
 
 /**
  * Push Notifications

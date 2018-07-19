@@ -14,13 +14,9 @@ import {
   ListingEntryInfo,
   SnapshotCreationRequest,
   ZpfsDiskUsage,
-  ZpfsRequest,
+  ZpfsRequest
 } from '../CommonTypes';
-import {
-  FileCreationRequest,
-  ZpfsFileHandler,
-  ZpfsToken,
-} from './Zpfs_hdfsTypes';
+import { FileCreationRequest, ZpfsFileHandler, ZpfsToken } from './Zpfs_hdfsTypes';
 
 /**
  * Upload: local

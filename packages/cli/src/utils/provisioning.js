@@ -8,7 +8,7 @@ const { analyze } = require('./di');
 class Worker extends Queue {
   static get DEPLOYMENT_OPTIONS() {
     return {
-      queue_auth_id: 'developer',
+      queue_auth_id: 'developer'
     };
   }
 }
@@ -22,13 +22,7 @@ const getDeploymentServiceList = (declaration) => {
   // Ignore specific platform services
   const ignored = [Queue].map((Service) => Service.DEPLOYMENT_TYPE);
   const { platform } = analyze(declaration);
-  return Array.from(
-    new Set(
-      platform.filter(
-        (Service) => ignored.indexOf(Service.DEPLOYMENT_TYPE) === -1,
-      ),
-    ),
-  );
+  return Array.from(new Set(platform.filter((Service) => ignored.indexOf(Service.DEPLOYMENT_TYPE) === -1)));
 };
 
 /**
@@ -37,9 +31,7 @@ const getDeploymentServiceList = (declaration) => {
  * @return {string[]}
  */
 const getDeploymentIdList = (declaration) =>
-  getDeploymentServiceList(declaration).map(
-    (Service) => Service.DEPLOYMENT_TYPE,
-  );
+  getDeploymentServiceList(declaration).map((Service) => Service.DEPLOYMENT_TYPE);
 
 /**
  * Get bootstrap provisioning items
@@ -58,10 +50,10 @@ const getBootstrapProvision = (config) => {
         description: `${Service.DEPLOYMENT_TYPE}`,
         options: Service.DEPLOYMENT_OPTIONS || {},
         forbiddenVerbs: [],
-        enabled: true,
-      },
+        enabled: true
+      }
     })),
-    calls: [],
+    calls: []
   };
 };
 
@@ -84,10 +76,10 @@ const getRuntimeProvision = (config, declaration) => {
         description: `${Service.DEPLOYMENT_TYPE}`,
         options: Service.DEPLOYMENT_OPTIONS || {},
         forbiddenVerbs: [],
-        enabled: true,
-      },
+        enabled: true
+      }
     })),
-    calls: [],
+    calls: []
   };
 };
 
@@ -113,5 +105,5 @@ module.exports = {
   generateProvisioningFile,
   getBootstrapProvision,
   getDeploymentIdList,
-  getRuntimeProvision,
+  getRuntimeProvision
 };

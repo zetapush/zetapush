@@ -6,7 +6,7 @@ import {
   TemplateListResult,
   TemplateRemoval,
   TemplateRequest,
-  TemplateResult,
+  TemplateResult
 } from './TemplateTypes';
 
 /**
