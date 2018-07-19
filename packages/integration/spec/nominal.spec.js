@@ -45,13 +45,13 @@ describe(`As developer with
           this.developerLogin,
           this.developerPassword,
           fullPathProject,
-          this.platformUrl
+          this.platformUrl,
         );
       });
 
       // 2) zeta push
       await consoleUserAction('2) zeta push', async () => {
-        zetaPush(fullPathProject);
+        await zetaPush(fullPathProject);
       });
 
       let zetarc = await readZetarc(fullPathProject);

@@ -2,7 +2,7 @@ const path = require('path');
 const os = require('os');
 
 const { compress, upload, filter, BLACKLIST } = require('@zetapush/worker');
-const { log, error, mkdir } = require('@zetapush/core');
+const { log, error, mkdir, trace } = require('@zetapush/core');
 const { generateProvisioningFile } = require('../utils/provisioning');
 const { getProgression } = require('../utils/progression');
 const troubleshooting = require('../errors/troubleshooting');
@@ -20,6 +20,9 @@ const archive = (command, config, declaration) => {
   const rootArchive = `${root}.zip`;
   const workerArchive = path.join(root, `worker.zip`);
   const frontArchive = path.join(root, `front.zip`);
+  trace(
+    `zipping worker (${workerArchive}) and front (${frontArchive}) into ${rootArchive}...`,
+  );
 
   const options = {
     filter: filter(BLACKLIST),

@@ -99,9 +99,29 @@ export enum ProgressFailureCauses {
   PROGRESSION_RETRYING = 'PROGRESSION_RETRYING',
 }
 
+export const defaultBackoff = (
+  delay: number,
+  remainingRetries: number,
+  maxRetries: number,
+) => {
+  if (remainingRetries == maxRetries) {
+    return delay;
+  }
+  return delay * 2;
+};
+
 /**
  * Ask the state of the progression for the deployment represented by the parameter `recipeId`.
  * The progression doesn't return anything but instead will emit events.
+ *
+ * When progresion can't be retrieved, the progression will be retried with backoff policy.
+ * By default, the backoff policy will work like this:
+ * - 1st retry after 500ms
+ * - 2nd retry after 1s
+ * - 3rd retry after 2s
+ * - 4th retry after 4s
+ * - 5th retry after 8s
+ * - ...
  *
  * @param config The ZetaPush configuration (login/password, appName...)
  * @param recipeId The identifier of either the recipe or the deployment. This is the identifier provided by the server when requesting a deployment.
@@ -111,15 +131,29 @@ export enum ProgressFailureCauses {
  * @fires ProgressEvents#FAILED
  * @fires ProgressEvents#SUCCESS
  */
-export const getDeploymentProgression = (config: Config, recipeId: string) => {
+export const getDeploymentProgression = (
+  config: Config,
+  recipeId: string,
+  pollDelay = 500,
+  maxRetries = 10,
+  retryBackoff: (
+    currentDelay: number,
+    remainingRetries: number,
+    maxRetries: number,
+  ) => number = defaultBackoff,
+) => {
   const events = new EventEmitter();
 
-  let remainingRetries = 10;
+  let remainingRetries = maxRetries;
+  let currentDelay = pollDelay;
 
   (async function check() {
     try {
       const { progressDetail } = await getProgress(config, recipeId);
       const { finished, hasUnrecoverableErrors } = progressDetail;
+      remainingRetries = maxRetries;
+      currentDelay = pollDelay;
+
       events.emit(ProgressEvents.PROGRESSION, {
         progressDetail,
         config,
@@ -127,7 +161,7 @@ export const getDeploymentProgression = (config: Config, recipeId: string) => {
       });
 
       if (!finished && !hasUnrecoverableErrors) {
-        setTimeout(check, 500);
+        setTimeout(check, pollDelay);
       } else if (hasUnrecoverableErrors) {
         events.emit(ProgressEvents.FAILED, {
           cause: ProgressFailureCauses.UNRECOVERABLE_ERRORS,
@@ -159,15 +193,20 @@ export const getDeploymentProgression = (config: Config, recipeId: string) => {
       }
     } catch (ex) {
       debugObject('progression check', { ex });
-      if (remainingRetries-- > 0) {
+      if (!isFatalServerError(ex) && remainingRetries-- > 0) {
+        currentDelay = retryBackoff(currentDelay, remainingRetries, maxRetries);
         events.emit(ProgressEvents.FAILED, {
           cause: ProgressFailureCauses.PROGRESSION_RETRYING,
           failure: ex,
           config,
           recipeId,
-          remainingRetries,
+          retry: {
+            remainingRetries,
+            maxRetries,
+            next: currentDelay,
+          },
         });
-        setTimeout(check, 500);
+        setTimeout(check, currentDelay);
       } else {
         events.emit(ProgressEvents.FAILED, {
           cause: ProgressFailureCauses.PROGRESSION_UNAVAILABLE,
@@ -183,24 +222,60 @@ export const getDeploymentProgression = (config: Config, recipeId: string) => {
   return events;
 };
 
+const isFatalServerError = (ex: any) => {
+  try {
+    return ex.statusCode === 409 && JSON.parse(ex.body).code === 'NOT_FOUND';
+  } catch (e) {
+    return false;
+  }
+};
+
 export const checkQueueServiceDeployed = (
   config: Config,
   recipeId: string,
+  pollDelay = 500,
+  maxRetries = 10,
+  retryBackoff: (
+    currentDelay: number,
+    remainingRetries: number,
+    maxRetries: number,
+  ) => number = defaultBackoff,
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
+    let remainingRetries = maxRetries;
+    let currentDelay = pollDelay;
+
     (async function checkDeployed() {
       try {
         const { progressDetail } = await getProgress(config, recipeId);
-        const { finished } = progressDetail;
+        const { finished, hasUnrecoverableErrors } = progressDetail;
+        remainingRetries = maxRetries;
+        currentDelay = pollDelay;
 
-        if (!finished) {
-          setTimeout(checkDeployed, 2500);
+        if (!finished && !hasUnrecoverableErrors) {
+          setTimeout(checkDeployed, pollDelay);
+        } else if (hasUnrecoverableErrors) {
+          reject({
+            cause: ProgressFailureCauses.UNRECOVERABLE_ERRORS,
+            progressDetail,
+            config,
+            recipeId,
+          });
         } else {
           resolve(recipeId);
         }
       } catch (ex) {
-        error('Progression', ex);
-        reject({ failure: ex, config, recipeId });
+        if (!isFatalServerError(ex) && remainingRetries-- > 0) {
+          currentDelay = retryBackoff(
+            currentDelay,
+            remainingRetries,
+            maxRetries,
+          );
+          setTimeout(checkDeployed, currentDelay);
+        } else {
+          error('Progression', ex);
+          reject({ failure: ex, config, recipeId });
+        }
       }
     })();
   });
