@@ -1,5 +1,5 @@
 export class ValidationError extends Error {
-  constructor(message: string, public context: Array<ValidationErrorContext>) {
+  constructor(message: string, context: Array<ValidationErrorContext>) {
     super(message);
   }
 }

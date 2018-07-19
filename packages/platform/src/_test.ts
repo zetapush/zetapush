@@ -1,18 +1,9 @@
 import { ScanAnnotations } from './common/core/ScanAnnotations';
-import {
-  IsEmail,
-  validate,
-  IsBoolean,
-  IsAlpha,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, validate, IsBoolean, IsAlpha, MinLength, Length } from 'class-validator';
 import { ValidationAccountCreationManager } from './common/api/Validator';
 
 class Man {
-  @IsEmail() email!: string;
-
-  @IsAlpha()
-  @MinLength(10)
+  @Length(5)
   name!: string;
 }
 
@@ -22,11 +13,14 @@ class Hello {
 
 const toto = new Man();
 toto.name = 'damienledantec';
-toto.email = 'damien.le-dantec@zetapush.com';
-const hello = new Hello();
 
 const annot = new ScanAnnotations();
 const schema = annot.scan(Man);
+console.log('toto');
+const schema2 = annot.scan(Hello);
+
+console.log('schema =>', JSON.stringify(schema.properties, null, 4));
+console.log('schema2 =>', JSON.stringify(schema2.properties, null, 4));
 
 const validManager = new ValidationAccountCreationManager();
 

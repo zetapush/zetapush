@@ -1,9 +1,4 @@
-import {
-  getFromContainer,
-  MetadataStorage,
-  ValidationSchema,
-  registerSchema,
-} from 'class-validator';
+import { getFromContainer, MetadataStorage, ValidationSchema, registerSchema } from 'class-validator';
 
 export interface ValidationMetadata {
   groups: Array<any>;
@@ -22,17 +17,10 @@ export interface ValidationMetadata {
  */
 export class ScanAnnotations {
   scan(object: Function): ValidationSchema {
-    const nameSchema = object.name + '_' + new Date().getTime();
     const metadataStorage = getFromContainer(MetadataStorage);
-    const validationMetadata = metadataStorage.getTargetValidationMetadatas(
-      object,
-      '',
-      undefined,
-    );
-    return convertValidationMetadataToValidationSchema(
-      nameSchema,
-      validationMetadata,
-    );
+    const validationMetadata = metadataStorage.getTargetValidationMetadatas(object, '', undefined);
+
+    return convertValidationMetadataToValidationSchema(object, validationMetadata);
   }
 }
 
@@ -42,28 +30,29 @@ export class ScanAnnotations {
  * @param validationMetadatas Input validation metadata
  */
 export function convertValidationMetadataToValidationSchema(
-  name: string,
-  validationMetadatas: Array<ValidationMetadata>,
+  object: Function,
+  validationMetadatas: Array<ValidationMetadata>
 ): ValidationSchema {
   const validationSchema: ValidationSchema = {
-    name,
-    properties: {},
+    name: object.name + '_' + new Date().getTime(),
+    properties: {}
   };
 
   validationMetadatas.forEach((validationMetadata) => {
-    if (
-      !validationSchema.properties.hasOwnProperty(
-        validationMetadata.propertyName,
-      )
-    ) {
+    // Avoid double
+    if (validationMetadata.target !== object) {
+      return;
+    }
+
+    if (!validationSchema.properties.hasOwnProperty(validationMetadata.propertyName)) {
       validationSchema.properties[validationMetadata.propertyName] = [
         {
           type: validationMetadata.type,
           constraints: validationMetadata.constraints,
           each: validationMetadata.each,
           groups: validationMetadata.groups,
-          always: validationMetadata.always,
-        },
+          always: validationMetadata.always
+        }
       ];
     } else {
       validationSchema.properties[validationMetadata.propertyName].push({
@@ -71,7 +60,7 @@ export function convertValidationMetadataToValidationSchema(
         constraints: validationMetadata.constraints,
         each: validationMetadata.each,
         groups: validationMetadata.groups,
-        always: validationMetadata.always,
+        always: validationMetadata.always
       });
     }
   });
