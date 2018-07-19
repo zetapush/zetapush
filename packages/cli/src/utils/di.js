@@ -68,21 +68,28 @@ const scan = (CustomCloudService, output = new ScanOutput(), layer = 0) => {
 const analyze = (declaration) => {
   const cleaned = clean(declaration);
   const output = new ScanOutput();
+  const baseApi = [];
   Object.values(cleaned).map((CustomCloudService) => {
-    scan(CustomCloudService, output),
-      output.bootLayer.unshift([CustomCloudService]);
+    scan(CustomCloudService, output);
+    baseApi.push(CustomCloudService);
   });
   output.bootLayer.reverse();
+  output.bootLayer.push(baseApi);
   // Removing duplicate of bootlayer
-  let seens = [];
-  for (let layer in output.bootLayer) {
-    for (let api in output.bootLayer[layer]) {
-      for (let seen of seens) {
-        if (seen == output.bootLayer[layer][api]) {
-          output.bootLayer[layer].splice(api, 1);
+  let matchs = -1;
+  while (matchs !== 0) {
+    let seens = [];
+    matchs = 0;
+    for (let layer in output.bootLayer) {
+      for (let api in output.bootLayer[layer]) {
+        for (let seen of seens) {
+          if (seen == output.bootLayer[layer][api]) {
+            output.bootLayer[layer].splice(api, 1);
+            matchs += 1;
+          }
         }
+        seens.push(output.bootLayer[layer][api]);
       }
-      seens.push(output.bootLayer[layer][api]);
     }
   }
   // Unicity
