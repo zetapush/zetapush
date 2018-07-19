@@ -23,12 +23,18 @@
     "build:umd:min": "cross-env NODE_ENV=production rollup -c -i src/index.ts -o dist/zetapush-platform.min.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "prepublish": "npm run clean && npm run build",
+    "test": "npm run clean && npm run build:commonjs && ts-node node_modules/jasmine/bin/jasmine",
+    "test:debug": "npm run clean && npm run build:commonjs && ts-node --nolazy --inspect-brk=9229 node_modules/jasmine/bin/jasmine.js",
     "build:api-doc": "typedoc --out ./docs ./src/user-management/index.ts"
   },
   "dependencies": {
-    "injection-js": "2.2.1"
+    "class-validator": "0.8.5",
+    "injection-js": "2.2.1",
+    "jasmine": "3.1.0",
+    "ts-node": "7.0.0"
   },
   "devDependencies": {
+    "@types/jasmine": "2.8.8",
     "cross-env": "5.2.0",
     "rimraf": "2.6.2",
     "rollup": "0.62.0",
