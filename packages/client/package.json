@@ -27,8 +27,8 @@
     "test:ci": "karma start karma.conf.js"
   },
   "dependencies": {
-    "@zetapush/cometd": "^0.30.1",
-    "@zetapush/platform": "^0.30.1"
+    "@zetapush/cometd": "0.30.1",
+    "@zetapush/platform": "0.30.1"
   },
   "devDependencies": {
     "@babel/cli": "7.0.0-beta.53",
