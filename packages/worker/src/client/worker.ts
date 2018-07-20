@@ -1,7 +1,18 @@
 import { Authentication, Client, uuid } from '@zetapush/client';
-import { Queue as Worker, TaskRequest } from '@zetapush/platform';
+import {
+  Queue as Worker,
+  QueueTask,
+  ConfigureTask,
+  TaskRequest,
+} from '@zetapush/platform';
+import { LogLevel, Logs as Logger, Context } from '@zetapush/platform';
 
 import { WorkerInstance } from '../utils/worker-instance';
+
+interface ListenerMessage<T> {
+  data: T;
+  channel: string;
+}
 
 interface WorkerClientOptions {
   platformUrl: string;
@@ -76,20 +87,34 @@ export class WorkerClient extends Client {
       timeout: this.timeout,
       worker,
     });
+    const logger = this.createService<Logger>({
+      Type: Logger,
+    });
     const queue = this.createService<Worker>({
       deploymentId,
       listener: {
-        async dispatch(task: TaskRequest) {
-          // Delegate task execution to worker instance
-          const response = await instance.dispatch(task);
-          // Notify platforme job is done
-          queue.done(response);
+        dispatch: async ({ data: task }: ListenerMessage<QueueTask>) => {
+          const { request, taskId } = task;
+          if (request && taskId) {
+            // Get request context for task request
+            const context = this.getRequestContext(request, logger);
+            // Delegate task execution to worker instance
+            const response = await instance.dispatch(request, context);
+            // Notify platforme job is done
+            queue.done({
+              ...response,
+              taskId,
+              requestId: request.requestId,
+            });
+          } else {
+            // Unable to dispatch task
+          }
         },
-        async configure(task: TaskRequest) {
+        configure: async ({ data: task }: ListenerMessage<ConfigureTask>) => {
           // Return a synchronous succcessfull done result
           queue.done({
             result: {},
-            taskId: task.data.taskId,
+            taskId: task.taskId,
             success: true,
           });
         },
@@ -100,5 +125,55 @@ export class WorkerClient extends Client {
       capacity: this.capacity,
     });
     return instance;
+  }
+  private getRequestContext(request: TaskRequest, logger: Logger): Context {
+    const { contextId, data, owner = '', originator } = request;
+    const { name, namespace } = data;
+    // Base log options
+    const options = {
+      contextId,
+      custom: {},
+      owner: originator ? originator.owner : '',
+      resource: originator ? originator.resource : '',
+      logger: `${namespace}.${name}`,
+    };
+    return Object.freeze({
+      owner,
+      trace(...messages: any[]) {
+        logger.log({
+          ...options,
+          data: messages,
+          level: LogLevel.TRACE,
+        });
+      },
+      debug(...messages: any[]) {
+        logger.log({
+          ...options,
+          data: messages,
+          level: LogLevel.DEBUG,
+        });
+      },
+      info(...messages: any[]) {
+        logger.log({
+          ...options,
+          data: messages,
+          level: LogLevel.INFO,
+        });
+      },
+      warn(...messages: any[]) {
+        logger.log({
+          ...options,
+          data: messages,
+          level: LogLevel.WARN,
+        });
+      },
+      error(...messages: any[]) {
+        logger.log({
+          ...options,
+          data: messages,
+          level: LogLevel.ERROR,
+        });
+      },
+    });
   }
 }
