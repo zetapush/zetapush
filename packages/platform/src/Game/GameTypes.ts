@@ -30,6 +30,14 @@ export interface GameJoinResponse {
   /**caller ID from the original request*/
   callerId?: string;
 }
+export interface GameJoinWithCallback {
+  /**unique ID for this message*/
+  msgId?: string;
+  /**message payload*/
+  payload?: GameJoin;
+  /**callback info*/
+  callerId?: string;
+}
 export interface GameOrganization {
   /**Game type*/
   type: GameType;
@@ -48,6 +56,14 @@ export interface GameOrganizationResponse {
   /**error message*/
   error?: string;
   /**caller ID from the original request*/
+  callerId?: string;
+}
+export interface GameOrganizationWithCallback {
+  /**unique ID for this message*/
+  msgId?: string;
+  /**message payload*/
+  payload?: GameOrganization;
+  /**callback info*/
   callerId?: string;
 }
 export interface GamePlay {

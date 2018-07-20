@@ -29,6 +29,12 @@ export class Sms_ovh extends Service {
    * User API for SMS.
    * @access public
    * */
+  /**
+   * Sends an SMS
+   *
+   * Sends the given message to the given recipients.
+   * @access public
+   * */
   send(body: SmsMessage) {
     return this.$publish('send', body);
   }

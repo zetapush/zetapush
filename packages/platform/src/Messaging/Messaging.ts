@@ -27,6 +27,13 @@ export class Messaging extends Service {
    * Simple and flexible user-to-user or user-to-group messaging service.
    * @access public
    * */
+  /**
+   * Sends a message to a target
+   *
+   * Sends the given message to the specified target on the given (optional) channel.
+   * The administratively given default channel name is used when none is provided in the message itself.
+   * @access public
+   * */
   send(body: Message) {
     return this.$publish('send', body);
   }

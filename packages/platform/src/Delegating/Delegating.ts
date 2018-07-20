@@ -32,6 +32,13 @@ export class Delegating extends Service {
    * Provisioning verbs.
    * @access public
    * */
+  /**
+   * Get user info
+   *
+   * Retrieves cached user info or (if missing) eagerly creates a zetapush key for the user.
+   * The returned field 'zetapushKey' is a unique and permanent ID identifying a user in a sandbox.
+   * @access public
+   * */
   userInfo(body: ExistingUser): Promise<StringAnyMap> {
     return this.$publish('userInfo', body);
   }
