@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Groups } from './Groups';
 import { PageContent } from '../CommonTypes';
 import { GrantList, Grants, GroupInfo, GroupRelated, GroupUsers, UserGroup } from './GroupsTypes';

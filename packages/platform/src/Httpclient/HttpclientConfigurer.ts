@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Httpclient } from './Httpclient';
 import { PageContent } from '../CommonTypes';
 import { HttpClientTemplate } from './HttpclientTypes';

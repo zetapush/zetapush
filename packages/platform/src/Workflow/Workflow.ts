@@ -1,4 +1,4 @@
-import { Service } from '../Core/index';
+import { Service } from '../Core';
 import { PageContent } from '../CommonTypes';
 import {
   WorkflowCreationRequest,

@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Simple } from './Simple';
 import { PageContent } from '../CommonTypes';
 import { BasicAuthenticatedUser, BasicUserCreation, ExistenceCheck } from './SimpleTypes';

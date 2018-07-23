@@ -1,4 +1,4 @@
-import { Service } from '../Core/index';
+import { Service } from '../Core';
 import { ProvisioningRequest, ProvisioningResult, UserControlRequest, UserControlStatus, UserToken } from './WeakTypes';
 
 /**

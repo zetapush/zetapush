@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Trigger } from './Trigger';
 import { ApiTriggerId, ApiTriggerListener, MassTriggers, TriggerId, TriggerListener } from './TriggerTypes';
 

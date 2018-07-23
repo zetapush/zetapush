@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Gda } from './Gda';
 import { GdaRemoveColumns, GdaTableModification, GdaTableRemoval, GdaTableStructure } from './GdaTypes';
 

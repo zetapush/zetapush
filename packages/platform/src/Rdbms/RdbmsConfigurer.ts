@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Rdbms } from './Rdbms';
 import { RdbmsSimpleQuery } from './RdbmsTypes';
 

@@ -1,27 +1,32 @@
-import { getFromContainer, MetadataStorage, ValidationSchema, registerSchema } from 'class-validator';
-
-export interface ValidationMetadata {
-  groups: Array<any>;
-  always: boolean;
-  each: boolean;
-  type: string;
-  target: string | Function;
-  propertyName: string;
-  constraints: Array<any>;
-  constraintCls: any;
-  validationTypeOptions: any;
-}
+import { AbstractParent } from './AbstractParent';
+import { Configurer, ValidationConfigurer } from './grammar';
+import { ValidationManager, ValidationMetadata } from '../api/Validation';
+import { Type } from '../../Metadata/Options';
+import { ValidationSchema, getFromContainer, MetadataStorage, registerSchema } from 'class-validator';
+import { ClassValidatorManager } from '../core/Validation';
 
 /**
- * Scan annotation to generate ValidationMetadata object
+ * ValidationConfigurer implementation using the "class-validator" library
  */
-export class ScanAnnotations {
-  scan(object: Function): ValidationSchema {
-    const metadataStorage = getFromContainer(MetadataStorage);
-    const validationMetadata = metadataStorage.getTargetValidationMetadatas(object, '', undefined);
+export class ClassValidatorValidationConfigurer<P> extends AbstractParent<P>
+  implements Configurer<ValidationManager>, ValidationConfigurer<P> {
+  private validationManager: ValidationManager;
 
-    return convertValidationMetadataToValidationSchema(object, validationMetadata);
+  constructor(parent: P, private model: Type<any>) {
+    super(parent);
   }
+
+  async build(): Promise<ValidationManager> {
+    this.validationManager = new ClassValidatorManager(generateValidationSchemaFromObject(this.model));
+    return this.validationManager;
+  }
+}
+
+export function generateValidationSchemaFromObject(object: Function): ValidationSchema {
+  const metadataStorage = getFromContainer(MetadataStorage);
+  const validationMetadata = metadataStorage.getTargetValidationMetadatas(object, '', undefined);
+
+  return convertValidationMetadataToValidationSchema(object, validationMetadata);
 }
 
 /**

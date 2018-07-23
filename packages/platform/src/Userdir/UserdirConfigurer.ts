@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Userdir } from './Userdir';
 import { UserSearchConfig } from './UserdirTypes';
 

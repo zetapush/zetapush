@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Search } from './Search';
 import { PageContent } from '../CommonTypes';
 import { SearchIndex } from './SearchTypes';

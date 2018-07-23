@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Macro } from './Macro';
 import { StringAnyMap } from '../CommonTypes';
 import {

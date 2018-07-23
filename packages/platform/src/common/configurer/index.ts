@@ -170,3 +170,33 @@ import { AccountStatus } from '../../user-management/standard-user-workflow/api'
 //         .reset(new MyCustomPasswordResetManager())
 //   }
 // }
+
+// this.userManagementConfigurer.build()
+// this.userManagementConfigurer
+//   .registration()
+//     .account()
+//       .fields()
+//         .scan(SignupInfo)
+//           .annotations()
+//             .validation()
+//             .and()
+//             // .toto()
+//           .and()
+//         .field('username')
+//           .validation()
+//             .required()
+//             .min(25)
+//         .field({
+//           username: {
+//             required: true,
+//             min: 25
+//           }
+//         })
+
+// this.userManagementConfigurer
+// .registration()
+//   .account()
+//     .fields()
+//       .scan(SignupInfo)
+
+//   this.userManagementConfigurer.build()

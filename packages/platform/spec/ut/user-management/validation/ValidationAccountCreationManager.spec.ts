@@ -1,10 +1,10 @@
 import {} from 'jasmine';
 import { Length, IsAlpha, IsEmail } from 'class-validator';
-import { ValidationAccountCreationManager } from '../../../../src/common/api/Validator';
+import { ClassValidatorManager } from '../../../../src/common/api/Validator';
 import { AccountCreationValidationError } from '../../../../src/user-management/standard-user-workflow/api/exceptions';
 
 describe('ValidationAccountCreationManager', function() {
-  const validator = new ValidationAccountCreationManager();
+  const validator = new ClassValidatorManager();
 
   const inputCorrectSchema = {
     name: 'ComplexClass_1532012582913',

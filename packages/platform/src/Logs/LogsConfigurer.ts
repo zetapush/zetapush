@@ -1,6 +1,6 @@
-import { Configurer } from '../Core/index';
 import { Logs } from './Logs';
 import { LogConfig, LogEntries, LogListRequest } from './LogsTypes';
+import { Configurer } from '../Core';
 
 /**json file based authentication*/
 export class LogsConfigurer extends Configurer {

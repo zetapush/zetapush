@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Template } from './Template';
 import { PageContent } from '../CommonTypes';
 import { TemplateInfo } from './TemplateTypes';

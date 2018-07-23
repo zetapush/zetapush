@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Notif } from './Notif';
 import { NotifiableApplication } from './NotifTypes';
 

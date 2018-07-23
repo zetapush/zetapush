@@ -1,4 +1,4 @@
-import { Service } from '../Core/index';
+import { Service } from '../Core';
 import { SearchData, SearchDocumentId, SearchRequest, SearchResults } from './SearchTypes';
 
 /**

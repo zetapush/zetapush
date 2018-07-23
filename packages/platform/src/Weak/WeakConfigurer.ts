@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Weak } from './Weak';
 import { Base64EncodedBytes } from '../CommonTypes';
 

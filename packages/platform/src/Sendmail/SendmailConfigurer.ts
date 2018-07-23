@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Sendmail } from './Sendmail';
 
 /**Sends email through SMTP*/

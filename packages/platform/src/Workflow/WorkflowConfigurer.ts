@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Workflow } from './Workflow';
 import { WorkflowTemplateCreation, WorkflowTemplatePurge } from './WorkflowTypes';
 

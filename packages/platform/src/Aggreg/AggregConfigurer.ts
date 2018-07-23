@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Aggreg } from './Aggreg';
 import { AggregationItemCategory } from './AggregTypes';
 
