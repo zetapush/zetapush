@@ -5,9 +5,11 @@ import {
   ConfigureTask,
   TaskRequest,
 } from '@zetapush/platform';
-import { LogLevel, Logs as Logger, Context } from '@zetapush/platform';
+import { LogLevel, Logs, Context } from '@zetapush/platform';
 
 import { WorkerInstance } from '../utils/worker-instance';
+
+const DEFAULT_NAMESPACE = '';
 
 interface ListenerMessage<T> {
   data: T;
@@ -87,8 +89,8 @@ export class WorkerClient extends Client {
       timeout: this.timeout,
       worker,
     });
-    const logger = this.createService<Logger>({
-      Type: Logger,
+    const logs = this.createService<Logs>({
+      Type: Logs,
     });
     const queue = this.createService<Worker>({
       deploymentId,
@@ -97,7 +99,7 @@ export class WorkerClient extends Client {
           const { request, taskId } = task;
           if (request && taskId) {
             // Get request context for task request
-            const context = this.getRequestContext(request, logger);
+            const context = this.getRequestContext(request, logs, deploymentId);
             // Delegate task execution to worker instance
             const response = await instance.dispatch(request, context);
             // Notify platforme job is done
@@ -126,54 +128,63 @@ export class WorkerClient extends Client {
     });
     return instance;
   }
-  private getRequestContext(request: TaskRequest, logger: Logger): Context {
+  private getRequestContext(
+    request: TaskRequest,
+    logs: Logs,
+    deploymentId: string,
+  ): Context {
     const { contextId, data, owner = '', originator } = request;
-    const { name, namespace } = data;
+    const { name } = data;
+    const namespace = () =>
+      data.namespace === DEFAULT_NAMESPACE ? 'default' : data.namespace;
     // Base log options
     const options = {
       contextId,
       custom: {},
       owner: originator ? originator.owner : '',
       resource: originator ? originator.resource : '',
-      logger: `${namespace}.${name}`,
+      logger: `${deploymentId}.${namespace()}.${name}`,
     };
-    return Object.freeze({
-      owner,
+    const logger = Object.freeze({
       trace(...messages: any[]) {
-        logger.log({
+        logs.log({
           ...options,
           data: messages,
           level: LogLevel.TRACE,
         });
       },
       debug(...messages: any[]) {
-        logger.log({
+        logs.log({
           ...options,
           data: messages,
           level: LogLevel.DEBUG,
         });
       },
       info(...messages: any[]) {
-        logger.log({
+        logs.log({
           ...options,
           data: messages,
           level: LogLevel.INFO,
         });
       },
       warn(...messages: any[]) {
-        logger.log({
+        logs.log({
           ...options,
           data: messages,
           level: LogLevel.WARN,
         });
       },
       error(...messages: any[]) {
-        logger.log({
+        logs.log({
           ...options,
           data: messages,
           level: LogLevel.ERROR,
         });
       },
+    });
+    return Object.freeze({
+      owner,
+      logger,
     });
   }
 }
