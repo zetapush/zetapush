@@ -1,4 +1,4 @@
-import { TaskRequest, onApplicationBootstrap } from '@zetapush/platform';
+import { TaskRequest } from '@zetapush/platform';
 
 import { timeoutify } from './async';
 
@@ -51,20 +51,24 @@ export class WorkerInstance {
   }
 
   async configure() {
-    try {
-      for (let layerIndex in this.bootLayers) {
-        for (let apiIndex in this.bootLayers[layerIndex]) {
-          const api = this.bootLayers[layerIndex][apiIndex];
-          if (typeof api[onApplicationBootstrap] === 'function') {
-            await api[onApplicationBootstrap]();
+    for (let layerIndex in this.bootLayers) {
+      for (let apiIndex in this.bootLayers[layerIndex]) {
+        const api = this.bootLayers[layerIndex][apiIndex];
+        console.log('OnApplicationBootstrap ::', api.constructor.name);
+        if (typeof api['onApplicationBootstrap'] === 'function') {
+          try {
+            await api['onApplicationBootstrap']();
+          } catch (error) {
+            return {
+              success: false,
+              result: {
+                error: error,
+                class: api.constructor.name,
+              },
+            };
           }
         }
       }
-    } catch (error) {
-      return {
-        success: false,
-        result: error,
-      };
     }
     return {
       success: true,
@@ -83,6 +87,10 @@ export class WorkerInstance {
       taskId,
     });
     try {
+      if (name === 'onApplicationBootstrap') {
+        // Forbidden
+        throw new Error('Forbidden external call : ' + name);
+      }
       // Wrap request context
       const context = {
         owner,

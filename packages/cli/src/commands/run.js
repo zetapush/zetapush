@@ -110,24 +110,29 @@ const run = (command, config, declaration) => {
       });
       const checkBoostrap = () => {
         return new Promise((resolve, reject) => {
-          if (!command.skipProvisioning) {
+          if (!command.skipBootstrap) {
             instance.configure().then((res) => {
               if (res.success == false) {
-                throw new Error(res.result);
+                reject(res.result);
+              } else {
+                resolve();
               }
-              resolve();
             });
           } else {
             resolve();
           }
         });
       };
-      checkBoostrap().then(() => {
-        info('Worker is up!');
-        if (command.serveFront) {
-          createServer(command, config);
-        }
-      });
+      return checkBoostrap()
+        .then(() => {
+          info('Worker is up!');
+          if (command.serveFront) {
+            createServer(command, config);
+          }
+        })
+        .catch((err) => {
+          troubleshooting.displayHelp(err);
+        });
     })
     .catch((failure) => {
       spinner.stop();

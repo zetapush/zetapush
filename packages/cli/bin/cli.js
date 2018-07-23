@@ -95,6 +95,12 @@ program
     () => true,
     false,
   )
+  .option(
+    '--skip-bootstrap',
+    'Discard all onApplicationBootstrap methods on run',
+    () => true,
+    false,
+  )
   .description('Run your code')
   .action((command) =>
     createApp(command)

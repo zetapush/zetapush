@@ -1,8 +1,7 @@
-import {onApplicationBootstrap} from "@zetapush/platform";
 export default class Api {
 
-  async [onApplicationBootstrap](){
-    // Init your backend here
+  async onApplicationBootstrap(){
+
     return ;
   }
 

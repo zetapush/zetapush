@@ -1,8 +1,7 @@
-const { onApplicationBootstrap } = require('@zetapush/platform');
 module.exports = class Api {
 
-  async [onApplicationBootstrap](){
-    // Init your backend here
+  async onApplicationBootstrap(){
+    
     return ;
   }
 
