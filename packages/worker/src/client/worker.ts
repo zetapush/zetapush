@@ -106,6 +106,7 @@ export class WorkerClient extends Client {
             queue.done({
               ...response,
               taskId,
+              contextId: request.contextId,
               requestId: request.requestId,
             });
           } else {
