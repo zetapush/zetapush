@@ -28,6 +28,13 @@ export class Trigger extends Service {
    * Register listeners and trigger events.
    * @access public
    * */
+  /**
+   * Triggers an event
+   *
+   * Triggers an event.
+   * All listeners previously registered for that event will be called, in no particular order.
+   * @access public
+   * */
   trigger(body: EventTrigger) {
     return this.$publish('trigger', body);
   }

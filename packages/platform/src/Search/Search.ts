@@ -35,15 +35,38 @@ export class Search extends Service {
    * This API is a very thin wrapper around ElasticSearch's API.
    * @access public
    * */
+  /**
+   * Deletes data
+   *
+   * Deletes a document from the elasticsearch engine by id.
+   * @access public
+   * */
   delete(body: SearchDocumentId) {
     return this.$publish('delete', body);
   }
+  /**
+   * Gets data
+   *
+   * Retrieves a document from the elasticsearch engine by id.
+   * @access public
+   * */
   get(body: SearchDocumentId): Promise<SearchData> {
     return this.$publish('get', body);
   }
+  /**
+   * Indexes data
+   *
+   * Inserts or updates a document into the elasticsearch engine.
+   * @access public
+   * */
   index(body: SearchData) {
     return this.$publish('index', body);
   }
+  /**
+   * Searches for data
+   *
+   * @access public
+   * */
   search(body: SearchRequest): Promise<SearchResults> {
     return this.$publish('search', body);
   }

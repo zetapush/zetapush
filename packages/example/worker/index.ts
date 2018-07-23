@@ -1,5 +1,5 @@
 
-import { Injectable } from '@zetapush/platform';
+import { Injectable, Context } from '@zetapush/platform';
 
 import { Calendar } from './calendar';
 import { Storage } from './storage';
@@ -13,7 +13,8 @@ export default class Api {
   list() {
     return this.storage.list();
   }
-  hello() {
+  hello(_: void, context: Context) {
+    context.debug('coucou');
     return `Hello World from TypeScript ${this.calendar.getNow()}`;
   }
   reduce(list: number[]) {

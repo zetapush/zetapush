@@ -1,8 +1,7 @@
 import { Configurer } from '../Core/index';
 import { Macro } from './Macro';
-import { StringAnyMap } from '../CommonTypes';
+import { ConfigurableHttpOutput, StringAnyMap } from '../CommonTypes';
 import {
-  ConfigurableHttpOutput,
   MacroCompletion,
   MacroDebugToken,
   MacroInfo,
