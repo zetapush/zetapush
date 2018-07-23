@@ -149,35 +149,35 @@ export class WorkerClient extends Client {
       trace(...messages: any[]) {
         logs.log({
           ...options,
-          data: messages,
+          data: { messages },
           level: LogLevel.TRACE,
         });
       },
       debug(...messages: any[]) {
         logs.log({
           ...options,
-          data: messages,
+          data: { messages },
           level: LogLevel.DEBUG,
         });
       },
       info(...messages: any[]) {
         logs.log({
           ...options,
-          data: messages,
+          data: { messages },
           level: LogLevel.INFO,
         });
       },
       warn(...messages: any[]) {
         logs.log({
           ...options,
-          data: messages,
+          data: { messages },
           level: LogLevel.WARN,
         });
       },
       error(...messages: any[]) {
         logs.log({
           ...options,
-          data: messages,
+          data: { messages },
           level: LogLevel.ERROR,
         });
       },
