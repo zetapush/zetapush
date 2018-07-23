@@ -117,6 +117,7 @@ export class WorkerClient extends Client {
           // Return a synchronous succcessfull done result
           queue.done({
             result: {},
+            contextId: task.request && task.request.contextId,
             taskId: task.taskId,
             success: true,
           });
