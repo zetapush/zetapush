@@ -88,6 +88,8 @@ export interface QueueTask {
 export interface TaskCompletion {
   /**Target for the response (the syntax is the same as in messaging.send). Overrides 'broadcast' when set.*/
   target?: any;
+  /**Optional context ID for logs. This value MUST have been previously given by the server to this connected client.*/
+  contextId?: string;
   /**Optional result of the processing. When 'success' is false, can contain an error object (with String fields 'code' and 'message').*/
   result?: any;
   /**Server-assigned task identifier.*/

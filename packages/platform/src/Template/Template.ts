@@ -35,22 +35,6 @@ export class Template extends Service {
     return 'template_0';
   }
   /**
-   * User API for templates
-   *
-   * Users use this API to evaluate pre-configured templates.
-   * @access public
-   * */
-  /**
-   * Evaluates a template
-   *
-   * Evaluates the given template and returns the result as a string.
-   * Templates are parsed the first time they are evaluated. Evaluation may fail early due to a parsing error.
-   * @access public
-   * */
-  evaluate(body: TemplateRequest): Promise<TemplateResult> {
-    return this.$publish('evaluate', body);
-  }
-  /**
    * User API for templates management
    *
    * Users use this API to configure templates.
@@ -92,5 +76,21 @@ export class Template extends Service {
    * */
   list(body: TemplateListRequest): Promise<TemplateListResult> {
     return this.$publish('list', body);
+  }
+  /**
+   * User API for templates
+   *
+   * Users use this API to evaluate pre-configured templates.
+   * @access public
+   * */
+  /**
+   * Evaluates a template
+   *
+   * Evaluates the given template and returns the result as a string.
+   * Templates are parsed the first time they are evaluated. Evaluation may fail early due to a parsing error.
+   * @access public
+   * */
+  evaluate(body: TemplateRequest): Promise<TemplateResult> {
+    return this.$publish('evaluate', body);
   }
 }

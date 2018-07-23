@@ -33,61 +33,6 @@ export class Game extends Service {
     return 'game_0';
   }
   /**
-   * User API for games
-   *
-   * Users can list, start, join games, and play.
-   * @access public
-   * */
-  /**
-   * Lists game types
-   *
-   * Returns the list of game types supported by the server and the currently registered game engines.
-   * @access public
-   * */
-  available(): Promise<GameInfo[]> {
-    return this.$publish('available');
-  }
-  /**
-   * A user joins a game
-   *
-   * @access public
-   * */
-  join(body: GameJoin) {
-    return this.$publish('join', body);
-  }
-  /**
-   * Organizes a game
-   *
-   * @access public
-   * */
-  organize(body: GameOrganization) {
-    return this.$publish('organize', body);
-  }
-  /**
-   * Gives some command to the game engine
-   *
-   * @access public
-   * */
-  play(body: GamePlay) {
-    return this.$publish('play', body);
-  }
-  /**
-   * Starts a game
-   *
-   * @access public
-   * */
-  start(body: GameStart) {
-    return this.$publish('start', body);
-  }
-  /**
-   * A user cancels joining a game
-   *
-   * @access public
-   * */
-  unjoin(body: GameJoin) {
-    return this.$publish('unjoin', body);
-  }
-  /**
    * Game Engine API
    *
    * The Game Engine API is for game engine clients, not end-users.
@@ -148,5 +93,60 @@ export class Game extends Service {
    * */
   unjoin_result(body: GameJoinResponse) {
     return this.$publish('unjoin_result', body);
+  }
+  /**
+   * User API for games
+   *
+   * Users can list, start, join games, and play.
+   * @access public
+   * */
+  /**
+   * Lists game types
+   *
+   * Returns the list of game types supported by the server and the currently registered game engines.
+   * @access public
+   * */
+  available(): Promise<GameInfo[]> {
+    return this.$publish('available');
+  }
+  /**
+   * A user joins a game
+   *
+   * @access public
+   * */
+  join(body: GameJoin) {
+    return this.$publish('join', body);
+  }
+  /**
+   * Organizes a game
+   *
+   * @access public
+   * */
+  organize(body: GameOrganization) {
+    return this.$publish('organize', body);
+  }
+  /**
+   * Gives some command to the game engine
+   *
+   * @access public
+   * */
+  play(body: GamePlay) {
+    return this.$publish('play', body);
+  }
+  /**
+   * Starts a game
+   *
+   * @access public
+   * */
+  start(body: GameStart) {
+    return this.$publish('start', body);
+  }
+  /**
+   * A user cancels joining a game
+   *
+   * @access public
+   * */
+  unjoin(body: GameJoin) {
+    return this.$publish('unjoin', body);
   }
 }

@@ -33,43 +33,6 @@ export class Workflow extends Service {
     return 'workflow_0';
   }
   /**
-   * Simple workflow service : workflow definition API
-   *
-   * Manage workflow templates.
-   * Consider using the @Workflow annotation to ease configuration.
-   * @access public
-   * */
-  /**
-   * Creates a template
-   *
-   * Creates a new workflow template.
-   * This new template will be available for instantiation by 'create'.
-   * @access public
-   * */
-  createTemplate(body: WorkflowTemplateCreation): Promise<WorkflowTemplate> {
-    return this.$publish('createTemplate', body);
-  }
-  /**
-   * Fetche a template
-   *
-   * Returns a existing template, by identifier.
-   * @access public
-   * */
-  getTemplate(body: WorkflowTemplateInfoRequest): Promise<WorkflowTemplate> {
-    return this.$publish('getTemplate', body);
-  }
-  /**
-   * Asks for a list of templates
-   *
-   * Returns a paginated list of templates.
-   * @access public
-   * */
-  listTemplates(
-    body: WorkflowTemplateList,
-  ): Promise<WorkflowTemplateListResult> {
-    return this.$publish('listTemplates', body);
-  }
-  /**
    * Simple workflow service : workflow usage API
    *
    * Instantiate workflows.
@@ -118,5 +81,42 @@ export class Workflow extends Service {
     body: WorkflowTransitionRequest,
   ): Promise<WorkflowTransitionRequest> {
     return this.$publish('transition', body);
+  }
+  /**
+   * Simple workflow service : workflow definition API
+   *
+   * Manage workflow templates.
+   * Consider using the @Workflow annotation to ease configuration.
+   * @access public
+   * */
+  /**
+   * Creates a template
+   *
+   * Creates a new workflow template.
+   * This new template will be available for instantiation by 'create'.
+   * @access public
+   * */
+  createTemplate(body: WorkflowTemplateCreation): Promise<WorkflowTemplate> {
+    return this.$publish('createTemplate', body);
+  }
+  /**
+   * Fetche a template
+   *
+   * Returns a existing template, by identifier.
+   * @access public
+   * */
+  getTemplate(body: WorkflowTemplateInfoRequest): Promise<WorkflowTemplate> {
+    return this.$publish('getTemplate', body);
+  }
+  /**
+   * Asks for a list of templates
+   *
+   * Returns a paginated list of templates.
+   * @access public
+   * */
+  listTemplates(
+    body: WorkflowTemplateList,
+  ): Promise<WorkflowTemplateListResult> {
+    return this.$publish('listTemplates', body);
   }
 }
