@@ -1,4 +1,10 @@
-import { OwnerResource, StringStringMap, ZetaApiError } from '../CommonTypes';
+import {
+  ConfigurableHttpOutput,
+  OwnerResource,
+  StringAnyMap,
+  StringStringMap,
+  ZetaApiError,
+} from '../CommonTypes';
 
 export interface ConfigureCall {}
 export interface ConfigureTask {

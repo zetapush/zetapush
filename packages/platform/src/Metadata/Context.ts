@@ -1,12 +1,16 @@
-type LogContextMethod = (...messages: any[]) => void;
+type ContextLoggerMethod = (...messages: any[]) => void;
+
+interface ContextLogger {
+  trace: ContextLoggerMethod;
+  debug: ContextLoggerMethod;
+  info: ContextLoggerMethod;
+  warn: ContextLoggerMethod;
+  error: ContextLoggerMethod;
+}
 
 interface MethodContext {
   owner: string;
-  trace: LogContextMethod;
-  debug: LogContextMethod;
-  info: LogContextMethod;
-  warn: LogContextMethod;
-  error: LogContextMethod;
+  logger: Readonly<ContextLogger>;
 }
 
 export type Context = Readonly<MethodContext>;

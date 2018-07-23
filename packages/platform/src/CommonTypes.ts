@@ -47,6 +47,10 @@ export interface PageContent<T> {
 
 export type ListOrSingle = string | string[];
 
+export interface ConfigurableHttpOutput {
+  /**EMPTY DESC*/
+  data?: any;
+}
 export interface CreatedFile {
   /**Old name (if applicable)*/
   oldPath?: string;

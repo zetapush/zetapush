@@ -1,4 +1,5 @@
 import {
+  ConfigurableHttpOutput,
   MacroScriptParam,
   MacroScriptParamConstraint,
   MacroTypeDefinition,
@@ -6,10 +7,6 @@ import {
   ZetaApiError,
 } from '../CommonTypes';
 
-export interface ConfigurableHttpOutput {
-  /**EMPTY DESC*/
-  data?: any;
-}
 export interface MacroCompletion {
   /**Execution statistics, when debug is enabled*/
   stats?: MacroCompletionStats;
