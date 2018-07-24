@@ -77,25 +77,15 @@ export class WorkerInstance {
   async dispatch(request: TaskRequest, context: Context) {
     const { data, owner } = request;
     const { name, namespace, parameters } = data;
-    console.log('WorkerInstance::dispatch', {
-      name,
-      namespace,
-      parameters,
-    });
     try {
       if (name === 'onApplicationBootstrap') {
         // Forbidden
         throw new Error('Forbidden external call : ' + name);
       }
-      // Wrap request context
-      const context = {
-        owner,
-      };
       const result = await timeoutify(
         () => this.worker[namespace][name](parameters, context),
         this.timeout,
       );
-      console.log('WorkerInstance::result', result);
       return {
         result,
         success: true,
