@@ -3,15 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.31.1](https://github.com/zetapush/zetapush/compare/v0.31.0...v0.31.1) (2018-07-24)
-
-
-### Bug Fixes
-
-* **create:** update default example ([efd390e](https://github.com/zetapush/zetapush/commit/efd390e))
+## [0.31.2](https://github.com/zetapush/zetapush/compare/v0.31.1...v0.31.2) (2018-07-24)
 
 
 
+
+**Note:** Version bump only for package @zetapush/create
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

@@ -3,12 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.31.1](https://github.com/zetapush/zetapush/compare/v0.31.0...v0.31.1) (2018-07-24)
+## [0.31.2](https://github.com/zetapush/zetapush/compare/v0.31.1...v0.31.2) (2018-07-24)
 
 
 ### Bug Fixes
 
-* **create:** update default example ([efd390e](https://github.com/zetapush/zetapush/commit/efd390e))
+* **example:** rename context[logLevel] to context.logger[logLevel] ([f27cf0d](https://github.com/zetapush/zetapush/commit/f27cf0d))
+* **log:** inject logger in context method object ([ba5609d](https://github.com/zetapush/zetapush/commit/ba5609d)), closes [#61](https://github.com/zetapush/zetapush/issues/61)
 
 
 
