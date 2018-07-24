@@ -1,6 +1,6 @@
 const { load, save } = require('../loader/config');
 
-const { createApplication, info } = require('@zetapush/core');
+const { createApplication, info } = require('@zetapush/common');
 
 /**
  * Create application on ZetaPush platform

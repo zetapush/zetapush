@@ -3,7 +3,7 @@ const dns = require('dns');
 const os = require('os');
 const process = require('process');
 const gateway = require('default-gateway');
-const { trace } = require('@zetapush/core');
+const { trace } = require('@zetapush/common');
 const execa = require('execa');
 
 class NetworkIssueAnalyzer extends ErrorAnalyzer {

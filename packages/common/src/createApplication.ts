@@ -6,7 +6,11 @@ import { Config } from './common-types';
  * @param {Object} config
  */
 const getPreferedCluster = (config: Config) =>
-  fetch({ config, pathname: 'orga/cluster/list' }).then((clusters: any[]) => {
+  fetch({
+    config,
+    pathname: 'orga/cluster/list',
+    debugName: 'getPreferedCluster',
+  }).then((clusters: any[]) => {
     const [cluster] = clusters.filter(({ preferred }) => Boolean(preferred));
     return cluster;
   });
@@ -14,7 +18,8 @@ const getPreferedCluster = (config: Config) =>
  * Get developer profile info
  * @param {Object} config
  */
-const whoami = (config: Config) => fetch({ config, pathname: 'auth/whoami' });
+const whoami = (config: Config) =>
+  fetch({ config, pathname: 'auth/whoami', debugName: 'whoami' });
 /**
  * Create business application
  * @param {Object} config
@@ -32,6 +37,7 @@ const create = (config: Config, orga: any, cluster: any) =>
       name: `app@${getNameSuffix()}`,
       description: getDescription(),
     }),
+    debugName: 'createApplication',
   });
 
 export const createApplication = (config: Config) =>

@@ -1,5 +1,5 @@
 const conditions = require('./conditions');
-const { trace } = require('@zetapush/core');
+const { trace } = require('@zetapush/common');
 
 const parse = (content) => {
   let parsed = content

@@ -12,10 +12,11 @@ const config = {
     resolve({
       jsnext: true,
       main: true,
-      // browser: true,
+      browser: true,
     }),
     commonjs({
-      include: ['node_modules/**', '../common/**'],
+      include: ['node_modules/**'],
+      exclude: ['node_modules/isomorphic-form-data'],
     }),
     ts({
       typescript,
@@ -23,11 +24,8 @@ const config = {
     json(),
   ],
   output: {
-    name: 'ZetaPushPlatform',
+    name: 'ZetaPushCommon',
     format: 'umd',
-    globals: {
-      '@zetapush/common': 'ZetaPushCommon',
-    },
     sourcemap: true,
   },
 };

@@ -1,23 +1,21 @@
-import * as path from 'path';
-import * as os from 'os';
 import { WorkerClient, Worker } from './worker';
-import { ReflectiveInjector, Weak, Queue } from '@zetapush/platform';
-const transports = require('@zetapush/cometd/lib/node/Transports');
-
-import { compress } from '../utils/compress';
+import { Weak, Queue, Service } from '@zetapush/platform';
 import {
   instantiate,
   WorkerDeclaration,
-  Config,
-  mkdir,
+  ResolvedConfig,
   checkQueueServiceDeployed,
   generateProvisioningFile,
   getDeploymentIdList,
   getRuntimeProvision,
   equals,
-  fetch
-} from '@zetapush/core';
-import { upload, filter, BLACKLIST } from '../utils/upload';
+  fetch,
+  upload,
+  filter,
+  BLACKLIST,
+  createProvisioningArchive,
+  generateProvisioningContent
+} from '@zetapush/common';
 import { EventEmitter } from 'events';
 import { WorkerInstance } from '../utils/worker-instance';
 
@@ -70,7 +68,12 @@ export class WorkerRunner extends EventEmitter {
   private currentDeclaration: WorkerDeclaration;
   private currentInstance?: WorkerInstance;
 
-  constructor(private skipProvisioning: boolean, private skipBootstrap: boolean, private config: Config) {
+  constructor(
+    private skipProvisioning: boolean,
+    private skipBootstrap: boolean,
+    private config: ResolvedConfig,
+    private transports: any[]
+  ) {
     super();
   }
 
@@ -80,8 +83,12 @@ export class WorkerRunner extends EventEmitter {
    * @param {Object} config
    * @param {Object} declaration
    */
-  private async start(client: WorkerClient, config: Config, declaration: WorkerDeclaration): Promise<WorkerInstance> {
-    return Promise.resolve(instantiate(client, declaration, ReflectiveInjector)).then((declaration) =>
+  private async start(
+    client: WorkerClient,
+    config: ResolvedConfig,
+    declaration: WorkerDeclaration
+  ): Promise<WorkerInstance> {
+    return Promise.resolve(instantiate(client, declaration)).then((declaration) =>
       client.subscribeTaskWorker(declaration, config.workerServiceId)
     );
   }
@@ -106,12 +113,12 @@ export class WorkerRunner extends EventEmitter {
    * @fires WorkerRunnerEvents#RELOAD_FAILED
    */
   run(declaration: WorkerDeclaration) {
-    console.log('###### B', this.config);
     const config = this.config;
 
+    const clientConfig: any = config;
     const client = new WorkerClient({
-      ...config,
-      transports
+      ...clientConfig,
+      transports: this.transports
     });
     this.client = client;
     this.currentDeclaration = declaration;
@@ -121,21 +128,6 @@ export class WorkerRunner extends EventEmitter {
       config,
       declaration
     });
-
-    // const onTerminalSignal = () => {
-    //   warn(`Properly disconnect client`);
-    //   client.disconnect().then(() => {
-    //     warn(`Client properly disconnected`);
-    //     process.exit(0);
-    //   });
-    // };
-
-    // const TERMINATE_SIGNALS = ['SIGINT', 'SIGTERM', 'SIGQUIT'];
-    // TERMINATE_SIGNALS.forEach((signal) => {
-    //   process.on(signal, () => {
-    //     onTerminalSignal(signal);
-    //   });
-    // });
 
     /**
      * Run worker and create services if necessary
@@ -149,9 +141,6 @@ export class WorkerRunner extends EventEmitter {
               : this.connectClientAndCreateServices(client, config, declaration)
         );
 
-    // // Progress
-    // const spinner = ora('Starting worker... \n');
-    // spinner.start();
     this.emit(WorkerRunnerEvents.STARTING, {
       client,
       config,
@@ -164,33 +153,7 @@ export class WorkerRunner extends EventEmitter {
     bootstrap
       .then(() => this.start(client, config, declaration))
       .then((instance) => {
-        // spinner.stop();
-        // let previous = getDeploymentIdList(declaration);
-        // WorkerLoader.events.on('reload', (reloaded: boolean) => {
-        //   spinner.text = `Reloading worker... \n`;
-        //   spinner.start();
-        //   let next = getDeploymentIdList(reloaded);
-        //   const deploymentListHasChange = !equals(previous, next);
-        //   const tasks = [];
-        //   if (deploymentListHasChange) {
-        //     tasks.push(createServices(client, config, reloaded));
-        //   }
-        //   Promise.all(tasks)
-        //     .then(() => {
-        //       // Create a new worker instance
-        //       const worker = instantiate(client, reloaded, ReflectiveInjector);
-        //       instance.setWorker(worker);
-        //       // Update previous deployment id list
-        //       previous = next;
-        //       // Stop spiner
-        //       spinner.stop();
-        //       info('Worker is up!');
-        //     })
-        //     .catch(() => {
-        //       spinner.stop();
-        //       warn('Fail to reload worker');
-        //     });
-        // });
+        this.currentInstance = instance;
         const checkBoostrap = () => {
           return new Promise((resolve, reject) => {
             if (!this.skipBootstrap) {
@@ -208,18 +171,12 @@ export class WorkerRunner extends EventEmitter {
         };
         return checkBoostrap()
           .then(() => {
-            console.log('###### C', config);
-            this.currentInstance = instance;
             this.emit(WorkerRunnerEvents.STARTED, {
               instance,
               client,
               config,
               declaration
             });
-            // info('Worker is up!');
-            // if (command.serveFront) {
-            //   return createServer(command, config);
-            // }
           })
           .catch((err) => {
             this.emit(WorkerRunnerEvents.START_FAILED, {
@@ -231,9 +188,6 @@ export class WorkerRunner extends EventEmitter {
           });
       })
       .catch((failure) => {
-        // spinner.stop();
-        // error('ZetaPush Celtia Error', failure);
-        // troubleshooting.displayHelp(failure);
         // TODO: reaise error instead ?
         this.emit(WorkerRunnerEvents.START_FAILED, {
           failure,
@@ -270,14 +224,10 @@ export class WorkerRunner extends EventEmitter {
           );
         }
         // Create a new worker instance
-        const worker = instantiate(this.client, reloaded, ReflectiveInjector);
+        const worker = instantiate(this.client, reloaded);
         this.currentInstance.setWorker(worker);
         // Update previous deployment id list
         this.currentDeclaration = reloaded;
-        // previous = next;
-        // // Stop spiner
-        // spinner.stop();
-        // info('Worker is up!');
         this.emit(WorkerRunnerEvents.RELOADED, {
           instance: this.currentInstance,
           client: this.client,
@@ -285,8 +235,6 @@ export class WorkerRunner extends EventEmitter {
         });
       })
       .catch((failure) => {
-        // spinner.stop();
-        // warn('Fail to reload worker');
         // TODO: reaise error instead ?
         this.emit(WorkerRunnerEvents.RELOAD_FAILED, {
           failure,
@@ -307,10 +255,9 @@ export class WorkerRunner extends EventEmitter {
   private waitingQueueServiceDeployed(
     recipe: any,
     client: WorkerClient,
-    config: Config,
+    config: ResolvedConfig,
     declaration: WorkerDeclaration
   ): Promise<boolean> {
-    console.log('###### D', config);
     const { recipeId } = recipe;
     if (recipeId === void 0) {
       throw new QueueServiceDeploymentError('Missing recipeId', recipe);
@@ -321,9 +268,7 @@ export class WorkerRunner extends EventEmitter {
       config,
       declaration
     });
-    // log('Waiting Queue service deploying...');
     return checkQueueServiceDeployed(config, recipeId).then((recipeId: string) => {
-      console.log('###### E', this.config);
       this.emit(WorkerRunnerEvents.QUEUE_SERVICE_READY, {
         recipe,
         client,
@@ -334,8 +279,7 @@ export class WorkerRunner extends EventEmitter {
     });
   }
 
-  private createServices(client: WorkerClient, config: Config, declaration: WorkerDeclaration) {
-    console.log('###### F', config);
+  private createServices(client: WorkerClient, config: ResolvedConfig, declaration: WorkerDeclaration) {
     const api = client.createAsyncService({
       Type: Queue
     });
@@ -343,21 +287,19 @@ export class WorkerRunner extends EventEmitter {
     const { items } = getRuntimeProvision(config, declaration, [Queue]);
     const services = items.map(({ item }) => item);
 
-    // info(`Create services`, services);
     this.emit(WorkerRunnerEvents.CREATED_SERVICES, {
       services,
       client,
       config,
       declaration
     });
-    console.log('###### F:services', services);
 
     return (<any>api).createServices({ services });
   }
 
   private connectClientAndCreateServices(
     client: WorkerClient,
-    config: Config,
+    config: ResolvedConfig,
     declaration: WorkerDeclaration
   ): Promise<boolean> {
     this.emit(WorkerRunnerEvents.CONNECTING, {
@@ -383,45 +325,20 @@ export class WorkerRunner extends EventEmitter {
         });
         return true;
       });
-    // try {
-    //   console.log('###### G', config);
-    // this.emit(WorkerRunnerEvents.CONNECTING, {
-    //   client,
-    //   config,
-    //   declaration,
-    // });
-    //   await client.connect();
-    // this.emit(WorkerRunnerEvents.CONNECTED, {
-    //   client,
-    //   config,
-    //   declaration,
-    // });
-    //   await this.createServices(client, config, declaration);
-    //   this.emit(WorkerRunnerEvents.PLATFORM_SERVICES_READY, {
-    //     client,
-    //     config,
-    //     declaration,
-    //   });
-    // } catch (e) {
-    //   throw new WorkerConnectionError(
-    //     'Failed to connect worker to platform',
-    //     e,
-    //   );
-    // }
   }
 
-  private checkServicesAlreadyDeployed(config: Config): Promise<boolean> {
-    console.log('###### H', config);
+  private checkServicesAlreadyDeployed(config: ResolvedConfig): Promise<boolean> {
     return fetch({
       config,
       method: 'GET',
-      pathname: `orga/item/list/${config.appName}`
-    }).then(({ content }) => content.length > 0);
+      pathname: `orga/item/list/${config.appName}`,
+      debugName: 'checkServicesAlreadyDeployed'
+    }).then(({ content }: { content: any[] }) => content.length > 0);
   }
 
   private cookWithOnlyQueueService(
     client: WorkerClient,
-    config: Config,
+    config: ResolvedConfig,
     declaration: WorkerDeclaration
   ): Promise<boolean> {
     this.emit(WorkerRunnerEvents.UPLOADING, {
@@ -430,22 +347,11 @@ export class WorkerRunner extends EventEmitter {
       declaration
     });
 
-    console.log('###### I', config);
-    const ts = Date.now();
-    const root = path.join(os.tmpdir(), String(ts));
-    const rootArchive = `${root}.zip`;
-    const app = path.join(root, 'app');
-
-    const options = {
-      filter: filter(BLACKLIST)
-    };
-
-    return mkdir(root)
-      .then(() => generateProvisioningFile(app, config, [Worker, Weak]))
-      .then(() => compress(root, { ...options, ...{ saveTo: rootArchive } }))
-      .then(() =>
-        upload(rootArchive, config)
-          .then((recipe) => {
+    return generateProvisioningContent(config, [Worker, Weak])
+      .then(({ json }: { json: string }) => createProvisioningArchive(json))
+      .then((archive: string) =>
+        upload(archive, config)
+          .then((recipe: any) => {
             this.emit(WorkerRunnerEvents.UPLOADED, {
               recipe,
               client,
@@ -454,7 +360,7 @@ export class WorkerRunner extends EventEmitter {
             });
             return this.waitingQueueServiceDeployed(recipe, client, config, declaration);
           })
-          .catch((failure) => {
+          .catch((failure: any) => {
             this.emit(WorkerRunnerEvents.UPLOAD_FAILED, {
               failure,
               client,
@@ -464,24 +370,5 @@ export class WorkerRunner extends EventEmitter {
             return false;
           })
       );
-
-    // try {
-    //   await mkdir(root);
-    //   await generateProvisioningFile(app, config, [Worker, Weak]);
-    //   await compress(root, { ...options, ...{ saveTo: rootArchive } });
-    //   const recipe = await upload(rootArchive, config);
-    //   await this.waitingQueueServiceDeployed(
-    //     recipe,
-    //     client,
-    //     config,
-    //     declaration,
-    //   );
-    //   // )
-    //   // // TODO: raise error
-    //   // .catch((failure: any) => error('Upload failed', failure)),
-    //   // );
-    // } catch (e) {
-    //   throw new UploadError('Failed to upload worker declaration', e);
-    // }
   }
 }

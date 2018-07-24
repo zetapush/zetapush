@@ -1,6 +1,20 @@
-import chalk from 'chalk';
-import fs from 'fs';
+import * as fs from 'fs';
 import { getZetaFilePath } from './files';
+
+let chalk: any;
+try {
+  chalk = require('chalk');
+} catch (e) {
+  // FIXME: chalk in browser
+  chalk = (...args: any[]) => args.join('');
+}
+
+let stringify: any;
+try {
+  stringify = require('json-stringify-safe');
+} catch (e) {
+  stringify = JSON.stringify;
+}
 
 export const setVerbosity = (verbosity: number) => {
   (<any>global).loggerVerbosity = verbosity;
@@ -15,14 +29,28 @@ export const debugObject = (what: string, ...objects: any[]) => {
         `${Date.now()}-${what}-${name}.json`,
       );
       try {
-        fs.writeFileSync(file, JSON.stringify(obj[name], null, 2));
+        fs.writeFileSync(file, stringify(obj[name], null, 2));
         console.debug(chalk`{gray [TRACE] ${what}-${name} written in ${file}}`);
       } catch (e) {
-        console.debug(
-          chalk`{gray [TRACE] ${what}-${name} couldn't be written in ${file}}`,
-          obj[name],
-          e,
-        );
+        try {
+          let fallbackFile = getZetaFilePath(
+            'zeta-debug',
+            `${Date.now()}-${what}-${name}.string`,
+          );
+          fs.writeFileSync(
+            fallbackFile,
+            Object.prototype.toString.call(obj[name]),
+          );
+          console.debug(
+            chalk`{gray [TRACE] ${what}-${name} written in ${fallbackFile}}`,
+          );
+        } catch (err) {
+          console.debug(
+            chalk`{gray [TRACE] ${what}-${name} couldn't be written in ${file}}`,
+            obj[name],
+            e,
+          );
+        }
       }
     }
   }

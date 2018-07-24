@@ -28,7 +28,7 @@
     "build:api-doc": "typedoc --out ./docs ./src/user-management/index.ts"
   },
   "dependencies": {
-    "injection-js": "2.2.1"
+    "@zetapush/common": "^0.30.1"
   },
   "devDependencies": {
     "@types/jasmine": "2.8.8",

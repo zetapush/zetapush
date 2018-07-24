@@ -1,8 +1,14 @@
-import { writeFile } from 'fs';
-
-import { log, error } from './utils/log';
+import { log, error } from '../utils/log';
 import { analyze } from './di';
-import { Service, Config, WorkerDeclaration } from './common-types';
+import {
+  Service,
+  Config,
+  WorkerDeclaration,
+  ResolvedConfig,
+} from '../common-types';
+import { PathLike, writeFile } from 'fs';
+import { isNode } from '../utils/environment';
+const JSZip = require('jszip');
 
 /**
  * Get deployment service list from injected service to provisioning items
@@ -46,7 +52,7 @@ export const getDeploymentIdList = (
  * @param {Service[]} services the services to bootstrap
  */
 export const getBootstrapProvision = (
-  config: Config,
+  config: ResolvedConfig,
   services: Array<Service>,
 ) => {
   return {
@@ -74,10 +80,14 @@ export const getBootstrapProvision = (
  * @param {Service[]} ignoredServices the list of services to ignore
  */
 export const getRuntimeProvision = (
-  config: Config,
+  config: ResolvedConfig,
   declaration: WorkerDeclaration,
   ignoredServices: Array<Service>,
-) => {
+): {
+  businessId: string;
+  items: Array<{ name: string; item: Object }>;
+  calls: any[];
+} => {
   const services = getDeploymentServiceList(declaration, ignoredServices);
   log(`Provisioning`, ...services);
   return {
@@ -103,20 +113,50 @@ export const getRuntimeProvision = (
  * @param {String} filepath
  * @param {Object} config
  * @param {Service[]} services the services to bootstrap
+ * @returns {Promise<{object, string}>} The provisioning object and the file content
  */
-export const generateProvisioningFile = (
-  filepath: string,
-  config: Config,
+export const generateProvisioningContent = (
+  config: ResolvedConfig,
   services: Array<Service>,
-) =>
+): Promise<{ provision: Object; json: string }> =>
   new Promise((resolve, reject) => {
     const provision = getBootstrapProvision(config, services);
     const json = JSON.stringify(provision);
-    writeFile(filepath, json, (failure) => {
-      if (failure) {
-        reject({ failure, config });
-        return error('provisioning', failure);
-      }
-      resolve({ filepath, provision });
-    });
+    resolve({ provision, json });
   });
+
+/**
+ * Generate a normalized file used by ZBO to provision ZetaPush Services
+ * @param {String} filepath
+ * @param {Object} config
+ * @param {Service[]} services the services to bootstrap
+ * @returns {Promise<{object, string}>} The provisioning object and the file content
+ */
+export const generateProvisioningFile = (
+  filepath: PathLike,
+  config: ResolvedConfig,
+  services: Array<Service>,
+) =>
+  new Promise((resolve, reject) => {
+    generateProvisioningContent(config, services).then(
+      ({ json, provision }) => {
+        writeFile(filepath, json, (failure) => {
+          if (failure) {
+            reject({ failure, config });
+            return error('provisioning', failure);
+          }
+          resolve(provision);
+        });
+      },
+    );
+  });
+
+export const createProvisioningArchive = (appJson: string) => {
+  const zip = new JSZip();
+  zip.file('app', appJson);
+  if (isNode()) {
+    return zip.generateNodeStream({ type: 'nodebuffer' });
+  } else {
+    return zip.generateAsync({ type: 'blob' });
+  }
+};

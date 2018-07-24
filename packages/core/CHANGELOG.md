@@ -68,7 +68,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
-**Note:** Version bump only for package @zetapush/core
+**Note:** Version bump only for package @zetapush/common
 
 # Change Log
 
@@ -90,5 +90,5 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### BREAKING CHANGES
 
-* @zetapush/core is now an empty package
-* Rename @zetapush/core to @zetapush/client
+* @zetapush/common is now an empty package
+* Rename @zetapush/common to @zetapush/client
