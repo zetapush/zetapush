@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Httpclient } from './Httpclient';
 import { PageContent } from '../CommonTypes';
 import { HttpClientTemplate } from './HttpclientTypes';
@@ -20,7 +20,7 @@ export class HttpclientConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Httpclient.DEFAULT_DEPLOYMENT_ID,
-      '/http/create',
+      '/http/create'
     );
   }
   /**
@@ -32,7 +32,7 @@ export class HttpclientConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Httpclient.DEFAULT_DEPLOYMENT_ID,
-      '/http/list',
+      '/http/list'
     );
   }
 }

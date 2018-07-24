@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Aggreg } from './Aggreg';
 import { AggregationItemCategory } from './AggregTypes';
 
@@ -22,7 +22,7 @@ export class AggregConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Aggreg.DEFAULT_DEPLOYMENT_ID,
-      '/aggreg/create',
+      '/aggreg/create'
     );
   }
 }

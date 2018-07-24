@@ -1,5 +1,5 @@
-import { Service } from '../Core/index';
 import { Message } from './MessagingTypes';
+import { Service } from '../Core';
 
 /**
  * Messaging service

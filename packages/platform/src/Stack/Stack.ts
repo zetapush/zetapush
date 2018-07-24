@@ -1,11 +1,11 @@
-import { Service } from '../Core/index';
+import { Service } from '../Core';
 import {
   StackItemAdd,
   StackItemRemove,
   StackListRequest,
   StackListResponse,
   StackListeners,
-  StackRequest,
+  StackRequest
 } from './StackTypes';
 
 /**

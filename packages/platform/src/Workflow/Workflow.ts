@@ -1,4 +1,4 @@
-import { Service } from '../Core/index';
+import { Service } from '../Core';
 import { PageContent } from '../CommonTypes';
 import {
   WorkflowCreationRequest,
@@ -9,7 +9,7 @@ import {
   WorkflowTemplateInfoRequest,
   WorkflowTemplateList,
   WorkflowTemplateListResult,
-  WorkflowTransitionRequest,
+  WorkflowTransitionRequest
 } from './WorkflowTypes';
 
 /**
@@ -45,9 +45,7 @@ export class Workflow extends Service {
   getTemplate(body: WorkflowTemplateInfoRequest): Promise<WorkflowTemplate> {
     return this.$publish('getTemplate', body);
   }
-  listTemplates(
-    body: WorkflowTemplateList,
-  ): Promise<WorkflowTemplateListResult> {
+  listTemplates(body: WorkflowTemplateList): Promise<WorkflowTemplateListResult> {
     return this.$publish('listTemplates', body);
   }
   /**
@@ -60,17 +58,13 @@ export class Workflow extends Service {
   create(body: WorkflowCreationRequest): Promise<WorkflowInfo> {
     return this.$publish('create', body);
   }
-  forceTransition(
-    body: WorkflowTransitionRequest,
-  ): Promise<WorkflowTransitionRequest> {
+  forceTransition(body: WorkflowTransitionRequest): Promise<WorkflowTransitionRequest> {
     return this.$publish('forceTransition', body);
   }
   list(body: WorkflowList): Promise<PageContent<WorkflowInfo>> {
     return this.$publish('list', body);
   }
-  transition(
-    body: WorkflowTransitionRequest,
-  ): Promise<WorkflowTransitionRequest> {
+  transition(body: WorkflowTransitionRequest): Promise<WorkflowTransitionRequest> {
     return this.$publish('transition', body);
   }
 }

@@ -1,11 +1,11 @@
-import { Service } from '../Core/index';
+import { Service } from '../Core';
 import {
   CronPlanning,
   CronTaskDeletion,
   CronTaskListRequest,
   CronTaskRequest,
   TimerRequest,
-  TimerResult,
+  TimerResult
 } from './CronTypes';
 
 /**

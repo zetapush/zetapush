@@ -1,10 +1,4 @@
-import {
-  PageContent,
-  PageDirection,
-  Pagination,
-  StringAnyMap,
-  StringStringMap,
-} from '../CommonTypes';
+import { PageContent, PageDirection, Pagination, StringAnyMap, StringStringMap } from '../CommonTypes';
 
 export interface LogConfig {
   /**EMPTY DESC*/
@@ -56,7 +50,7 @@ export enum LogLevel {
   /**missing enum desc*/
   WARN = 'WARN',
   /**missing enum desc*/
-  INFO = 'INFO',
+  INFO = 'INFO'
 }
 export interface LogListRequest {
   /**EMPTY DESC*/
@@ -94,5 +88,5 @@ export enum LogSinkType {
   /**missing enum desc*/
   TODO = 'TODO',
   /**missing enum desc*/
-  INTERNAL = 'INTERNAL',
+  INTERNAL = 'INTERNAL'
 }

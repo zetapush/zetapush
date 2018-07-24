@@ -39,23 +39,20 @@ export class WorkerInstance {
       namespace,
       parameters,
       requestId,
-      taskId,
+      taskId
     });
     try {
       // Wrap request context
       const context = {
-        owner,
+        owner
       };
-      const result = await timeoutify(
-        () => this.worker[namespace][name](parameters, context),
-        this.timeout,
-      );
+      const result = await timeoutify(() => this.worker[namespace][name](parameters, context), this.timeout);
       console.log('WorkerInstance::result', result);
       return {
         result,
         taskId,
         requestId,
-        success: true,
+        success: true
       };
     } catch ({ code = DEFAULT_ERROR_CODE, message }) {
       console.error('WorkerInstance::error', { code, message });
@@ -63,7 +60,7 @@ export class WorkerInstance {
         result: { code, message },
         taskId,
         requestId,
-        success: false,
+        success: false
       };
     }
   }

@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Zpfs_hdfs } from './Zpfs_hdfs';
 
 /**Upload service with local HDFS storage*/

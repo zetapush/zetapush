@@ -1,4 +1,4 @@
-import { Service as PlatformService } from '../Core/index';
+import { Service as PlatformService } from '../Core';
 
 export type Type<T> = { new (...args: any[]): T };
 

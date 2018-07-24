@@ -1,6 +1,6 @@
-import { Configurer } from '../Core/index';
 import { Logs } from './Logs';
 import { LogConfig, LogEntries, LogListRequest } from './LogsTypes';
+import { Configurer } from '../Core';
 
 /**json file based authentication*/
 export class LogsConfigurer extends Configurer {
@@ -20,7 +20,7 @@ export class LogsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Logs.DEFAULT_DEPLOYMENT_ID,
-      '/logs/configure',
+      '/logs/configure'
     );
   }
   /**List log entries*/
@@ -28,7 +28,7 @@ export class LogsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Logs.DEFAULT_DEPLOYMENT_ID,
-      '/logs/list',
+      '/logs/list'
     );
   }
 }

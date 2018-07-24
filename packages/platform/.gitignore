@@ -1,5 +1,7 @@
 # Generated documentation
+/docs/
 /.esdoc/
+/docs/
 # Generated sources
 /dist/
 /es/

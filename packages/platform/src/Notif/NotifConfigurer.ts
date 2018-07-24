@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Notif } from './Notif';
 import { NotifiableApplication } from './NotifTypes';
 
@@ -18,7 +18,7 @@ export class NotifConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Notif.DEFAULT_DEPLOYMENT_ID,
-      '/notifs/createApp',
+      '/notifs/createApp'
     );
   }
 }

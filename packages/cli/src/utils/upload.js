@@ -19,25 +19,19 @@ const upload = (archived, config) =>
       headers: {
         'X-Authorization': JSON.stringify({
           username: developerLogin,
-          password: developerPassword,
-        }),
+          password: developerPassword
+        })
       },
       method: 'POST',
       url,
       formData: {
         businessId: appName,
         description: `Deploy on application ${appName}`,
-        file: fs.createReadStream(archived),
-      },
+        file: fs.createReadStream(archived)
+      }
     };
     log('Upload archive', url);
-    trace(
-      `credentials`,
-      developerLogin,
-      developerPassword,
-      platformUrl,
-      appName,
-    );
+    trace(`credentials`, developerLogin, developerPassword, platformUrl, appName);
     request(options, (failure, response, body) => {
       if (failure) {
         trace('Upload failed:', failure);
@@ -59,7 +53,7 @@ const upload = (archived, config) =>
           body,
           statusCode: response.statusCode,
           request: options,
-          config,
+          config
         });
       }
       return resolve(JSON.parse(body));
@@ -72,10 +66,7 @@ const BLACKLIST = ['node_modules', '.DS_Store', '.git'];
  * @param {String[]} blacklist
  */
 const filter = (blacklist) => (filepath, stat) =>
-  blacklist.reduce(
-    (filtered, check) => filtered && !filepath.includes(check),
-    true,
-  );
+  blacklist.reduce((filtered, check) => filtered && !filepath.includes(check), true);
 
 const mkdir = (root) =>
   new Promise((resolve, reject) => {

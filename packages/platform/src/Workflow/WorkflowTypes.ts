@@ -1,9 +1,4 @@
-import {
-  PageContent,
-  PageDirection,
-  Pagination,
-  StringAnyMap,
-} from '../CommonTypes';
+import { PageContent, PageDirection, Pagination, StringAnyMap } from '../CommonTypes';
 
 export interface FullWorkflowStateDefinition {
   /**Called on the workflow when this state is about to be reached. If the call is a macro, it has the possibility to prevent the transition by returning {'transition':'failed', 'message':'optional error message'}.*/

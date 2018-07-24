@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Userdir } from './Userdir';
 import { UserSearchConfig } from './UserdirTypes';
 
@@ -15,7 +15,7 @@ export class UserdirConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Userdir.DEFAULT_DEPLOYMENT_ID,
-      '/config/setMapping',
+      '/config/setMapping'
     );
   }
 }

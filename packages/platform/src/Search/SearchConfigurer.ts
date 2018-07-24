@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Search } from './Search';
 import { PageContent } from '../CommonTypes';
 import { SearchIndex } from './SearchTypes';
@@ -16,7 +16,7 @@ export class SearchConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Search.DEFAULT_DEPLOYMENT_ID,
-      '/search/createIndex',
+      '/search/createIndex'
     );
   }
   /**
@@ -28,7 +28,7 @@ export class SearchConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Search.DEFAULT_DEPLOYMENT_ID,
-      '/search/listIndices',
+      '/search/listIndices'
     );
   }
 }

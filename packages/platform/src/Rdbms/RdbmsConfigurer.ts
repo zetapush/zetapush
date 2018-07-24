@@ -1,4 +1,4 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Rdbms } from './Rdbms';
 import { RdbmsSimpleQuery } from './RdbmsTypes';
 
@@ -18,7 +18,7 @@ export class RdbmsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Rdbms.DEFAULT_DEPLOYMENT_ID,
-      '/rdbms/ddl',
+      '/rdbms/ddl'
     );
   }
 }

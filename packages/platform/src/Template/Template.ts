@@ -1,4 +1,4 @@
-import { Service } from '../Core/index';
+import { Service } from '../Core';
 import {
   LocalizedTemplateCreation,
   TemplateCreation,
@@ -6,7 +6,7 @@ import {
   TemplateListResult,
   TemplateRemoval,
   TemplateRequest,
-  TemplateResult,
+  TemplateResult
 } from './TemplateTypes';
 
 /**

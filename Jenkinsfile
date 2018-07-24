@@ -198,6 +198,44 @@ pipeline {
         }
       }
     }
+
+    stage('Generate API documentation') {
+      when {
+        branch 'master'
+      }
+
+      agent { 
+        docker {
+          image 'node:10.4.1'
+          label 'docker'
+          args '-u 0:0'
+        }
+      }
+
+      steps {
+        // checkout gh-pages
+        dir('target/documentation') {
+          git(url: 'git@github.com:zetapush/zetapush.git', branch: 'gh-pages')
+        }
+
+        sh 'cd packages/platform && npm i'
+        sh 'cd packages/platform && npm run build:api-doc'
+
+
+        // copy new documentation to gh-pages local repo
+        sh 'cp -rf packages/platform/docs/* target/documentation'
+
+        // commit
+        sh 'cd target/documentation && git add .'
+        sh 'cd target/documentation && git commit -m "Update generated documentation"'
+        // push on gh-pages
+        sshagent(['github-ssh']) {
+          sh 'mkdir ~/.ssh'
+          sh 'ssh-keyscan github.com >> ~/.ssh/known_hosts'
+          sh 'cd target/documentation && git push origin gh-pages'
+        }
+      }
+    }
   }
     
 

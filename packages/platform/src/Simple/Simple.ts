@@ -1,4 +1,4 @@
-import { Service } from '../Core/index';
+import { Service } from '../Core';
 import { StringAnyMap } from '../CommonTypes';
 import {
   AllCredentials,
@@ -10,7 +10,7 @@ import {
   ImpersonatedTraceableRequest,
   ResetInfo,
   ResetRequest,
-  UserLoginchange,
+  UserLoginchange
 } from './SimpleTypes';
 
 /**

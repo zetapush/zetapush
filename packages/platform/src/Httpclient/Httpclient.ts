@@ -1,10 +1,10 @@
-import { Service } from '../Core/index';
+import { Service } from '../Core';
 import {
   HttpClientCall,
   HttpClientRequest,
   HttpClientResponse,
   HttpClientSOAPRequest,
-  HttpClientSOAPResponse,
+  HttpClientSOAPResponse
 } from './HttpclientTypes';
 
 /**

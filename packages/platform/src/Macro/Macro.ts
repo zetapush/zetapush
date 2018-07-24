@@ -1,4 +1,4 @@
-import { Service } from '../Core/index';
+import { Service } from '../Core';
 import {
   MacroCompletion,
   MacroDebugBreakpointSet,
@@ -10,7 +10,7 @@ import {
   MacroFunctionRequest,
   MacroFunctionResult,
   MacroPlay,
-  SuMacroPlay,
+  SuMacroPlay
 } from './MacroTypes';
 
 /**

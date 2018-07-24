@@ -40,7 +40,7 @@ export enum NotificationPlatform {
   /**Apple VOIP sandbox*/
   APNS_SANDBOX = 'APNS_SANDBOX',
   /**Google Cloud Messaging*/
-  GCM = 'GCM',
+  GCM = 'GCM'
 }
 export interface NotificationSendStatus {
   /**List of statuses for each target device*/

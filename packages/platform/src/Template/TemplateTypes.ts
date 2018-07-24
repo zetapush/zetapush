@@ -1,9 +1,4 @@
-import {
-  PageContent,
-  PageDirection,
-  Pagination,
-  StringAnyMap,
-} from '../CommonTypes';
+import { PageContent, PageDirection, Pagination, StringAnyMap } from '../CommonTypes';
 
 export interface LocalizedTemplateCreation {
   /**IETF BCP 47 language tag*/

@@ -14,7 +14,7 @@ const getProgress = (config, recipeId) =>
   fetch({
     config,
     method: 'GET',
-    pathname: `orga/recipe/status/${config.appName}/${recipeId}`,
+    pathname: `orga/recipe/status/${config.appName}/${recipeId}`
   });
 
 /**
@@ -25,7 +25,7 @@ const getLiveStatus = (config) =>
   fetch({
     config,
     method: 'GET',
-    pathname: `orga/business/live/${config.appName}`,
+    pathname: `orga/business/live/${config.appName}`
   }).then((response) => {
     const nodes = Object.values(response.nodes);
     return nodes.reduce((reduced, node) => {
@@ -35,7 +35,7 @@ const getLiveStatus = (config) =>
         ...contexts.reduce((acc, context) => {
           acc[context.name] = context.urls;
           return acc;
-        }, {}),
+        }, {})
       };
     }, {});
   });
@@ -55,12 +55,10 @@ const displayProgress = (progress, steps) => {
           total: 100,
           width: 20,
           schema: `:bar.${getProgressionColor(step)} ${step.name}`,
-          blank: '░',
+          blank: '░'
         });
       }
-      progress[step.id].setSchema(
-        `:bar.${getProgressionColor(step)} ${step.name}`,
-      );
+      progress[step.id].setSchema(`:bar.${getProgressionColor(step)} ${step.name}`);
       progress[step.id].update(step.progress / 100);
     });
   } catch (e) {
@@ -69,11 +67,7 @@ const displayProgress = (progress, steps) => {
     steps.forEach((step) => {
       const progressChars = Math.floor((step.progress * 20) / 100);
       const blankChars = 20 - progressChars;
-      console.log(
-        `${''.padEnd(progressChars, '▇')}${''.padEnd(blankChars, '░')} ${
-          step.name
-        }`,
-      );
+      console.log(`${''.padEnd(progressChars, '▇')}${''.padEnd(blankChars, '░')} ${step.name}`);
     });
   }
 };
@@ -104,16 +98,10 @@ const getProgression = (config, recipeId) => {
           .then((fronts) => {
             log(`Application status`);
             Object.entries(fronts).forEach(([name, urls]) => {
-              info(
-                `Your frontend application ${name} is available at ${
-                  urls[urls.length - 1]
-                }`,
-              );
+              info(`Your frontend application ${name} is available at ${urls[urls.length - 1]}`);
             });
           })
-          .catch((failure) =>
-            error(`Unable to get Application status`, failure),
-          );
+          .catch((failure) => error(`Unable to get Application status`, failure));
       }
     } catch (ex) {
       debugObject('progression check', { ex });

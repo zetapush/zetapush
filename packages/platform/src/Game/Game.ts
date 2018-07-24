@@ -1,4 +1,4 @@
-import { Service } from '../Core/index';
+import { Service } from '../Core';
 import {
   GameInfo,
   GameJoin,
@@ -8,7 +8,7 @@ import {
   GamePlay,
   GameRunnerRegistration,
   GameStart,
-  GameState,
+  GameState
 } from './GameTypes';
 
 /**

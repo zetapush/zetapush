@@ -1,4 +1,4 @@
-import { Service } from '../Core/index';
+import { Service } from '../Core';
 import {
   GdaCellRequest,
   GdaCellsRequest,
@@ -20,7 +20,7 @@ import {
   GdaReduceRequest,
   GdaReduceResult,
   GdaRemoveRange,
-  GdaRowRequest,
+  GdaRowRequest
 } from './GdaTypes';
 
 /**

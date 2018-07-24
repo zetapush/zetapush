@@ -1,9 +1,6 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Workflow } from './Workflow';
-import {
-  WorkflowTemplateCreation,
-  WorkflowTemplatePurge,
-} from './WorkflowTypes';
+import { WorkflowTemplateCreation, WorkflowTemplatePurge } from './WorkflowTypes';
 
 /**Workflow*/
 export class WorkflowConfigurer extends Configurer {
@@ -22,7 +19,7 @@ export class WorkflowConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Workflow.DEFAULT_DEPLOYMENT_ID,
-      '/workflow/createTemplate',
+      '/workflow/createTemplate'
     );
   }
   /**
@@ -34,7 +31,7 @@ export class WorkflowConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Workflow.DEFAULT_DEPLOYMENT_ID,
-      '/workflow/purgeTemplates',
+      '/workflow/purgeTemplates'
     );
   }
 }

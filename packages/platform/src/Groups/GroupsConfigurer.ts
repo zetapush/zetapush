@@ -1,14 +1,7 @@
-import { Configurer } from '../Core/index';
+import { Configurer } from '../Core';
 import { Groups } from './Groups';
 import { PageContent } from '../CommonTypes';
-import {
-  GrantList,
-  Grants,
-  GroupInfo,
-  GroupRelated,
-  GroupUsers,
-  UserGroup,
-} from './GroupsTypes';
+import { GrantList, Grants, GroupInfo, GroupRelated, GroupUsers, UserGroup } from './GroupsTypes';
 
 /**Groups management for users, grants on resources, remote commands on devices. This is where you can configure rights for any resource.*/
 export class GroupsConfigurer extends Configurer {
@@ -29,7 +22,7 @@ export class GroupsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Groups.DEFAULT_DEPLOYMENT_ID,
-      '/groups/addUser',
+      '/groups/addUser'
     );
   }
   /**
@@ -41,7 +34,7 @@ export class GroupsConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Groups.DEFAULT_DEPLOYMENT_ID,
-      '/groups/allGroups',
+      '/groups/allGroups'
     );
   }
   /**
@@ -54,7 +47,7 @@ export class GroupsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Groups.DEFAULT_DEPLOYMENT_ID,
-      '/groups/create',
+      '/groups/create'
     );
   }
   /**
@@ -66,7 +59,7 @@ export class GroupsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Groups.DEFAULT_DEPLOYMENT_ID,
-      '/groups/delUser',
+      '/groups/delUser'
     );
   }
   /**
@@ -78,7 +71,7 @@ export class GroupsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Groups.DEFAULT_DEPLOYMENT_ID,
-      '/groups/deleteGroup',
+      '/groups/deleteGroup'
     );
   }
   /**
@@ -90,7 +83,7 @@ export class GroupsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Groups.DEFAULT_DEPLOYMENT_ID,
-      '/groups/grant',
+      '/groups/grant'
     );
   }
   /**
@@ -103,7 +96,7 @@ export class GroupsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Groups.DEFAULT_DEPLOYMENT_ID,
-      '/groups/grants',
+      '/groups/grants'
     );
   }
   /**
@@ -116,7 +109,7 @@ export class GroupsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Groups.DEFAULT_DEPLOYMENT_ID,
-      '/groups/groupUsers',
+      '/groups/groupUsers'
     );
   }
   /**
@@ -128,7 +121,7 @@ export class GroupsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Groups.DEFAULT_DEPLOYMENT_ID,
-      '/groups/revoke',
+      '/groups/revoke'
     );
   }
 }

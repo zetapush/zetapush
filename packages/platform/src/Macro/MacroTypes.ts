@@ -3,7 +3,7 @@ import {
   MacroScriptParamConstraint,
   MacroTypeDefinition,
   StringAnyMap,
-  ZetaApiError,
+  ZetaApiError
 } from '../CommonTypes';
 
 export interface ConfigurableHttpOutput {
@@ -90,7 +90,7 @@ export enum MacroDebugStepType {
   /**Terminate execution*/
   TERMINATE = 'TERMINATE',
   /**Step into the next macrvo call*/
-  STEP_INTO = 'STEP_INTO',
+  STEP_INTO = 'STEP_INTO'
 }
 export interface MacroDebugToken {
   /**Token suitable for use by debug verbs*/

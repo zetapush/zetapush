@@ -1,10 +1,5 @@
-import { Service } from '../Core/index';
-import {
-  UserInfoRequest,
-  UserInfoResponse,
-  UserSearchRequest,
-  UserSearchResponse,
-} from './UserdirTypes';
+import { Service } from '../Core';
+import { UserInfoRequest, UserInfoResponse, UserSearchRequest, UserSearchResponse } from './UserdirTypes';
 
 /**
  * User directory service
