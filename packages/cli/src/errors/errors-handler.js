@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { error } = require('@zetapush/core');
+const { error } = require('@zetapush/common');
 
 const displayError = (steps) => {
   steps.forEach((step) => {

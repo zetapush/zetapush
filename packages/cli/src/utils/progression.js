@@ -8,7 +8,7 @@ const {
   getDeploymentProgression,
   ProgressEvents,
   ProgressFailureCauses
-} = require('@zetapush/core');
+} = require('@zetapush/common');
 const ProgressBar = require('node-progress-bars');
 
 const errorsHandler = require('../errors/errors-handler');

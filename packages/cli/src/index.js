@@ -4,8 +4,8 @@ const {
   createApplication,
   DEFAULTS,
   fetch,
-} = require('@zetapush/core');
-const logger = require('@zetapush/core');
+} = require('@zetapush/common');
+const logger = require('@zetapush/common');
 const { getDeveloperLogin, getDeveloperPassword } = require('./utils/security');
 
 module.exports = {

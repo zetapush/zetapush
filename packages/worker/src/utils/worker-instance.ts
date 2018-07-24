@@ -1,6 +1,9 @@
 import { Context, TaskRequest, CloudServiceInstance } from '@zetapush/platform';
 import { timeoutify } from './async';
 import { inject } from './context';
+import { TaskRequest } from '@zetapush/platform';
+
+import { timeoutify } from '@zetapush/common';
 
 /**
  * Default error code
@@ -24,15 +27,7 @@ export class WorkerInstance {
   /**
    *
    */
-  constructor({
-    timeout,
-    worker,
-    bootLayers,
-  }: {
-    timeout: number;
-    worker: any;
-    bootLayers: any;
-  }) {
+  constructor({ timeout, worker, bootLayers }: { timeout: number; worker: any; bootLayers: any }) {
     /**
      * @access private
      * @type {number}
@@ -62,14 +57,10 @@ export class WorkerInstance {
               success: false,
               result: {
                 code: 'EBOOTFAIL',
-                message:
-                  'onApplicationBootstrap error on class ' +
-                  api.constructor.name +
-                  ' : ' +
-                  error.toString(),
+                message: 'onApplicationBootstrap error on class ' + api.constructor.name + ' : ' + error.toString(),
                 context: {},
-                location: api.constructor.name,
-              },
+                location: api.constructor.name
+              }
             };
           }
         }
@@ -77,7 +68,7 @@ export class WorkerInstance {
     }
     return {
       success: true,
-      result: {},
+      result: {}
     };
   }
 
@@ -102,18 +93,15 @@ export class WorkerInstance {
       // Inject context in a proxified worker namespace
       const injected = inject(tasker, context.contextId);
       // Delegate task to
-      const result = await timeoutify(
-        () => injected[name](parameters, context),
-        this.timeout,
-      );
+      const result = await timeoutify(() => injected[name](parameters, context), this.timeout);
       return {
         result,
-        success: true,
+        success: true
       };
     } catch ({ code = DEFAULT_ERROR_CODE, message }) {
       return {
         result: { code, message },
-        success: false,
+        success: false
       };
     }
   }

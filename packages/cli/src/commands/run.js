@@ -5,7 +5,8 @@ const { WorkerRunner, WorkerRunnerEvents } = require('@zetapush/worker');
 const troubleshooting = require('../errors/troubleshooting');
 const WorkerLoader = require('../loader/worker');
 const { createServer } = require('../utils/http-server');
-const { log, error, warn, info, trace } = require('@zetapush/core');
+const { log, error, warn, info, trace } = require('@zetapush/common');
+const transports = require('@zetapush/cometd/lib/node/Transports');
 
 /**
  * Run Worker instance
@@ -14,7 +15,7 @@ const { log, error, warn, info, trace } = require('@zetapush/core');
  * @param {WorkerDeclaration} declaration
  */
 const run = (command, config, declaration) => {
-  const runner = new WorkerRunner(command.skipProvisionning, command.skipBootstrap, config);
+  const runner = new WorkerRunner(command.skipProvisionning, command.skipBootstrap, config, transports);
   const spinner = ora('Starting worker... \n');
 
   runner.on(WorkerRunnerEvents.BOOTSTRAPING, ({ client }) => {

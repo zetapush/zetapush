@@ -84,7 +84,7 @@ const npmInit = (developerLogin, developerPassword, dir, platformUrl) => {
     if (npmVersion().major < 6) {
       commandLogger.debug(
         `npmInit() -> [npx @zetapush/create ${relativeDir} --developer-login xxx --developer-password xxx ${
-          platformUrl ? '--platform-url' + platformUrl : ''
+          platformUrl ? '--platform-url ' + platformUrl : ''
         }]`,
       );
       cmd = execa(
@@ -103,7 +103,7 @@ const npmInit = (developerLogin, developerPassword, dir, platformUrl) => {
     } else {
       commandLogger.debug(
         `npmInit() -> [npm init @zetapush ${relativeDir} --developer-login xxx --developer-password xxx ${
-          platformUrl ? '--platform-url' + platformUrl : ''
+          platformUrl ? '--platform-url ' + platformUrl : ''
         }]`,
       );
       cmd = execa(
@@ -125,7 +125,7 @@ const npmInit = (developerLogin, developerPassword, dir, platformUrl) => {
     const createPath = path.join(__dirname, '../../..', 'create', 'index.js');
     commandLogger.debug(
       `npmInit() -> [node ${createPath} ${relativeDir} --developer-login xxx --developer-password xxx ${
-        platformUrl ? '--platform-url' + platformUrl : ''
+        platformUrl ? '--platform-url ' + platformUrl : ''
       }]`,
     );
     cmd = execa(
@@ -144,7 +144,7 @@ const npmInit = (developerLogin, developerPassword, dir, platformUrl) => {
   } else {
     commandLogger.debug(
       `npmInit() -> [npx @zetapush/create@canary ${relativeDir} --force-current-version --developer-login xxx --developer-password xxx ${
-        platformUrl ? '--platform-url' + platformUrl : ''
+        platformUrl ? '--platform-url ' + platformUrl : ''
       }]`,
     );
     cmd = execa(
@@ -184,10 +184,12 @@ const npmInit = (developerLogin, developerPassword, dir, platformUrl) => {
  */
 const zetaPush = (dir) => {
   return new Promise((resolve, reject) => {
-    commandLogger.info(`zetaPush(${dir}) -> [npm run deploy -- -vvv]`);
+    commandLogger.info(
+      `zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}]`,
+    );
     const stdout = [];
     const stderr = [];
-    const cmd = execa.shell('npm run deploy -- -vvv', { cwd: dir });
+    const cmd = execa.shell(`npm run deploy -- ${zpLogLevel()}`, { cwd: dir });
     const out = new PassThrough();
     const err = new PassThrough();
     out.on('data', (chunk) => stdout.push(chunk));
@@ -203,7 +205,7 @@ const zetaPush = (dir) => {
         stderr: stderr.join('\n'),
       };
       subProcessLogger.silly(
-        `zetaPush(${dir}) -> [npm run deploy -- -vvv] -> `,
+        `zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}] -> `,
         {
           code,
           signal,
@@ -220,10 +222,10 @@ const zetaPush = (dir) => {
  */
 const zetaRun = async (dir) => {
   return new Promise((resolve, reject) => {
-    commandLogger.info(`zetaRun(${dir}) -> [npm run start -- -vvv]`);
+    commandLogger.info(`zetaRun(${dir}) -> [npm run start -- ${zpLogLevel()}]`);
     const stdout = [];
     const stderr = [];
-    const cmd = execa.shell('npm run start -- -vvv', { cwd: dir });
+    const cmd = execa.shell(`npm run start -- ${zpLogLevel()}`, { cwd: dir });
     const out = new PassThrough();
     const err = new PassThrough();
     out.on('data', (chunk) => stdout.push(chunk));
@@ -238,10 +240,13 @@ const zetaRun = async (dir) => {
         stdout: stdout.join('\n'),
         stderr: stderr.join('\n'),
       };
-      subProcessLogger.silly(`zetaRun(${dir}) -> [npm run start -- -vvv] -> `, {
-        code,
-        signal,
-      });
+      subProcessLogger.silly(
+        `zetaRun(${dir}) -> [npm run start -- ${zpLogLevel()}] -> `,
+        {
+          code,
+          signal,
+        },
+      );
       resolve(res);
     });
   });
@@ -498,7 +503,7 @@ const symlinkLocalDependencies = async (dir) => {
     await rm(`${dir}/node_modules/@zetapush/*`);
     fs.symlinkSync(
       path.resolve(__dirname, '../../..', 'core'),
-      `${dir}/node_modules/@zetapush/core`,
+      `${dir}/node_modules/@zetapush/common`,
       'dir',
     );
     fs.symlinkSync(
@@ -635,6 +640,7 @@ class Runner {
           const res = await fetch({
             config: creds,
             pathname: `orga/business/live/${creds.appName}`,
+            debugName: 'waitForWorkerUp',
           });
           for (let node in res.nodes) {
             for (let item in res.nodes[node].items) {
@@ -667,8 +673,10 @@ class Runner {
   }
 
   run(quiet = false) {
-    commandLogger.info('Runner:run() -> [npm run start -- -vvv]');
-    this.cmd = execa('npm', ['run', 'start', '--', '-vvv'], { cwd: this.dir });
+    commandLogger.info(`Runner:run() -> [npm run start -- ${zpLogLevel()}]`);
+    this.cmd = execa('npm', ['run', 'start', '--', zpLogLevel()], {
+      cwd: this.dir,
+    });
     if (!quiet) {
       this.cmd.stdout.pipe(new SubProcessLoggerStream('silly'));
       this.cmd.stderr.pipe(new SubProcessLoggerStream('warn'));
@@ -676,6 +684,10 @@ class Runner {
     return this.cmd;
   }
 }
+
+const zpLogLevel = () => {
+  return process.env.ZETAPUSH_COMMANDS_LOG_LEVEL || '-vvv';
+};
 
 module.exports = {
   rm,

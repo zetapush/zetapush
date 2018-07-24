@@ -1,5 +1,5 @@
 const { ErrorAnalyzer } = require('./troubleshooting');
-const { log, trace } = require('@zetapush/core');
+const { log, trace } = require('@zetapush/common');
 
 class CustomCloudServiceStartErrorAnalyzer extends ErrorAnalyzer {
   hasWorkerStartNpmErr(progress) {

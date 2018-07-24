@@ -1,6 +1,6 @@
 const { Queue, Weak } = require('@zetapush/platform');
 const { Worker } = require('@zetapush/worker');
-const core = require('@zetapush/core');
+const core = require('@zetapush/common');
 
 /**
  * Get deployment id list from injected service to provisioning items

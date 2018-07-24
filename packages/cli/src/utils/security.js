@@ -2,7 +2,7 @@
 const chalk = require('chalk');
 const prompt = require('prompt-sync')();
 const process = require('process');
-const { error } = require('@zetapush/core');
+const { error } = require('@zetapush/common');
 
 const getDeveloperLogin = () => {
   try {

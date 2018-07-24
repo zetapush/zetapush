@@ -15,6 +15,7 @@ const getProgress = (config: Config, recipeId: string) =>
     config,
     method: 'GET',
     pathname: `orga/recipe/status/${config.appName}/${recipeId}`,
+    debugName: 'getProgress',
   }).then((progress) => {
     trace('progress', progress.progressDetail);
     return progress;
@@ -29,6 +30,7 @@ export const getLiveStatus = (config: Config) =>
     config,
     method: 'GET',
     pathname: `orga/business/live/${config.appName}`,
+    debugName: 'getLiveStatus',
   }).then((response) => {
     const nodes = Object.values(response.nodes);
     return nodes.reduce((reduced, node: any) => {

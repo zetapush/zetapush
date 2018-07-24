@@ -9,12 +9,12 @@ const program = require('commander');
 
 const { version } = require('../package.json');
 
-const { DEFAULTS } = require('@zetapush/core');
+const { DEFAULTS } = require('@zetapush/common');
 const {
   helpMessageRun,
   helpMessagePush,
 } = require('../src/utils/helper-messages');
-const { setVerbosity, error } = require('@zetapush/core');
+const { setVerbosity, error } = require('@zetapush/common');
 const { identity } = require('../src/utils/validator');
 
 const push = require('../src/commands/push');

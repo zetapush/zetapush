@@ -1,5 +1,5 @@
 const { ErrorAnalyzer } = require('./troubleshooting');
-const { trace } = require('@zetapush/core');
+const { trace } = require('@zetapush/common');
 
 class ConfigLoadIssueAnalyzer extends ErrorAnalyzer {
   async getError(err) {
