@@ -1,11 +1,7 @@
 export default class Api {
-
-  async onApplicationBootstrap(){
-
-    return ;
+  async onApplicationBootstrap() {
+    
   }
-
-
   hello() {
     return `Hello World from JavaScript ${Date.now()}`;
   }
