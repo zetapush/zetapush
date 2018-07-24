@@ -1,5 +1,4 @@
-import { TaskRequest } from '@zetapush/platform';
-
+import { QueueTask, Context, TaskRequest } from '@zetapush/platform';
 import { timeoutify } from './async';
 
 /**
@@ -76,15 +75,13 @@ export class WorkerInstance {
     };
   }
 
-  async dispatch({ data: { request, taskId } }: TaskRequest) {
-    const { data, requestId, owner } = request;
+  async dispatch(request: TaskRequest, context: Context) {
+    const { data, owner } = request;
     const { name, namespace, parameters } = data;
     console.log('WorkerInstance::dispatch', {
       name,
       namespace,
       parameters,
-      requestId,
-      taskId,
     });
     try {
       if (name === 'onApplicationBootstrap') {
@@ -102,16 +99,12 @@ export class WorkerInstance {
       console.log('WorkerInstance::result', result);
       return {
         result,
-        taskId,
-        requestId,
         success: true,
       };
     } catch ({ code = DEFAULT_ERROR_CODE, message }) {
       console.error('WorkerInstance::error', { code, message });
       return {
         result: { code, message },
-        taskId,
-        requestId,
         success: false,
       };
     }

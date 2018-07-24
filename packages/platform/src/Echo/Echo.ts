@@ -27,6 +27,12 @@ export class Echo extends Service {
    * Simple echo service, for development purposes.
    * @access public
    * */
+  /**
+   * Echoes an object
+   *
+   * Echoes an object: the server will echo that object on channel 'echo' for the current user.
+   * @access public
+   * */
   echo(body: StringAnyMap): Promise<StringAnyMap> {
     return this.$publish('echo', body);
   }

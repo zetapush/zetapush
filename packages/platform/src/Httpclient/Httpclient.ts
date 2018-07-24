@@ -35,12 +35,30 @@ export class Httpclient extends Service {
    *
    * @access public
    * */
+  /**
+   * Makes a predefined request
+   *
+   * Lookups a predefined request by name, and executes it.
+   * @access public
+   * */
   call(body: HttpClientCall): Promise<HttpClientResponse> {
     return this.$publish('call', body);
   }
+  /**
+   * Makes a parameterized request
+   *
+   * Executes an HTTP request with the given url, method, headers and body.
+   * @access public
+   * */
   request(body: HttpClientRequest): Promise<HttpClientResponse> {
     return this.$publish('request', body);
   }
+  /**
+   * Makes a soap request
+   *
+   * Executes an HTTP SOAP request with the given url, method, headers and body.
+   * @access public
+   * */
   soap(body: HttpClientSOAPRequest): Promise<HttpClientSOAPResponse> {
     return this.$publish('soap', body);
   }

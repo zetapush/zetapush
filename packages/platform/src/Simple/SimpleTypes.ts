@@ -8,13 +8,8 @@ export interface AllCredentials {
   /**List of account information for the asking user. empty if the user does not have credentials in the service. One item in this list is a map of account fields.*/
   credentials?: StringAnyMap[];
 }
-export interface BasicAuthenticatedUser {
-  /**You can pass any number of arbitrary properties in the enclosing object (there is no field actually named additionalProperties). */
-  additionalProperties?: StringAnyMap;
-}
-export interface BasicUserCreation {
-  /**You can pass any number of arbitrary properties in the enclosing object (there is no field actually named additionalProperties).*/
-  additionalProperties?: StringAnyMap;
+export interface BasicAuthenticatedUser extends StringAnyMap {}
+export interface BasicUserCreation extends StringAnyMap {
   /**Specify the behavior when the user already exists. The default value is IGNORE_IDENTICAL*/
   idempotence?: Idempotence;
 }

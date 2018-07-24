@@ -31,9 +31,19 @@ export class Userdir extends Service {
    *
    * @access public
    * */
+  /**
+   * Searches for users matching the request
+   *
+   * @access public
+   * */
   search(body: UserSearchRequest): Promise<UserSearchResponse> {
     return this.$publish('search', body);
   }
+  /**
+   * Requests public data for the specified users
+   *
+   * @access public
+   * */
   userInfo(body: UserInfoRequest): Promise<UserInfoResponse> {
     return this.$publish('userInfo', body);
   }

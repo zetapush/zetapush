@@ -4,7 +4,7 @@ import { LogRequest } from './LogsTypes';
 /**
  * Logs
  *
- * json file based authentication
+ * Log service
  * */
 export class Logs extends Service {
   /**
@@ -25,6 +25,13 @@ export class Logs extends Service {
    * Log API
    *
    * User API for logging.
+   * This service is a façade for a system logging facility. Creating two log services has no effect.
+   * @access public
+   * */
+  /**
+   * Creates a log entry
+   *
+   * Adds some server generated data and stores the entry into the sink defined by configuration.
    * @access public
    * */
   log(body: LogRequest) {

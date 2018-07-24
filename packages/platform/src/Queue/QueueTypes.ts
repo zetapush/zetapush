@@ -1,5 +1,52 @@
-import { OwnerResource, StringStringMap, ZetaApiError } from '../CommonTypes';
+import {
+  ConfigurableHttpOutput,
+  OwnerResource,
+  StringAnyMap,
+  StringStringMap,
+  ZetaApiError,
+} from '../CommonTypes';
 
+export interface ConfigureCall {}
+export interface ConfigureTask {
+  /**for server use*/
+  done?: boolean;
+  /**Use-case specific payload*/
+  request?: ConfigureTaskRequest;
+  /**Sandbox ID of this queue service*/
+  businessId?: string;
+  /**Channel name*/
+  channel?: string;
+  /**Server-generated task ID. Should be given back to channel 'done'*/
+  taskId?: string;
+  /**Some tasks (provisioning) require a particular generation of workers.*/
+  generation?: string;
+  /**STR Node processing the request*/
+  comet?: string;
+  /**Deployment ID of this queue service*/
+  deploymentId?: string;
+  /**Slave coordinates for this task*/
+  assignee?: OwnerResource;
+  /**for server use*/
+  dispatched?: boolean;
+}
+export interface ConfigureTaskRequest {
+  /**Request submitter*/
+  originator?: OwnerResource;
+  /**Task description*/
+  description?: string;
+  /**STR-generated context ID. Used for traceability of client requests.*/
+  contextId?: string;
+  /**BusinessId of the service which the task is from*/
+  originBusinessId?: string;
+  /**DeploymentId of the service which the task is from*/
+  originDeploymentId?: string;
+  /**User field for traceability of requests. Synchronous SDK APIs use this field for you.*/
+  requestId?: string;
+  /**Task parameters. Specific for each consumer/producer contract*/
+  data?: ConfigureCall;
+  /**When impersonating someone, use this field to differentiate from originator.owner*/
+  owner?: string;
+}
 export interface DeployedItem {
   /**EMPTY DESC*/
   description?: string;
@@ -16,9 +63,33 @@ export interface DeployedItem {
   /**EMPTY DESC*/
   options?: StringStringMap;
 }
+export interface QueueTask {
+  /**for server use*/
+  done?: boolean;
+  /**Use-case specific payload*/
+  request?: TaskRequest;
+  /**Sandbox ID of this queue service*/
+  businessId?: string;
+  /**Channel name*/
+  channel?: string;
+  /**Server-generated task ID. Should be given back to channel 'done'*/
+  taskId?: string;
+  /**Some tasks (provisioning) require a particular generation of workers.*/
+  generation?: string;
+  /**STR Node processing the request*/
+  comet?: string;
+  /**Deployment ID of this queue service*/
+  deploymentId?: string;
+  /**Slave coordinates for this task*/
+  assignee?: OwnerResource;
+  /**for server use*/
+  dispatched?: boolean;
+}
 export interface TaskCompletion {
   /**Target for the response (the syntax is the same as in messaging.send). Overrides 'broadcast' when set.*/
   target?: any;
+  /**Optional context ID for logs. This value MUST have been previously given by the server to this connected client.*/
+  contextId?: string;
   /**Optional result of the processing. When 'success' is false, can contain an error object (with String fields 'code' and 'message').*/
   result?: any;
   /**Server-assigned task identifier.*/
@@ -29,7 +100,7 @@ export interface TaskCompletion {
   success?: boolean;
 }
 export interface TaskConsumerRegistration {
-  /**Task consumer maximum capacity at a given time. The server will not exceed that capacity when dispatching new tasks*/
+  /**Task consumer maximum capacity at a given time. The server will not exceed that capacity when dispatching new tasks. Special tasks (provisioning) are not affected by this restriction.*/
   capacity?: number;
 }
 export interface TaskRequest {
@@ -37,6 +108,8 @@ export interface TaskRequest {
   originator?: OwnerResource;
   /**Task description*/
   description?: string;
+  /**STR-generated context ID. Used for traceability of client requests.*/
+  contextId?: string;
   /**BusinessId of the service which the task is from*/
   originBusinessId?: string;
   /**DeploymentId of the service which the task is from*/

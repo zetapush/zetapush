@@ -32,6 +32,14 @@ export class Aggreg extends Service {
    * This service does not allow you to read the data. To achieve that kind of behavior, you could configure a callback to store the data.
    * @access public
    * */
+  /**
+   * Pushes some data
+   *
+   * Pushes the given data.
+   * All the items are processed according to the defined rules.
+   * At least one push for a given item is needed during a time period to trigger processing and calling of the corresponding callback verb/macro.
+   * @access public
+   * */
   push(body: AggregationPushes) {
     return this.$publish('push', body);
   }

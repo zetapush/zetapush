@@ -19,7 +19,10 @@ import {
   SnapshotItem,
   StringAnyMap,
   StringStringMap,
+  Thumbnail,
+  ThumbnailResult,
   UploadedFile,
+  ZetaApiError,
   ZpfsDiskUsage,
   ZpfsRequest,
 } from '../CommonTypes';

@@ -28,6 +28,12 @@ export class Sendmail extends Service {
    * Users call the API here to actually send emails.
    * @access public
    * */
+  /**
+   * Sends an email
+   *
+   * Sends an email with the given body to the intended recipients.
+   * @access public
+   * */
   send(body: Email) {
     return this.$publish('send', body);
   }

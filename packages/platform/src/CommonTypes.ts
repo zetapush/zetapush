@@ -47,6 +47,10 @@ export interface PageContent<T> {
 
 export type ListOrSingle = string | string[];
 
+export interface ConfigurableHttpOutput {
+  /**EMPTY DESC*/
+  data?: any;
+}
 export interface CreatedFile {
   /**Old name (if applicable)*/
   oldPath?: string;
@@ -234,6 +238,22 @@ export interface SnapshotItem {
   includes?: string[];
   /**Patterns for files that should be excluded. Used only when path is a folder. Exclusions have precedence over inclusions*/
   excludes?: string[];
+}
+export interface Thumbnail {
+  /**The unique identifier of the thumbnail*/
+  guid?: string;
+  /**The name of the thumbnail*/
+  name?: string;
+  /**The size of the thumbnail*/
+  size?: string;
+}
+export interface ThumbnailResult {
+  /**The file used as base for generating thumbnails*/
+  baseFile?: UploadedFile;
+  /**Generated thumbnails*/
+  thumbnails?: Thumbnail[];
+  /**Generated thumbnails*/
+  failed?: ZetaApiError[];
 }
 export interface UploadedFile {
   /**File mime type*/

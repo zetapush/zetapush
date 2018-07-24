@@ -1,3 +1,5 @@
+export { Inject, Injectable, ReflectiveInjector } from 'injection-js';
+
 export * from './Core/index';
 export * from './Metadata/index';
 export * from './CommonTypes';
