@@ -14,7 +14,7 @@ export default class Api {
     return this.storage.list();
   }
   hello(_: void, context: Context) {
-    context.debug('coucou');
+    context.logger.debug('hello');
     return `Hello World from TypeScript ${this.calendar.getNow()}`;
   }
   reduce(list: number[]) {
