@@ -25,7 +25,7 @@
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@zetapush/client": "^0.31.0",
+    "@zetapush/client": "0.31.0",
     "@zetapush/platform": "^0.31.0"
   },
   "devDependencies": {
