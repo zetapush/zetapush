@@ -3,13 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.30.1](https://github.com/zetapush/zetapush/compare/v0.30.0...v0.30.1) (2018-07-18)
+# [0.31.0](https://github.com/zetapush/zetapush/compare/v0.30.1...v0.31.0) (2018-07-24)
 
 
 ### Features
 
-* **configure-compatibility:** add a synchronous succcessfull done result for server futurproof comp ([d4d491d](https://github.com/zetapush/zetapush/commit/d4d491d))
-* **worker:** improve error message on error from server ([1669533](https://github.com/zetapush/zetapush/commit/1669533))
+* use fixed version for internal packages ([adaae7b](https://github.com/zetapush/zetapush/commit/adaae7b))
+* **context-logger:** implements Context logger in second parameter ([29966f0](https://github.com/zetapush/zetapush/commit/29966f0))
+* **context-logger-configurable:** add contextId for configure request ([6b22180](https://github.com/zetapush/zetapush/commit/6b22180))
+* **context-logger-configurable:** implements logger with context id ([23dcd87](https://github.com/zetapush/zetapush/commit/23dcd87))
+* **context-logger-configurable:** transmit contextId from requester to platform to keep platform up ([ad5d1bd](https://github.com/zetapush/zetapush/commit/ad5d1bd))
+* **ontext-logger-configurable:** update logged data structure ([479096e](https://github.com/zetapush/zetapush/commit/479096e))
 
 
 

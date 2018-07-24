@@ -3,12 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.30.1](https://github.com/zetapush/zetapush/compare/v0.30.0...v0.30.1) (2018-07-18)
+# [0.31.0](https://github.com/zetapush/zetapush/compare/v0.30.1...v0.31.0) (2018-07-24)
+
+
+### Features
+
+* use fixed version for internal packages ([adaae7b](https://github.com/zetapush/zetapush/commit/adaae7b))
 
 
 
-
-**Note:** Version bump only for package @zetapush/cli
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

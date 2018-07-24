@@ -3,19 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.30.1](https://github.com/zetapush/zetapush/compare/v0.30.0...v0.30.1) (2018-07-18)
-
-
-### Bug Fixes
-
-* **testing:** update utils functions (testing) ([b08c8b2](https://github.com/zetapush/zetapush/commit/b08c8b2))
+# [0.31.0](https://github.com/zetapush/zetapush/compare/v0.30.1...v0.31.0) (2018-07-24)
 
 
 ### Features
 
-* **configure-compatibility:** add a synchronous succcessfull done result for server futurproof comp ([d4d491d](https://github.com/zetapush/zetapush/commit/d4d491d))
-* **example:** add vscode config file ([83c53e2](https://github.com/zetapush/zetapush/commit/83c53e2))
-* **worker:** improve error message on error from server ([1669533](https://github.com/zetapush/zetapush/commit/1669533))
+* use fixed version for internal packages ([adaae7b](https://github.com/zetapush/zetapush/commit/adaae7b))
+* **context-logger:** add example with context logger ([ff84d4a](https://github.com/zetapush/zetapush/commit/ff84d4a))
+* **context-logger:** implements Context logger in second parameter ([29966f0](https://github.com/zetapush/zetapush/commit/29966f0))
+* **context-logger-configurable:** add contextId for configure request ([6b22180](https://github.com/zetapush/zetapush/commit/6b22180))
+* **context-logger-configurable:** implements logger with context id ([23dcd87](https://github.com/zetapush/zetapush/commit/23dcd87))
+* **context-logger-configurable:** transmit contextId from requester to platform to keep platform up ([ad5d1bd](https://github.com/zetapush/zetapush/commit/ad5d1bd))
+* **context-logger-configurable:** update auto genrated service definition ([1840090](https://github.com/zetapush/zetapush/commit/1840090))
+* **context-logger-configurable:** update platform generates services ([989a10c](https://github.com/zetapush/zetapush/commit/989a10c))
+* **ontext-logger-configurable:** update logged data structure ([479096e](https://github.com/zetapush/zetapush/commit/479096e))
+* **platform:** bump platform cloud services ([124802b](https://github.com/zetapush/zetapush/commit/124802b))
 
 
 
