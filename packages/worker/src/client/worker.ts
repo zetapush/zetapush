@@ -88,6 +88,7 @@ export class WorkerClient extends Client {
     const instance = new WorkerInstance({
       timeout: this.timeout,
       worker,
+      bootLayers: worker.bootLayers,
     });
     const logs = this.createService<Logs>({
       Type: Logs,
@@ -113,13 +114,12 @@ export class WorkerClient extends Client {
             // Unable to dispatch task
           }
         },
-        configure: async ({ data: task }: ListenerMessage<ConfigureTask>) => {
-          // Return a synchronous succcessfull done result
+        async configure(task: TaskRequest) {
+          const res = await instance.configure();
           queue.done({
-            result: {},
-            contextId: task.request && task.request.contextId,
-            taskId: task.taskId,
-            success: true,
+            result: res.result,
+            taskId: task.data.taskId,
+            success: res.success,
           });
         },
       },

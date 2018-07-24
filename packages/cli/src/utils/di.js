@@ -9,6 +9,7 @@ class ScanOutput {
   constructor() {
     this.custom = [];
     this.platform = [];
+    this.bootLayer = [];
   }
 }
 
@@ -20,26 +21,38 @@ const getInjectionMetadata = (target) =>
 const isToken = (provider) =>
   Boolean(provider) && provider.toString() === '@Inject';
 
-const scan = (CustomCloudService, output = new ScanOutput()) => {
+const scan = (CustomCloudService, output = new ScanOutput(), layer = 0) => {
   if (isFunction(CustomCloudService)) {
     const metadata = getInjectionMetadata(CustomCloudService);
     if (Array.isArray(metadata)) {
+      const toScan = [];
+      const addToScan = [];
       metadata.forEach((injected) => {
         const provider = isToken(injected) ? injected.token : injected;
         if (isFunction(provider)) {
           if (Array.isArray(getInjectionMetadata(provider))) {
             // CustomCloudService with DI
-            scan(provider, output);
+            toScan.push({ provider, output });
             output.custom.push(provider);
+            addToScan.push(provider);
           } else if (provider.DEFAULT_DEPLOYMENT_ID) {
             // Platform CloudService
             output.platform.push(provider);
           } else {
             // CustomCloudService without DI
             output.custom.push(provider);
+            addToScan.push(provider);
           }
         }
       });
+      if (output.bootLayer[layer] === undefined) {
+        output.bootLayer.push(addToScan);
+      } else {
+        output.bootLayer[layer] = output.bootLayer[layer].concat(addToScan);
+      }
+      for (let sc of toScan) {
+        scan(sc.provider, sc.output, layer + 1);
+      }
     }
     // Add CustomCloudService
     output.custom.push(CustomCloudService);
@@ -55,9 +68,30 @@ const scan = (CustomCloudService, output = new ScanOutput()) => {
 const analyze = (declaration) => {
   const cleaned = clean(declaration);
   const output = new ScanOutput();
-  Object.values(cleaned).map((CustomCloudService) =>
-    scan(CustomCloudService, output),
-  );
+  const baseApi = [];
+  Object.values(cleaned).map((CustomCloudService) => {
+    scan(CustomCloudService, output);
+    baseApi.push(CustomCloudService);
+  });
+  output.bootLayer.reverse();
+  output.bootLayer.push(baseApi);
+  // Removing duplicate of bootlayer
+  let matchs = -1;
+  while (matchs !== 0) {
+    let seens = [];
+    matchs = 0;
+    for (let layer in output.bootLayer) {
+      for (let api in output.bootLayer[layer]) {
+        for (let seen of seens) {
+          if (seen == output.bootLayer[layer][api]) {
+            output.bootLayer[layer].splice(api, 1);
+            matchs += 1;
+          }
+        }
+        seens.push(output.bootLayer[layer][api]);
+      }
+    }
+  }
   // Unicity
   output.custom = Array.from(new Set(output.custom));
   output.platform = Array.from(new Set(output.platform));
@@ -142,11 +176,19 @@ const normalize = (declaration) => {
  */
 const instanciate = (client, declaration) => {
   let singleton;
+  let output;
   try {
     const cleaned = clean(declaration);
-    const output = analyze(cleaned);
+    output = analyze(cleaned);
     const providers = resolve(client, output);
     const injector = ReflectiveInjector.resolveAndCreate(providers);
+    // convert bootlayer declaration to instances
+    for (let lay in output.bootLayer) {
+      for (let cus in output.bootLayer[lay]) {
+        const tmp = output.bootLayer[lay][cus];
+        output.bootLayer[lay][cus] = injector.get(tmp);
+      }
+    }
     singleton = Object.entries(cleaned).reduce(
       (instance, [namespace, CustomCloudService]) => {
         instance[namespace] = injector.get(CustomCloudService);
@@ -158,6 +200,7 @@ const instanciate = (client, declaration) => {
     error('instanciate', ex);
   }
   log('instanciate', singleton);
+  singleton.bootLayers = output.bootLayer;
   return singleton;
 };
 
