@@ -53,7 +53,6 @@ export class WorkerInstance {
     for (let layerIndex in this.bootLayers) {
       for (let apiIndex in this.bootLayers[layerIndex]) {
         const api = this.bootLayers[layerIndex][apiIndex];
-        console.log('OnApplicationBootstrap ::', api.constructor.name);
         if (typeof api['onApplicationBootstrap'] === 'function') {
           try {
             await api['onApplicationBootstrap']();
