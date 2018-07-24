@@ -3,21 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.31.0](https://github.com/zetapush/zetapush/compare/v0.30.1...v0.31.0) (2018-07-24)
+## [0.31.1](https://github.com/zetapush/zetapush/compare/v0.31.0...v0.31.1) (2018-07-24)
 
 
-### Features
+### Bug Fixes
 
-* use fixed version for internal packages ([adaae7b](https://github.com/zetapush/zetapush/commit/adaae7b))
-* **context-logger:** add example with context logger ([ff84d4a](https://github.com/zetapush/zetapush/commit/ff84d4a))
-* **context-logger:** implements Context logger in second parameter ([29966f0](https://github.com/zetapush/zetapush/commit/29966f0))
-* **context-logger-configurable:** add contextId for configure request ([6b22180](https://github.com/zetapush/zetapush/commit/6b22180))
-* **context-logger-configurable:** implements logger with context id ([23dcd87](https://github.com/zetapush/zetapush/commit/23dcd87))
-* **context-logger-configurable:** transmit contextId from requester to platform to keep platform up ([ad5d1bd](https://github.com/zetapush/zetapush/commit/ad5d1bd))
-* **context-logger-configurable:** update auto genrated service definition ([1840090](https://github.com/zetapush/zetapush/commit/1840090))
-* **context-logger-configurable:** update platform generates services ([989a10c](https://github.com/zetapush/zetapush/commit/989a10c))
-* **ontext-logger-configurable:** update logged data structure ([479096e](https://github.com/zetapush/zetapush/commit/479096e))
-* **platform:** bump platform cloud services ([124802b](https://github.com/zetapush/zetapush/commit/124802b))
+* **create:** update default example ([efd390e](https://github.com/zetapush/zetapush/commit/efd390e))
 
 
 

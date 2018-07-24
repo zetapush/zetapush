@@ -3,20 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.31.0](https://github.com/zetapush/zetapush/compare/v0.30.1...v0.31.0) (2018-07-24)
-
-
-### Features
-
-* use fixed version for internal packages ([adaae7b](https://github.com/zetapush/zetapush/commit/adaae7b))
-* **context-logger:** implements Context logger in second parameter ([29966f0](https://github.com/zetapush/zetapush/commit/29966f0))
-* **context-logger-configurable:** add contextId for configure request ([6b22180](https://github.com/zetapush/zetapush/commit/6b22180))
-* **context-logger-configurable:** implements logger with context id ([23dcd87](https://github.com/zetapush/zetapush/commit/23dcd87))
-* **context-logger-configurable:** transmit contextId from requester to platform to keep platform up ([ad5d1bd](https://github.com/zetapush/zetapush/commit/ad5d1bd))
-* **ontext-logger-configurable:** update logged data structure ([479096e](https://github.com/zetapush/zetapush/commit/479096e))
+## [0.31.1](https://github.com/zetapush/zetapush/compare/v0.31.0...v0.31.1) (2018-07-24)
 
 
 
+
+**Note:** Version bump only for package @zetapush/worker
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

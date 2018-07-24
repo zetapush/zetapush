@@ -3,17 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.31.0](https://github.com/zetapush/zetapush/compare/v0.30.1...v0.31.0) (2018-07-24)
-
-
-### Features
-
-* **context-logger-configurable:** update auto genrated service definition ([1840090](https://github.com/zetapush/zetapush/commit/1840090))
-* **context-logger-configurable:** update platform generates services ([989a10c](https://github.com/zetapush/zetapush/commit/989a10c))
-* **platform:** bump platform cloud services ([124802b](https://github.com/zetapush/zetapush/commit/124802b))
+## [0.31.1](https://github.com/zetapush/zetapush/compare/v0.31.0...v0.31.1) (2018-07-24)
 
 
 
+
+**Note:** Version bump only for package @zetapush/platform
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
