@@ -67,11 +67,56 @@ export interface AccountDetailsProvider {
   getUserProfile(original: any): Promise<UserProfile>;
 }
 
+/**
+ * The 'AccountConfirmationManager' is in charge to manage the account confirmation
+ * in an application. In many applications, a user account need to be validated to be used.
+ *
+ * The 'AccountConfirmationManager' is just a marker interface. Account confirmation process
+ * may vary a lot, that's why we use the interface to mark the concept.
+ * This interface exposes you two methods :
+ *  - 'askConfirmation()' to launch the validation process for a created account
+ *  - 'confirm()' to validate a created account
+ *
+ * The account confirmation process may vary a lot. For example,
+ * 'TemplatedMessageAccountConfirmationManager' is an implementation of AccountConfirmationManager
+ * that send an email to validate the account via a link.
+ * You can choose your implementation depending of your case or create your own implementation.
+ *
+ * @see TemplatedMessageAccountConfirmationManager
+ * @see Account
+ * @see PendingAccountConfirmation
+ * @see Token
+ * @see ConfirmedAccount
+ */
 export interface AccountConfirmationManager {
+  /**
+   * Ask the confirmation of a created account.
+   *
+   * accountToConfirm can takes many different forms. In the case of we use the login/password
+   * connection process this is an account ID, an account status and an user profile.
+   * This can be very different in other case, for example in the case of a GitHub OAuth authentication.
+   *
+   * @param {Account} accountToConfirm Created account that we want to ask confirmation
+   * @returns {Promise<PendingAccountConfirmation>} Object that includes the ID of the created account and the token to validate it
+   */
   askConfirmation(accountToConfirm: Account): Promise<PendingAccountConfirmation>;
+
+  /**
+   * Confirm a pending confirmation account
+   *
+   * @param {Token} token Unique token to validate a specific account
+   * @returns {Promise<ConfirmedAccount} Object with the accountId, the status of the account and the user profile
+   */
   confirm(token: Token): Promise<ConfirmedAccount>;
 }
 
+/**
+ * The AccountConfirmationMessageManager is used to manage the confirmation messages.
+ *
+ * It uses the send the confirmation message to let the user validate his account.
+ * To do this, you need to use a Message instance that will be anything.
+ * For example a Message can by an Email.
+ */
 export interface AccountConfirmationMessageManager {
   send(message: Message): Promise<SentMessage>;
 }
@@ -117,14 +162,37 @@ export interface AccountStatusProvider {
   getStatus(): Promise<AccountStatus>;
 }
 
+/**
+ * Define the status of an account (example : 'active' / 'waitingConfirmation' / 'disabled')
+ */
 export type AccountStatus = string;
 
+/**
+ * Information of the user
+ * That includes for example the username, birthdate, gender...
+ */
 export interface UserProfile {}
 
+/**
+ * Necessary informations for the account creation process
+ * These informations may vary a lot. In the case of a username/password
+ * login process with an email confirmation, the needed informations are
+ * the login, the email, the password (x2 for confirmation password).
+ */
 export interface AccountCreationDetails {}
 
+/**
+ * This is returned when an account is validated.
+ * By default it includes the same informations that an Account
+ * but it can takes extra informations if you want.
+ *
+ * @see Account
+ */
 export interface ConfirmedAccount extends Account {}
 
+/**
+ * Returned when you ask an account confirmation
+ */
 export interface PendingAccountConfirmation {
   createdAccountId: string;
   token: Token;
