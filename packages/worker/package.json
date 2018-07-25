@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/worker",
-  "version": "0.31.2",
+  "version": "0.31.3",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-worker.js",
   "main": "lib/index.js",
@@ -25,8 +25,8 @@
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@zetapush/client": "^0.31.2",
-    "@zetapush/platform": "^0.31.2"
+    "@zetapush/client": "^0.31.3",
+    "@zetapush/platform": "^0.31.3"
   },
   "devDependencies": {
     "cross-env": "5.2.0",

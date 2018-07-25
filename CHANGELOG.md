@@ -3,13 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.31.2](https://github.com/zetapush/zetapush/compare/v0.31.1...v0.31.2) (2018-07-24)
+## [0.31.3](https://github.com/zetapush/zetapush/compare/v0.31.2...v0.31.3) (2018-07-25)
 
 
-### Bug Fixes
+### Features
 
-* **example:** rename context[logLevel] to context.logger[logLevel] ([f27cf0d](https://github.com/zetapush/zetapush/commit/f27cf0d))
-* **log:** inject logger in context method object ([ba5609d](https://github.com/zetapush/zetapush/commit/ba5609d)), closes [#61](https://github.com/zetapush/zetapush/issues/61)
+* **context-id:** add context id in injected cloud service methods context ([64e9796](https://github.com/zetapush/zetapush/commit/64e9796))
+* **context-id:** add contextId on public interface ([9609949](https://github.com/zetapush/zetapush/commit/9609949))
+* **context-id:** use Proxy to wrap context id ([0c22f02](https://github.com/zetapush/zetapush/commit/0c22f02))
 
 
 
