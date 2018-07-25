@@ -1,4 +1,6 @@
-const stream = require('stream');
+import { Writable } from 'stream';
+import { setVerbosity } from '@zetapush/common';
+import * as process from 'process';
 const winston = require('winston');
 const path = require('path');
 const chalk = require('chalk');
@@ -6,23 +8,23 @@ const jsonStringify = require('fast-safe-stringify');
 
 const logPath = path.join(__dirname, '..', '..', '.logs');
 
-const fixedSize = (str, size) => {
+const fixedSize = (str: string, size: number) => {
   return str.padEnd(size, ' ').substr(0, size);
 };
 
-const fixedSizeLevel = (str, size) => {
+const fixedSizeLevel = (str: string, size: number) => {
   return str.replace(/(error|warn|info|debug|verbose|silly)/i, (_, s) =>
     fixedSize(s, size),
   );
 };
 
-const upper = (str) => {
+const upper = (str: string) => {
   return str.replace(/(error|warn|info|debug|verbose|silly)/i, (_, s) =>
     s.toUpperCase(),
   );
 };
 
-const stringifiedRest = (info) => {
+const stringifiedRest = (info: any) => {
   const json = jsonStringify(
     Object.assign({}, info, {
       timestamp: undefined,
@@ -36,8 +38,8 @@ const stringifiedRest = (info) => {
   return json == '{}' ? '' : json;
 };
 
-const myFormat = (fmt) => {
-  return winston.format.printf((info) => {
+const myFormat = (fmt?: string | null) => {
+  return winston.format.printf((info: any) => {
     const label = fmt
       ? chalk`{${fmt} ${fixedSize(info.label, 18)}}`
       : fixedSize(info.label, 18);
@@ -48,7 +50,11 @@ const myFormat = (fmt) => {
   });
 };
 
-const addCategorizedLogger = (name, label, fmt) => {
+export const addCategorizedLogger = (
+  name: string,
+  label: string,
+  fmt?: string,
+) => {
   winston.loggers.add(name, {
     format: winston.format.combine(
       winston.format.colorize(),
@@ -94,33 +100,32 @@ const addCategorizedLogger = (name, label, fmt) => {
   return winston.loggers.get(name);
 };
 
-const givenLogger = addCategorizedLogger('given', 'GIVEN', 'grey');
-const userActionLogger = addCategorizedLogger(
+export const givenLogger = addCategorizedLogger('given', 'GIVEN', 'grey');
+export const userActionLogger = addCategorizedLogger(
   'userAction',
   'USER ACTION',
   'bold',
 );
-const frontUserActionLogger = addCategorizedLogger(
+export const frontUserActionLogger = addCategorizedLogger(
   'frontUserAction',
   'FRONT USER ACTION',
   'bold',
 );
-const cleanLogger = addCategorizedLogger('clean', 'CLEAN', 'grey');
-const commandLogger = addCategorizedLogger('command', 'COMMAND', '');
-const envLogger = addCategorizedLogger('env', 'ENV', 'grey');
-const subProcessLogger = addCategorizedLogger(
+export const cleanLogger = addCategorizedLogger('clean', 'CLEAN', 'grey');
+export const commandLogger = addCategorizedLogger('command', 'COMMAND', '');
+export const envLogger = addCategorizedLogger('env', 'ENV', 'grey');
+export const subProcessLogger = addCategorizedLogger(
   'subProcess',
   'PROCESS STDOUT/STDERR',
   '',
 );
 
-class SubProcessLoggerStream extends stream.Writable {
-  constructor(level) {
+export class SubProcessLoggerStream extends Writable {
+  constructor(private level: string) {
     super();
-    this.level = level;
   }
 
-  _write(chunk, enc, next) {
+  _write(chunk: any, encoding: string, callback: (err?: Error) => void): void {
     subProcessLogger.log(
       this.level,
       chunk
@@ -132,17 +137,11 @@ class SubProcessLoggerStream extends stream.Writable {
         // do not indent first line
         .replace(/^ {54}[|] /, ''),
     );
-    next();
+    callback();
   }
 }
 
-module.exports = {
-  givenLogger,
-  userActionLogger,
-  frontUserActionLogger,
-  cleanLogger,
-  commandLogger,
-  subProcessLogger,
-  SubProcessLoggerStream,
-  envLogger,
-};
+setVerbosity(
+  ((process.env.ZETAPUSH_COMMANDS_LOG_LEVEL || '-vvv').match(/v/g) || [])
+    .length,
+);

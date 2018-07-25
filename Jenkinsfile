@@ -23,7 +23,7 @@ pipeline {
         }
       }
       steps {
-        sh 'npm cache clear --force'
+        //sh 'npm cache clear --force'
         sh 'npm i'
         sh 'npm run lerna:clean -- --yes'
       }
@@ -83,7 +83,7 @@ pipeline {
         }
       }
       steps {
-        sh 'npm cache clear --force'
+        //sh 'npm cache clear --force'
         sh 'npm i'
         sh 'npm run lerna:clean -- --yes'
         sh "chown -R ${env.JENKINS_UID}:${env.JENKINS_GID} ."
