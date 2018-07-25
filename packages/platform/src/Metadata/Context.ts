@@ -9,6 +9,7 @@ interface ContextLogger {
 }
 
 interface MethodContext {
+  id?: string;
   owner: string;
   logger: Readonly<ContextLogger>;
 }
