@@ -50,6 +50,85 @@ export class Groups extends Service {
     return 'groups_0';
   }
   /**
+   * User API for remote control
+   *
+   * @access public
+   * */
+  /**
+   * Adds a listener
+   *
+   * A user requests notifications from a device owned by anyone who granted him the right authorizations.
+   * Whenever the device calls 'notify', notifications will be sent to the caller of this verb.
+   * @access public
+   * */
+  addListener(body: RemoteCommand) {
+    return this.$publish('addListener', body);
+  }
+  /**
+   * Response to 'getCapabilities'
+   *
+   * @access public
+   * */
+  capabilities(body: DeviceCapabilities) {
+    return this.$publish('capabilities', body);
+  }
+  /**
+   * Executes a command
+   *
+   * A user executes a command on a device owned by anyone who granted him the right authorizations.
+   * The command is issued on channel 'command'
+   * @access public
+   * */
+  execute(body: RemoteCommand) {
+    return this.$publish('execute', body);
+  }
+  /**
+   * Requests capabilities
+   *
+   * A user requests all his devices for the whole list of their capabilities.
+   * Devices are expected to answer on channel 'capabilities'
+   * @access public
+   * */
+  getCapabilities() {
+    return this.$publish('getCapabilities');
+  }
+  /**
+   * Notifies of some event
+   *
+   * A device notifies the registered users/devices on this channel.
+   * The server forwards the notification to said users.
+   * @access public
+   * */
+  notify(body: RemoteCommand) {
+    return this.$publish('notify', body);
+  }
+  /**
+   * Pings devices
+   *
+   * A user requests all devices (of all owners) on which he has authorizations to respond on channel 'pong'
+   * @access public
+   * */
+  ping(body: PingRequest) {
+    return this.$publish('ping', body);
+  }
+  /**
+   * Response to ping
+   *
+   * @access public
+   * */
+  pong(body: DeviceAvailability) {
+    return this.$publish('pong', body);
+  }
+  /**
+   * Removes a listener
+   *
+   * A user stops requesting notifications from a device owned by anyone who granted him the right authorizations
+   * @access public
+   * */
+  removeListener(body: RemoteCommand) {
+    return this.$publish('removeListener', body);
+  }
+  /**
    * User API for groups and rights.
    *
    * Groups are stored per user.
@@ -301,84 +380,5 @@ export class Groups extends Service {
    * */
   revoke(body: Grant): Promise<Grant> {
     return this.$publish('revoke', body);
-  }
-  /**
-   * User API for remote control
-   *
-   * @access public
-   * */
-  /**
-   * Adds a listener
-   *
-   * A user requests notifications from a device owned by anyone who granted him the right authorizations.
-   * Whenever the device calls 'notify', notifications will be sent to the caller of this verb.
-   * @access public
-   * */
-  addListener(body: RemoteCommand) {
-    return this.$publish('addListener', body);
-  }
-  /**
-   * Response to 'getCapabilities'
-   *
-   * @access public
-   * */
-  capabilities(body: DeviceCapabilities) {
-    return this.$publish('capabilities', body);
-  }
-  /**
-   * Executes a command
-   *
-   * A user executes a command on a device owned by anyone who granted him the right authorizations.
-   * The command is issued on channel 'command'
-   * @access public
-   * */
-  execute(body: RemoteCommand) {
-    return this.$publish('execute', body);
-  }
-  /**
-   * Requests capabilities
-   *
-   * A user requests all his devices for the whole list of their capabilities.
-   * Devices are expected to answer on channel 'capabilities'
-   * @access public
-   * */
-  getCapabilities() {
-    return this.$publish('getCapabilities');
-  }
-  /**
-   * Notifies of some event
-   *
-   * A device notifies the registered users/devices on this channel.
-   * The server forwards the notification to said users.
-   * @access public
-   * */
-  notify(body: RemoteCommand) {
-    return this.$publish('notify', body);
-  }
-  /**
-   * Pings devices
-   *
-   * A user requests all devices (of all owners) on which he has authorizations to respond on channel 'pong'
-   * @access public
-   * */
-  ping(body: PingRequest) {
-    return this.$publish('ping', body);
-  }
-  /**
-   * Response to ping
-   *
-   * @access public
-   * */
-  pong(body: DeviceAvailability) {
-    return this.$publish('pong', body);
-  }
-  /**
-   * Removes a listener
-   *
-   * A user stops requesting notifications from a device owned by anyone who granted him the right authorizations
-   * @access public
-   * */
-  removeListener(body: RemoteCommand) {
-    return this.$publish('removeListener', body);
   }
 }
