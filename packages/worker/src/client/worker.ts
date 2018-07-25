@@ -185,7 +185,7 @@ export class WorkerClient extends Client {
       },
     });
     return Object.freeze({
-      id: contextId,
+      contextId,
       owner,
       logger,
     });
