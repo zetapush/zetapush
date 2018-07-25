@@ -38,55 +38,6 @@ export class Macro extends Service {
     return 'macro_0';
   }
   /**
-   * User API for macro debugging
-   *
-   * Debugger API for macro.
-   * These API verbs are not intended for use by most developers.
-   * @access public
-   * */
-  /**
-   * Enables or disables a breakpoint
-   *
-   * @access public
-   * */
-  breakpoint(body: MacroDebugBreakpointSet) {
-    return this.$publish('breakpoint', body);
-  }
-  /**
-   * Requests some information
-   *
-   * @access public
-   * */
-  info(body: MacroDebugInfoRequest) {
-    return this.$publish('info', body);
-  }
-  /**
-   * Debugs a previously recorded macro
-   *
-   * The given breakpoints will be honored, causing a suspension of the execution, resumable via 'resume'.
-   * Only one debug session can be active at any given time.
-   * @access public
-   * */
-  livedebug(body: MacroDebugSession) {
-    return this.$publish('livedebug', body);
-  }
-  /**
-   * Resumes a paused macro
-   *
-   * @access public
-   * */
-  resume(body: MacroDebugStep) {
-    return this.$publish('resume', body);
-  }
-  /**
-   * Sets a variable value
-   *
-   * @access public
-   * */
-  variable(body: MacroDebugVariableChange) {
-    return this.$publish('variable', body);
-  }
-  /**
    * User API for macro execution
    *
    * Simple errors are reported as usual.
@@ -140,5 +91,54 @@ export class Macro extends Service {
    * */
   sudo(body: SuMacroPlay): Promise<MacroCompletion> {
     return this.$publish('sudo', body);
+  }
+  /**
+   * User API for macro debugging
+   *
+   * Debugger API for macro.
+   * These API verbs are not intended for use by most developers.
+   * @access public
+   * */
+  /**
+   * Enables or disables a breakpoint
+   *
+   * @access public
+   * */
+  breakpoint(body: MacroDebugBreakpointSet) {
+    return this.$publish('breakpoint', body);
+  }
+  /**
+   * Requests some information
+   *
+   * @access public
+   * */
+  info(body: MacroDebugInfoRequest) {
+    return this.$publish('info', body);
+  }
+  /**
+   * Debugs a previously recorded macro
+   *
+   * The given breakpoints will be honored, causing a suspension of the execution, resumable via 'resume'.
+   * Only one debug session can be active at any given time.
+   * @access public
+   * */
+  livedebug(body: MacroDebugSession) {
+    return this.$publish('livedebug', body);
+  }
+  /**
+   * Resumes a paused macro
+   *
+   * @access public
+   * */
+  resume(body: MacroDebugStep) {
+    return this.$publish('resume', body);
+  }
+  /**
+   * Sets a variable value
+   *
+   * @access public
+   * */
+  variable(body: MacroDebugVariableChange) {
+    return this.$publish('variable', body);
   }
 }

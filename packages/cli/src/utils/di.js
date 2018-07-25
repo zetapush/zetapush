@@ -1,6 +1,9 @@
 require('reflect-metadata');
 
-const { ReflectiveInjector } = require('@zetapush/platform');
+const {
+  CloudServiceInstance,
+  ReflectiveInjector,
+} = require('@zetapush/platform');
 
 const DEFAULTS = require('./defaults');
 const { log, error, info, warn } = require('./log');
@@ -100,6 +103,29 @@ const analyze = (declaration) => {
 };
 
 /**
+ * Creare platform service instance
+ * @param {Object} client
+ * @param {Object} Type
+ */
+const createAsyncService = (client, Type) => {
+  const instance = client.createAsyncService({
+    Type,
+  });
+  const $publish = instance.$publish;
+  // Override $publish method with scopable `function`
+  instance.$publish = function $$publish(name, parameters) {
+    // Inject contextId in parameters
+    return $publish(
+      name,
+      Object.assign(parameters, {
+        contextId: this.contextId,
+      }),
+    );
+  };
+  return instance;
+};
+
+/**
  * Resolve providers with dynamicly injected values
  * @param {ServerClient} client
  * @param {ScanOutput} output
@@ -107,9 +133,7 @@ const analyze = (declaration) => {
 const resolve = (client, output) => [
   ...output.platform.map((PlatformService) => ({
     provide: PlatformService,
-    useValue: client.createAsyncService({
-      Type: PlatformService,
-    }),
+    useValue: createAsyncService(client, PlatformService),
   })),
   ...output.custom.map((CustomCloudService) => ({
     provide: CustomCloudService,
@@ -182,13 +206,19 @@ const instanciate = (client, declaration) => {
     output = analyze(cleaned);
     const providers = resolve(client, output);
     const injector = ReflectiveInjector.resolveAndCreate(providers);
-    // convert bootlayer declaration to instances
-    for (let lay in output.bootLayer) {
-      for (let cus in output.bootLayer[lay]) {
-        const tmp = output.bootLayer[lay][cus];
-        output.bootLayer[lay][cus] = injector.get(tmp);
-      }
-    }
+    // Flag all instance as CloudServiceInstance
+    providers.forEach((provider) => {
+      const instance = injector.get(provider.provide);
+      CloudServiceInstance.flag(instance);
+    });
+    // Convert bootlayer declaration to instances
+    output.bootLayer.forEach((layer) => {
+      layer.forEach((CloudService, key) => {
+        const instance = injector.get(CloudService);
+        layer[key] = instance;
+      });
+    });
+    // Reduce singleton from namespaced
     singleton = Object.entries(cleaned).reduce(
       (instance, [namespace, CustomCloudService]) => {
         instance[namespace] = injector.get(CustomCloudService);
