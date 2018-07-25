@@ -41,6 +41,9 @@ const { InjectionIssueAnalyzer } = require('../src/errors/injection-issue');
 const {
   CustomCloudServiceStartErrorAnalyzer,
 } = require('../src/errors/custom-cloud-service-start-issue');
+const {
+  OnApplicationBoostrapErrorAnalyser,
+} = require('../src/errors/bootstrap-issue');
 
 ErrorAnalyzer.register(new ConfigLoadIssueAnalyzer());
 ErrorAnalyzer.register(new NetworkIssueAnalyzer());
@@ -48,6 +51,7 @@ ErrorAnalyzer.register(new AccessDeniedIssueAnalyzer());
 ErrorAnalyzer.register(new InjectionIssueAnalyzer());
 ErrorAnalyzer.register(new MissingNpmDependencyErrorAnalyzer());
 ErrorAnalyzer.register(new CustomCloudServiceStartErrorAnalyzer());
+ErrorAnalyzer.register(new OnApplicationBoostrapErrorAnalyser());
 
 function increaseVerbosity(v, total) {
   setVerbosity(total);

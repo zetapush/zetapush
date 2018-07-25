@@ -277,6 +277,7 @@ const EXIT_CODES = {
   'INJECTION-01': 71,
   'SERVICE-04': 94,
   'SERVICE-05': 95,
+  'BOOTSTRAP-01': 110,
 };
 
 module.exports = {
