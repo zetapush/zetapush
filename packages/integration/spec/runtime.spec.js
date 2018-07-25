@@ -1,13 +1,3 @@
-const {
-  rm,
-  npmInit,
-  zetaPush,
-  readZetarc,
-  Runner,
-  createZetarc,
-  npmInstallLatestVersion,
-  nukeApp,
-} = require('@zetapush/testing');
 const { given, frontUserAction, autoclean } = require('@zetapush/testing');
 
 const sleep = (millis) => {

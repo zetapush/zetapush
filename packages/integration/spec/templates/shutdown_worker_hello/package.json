@@ -1,5 +1,5 @@
 {
-  "name": "broken-worker-case",
+  "name": "shutdown-worker-hello",
   "version": "0.1.0",
   "main": "worker/index.js",
   "private": true,

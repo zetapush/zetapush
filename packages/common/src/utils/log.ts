@@ -16,12 +16,15 @@ try {
   stringify = JSON.stringify;
 }
 
+const conf = {
+  loggerVerbosity: 1,
+};
 export const setVerbosity = (verbosity: number) => {
-  (<any>global).loggerVerbosity = verbosity;
+  conf.loggerVerbosity = verbosity;
 };
 
 export const debugObject = (what: string, ...objects: any[]) => {
-  if ((<any>global).loggerVerbosity < 4) return;
+  if (conf.loggerVerbosity < 4) return;
   for (let obj of objects) {
     for (let name in obj) {
       let file = getZetaFilePath(
@@ -57,7 +60,7 @@ export const debugObject = (what: string, ...objects: any[]) => {
 };
 
 export const trace = (message: any, ...messages: any[]) => {
-  if ((<any>global).loggerVerbosity < 3) return;
+  if (conf.loggerVerbosity < 3) return;
   console.debug(
     chalk`{gray [TRACE] ${message}}`,
     messages.length > 0 ? messages : '',
@@ -66,7 +69,7 @@ export const trace = (message: any, ...messages: any[]) => {
 };
 
 export const log = (message: any, ...messages: any[]) => {
-  if ((<any>global).loggerVerbosity < 2) return;
+  if (conf.loggerVerbosity < 2) return;
   console.log(
     chalk`[{cyan.bold LOG}] ${message}`,
     messages.length > 0 ? messages : '',
@@ -75,7 +78,7 @@ export const log = (message: any, ...messages: any[]) => {
 };
 
 export const info = (message: any, ...messages: any[]) => {
-  if ((<any>global).loggerVerbosity < 1) return;
+  if (conf.loggerVerbosity < 1) return;
   console.info(
     chalk`[{cyan.bold INFO}] {bold ${message}}`,
     messages.length > 0 ? messages : '',

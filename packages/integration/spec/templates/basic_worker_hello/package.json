@@ -1,5 +1,5 @@
 {
-  "name": "broken-worker-case",
+  "name": "basic-worker-case",
   "version": "0.1.0",
   "main": "worker/index.js",
   "private": true,

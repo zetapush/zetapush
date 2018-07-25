@@ -1,4 +1,9 @@
-export const userAction = async (name, func) => {
+import { userActionLogger, frontUserActionLogger } from '../utils/logger';
+import { WeakClient } from '@zetapush/client';
+import { Test, TestContext, Context, ContextWrapper } from '../utils/types';
+const transports = require('@zetapush/cometd/lib/node/Transports');
+
+export const userAction = async (name: string, func: () => any) => {
   try {
     userActionLogger.info(`>>> User action: ${name}`);
     const res = await func();
@@ -10,24 +15,28 @@ export const userAction = async (name, func) => {
   }
 };
 
-export const consoleUserAction = async (name, func) => {
+export const consoleUserAction = async (name: string, func: () => any) => {
   return await userAction(name + ' from console', func);
 };
 
-export const frontUserAction = async (name, testOrContext, func) => {
+export const frontUserAction = async (
+  name: string,
+  testOrContext: Context,
+  func: (api: any, client: WeakClient) => any,
+) => {
   return await userAction(name + ' from front', async () => {
     let api;
     let client;
     try {
-      const zetarc = testOrContext.zetarc || testOrContext.context.zetarc;
+      const zetarc = new ContextWrapper(testOrContext).getContext().zetarc;
       client = new WeakClient({
-        ...zetarc,
+        ...(<any>zetarc),
         transports,
       });
       frontUserActionLogger.debug('Connecting to worker...');
       await client.connect();
       frontUserActionLogger.debug('Connected to worker');
-      api = client.createProxyTaskService();
+      api = (<any>client).createProxyTaskService();
       frontUserActionLogger.debug('Api instance created');
     } catch (e) {
       frontUserActionLogger.error(
@@ -41,7 +50,7 @@ export const frontUserAction = async (name, testOrContext, func) => {
     } catch (e) {
       frontUserActionLogger.error(
         `>>> Front user action FAILED: ${name}`,
-        testOrContext.context || testOrContext,
+        new ContextWrapper(testOrContext).getContext(),
         e,
       );
       throw e;

@@ -1,34 +1,38 @@
-const stream = require('stream');
 const execa = require('execa');
-const util = require('util');
-const fs = require('fs');
-const path = require('path');
-const process = require('process');
-const readFile = util.promisify(fs.readFile);
-const writeFile = util.promisify(fs.writeFile);
-const exists = util.promisify(fs.exists);
+import { ExecaChildProcess } from 'execa';
+// import * as util from 'util';
+import * as fs from 'fs';
+import { PathLike, readFileSync, writeFileSync, existsSync } from 'fs';
+import * as path from 'path';
+import * as process from 'process';
+// const readFile = util.promisify(fs.readFile);
+// const writeFile = util.promisify(fs.writeFile);
+// const exists = util.promisify(fs.exists);
 const rimraf = require('rimraf');
-const { fetch } = require('@zetapush/cli');
+import { fetch } from '@zetapush/common';
 const kill = require('tree-kill');
-const {
+import {
   commandLogger,
   SubProcessLoggerStream,
   subProcessLogger,
-} = require('./logger');
-const { PassThrough } = require('stream');
+} from './logger';
+import { PassThrough } from 'stream';
 
 const PLATFORM_URL = 'https://celtia.zetapush.com/zbo/pub/business';
 
-const rm = (path) =>
+export const rm = (path: PathLike) =>
   new Promise((resolve, reject) =>
-    rimraf(path, (failure) => (failure ? reject(failure) : resolve())),
+    rimraf(
+      path.toString(),
+      (failure: any) => (failure ? reject(failure) : resolve()),
+    ),
   );
 
-const getCurrentEnv = (dir) => {
+export const getCurrentEnv = (dir: PathLike) => {
   // get current zetapush version for each module
-  const versions = {};
+  const versions: any = {};
   try {
-    const modulesDir = path.join(dir, 'node_modules/@zetapush');
+    const modulesDir = path.join(dir.toString(), 'node_modules/@zetapush');
     if (fs.existsSync(modulesDir)) {
       for (let m of fs.readdirSync(modulesDir)) {
         try {
@@ -71,14 +75,19 @@ const getCurrentEnv = (dir) => {
  * @param {string} developerPassword
  * @param {string} dir Name of the application folder
  */
-const npmInit = (developerLogin, developerPassword, dir, platformUrl) => {
+export const npmInit = (
+  developerLogin: string,
+  developerPassword: string,
+  dir: PathLike,
+  platformUrl?: string,
+) => {
   commandLogger.info(
     `npmInit(${developerLogin}, ${developerPassword}, ${dir}, ${platformUrl})`,
   );
   if (npmVersion().major < 5) {
     throw new Error('Minimum required npm version is 5.6.0');
   }
-  const relativeDir = path.relative('.generated-projects', dir);
+  const relativeDir = path.relative('.generated-projects', dir.toString());
   let cmd;
   if (process.env.TEST_RELEASE_VERSION) {
     if (npmVersion().major < 6) {
@@ -164,7 +173,7 @@ const npmInit = (developerLogin, developerPassword, dir, platformUrl) => {
   }
   cmd.stdout.pipe(new SubProcessLoggerStream('silly'));
   cmd.stderr.pipe(new SubProcessLoggerStream('warn'));
-  cmd.on('exit', (code, signal) => {
+  cmd.on('exit', (code: number, signal: any) => {
     subProcessLogger.silly(`npmInit() -> exited`, { code, signal });
   });
 
@@ -182,21 +191,23 @@ const npmInit = (developerLogin, developerPassword, dir, platformUrl) => {
  * Run 'zeta push' command
  * @param {string} dir Full path of the application folder
  */
-const zetaPush = (dir) => {
+export const zetaPush = (dir: PathLike) => {
   return new Promise((resolve, reject) => {
     commandLogger.info(
       `zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}]`,
     );
-    const stdout = [];
-    const stderr = [];
-    const cmd = execa.shell(`npm run deploy -- ${zpLogLevel()}`, { cwd: dir });
+    const stdout: Array<string | Buffer> = [];
+    const stderr: Array<string | Buffer> = [];
+    const cmd = execa.shell(`npm run deploy -- ${zpLogLevel()}`, {
+      cwd: dir.toString(),
+    });
     const out = new PassThrough();
     const err = new PassThrough();
     out.on('data', (chunk) => stdout.push(chunk));
     err.on('data', (chunk) => stderr.push(chunk));
     cmd.stdout.pipe(out).pipe(new SubProcessLoggerStream('silly'));
     cmd.stderr.pipe(err).pipe(new SubProcessLoggerStream('warn'));
-    cmd.on('exit', (code, signal) => {
+    cmd.on('exit', (code: number, signal: any) => {
       const res = {
         cmd,
         code,
@@ -220,19 +231,21 @@ const zetaPush = (dir) => {
  * Run 'zeta run' command
  * @param {string} dir Full path of the application folder
  */
-const zetaRun = async (dir) => {
+export const zetaRun = async (dir: PathLike) => {
   return new Promise((resolve, reject) => {
     commandLogger.info(`zetaRun(${dir}) -> [npm run start -- ${zpLogLevel()}]`);
-    const stdout = [];
-    const stderr = [];
-    const cmd = execa.shell(`npm run start -- ${zpLogLevel()}`, { cwd: dir });
+    const stdout: Array<string | Buffer> = [];
+    const stderr: Array<string | Buffer> = [];
+    const cmd = execa.shell(`npm run start -- ${zpLogLevel()}`, {
+      cwd: dir.toString(),
+    });
     const out = new PassThrough();
     const err = new PassThrough();
     out.on('data', (chunk) => stdout.push(chunk));
     err.on('data', (chunk) => stderr.push(chunk));
     cmd.stdout.pipe(out).pipe(new SubProcessLoggerStream('silly'));
     cmd.stderr.pipe(err).pipe(new SubProcessLoggerStream('warn'));
-    cmd.on('exit', (code, signal) => {
+    cmd.on('exit', (code: number, signal: any) => {
       const res = {
         cmd,
         code,
@@ -256,10 +269,10 @@ const zetaRun = async (dir) => {
  * Read the .zetarc file of an application
  * @param {string} dir Full path of the application folder
  */
-const readZetarc = async (dir) => {
+export const readZetarc = async (dir: PathLike) => {
   try {
     commandLogger.debug(`readZetarc(${dir})`);
-    const content = await readFile(`${dir}/.zetarc`, {
+    const content = readFileSync(`${dir}/.zetarc`, {
       encoding: 'utf-8',
     });
     commandLogger.debug(`readZetarc(${dir}) -> `, { content });
@@ -274,10 +287,10 @@ const readZetarc = async (dir) => {
  * Delete login and password of .zetarc file
  * @param {string} dir Full path of the application folder
  */
-const deleteAccountFromZetarc = async (dir) => {
+export const deleteAccountFromZetarc = async (dir: PathLike) => {
   let jsonContent;
-  if (await exists(`${dir}/.zetarc`)) {
-    const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
+  if (existsSync(`${dir}/.zetarc`)) {
+    const content = readFileSync(`${dir}/.zetarc`, { encoding: 'utf-8' });
     jsonContent = JSON.parse(content);
 
     delete jsonContent.developerLogin;
@@ -286,7 +299,7 @@ const deleteAccountFromZetarc = async (dir) => {
     jsonContent = {};
   }
 
-  await writeFile(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
+  writeFileSync(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
     encoding: 'utf-8',
   });
 
@@ -298,10 +311,10 @@ const deleteAccountFromZetarc = async (dir) => {
  * @param {string} dir Full path of the application folder
  * @param {string} appName new appName in the .zetarc
  */
-const setAppNameToZetarc = async (dir, appName) => {
+export const setAppNameToZetarc = async (dir: PathLike, appName: string) => {
   let jsonContent;
-  if (await exists(`${dir}/.zetarc`)) {
-    const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
+  if (existsSync(`${dir}/.zetarc`)) {
+    const content = readFileSync(`${dir}/.zetarc`, { encoding: 'utf-8' });
     jsonContent = JSON.parse(content);
 
     if (appName.length > 0) {
@@ -313,7 +326,7 @@ const setAppNameToZetarc = async (dir, appName) => {
     jsonContent = { appName };
   }
 
-  await writeFile(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
+  writeFileSync(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
     encoding: 'utf-8',
   });
 
@@ -326,10 +339,14 @@ const setAppNameToZetarc = async (dir, appName) => {
  * @param {string} login
  * @param {string} password
  */
-const setAccountToZetarc = async (dir, login, password) => {
+export const setAccountToZetarc = async (
+  dir: PathLike,
+  login: string,
+  password: string,
+) => {
   let jsonContent;
-  if (await exists(`${dir}/.zetarc`)) {
-    const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
+  if (existsSync(`${dir}/.zetarc`)) {
+    const content = readFileSync(`${dir}/.zetarc`, { encoding: 'utf-8' });
     jsonContent = JSON.parse(content);
   } else {
     jsonContent = {};
@@ -347,7 +364,7 @@ const setAccountToZetarc = async (dir, login, password) => {
     delete jsonContent.developerPassword;
   }
 
-  await writeFile(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
+  writeFileSync(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
     encoding: 'utf-8',
   });
 
@@ -360,12 +377,15 @@ const setAccountToZetarc = async (dir, login, password) => {
  * @param {string} login
  * @param {string} password
  */
-const setPlatformUrlToZetarc = async (dir, platformUrl) => {
+export const setPlatformUrlToZetarc = async (
+  dir: PathLike,
+  platformUrl?: string,
+) => {
   commandLogger.debug(`setPlatformUrlToZetarc(${dir}, ${platformUrl})`);
 
   let jsonContent;
-  if (await exists(`${dir}/.zetarc`)) {
-    const content = await readFile(`${dir}/.zetarc`, { encoding: 'utf-8' });
+  if (existsSync(`${dir}/.zetarc`)) {
+    const content = readFileSync(`${dir}/.zetarc`, { encoding: 'utf-8' });
     jsonContent = JSON.parse(content);
   } else {
     jsonContent = {};
@@ -377,27 +397,29 @@ const setPlatformUrlToZetarc = async (dir, platformUrl) => {
     delete jsonContent.platformUrl;
   }
 
-  await writeFile(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
+  writeFileSync(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
     encoding: 'utf-8',
   });
 
   return jsonContent;
 };
 
-const nodeVersion = () => {
+export const nodeVersion = () => {
   commandLogger.debug('nodeVersion() -> [node --version]');
   const { stdout } = execa.sync('node', ['--version']);
   const [major, minor, patch] = stdout
     .replace('v', '')
     .split('.')
-    .map((v) => parseInt(v, 10));
+    .map((v: string) => parseInt(v, 10));
   return { major, minor, patch, str: stdout };
 };
 
-const npmVersion = () => {
+export const npmVersion = () => {
   commandLogger.debug('npmVersion() -> [npm --version]');
   const { stdout } = execa.sync('npm', ['--version']);
-  const [major, minor, patch] = stdout.split('.').map((v) => parseInt(v, 10));
+  const [major, minor, patch] = stdout
+    .split('.')
+    .map((v: string) => parseInt(v, 10));
   return { major, minor, patch, str: stdout };
 };
 
@@ -406,25 +428,25 @@ const npmVersion = () => {
  * @param {string} dir Full path of the application folder
  * @param {string} version Version of the ZetaPush dependency
  */
-const npmInstall = async (dir, version) => {
+export const npmInstall = async (dir: PathLike, version: string) => {
   commandLogger.info(`npmInstall(${dir}, ${version})`);
 
   await rm(`${dir}/node_modules/`);
 
-  const content = await readFile(`${dir}/package.json`, { encoding: 'utf-8' });
+  const content = readFileSync(`${dir}/package.json`, { encoding: 'utf-8' });
   let jsonContent = JSON.parse(content);
   jsonContent.dependencies['@zetapush/cli'] = version;
   jsonContent.dependencies['@zetapush/platform'] = version;
 
-  await writeFile(`${dir}/package.json`, JSON.stringify(jsonContent), {
+  writeFileSync(`${dir}/package.json`, JSON.stringify(jsonContent), {
     encoding: 'utf-8',
   });
 
   try {
     commandLogger.debug(`npmInstall(${dir}, ${version}) -> [npm install]`);
-    const res = execa.shellSync('npm install', { cwd: dir });
+    const res = execa.shellSync('npm install', { cwd: dir.toString() });
     commandLogger.silly(`npmInstall(${dir}, ${version}) -> [npm install] -> `, {
-      exitCode: res.status,
+      exitCode: res.code,
     });
     subProcessLogger.silly('\n' + res.stdout);
     subProcessLogger.warn('\n' + res.stderr);
@@ -442,7 +464,7 @@ const npmInstall = async (dir, version) => {
   }
 };
 
-const npmInstallLatestVersion = async (dir) => {
+export const npmInstallLatestVersion = async (dir: PathLike) => {
   commandLogger.info(`npmInstallLatestVersion(${dir})`);
   await rm(`${dir}/node_modules/`);
   await rm(`${dir}/package-lock.json`);
@@ -453,11 +475,11 @@ const npmInstallLatestVersion = async (dir) => {
       'npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save]',
     );
     const resCli = execa.shellSync('npm install @zetapush/cli@canary --save', {
-      cwd: dir,
+      cwd: dir.toString(),
     });
     commandLogger.silly(
       'npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save] -> ',
-      { exitCode: resCli.status },
+      { exitCode: resCli.code },
     );
     subProcessLogger.silly('\n' + resCli.stdout);
     subProcessLogger.warn('\n' + resCli.stderr);
@@ -467,12 +489,12 @@ const npmInstallLatestVersion = async (dir) => {
     const restPf = execa.shellSync(
       'npm install @zetapush/platform@canary --save',
       {
-        cwd: dir,
+        cwd: dir.toString(),
       },
     );
     commandLogger.silly(
       'npmInstallLatestVersion() -> [npm install @zetapush/platform@canary --save] -> ',
-      { exitCode: restPf.status },
+      { exitCode: restPf.code },
     );
     subProcessLogger.silly('\n' + restPf.stdout);
     subProcessLogger.warn('\n' + restPf.stderr);
@@ -490,14 +512,14 @@ const npmInstallLatestVersion = async (dir) => {
   }
 };
 
-const useSymlinkedDependencies = () => {
+export const useSymlinkedDependencies = () => {
   return (
-    process.env.ZETAPUSH_LOCAL_DEV === 'true' ||
-    process.env.ZETAPUSH_LOCAL_DEV === true
+    <any>process.env.ZETAPUSH_LOCAL_DEV === 'true' ||
+    <any>process.env.ZETAPUSH_LOCAL_DEV === true
   );
 };
 
-const symlinkLocalDependencies = async (dir) => {
+export const symlinkLocalDependencies = async (dir: PathLike) => {
   try {
     commandLogger.silly(`symlinkLocalDependencies(${dir})`);
     await rm(`${dir}/node_modules/@zetapush/*`);
@@ -541,18 +563,23 @@ const symlinkLocalDependencies = async (dir) => {
  * Remove all installed dependencies
  * @param {string} dir Full path of the application
  */
-const clearDependencies = async (dir) => {
-  const content = await readFile(`${dir}/package.json`, { encoding: 'utf-8' });
+export const clearDependencies = async (dir: PathLike) => {
+  const content = readFileSync(`${dir}/package.json`, { encoding: 'utf-8' });
 
   let jsonContent = JSON.parse(content);
   delete jsonContent.dependencies;
 
-  await writeFile(`${dir}/package.json`, JSON.stringify(jsonContent), {
+  writeFileSync(`${dir}/package.json`, JSON.stringify(jsonContent), {
     encoding: 'utf-8',
   });
 };
 
-const createZetarc = (developerLogin, developerPassword, dir, platformUrl) => {
+export const createZetarc = (
+  developerLogin: string,
+  developerPassword: string,
+  dir: PathLike,
+  platformUrl?: string,
+) => {
   commandLogger.debug(
     `createZetarc(${developerLogin}, ${developerPassword}, ${dir}, ${platformUrl})`,
   );
@@ -570,7 +597,7 @@ const createZetarc = (developerLogin, developerPassword, dir, platformUrl) => {
   );
 };
 
-const nukeApp = (dir) => {
+export const nukeApp = (dir: PathLike) => {
   commandLogger.info(`nukeApp(${dir})`);
   return new Promise(async (resolve, reject) => {
     commandLogger.silly(`nukeApp(${dir}) -> readZetarc(${dir})`);
@@ -584,6 +611,7 @@ const nukeApp = (dir) => {
           method: 'DELETE',
           config: creds,
           pathname: `orga/business/nuke/${creds.appName}`,
+          debugName: 'nukeApp',
         });
         commandLogger.silly(
           `nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName} -> `,
@@ -615,12 +643,10 @@ const nukeApp = (dir) => {
  *   await runner.stop();
  *
  */
-class Runner {
-  constructor(dir, timeout = 300000) {
-    this.dir = dir;
-    this.timeout = timeout;
-    this.cmd = null;
-  }
+export class Runner {
+  private cmd?: ExecaChildProcess;
+
+  constructor(private dir: string, private timeout = 300000) {}
 
   async waitForWorkerUp() {
     commandLogger.debug('Runner:waitForWorkerUp()');
@@ -635,28 +661,41 @@ class Runner {
           return;
         }
         commandLogger.silly('Runner:waitForWorkerUp() -> getStatus()');
-        const creds = await readZetarc(this.dir);
-        if (creds.appName != undefined) {
-          const res = await fetch({
-            config: creds,
-            pathname: `orga/business/live/${creds.appName}`,
-            debugName: 'waitForWorkerUp',
-          });
-          for (let node in res.nodes) {
-            for (let item in res.nodes[node].items) {
-              if (res.nodes[node].items[item].itemId === 'queue') {
-                if (res.nodes[node].items[item].liveData != undefined) {
-                  if (
-                    res.nodes[node].items[item].liveData['queue.workers']
-                      .length > 0
-                  ) {
-                    resolve();
-                    return;
+        try {
+          const creds = await readZetarc(this.dir);
+          if (creds.appName != undefined) {
+            commandLogger.silly('Runner:waitForWorkerUp() -> fetch()');
+            const res = await fetch({
+              config: creds,
+              pathname: `orga/business/live/${creds.appName}`,
+              debugName: 'waitForWorkerUp',
+            });
+            commandLogger.silly('Runner:waitForWorkerUp() -> fetch() -> ', res);
+            for (let node in res.nodes) {
+              for (let item in res.nodes[node].items) {
+                if (res.nodes[node].items[item].itemId === 'queue') {
+                  if (res.nodes[node].items[item].liveData != undefined) {
+                    if (
+                      res.nodes[node].items[item].liveData['queue.workers']
+                        .length > 0
+                    ) {
+                      commandLogger.silly(
+                        'Runner:waitForWorkerUp() -> getStatus() -> ',
+                        res,
+                      );
+                      resolve();
+                      return;
+                    }
                   }
                 }
               }
             }
           }
+        } catch (e) {
+          commandLogger.silly(
+            'Runner:waitForWorkerUp() -> getStatus() FAILED',
+            e,
+          );
         }
         setTimeout(getStatus, 300);
       };
@@ -666,6 +705,9 @@ class Runner {
 
   stop() {
     return new Promise((resolve) => {
+      if (!this.cmd) {
+        return resolve();
+      }
       kill(this.cmd.pid, 'SIGTERM', () => {
         resolve();
       });
@@ -677,7 +719,7 @@ class Runner {
     this.cmd = execa('npm', ['run', 'start', '--', zpLogLevel()], {
       cwd: this.dir,
     });
-    if (!quiet) {
+    if (this.cmd && !quiet) {
       this.cmd.stdout.pipe(new SubProcessLoggerStream('silly'));
       this.cmd.stderr.pipe(new SubProcessLoggerStream('warn'));
     }
@@ -685,24 +727,6 @@ class Runner {
   }
 }
 
-const zpLogLevel = () => {
+export const zpLogLevel = () => {
   return process.env.ZETAPUSH_COMMANDS_LOG_LEVEL || '-vvv';
-};
-
-module.exports = {
-  rm,
-  npmInit,
-  readZetarc,
-  zetaPush,
-  deleteAccountFromZetarc,
-  zetaRun,
-  setAppNameToZetarc,
-  setAccountToZetarc,
-  npmInstall,
-  npmInstallLatestVersion,
-  createZetarc,
-  nukeApp,
-  Runner,
-  getCurrentEnv,
-  setPlatformUrlToZetarc,
 };

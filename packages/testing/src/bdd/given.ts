@@ -1,28 +1,28 @@
-const copydir = require('copy-dir');
-const {
+import { givenLogger, envLogger } from '../utils/logger';
+import {
+  readZetarc,
   rm,
   npmInit,
-  zetaPush,
-  readZetarc,
-  Runner,
-  createZetarc,
-  npmInstallLatestVersion,
-  nukeApp,
-  setAccountToZetarc,
   setAppNameToZetarc,
-  getCurrentEnv,
-  setPlatformUrlToZetarc
-} = require('./commands');
-const { WeakClient } = require('@zetapush/client');
-const transports = require('@zetapush/cometd/lib/node/Transports');
-const { userActionLogger, givenLogger, frontUserActionLogger, cleanLogger, envLogger } = require('./logger');
+  npmInstallLatestVersion,
+  setAccountToZetarc,
+  setPlatformUrlToZetarc,
+  createZetarc,
+  Runner,
+  getCurrentEnv
+} from '../utils/commands';
+import copydir from 'copy-dir';
+import { TestContext, Test } from '../utils/types';
 
-const given = () => {
-  return new Given();
-};
+export const given = () => new Given();
 
 class Given {
-  private creds;
+  private sharedCredentials: any;
+  private givenCredentials?: GivenCredentials;
+  private givenNewApp?: GivenNewApp;
+  private givenTestingApp?: GivenTestingApp;
+  private givenTemplate?: GivenTemplatedApp;
+  private givenWorker?: GivenWorker;
 
   constructor() {
     this.sharedCredentials = {};
@@ -53,7 +53,7 @@ class Given {
     return this.givenWorker;
   }
 
-  async apply(objToFill) {
+  async apply(objToFill: any): Promise<TestContext> {
     try {
       givenLogger.debug(`>> Apply Given`);
       if (this.givenCredentials) {
@@ -69,27 +69,25 @@ class Given {
       if (this.givenTemplate) {
         projectDir = await this.givenTemplate.execute();
       }
+      if (!projectDir) {
+        throw new Error(
+          "Can't start worker or read zetarc if there is no project directory provided. You may need to configure either newApp(), testingApp() or templatedApp()"
+        );
+      }
       let runner;
       if (this.givenWorker) {
         runner = await this.givenWorker.execute(projectDir);
       }
       const zetarc = await readZetarc(projectDir);
+      const context = { zetarc, projectDir, runner };
       if (objToFill) {
         Object.assign(objToFill, {
-          context: {
-            zetarc,
-            projectDir,
-            runner
-          }
+          context
         });
       }
       envLogger.silly(`Current environment:`, getCurrentEnv(projectDir));
       givenLogger.debug(`>> Apply Given DONE`);
-      return {
-        zetarc,
-        projectDir,
-        runner
-      };
+      return context;
     } catch (e) {
       givenLogger.error(`>> Apply Given FAILED`, e);
       throw e;
@@ -97,18 +95,20 @@ class Given {
   }
 }
 
-class Parent {
-  constructor(parent) {
-    this.parent = parent;
-  }
+class Parent<P> {
+  constructor(private parent: P) {}
 
   and() {
     return this.parent;
   }
 }
 
-class GivenCredentials extends Parent {
-  constructor(parent) {
+class GivenCredentials extends Parent<Given> {
+  private url?: string;
+  private developerLogin?: string;
+  private developerPassword?: string;
+
+  constructor(parent: Given) {
     super(parent);
     // default behavior uses the env variables
     this.url = process.env.ZETAPUSH_PLATFORM_URL;
@@ -121,17 +121,17 @@ class GivenCredentials extends Parent {
     return this;
   }
 
-  login(developerLogin) {
+  login(developerLogin: string) {
     this.developerLogin = developerLogin;
     return this;
   }
 
-  password(developerPassword) {
+  password(developerPassword: string) {
     this.developerPassword = developerPassword;
     return this;
   }
 
-  platformUrl(url) {
+  platformUrl(url: string) {
     this.url = url;
     return this;
   }
@@ -145,18 +145,21 @@ class GivenCredentials extends Parent {
   }
 }
 
-class GivenNewApp extends Parent {
-  constructor(parent, credentials) {
+class GivenNewApp extends Parent<Given> {
+  private dirName?: string;
+  private setNewAppName = false;
+  private newAppName?: string;
+
+  constructor(parent: Given, private credentials: any) {
     super(parent);
-    this.credentials = credentials;
   }
 
-  dir(dirName) {
+  dir(dirName: string) {
     this.dirName = dirName;
     return this;
   }
 
-  setAppName(newAppName) {
+  setAppName(newAppName: string) {
     this.setNewAppName = true;
     this.newAppName = newAppName;
     return this;
@@ -180,7 +183,7 @@ class GivenNewApp extends Parent {
         projectDir,
         this.credentials.platformUrl
       );
-      if (this.setNewAppName) {
+      if (this.setNewAppName && this.newAppName) {
         givenLogger.silly(
           `GivenNewApp:execute -> setAppNameToZetarc(.generated-projects/${this.dirName}, ${this.newAppName})`
         );
@@ -194,13 +197,15 @@ class GivenNewApp extends Parent {
   }
 }
 
-class GivenTestingApp extends Parent {
-  constructor(parent, credentials) {
+class GivenTestingApp extends Parent<Given> {
+  private projectDirName?: string;
+  private installLatestDependencies = false;
+
+  constructor(parent: Given, private credentials: any) {
     super(parent);
-    this.credentials = credentials;
   }
 
-  projectName(projectDirName) {
+  projectName(projectDirName: string) {
     this.projectDirName = projectDirName;
     return this;
   }
@@ -241,13 +246,14 @@ class GivenTestingApp extends Parent {
   }
 }
 
-class GivenTemplatedApp extends Parent {
-  constructor(parent, credentials) {
+class GivenTemplatedApp extends Parent<Given> {
+  private templateApp?: string;
+
+  constructor(parent: Given, private credentials: any) {
     super(parent);
-    this.credentials = credentials;
   }
 
-  dir(templateAppDir) {
+  dir(templateAppDir: string) {
     this.templateApp = templateAppDir;
     return this;
   }
@@ -265,6 +271,8 @@ class GivenTemplatedApp extends Parent {
         })`
       );
       copydir.sync('spec/templates/' + this.templateApp, '.generated-projects/' + this.templateApp);
+      await npmInstallLatestVersion(`.generated-projects/${this.templateApp}`);
+
       if (this.credentials) {
         givenLogger.silly(
           `GivenTemplatedApp:execute -> createZetarc(${this.credentials.developerLogin}, ${
@@ -286,8 +294,13 @@ class GivenTemplatedApp extends Parent {
   }
 }
 
-class GivenWorker extends Parent {
-  constructor(parent) {
+class GivenWorker extends Parent<Given> {
+  private createRunner = false;
+  private workerUp = false;
+  private timeout?: number;
+  private isQuiet = false;
+
+  constructor(parent: Given) {
     super(parent);
   }
 
@@ -296,7 +309,7 @@ class GivenWorker extends Parent {
     return this;
   }
 
-  up(timeout) {
+  up(timeout: number) {
     this.workerUp = true;
     this.timeout = timeout;
     return this;
@@ -307,7 +320,7 @@ class GivenWorker extends Parent {
     return this;
   }
 
-  async execute(currentDir) {
+  async execute(currentDir: string) {
     try {
       if (this.createRunner) {
         return new Runner(currentDir);

@@ -36,7 +36,7 @@ describe(`As developer with
       expect(zetarc.appName).toBeDefined();
       expect(zetarc.appName.length).toBeGreaterThan(0);
 
-      await frontUserAction('2) call hello', { zetarc }, async (api) => {
+      await frontUserAction('2) call hello', this, async (api) => {
         const message = await api.hello();
         expect(typeof message).toBe('string');
         expect(PATTERN.test(message)).toBe(true);
