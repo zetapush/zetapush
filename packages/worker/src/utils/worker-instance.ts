@@ -1,5 +1,6 @@
-import { QueueTask, Context, TaskRequest } from '@zetapush/platform';
+import { Context, TaskRequest, CloudServiceInstance } from '@zetapush/platform';
 import { timeoutify } from './async';
+import { inject } from './context';
 
 /**
  * Default error code
@@ -75,15 +76,28 @@ export class WorkerInstance {
   }
 
   async dispatch(request: TaskRequest, context: Context) {
-    const { data, owner } = request;
+    const { data } = request;
     const { name, namespace, parameters } = data;
     try {
       if (name === 'onApplicationBootstrap') {
         // Forbidden
-        throw new Error('Forbidden external call : ' + name);
+        throw new Error(`Forbidden external call: ${name}`);
       }
+      if (typeof this.worker[namespace] === 'undefined') {
+        // Namespace
+        throw new Error(`Invalid namespace : ${namespace}`);
+      }
+      if (typeof this.worker[namespace][name] !== 'function') {
+        // Namespace
+        throw new Error(`Invalid namespace method: ${namespace}${name}`);
+      }
+      // Api instance
+      const tasker = this.worker[namespace];
+      // Inject context in a proxified worker namespace
+      const injected = inject(tasker, context.contextId);
+      // Delegate task to
       const result = await timeoutify(
-        () => this.worker[namespace][name](parameters, context),
+        () => injected[name](parameters, context),
         this.timeout,
       );
       return {
@@ -91,7 +105,6 @@ export class WorkerInstance {
         success: true,
       };
     } catch ({ code = DEFAULT_ERROR_CODE, message }) {
-      console.error('WorkerInstance::error', { code, message });
       return {
         result: { code, message },
         success: false,
@@ -99,7 +112,6 @@ export class WorkerInstance {
     }
   }
   setWorker(worker: any) {
-    console.log('WorkerInstance::setWorker', worker);
     this.worker = worker;
   }
 }
