@@ -70,7 +70,11 @@ export class WorkerRunner extends EventEmitter {
   private currentDeclaration: WorkerDeclaration;
   private currentInstance?: WorkerInstance;
 
-  constructor(private skipProvisioning: boolean, private config: Config) {
+  constructor(
+    private skipProvisioning: boolean,
+    private skipBootstrap: boolean,
+    private config: Config,
+  ) {
     super();
   }
 
@@ -201,18 +205,44 @@ export class WorkerRunner extends EventEmitter {
         //       warn('Fail to reload worker');
         //     });
         // });
-        console.log('###### C', config);
-        this.currentInstance = instance;
-        this.emit(WorkerRunnerEvents.STARTED, {
-          instance,
-          client,
-          config,
-          declaration,
-        });
-        // info('Worker is up!');
-        // if (command.serveFront) {
-        //   return createServer(command, config);
-        // }
+        const checkBoostrap = () => {
+          return new Promise((resolve, reject) => {
+            if (!this.skipBootstrap) {
+              instance.configure().then((res) => {
+                if (res.success == false) {
+                  reject(res.result);
+                } else {
+                  resolve();
+                }
+              });
+            } else {
+              resolve();
+            }
+          });
+        };
+        return checkBoostrap()
+          .then(() => {
+            console.log('###### C', config);
+            this.currentInstance = instance;
+            this.emit(WorkerRunnerEvents.STARTED, {
+              instance,
+              client,
+              config,
+              declaration,
+            });
+            // info('Worker is up!');
+            // if (command.serveFront) {
+            //   return createServer(command, config);
+            // }
+          })
+          .catch((err) => {
+            this.emit(WorkerRunnerEvents.START_FAILED, {
+              failure: err,
+              client,
+              config,
+              declaration,
+            });
+          });
       })
       .catch((failure) => {
         // spinner.stop();
