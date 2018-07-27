@@ -1,4 +1,4 @@
-import { WorkerClient, Worker } from './worker';
+import { WorkerClient, Worker, WorkerInstanceFactory } from './worker';
 import { Weak, Queue, Service } from '@zetapush/platform';
 import {
   instantiate,
@@ -18,6 +18,8 @@ import {
 } from '@zetapush/common';
 import { EventEmitter } from 'events';
 import { WorkerInstance } from '../utils/worker-instance';
+import { resolve } from 'path';
+import { Provider } from 'injection-js';
 
 export enum WorkerRunnerEvents {
   BOOTSTRAPING = 'bootstraping',
@@ -63,6 +65,16 @@ export class QueueServiceDeploymentError extends Error {
   }
 }
 
+export interface WorkerEventData {
+  client: WorkerClient;
+  config: ResolvedConfig;
+  declaration: WorkerDeclaration;
+}
+
+export interface WorkerStartEventData extends WorkerEventData {
+  instance: WorkerInstance;
+}
+
 export class WorkerRunner extends EventEmitter {
   private client?: WorkerClient;
   private currentDeclaration: WorkerDeclaration;
@@ -72,7 +84,9 @@ export class WorkerRunner extends EventEmitter {
     private skipProvisioning: boolean,
     private skipBootstrap: boolean,
     private config: ResolvedConfig,
-    private transports: any[]
+    private transports: any[],
+    private workerInstanceFactory?: WorkerInstanceFactory,
+    private customProviders?: Provider[]
   ) {
     super();
   }
@@ -88,7 +102,7 @@ export class WorkerRunner extends EventEmitter {
     config: ResolvedConfig,
     declaration: WorkerDeclaration
   ): Promise<WorkerInstance> {
-    return Promise.resolve(instantiate(client, declaration)).then((declaration) =>
+    return Promise.resolve(instantiate(client, declaration, this.customProviders || [])).then((declaration) =>
       client.subscribeTaskWorker(declaration, config.workerServiceId)
     );
   }
@@ -112,90 +126,95 @@ export class WorkerRunner extends EventEmitter {
    * @fires WorkerRunnerEvents#RELOADED
    * @fires WorkerRunnerEvents#RELOAD_FAILED
    */
-  run(declaration: WorkerDeclaration) {
-    const config = this.config;
+  run(declaration: WorkerDeclaration): Promise<WorkerStartEventData> {
+    return new Promise((resolve, reject) => {
+      const config = this.config;
 
-    const clientConfig: any = config;
-    const client = new WorkerClient({
-      ...clientConfig,
-      transports: this.transports
-    });
-    this.client = client;
-    this.currentDeclaration = declaration;
+      const clientConfig: any = config;
+      const client = new WorkerClient(
+        {
+          ...clientConfig,
+          transports: this.transports
+        },
+        this.workerInstanceFactory
+      );
+      this.client = client;
+      this.currentDeclaration = declaration;
 
-    this.emit(WorkerRunnerEvents.BOOTSTRAPING, {
-      client,
-      config,
-      declaration
-    });
-
-    /**
-     * Run worker and create services if necessary
-     */
-    const bootstrap = this.skipProvisioning
-      ? this.connectClientAndCreateServices(client, config, declaration)
-      : this.checkServicesAlreadyDeployed(config).then(
-          (deployed: boolean) =>
-            !deployed
-              ? this.cookWithOnlyQueueService(client, config, declaration)
-              : this.connectClientAndCreateServices(client, config, declaration)
-        );
-
-    this.emit(WorkerRunnerEvents.STARTING, {
-      client,
-      config,
-      declaration
-    });
-
-    /**
-     * Start worker
-     */
-    bootstrap
-      .then(() => this.start(client, config, declaration))
-      .then((instance) => {
-        this.currentInstance = instance;
-        const checkBoostrap = () => {
-          return new Promise((resolve, reject) => {
-            if (!this.skipBootstrap) {
-              instance.configure().then((res) => {
-                if (res.success == false) {
-                  reject(res.result);
-                } else {
-                  resolve();
-                }
-              });
-            } else {
-              resolve();
-            }
-          });
-        };
-        return checkBoostrap()
-          .then(() => {
-            this.emit(WorkerRunnerEvents.STARTED, {
-              instance,
-              client,
-              config,
-              declaration
-            });
-          })
-          .catch((err) => {
-            this.emit(WorkerRunnerEvents.START_FAILED, {
-              failure: err,
-              client,
-              config,
-              declaration
-            });
-          });
-      })
-      .catch((failure) => {
-        // TODO: reaise error instead ?
-        this.emit(WorkerRunnerEvents.START_FAILED, {
-          failure,
-          client,
-          config,
-          declaration
-        });
+      this.emit(WorkerRunnerEvents.BOOTSTRAPING, {
+        client,
+        config,
+        declaration
       });
+
+      /**
+       * Run worker and create services if necessary
+       */
+      const bootstrap = this.skipProvisioning
+        ? this.connectClientAndCreateServices(client, config, declaration)
+        : this.checkServicesAlreadyDeployed(config).then(
+            (deployed: boolean) =>
+              !deployed
+                ? this.cookWithOnlyQueueService(client, config, declaration)
+                : this.connectClientAndCreateServices(client, config, declaration)
+          );
+
+      this.emit(WorkerRunnerEvents.STARTING, {
+        client,
+        config,
+        declaration
+      });
+
+      /**
+       * Start worker
+       */
+      bootstrap
+        .then(() => this.start(client, config, declaration))
+        .then((instance) => {
+          this.currentInstance = instance;
+          const checkBoostrap = () => {
+            return new Promise((resolve, reject) => {
+              if (!this.skipBootstrap) {
+                instance.configure().then((res) => {
+                  if (res.success == false) {
+                    reject(res.result);
+                  } else {
+                    resolve();
+                  }
+                });
+              } else {
+                resolve();
+              }
+            });
+          };
+          return checkBoostrap()
+            .then(() => {
+              this.emit(WorkerRunnerEvents.STARTED, {
+                instance,
+                client,
+                config,
+                declaration
+              });
+            })
+            .catch((err) => {
+              this.emit(WorkerRunnerEvents.START_FAILED, {
+                failure: err,
+                client,
+                config,
+                declaration
+              });
+            });
+        })
+        .catch((failure) => {
+          // TODO: reaise error instead ?
+          this.emit(WorkerRunnerEvents.START_FAILED, {
+            failure,
+            client,
+            config,
+            declaration
+          });
+        });
+    });
   }
 
   async reload(reloaded: WorkerDeclaration) {
@@ -224,7 +243,7 @@ export class WorkerRunner extends EventEmitter {
           );
         }
         // Create a new worker instance
-        const worker = instantiate(this.client, reloaded);
+        const worker = instantiate(this.client, reloaded, this.customProviders || []);
         this.currentInstance.setWorker(worker);
         // Update previous deployment id list
         this.currentDeclaration = reloaded;

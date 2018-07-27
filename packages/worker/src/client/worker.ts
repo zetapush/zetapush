@@ -1,7 +1,7 @@
 import { Authentication, Client, uuid } from '@zetapush/client';
 import { Queue, TaskRequest } from '@zetapush/platform';
 
-import { WorkerInstance } from '../utils/worker-instance';
+import { WorkerInstance, TaskDispatcherWorkerInstance } from '../utils/worker-instance';
 
 const DEFAULT_NAMESPACE = '';
 
@@ -10,7 +10,7 @@ interface ListenerMessage<T> {
   channel: string;
 }
 
-interface WorkerClientOptions {
+export interface WorkerClientOptions {
   platformUrl: string;
   appName: string;
   forceHttps: boolean;
@@ -30,6 +30,10 @@ export class Worker extends Queue {
   }
 }
 
+export interface WorkerInstanceFactory {
+  create(worker: any, deploymentId: string, options: WorkerClientOptions): WorkerInstance;
+}
+
 export class WorkerClient extends Client {
   /**
    * Worker capacity
@@ -40,19 +44,27 @@ export class WorkerClient extends Client {
    */
   private timeout: number;
   /**
+   * A factory used to instantiate a WorkerInstance
+   */
+  private workerInstanceFactory?: WorkerInstanceFactory;
+  private options: WorkerClientOptions;
+  /**
    * WorkerClient constructor
    */
-  constructor({
-    platformUrl,
-    appName,
-    forceHttps,
-    transports,
-    developerLogin,
-    developerPassword,
-    resource = `node_js_worker_${uuid()}`,
-    timeout = 60 * 1000,
-    capacity = 100
-  }: WorkerClientOptions) {
+  constructor(
+    {
+      platformUrl,
+      appName,
+      forceHttps,
+      transports,
+      developerLogin,
+      developerPassword,
+      resource = `node_js_worker_${uuid()}`,
+      timeout = 60 * 1000,
+      capacity = 100
+    }: WorkerClientOptions,
+    workerInstanceFactory?: WorkerInstanceFactory
+  ) {
     const authentication = () =>
       Authentication.developer({
         login: developerLogin,
@@ -79,19 +91,31 @@ export class WorkerClient extends Client {
      * @type {number}
      */
     this.timeout = timeout;
+    /**
+     * @access private
+     * @type {Function}
+     */
+    this.workerInstanceFactory = workerInstanceFactory;
+    this.options = {
+      platformUrl,
+      appName,
+      forceHttps,
+      transports,
+      developerLogin,
+      developerPassword,
+      resource,
+      timeout,
+      capacity
+    };
   }
   /**
    * Subscribe a task worker
    */
   subscribeTaskWorker(worker: any, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
-    const instance = new WorkerInstance({
-      timeout: this.timeout,
-      worker,
-      bootLayers: worker.bootLayers
-    });
     const logs = this.createService<Logs>({
       Type: Logs
     });
+    const instance = this.newWorkerInstance(worker, deploymentId);
     const queue = this.createService<Worker>({
       deploymentId,
       listener: {
@@ -183,5 +207,16 @@ export class WorkerClient extends Client {
       owner,
       logger
     });
+  }
+
+  private newWorkerInstance(worker: any, deploymentId: string) {
+    if (!this.workerInstanceFactory) {
+      return new TaskDispatcherWorkerInstance({
+        timeout: this.timeout,
+        worker,
+        bootLayers: worker.bootLayers
+      });
+    }
+    return this.workerInstanceFactory.create(worker, deploymentId, this.options);
   }
 }

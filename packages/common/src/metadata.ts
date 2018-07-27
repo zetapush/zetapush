@@ -1,1 +1,1 @@
-export { Inject, Injectable, ReflectiveInjector } from 'injection-js';
+export { Inject, Injectable, ReflectiveInjector, Injector } from 'injection-js';

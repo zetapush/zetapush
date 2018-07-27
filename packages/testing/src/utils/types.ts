@@ -48,4 +48,4 @@ export class ContextWrapper {
   }
 }
 
-export type Context = TestContext | Test;
+export type Context = TestContext | Test | any;

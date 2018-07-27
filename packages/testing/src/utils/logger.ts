@@ -13,15 +13,11 @@ const fixedSize = (str: string, size: number) => {
 };
 
 const fixedSizeLevel = (str: string, size: number) => {
-  return str.replace(/(error|warn|info|debug|verbose|silly)/i, (_, s) =>
-    fixedSize(s, size),
-  );
+  return str.replace(/(error|warn|info|debug|verbose|silly)/i, (_, s) => fixedSize(s, size));
 };
 
 const upper = (str: string) => {
-  return str.replace(/(error|warn|info|debug|verbose|silly)/i, (_, s) =>
-    s.toUpperCase(),
-  );
+  return str.replace(/(error|warn|info|debug|verbose|silly)/i, (_, s) => s.toUpperCase());
 };
 
 const stringifiedRest = (info: any) => {
@@ -31,8 +27,8 @@ const stringifiedRest = (info: any) => {
       label: undefined,
       level: undefined,
       message: undefined,
-      splat: undefined,
-    }),
+      splat: undefined
+    })
   );
   // do not display empty objects
   return json == '{}' ? '' : json;
@@ -40,28 +36,20 @@ const stringifiedRest = (info: any) => {
 
 const myFormat = (fmt?: string | null) => {
   return winston.format.printf((info: any) => {
-    const label = fmt
-      ? chalk`{${fmt} ${fixedSize(info.label, 18)}}`
-      : fixedSize(info.label, 18);
+    const label = fmt ? chalk`{${fmt} ${fixedSize(info.label, 18)}}` : fixedSize(info.label, 18);
     const message = fmt ? chalk`{${fmt} ${info.message}}` : info.message;
-    return `${fixedSizeLevel(upper(info.level), 7)} ${
-      info.timestamp
-    } - ${label} | ${message} ${stringifiedRest(info)}`;
+    return `${fixedSizeLevel(upper(info.level), 7)} ${info.timestamp} - ${label} | ${message} ${stringifiedRest(info)}`;
   });
 };
 
-export const addCategorizedLogger = (
-  name: string,
-  label: string,
-  fmt?: string,
-) => {
+export const addCategorizedLogger = (name: string, label: string, fmt?: string) => {
   winston.loggers.add(name, {
     format: winston.format.combine(
       winston.format.colorize(),
       winston.format.label({ label }),
       winston.format.timestamp(),
       winston.format.splat(),
-      myFormat(fmt),
+      myFormat(fmt)
     ),
     level: process.env.ZETAPUSH_LOG_LEVEL || 'info',
     transports: [
@@ -75,16 +63,16 @@ export const addCategorizedLogger = (
             .replace('T', ' ')
             .replace(':', 'h')
             .replace(':', 'm')
-            .replace(/[.][0-9]{3}Z$/, 's')}.log`,
+            .replace(/[.][0-9]{3}Z$/, 's')}.log`
         ),
         format: winston.format.combine(
           winston.format.uncolorize(),
           winston.format.label({ label }),
           winston.format.timestamp(),
           winston.format.splat(),
-          myFormat(null),
-        ),
-      }),
+          myFormat(null)
+        )
+      })
       // new winston.transports.File({
       //   filename: path.join(logPath, 'infos.log'),
       //   // level: 'info',
@@ -95,30 +83,19 @@ export const addCategorizedLogger = (
       //   // level: 'error',
       //   // timestamp: tsFormat,
       // }),
-    ],
+    ]
   });
   return winston.loggers.get(name);
 };
 
 export const givenLogger = addCategorizedLogger('given', 'GIVEN', 'grey');
-export const userActionLogger = addCategorizedLogger(
-  'userAction',
-  'USER ACTION',
-  'bold',
-);
-export const frontUserActionLogger = addCategorizedLogger(
-  'frontUserAction',
-  'FRONT USER ACTION',
-  'bold',
-);
+export const userActionLogger = addCategorizedLogger('userAction', 'USER ACTION', 'bold');
+export const frontUserActionLogger = addCategorizedLogger('frontUserAction', 'FRONT USER ACTION', 'bold');
+export const runInWorkerLogger = addCategorizedLogger('runInWorker', 'RUN IN WORKER', 'grey');
 export const cleanLogger = addCategorizedLogger('clean', 'CLEAN', 'grey');
 export const commandLogger = addCategorizedLogger('command', 'COMMAND', '');
 export const envLogger = addCategorizedLogger('env', 'ENV', 'grey');
-export const subProcessLogger = addCategorizedLogger(
-  'subProcess',
-  'PROCESS STDOUT/STDERR',
-  '',
-);
+export const subProcessLogger = addCategorizedLogger('subProcess', 'PROCESS STDOUT/STDERR', '');
 
 export class SubProcessLoggerStream extends Writable {
   constructor(private level: string) {
@@ -135,13 +112,10 @@ export class SubProcessLoggerStream extends Writable {
         // indent each line
         .replace(/^/gm, ' '.repeat(54) + '| ')
         // do not indent first line
-        .replace(/^ {54}[|] /, ''),
+        .replace(/^ {54}[|] /, '')
     );
     callback();
   }
 }
 
-setVerbosity(
-  ((process.env.ZETAPUSH_COMMANDS_LOG_LEVEL || '-vvv').match(/v/g) || [])
-    .length,
-);
+setVerbosity(((process.env.ZETAPUSH_COMMANDS_LOG_LEVEL || '-vvv').match(/v/g) || []).length);

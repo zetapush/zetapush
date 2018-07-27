@@ -10,15 +10,22 @@ import { timeoutify } from '@zetapush/common';
  */
 const DEFAULT_ERROR_CODE = 'API_ERROR';
 
-export class WorkerInstance {
+export interface WorkerInstance {
+  setWorker(worker: any): void;
+  dispatch({
+    data: { request, taskId }
+  }: TaskRequest): Promise<{ result: any; taskId: string; requestId: string; success: boolean }>;
+}
+
+export class TaskDispatcherWorkerInstance implements WorkerInstance {
   /**
    * Worker instance timeout
    */
-  private timeout: number;
+  protected timeout: number;
   /**
    * Worker implementation
    */
-  private worker: any;
+  protected worker: any;
   /**
    * Bootstraps layers
    */
@@ -105,6 +112,7 @@ export class WorkerInstance {
       };
     }
   }
+
   setWorker(worker: any) {
     this.worker = worker;
   }

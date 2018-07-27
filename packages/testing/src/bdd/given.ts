@@ -13,46 +13,62 @@ import {
 } from '../utils/commands';
 import copydir from 'copy-dir';
 import { TestContext, Test } from '../utils/types';
+import { existsSync } from 'fs';
+import { createApplication } from '@zetapush/common';
+import { Config } from '@zetapush/common/lib';
 
 export const given = () => new Given();
 
 class Given {
-  private sharedCredentials: any;
+  private sharedCredentials: Config;
   private givenCredentials?: GivenCredentials;
-  private givenNewApp?: GivenNewApp;
-  private givenTestingApp?: GivenTestingApp;
-  private givenTemplate?: GivenTemplatedApp;
+  private givenApp?: GivenApp;
   private givenWorker?: GivenWorker;
 
   constructor() {
     this.sharedCredentials = {};
   }
 
+  /**
+   * Configure developer account to use for testing the code.
+   * The developer account will be used either to create new applications or to use existing applications.
+   *
+   * You can explicitly set login and password or choose to externalize credentials in environment variables (ZETAPUSH_DEVELOPER_LOGIN and ZETAPUSH_DEVELOPER_PASSWORD).
+   */
   credentials() {
     this.givenCredentials = new GivenCredentials(this);
     return this.givenCredentials;
   }
 
-  newApp() {
-    this.givenNewApp = new GivenNewApp(this, this.sharedCredentials);
-    return this.givenNewApp;
+  /**
+   * Configure a directory that will be used as a container for an application (either a new application created through `npm init`
+   * or a directory containing existing sources).
+   */
+  project() {
+    this.givenApp = new GivenApp(this, this.sharedCredentials);
+    return this.givenApp;
   }
 
-  testingApp() {
-    this.givenTestingApp = new GivenTestingApp(this, this.sharedCredentials);
-    return this.givenTestingApp;
-  }
-
-  templatedApp() {
-    this.givenTemplate = new GivenTemplatedApp(this, this.sharedCredentials);
-    return this.givenTemplate;
-  }
-
+  /**
+   * Configure the behavior of the worker.
+   *
+   * The worker will be started in the application directory according to what you have configured for the application container/directory (see `app()`).
+   */
   worker() {
     this.givenWorker = new GivenWorker(this);
     return this.givenWorker;
   }
 
+  /**
+   * Once you have prepare the environment for your test, call this method to run the given treatments.
+   *
+   * @param objToFill Any object you want that will be updated with useful information that will later
+   * be used by other test utilities (generate a front that will automatically connect to the worker,
+   * automatically delete the worker at the end of the test, ...)
+   * @returns An object you want that will be updated with useful information that will later
+   * be used by other test utilities (generate a front that will automatically connect to the worker,
+   * automatically delete the worker at the end of the test, ...)
+   */
   async apply(objToFill: any): Promise<TestContext> {
     try {
       givenLogger.debug(`>> Apply Given`);
@@ -60,32 +76,28 @@ class Given {
         Object.assign(this.sharedCredentials, await this.givenCredentials.execute());
       }
       let projectDir;
-      if (this.givenNewApp) {
-        projectDir = await this.givenNewApp.execute();
+      if (this.givenApp) {
+        projectDir = await this.givenApp.execute();
       }
-      if (this.givenTestingApp) {
-        projectDir = await this.givenTestingApp.execute();
-      }
-      if (this.givenTemplate) {
-        projectDir = await this.givenTemplate.execute();
-      }
-      if (!projectDir) {
-        throw new Error(
+      if (this.givenWorker && !projectDir) {
+        givenLogger.warn(
           "Can't start worker or read zetarc if there is no project directory provided. You may need to configure either newApp(), testingApp() or templatedApp()"
         );
       }
       let runner;
-      if (this.givenWorker) {
+      if (this.givenWorker && projectDir) {
         runner = await this.givenWorker.execute(projectDir);
       }
-      const zetarc = await readZetarc(projectDir);
+      const zetarc = projectDir ? await readZetarc(projectDir) : this.sharedCredentials;
       const context = { zetarc, projectDir, runner };
       if (objToFill) {
         Object.assign(objToFill, {
           context
         });
       }
-      envLogger.silly(`Current environment:`, getCurrentEnv(projectDir));
+      if (projectDir) {
+        envLogger.silly(`Current environment:`, getCurrentEnv(projectDir));
+      }
       givenLogger.debug(`>> Apply Given DONE`);
       return context;
     } catch (e) {
@@ -103,10 +115,69 @@ class Parent<P> {
   }
 }
 
+class GivenApp extends Parent<Given> {
+  private givenNewApp?: GivenNewApp;
+  private givenTestingApp?: GivenTestingApp;
+  private givenTemplate?: GivenTemplatedApp;
+
+  constructor(parent: Given, private sharedCredentials: any) {
+    super(parent);
+  }
+
+  /**
+   * Create a new development project using `npm init @zetapush` command.
+   *
+   * The generated project will be located in `.generated-projects` folder.
+   * You can choose the name of the sub-directory for the new project (by default 'new-project' is used).
+   * You can also choose the appName to set into the `.zetarc` file (by default, a new application is created).
+   */
+  newProject() {
+    this.givenNewApp = new GivenNewApp(this, this.sharedCredentials);
+    return this.givenNewApp;
+  }
+
+  // /**
+  //  * Use an existing folder that is ready to be tested. The directory is used as-is.
+  //  * Only `.zetarc` file may be updated to use credentials provided by `credentials()` method.
+  //  */
+  // useExistingAppDirectory() {
+  //   this.givenTestingApp = new GivenTestingApp(this, this.sharedCredentials);
+  //   return this.givenTestingApp;
+  // }
+
+  /**
+   * Use an existing folder that is copied in `.generated-projects` and then configured for the test.
+   */
+  template() {
+    this.givenTemplate = new GivenTemplatedApp(this, this.sharedCredentials);
+    return this.givenTemplate;
+  }
+
+  async execute(): Promise<string | undefined> {
+    try {
+      let projectDir;
+      if (this.givenNewApp) {
+        projectDir = await this.givenNewApp.execute();
+      }
+      if (this.givenTestingApp) {
+        projectDir = await this.givenTestingApp.execute();
+      }
+      if (this.givenTemplate) {
+        projectDir = await this.givenTemplate.execute();
+      }
+      return projectDir;
+    } catch (e) {
+      throw e;
+    }
+  }
+}
+
 class GivenCredentials extends Parent<Given> {
   private url?: string;
   private developerLogin?: string;
   private developerPassword?: string;
+  private appName?: string;
+  private createApp = false;
 
   constructor(parent: Given) {
     super(parent);
@@ -118,6 +189,7 @@ class GivenCredentials extends Parent<Given> {
     this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
     this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
     this.url = process.env.ZETAPUSH_PLATFORM_URL;
+    this.appName = process.env.ZETAPUSH_PLATFORM_APP_NAME;
     return this;
   }
 
@@ -136,25 +208,39 @@ class GivenCredentials extends Parent<Given> {
     return this;
   }
 
+  newApp() {
+    this.createApp = true;
+    return this;
+  }
+
   async execute() {
+    if (this.createApp) {
+      const { appName } = await createApplication({
+        developerLogin: this.developerLogin,
+        developerPassword: this.developerPassword,
+        platformUrl: this.url
+      });
+      this.appName = appName;
+    }
     return {
       developerLogin: this.developerLogin,
       developerPassword: this.developerPassword,
-      platformUrl: this.url
+      platformUrl: this.url,
+      appName: this.appName
     };
   }
 }
 
-class GivenNewApp extends Parent<Given> {
-  private dirName?: string;
+class GivenNewApp extends Parent<GivenApp> {
+  private dirName = 'new-project';
   private setNewAppName = false;
   private newAppName?: string;
 
-  constructor(parent: Given, private credentials: any) {
+  constructor(parent: GivenApp, private credentials: any) {
     super(parent);
   }
 
-  dir(dirName: string) {
+  targetDir(dirName: string) {
     this.dirName = dirName;
     return this;
   }
@@ -197,15 +283,15 @@ class GivenNewApp extends Parent<Given> {
   }
 }
 
-class GivenTestingApp extends Parent<Given> {
+class GivenTestingApp extends Parent<GivenApp> {
   private projectDirName?: string;
   private installLatestDependencies = false;
 
-  constructor(parent: Given, private credentials: any) {
+  constructor(parent: GivenApp, private credentials: any) {
     super(parent);
   }
 
-  projectName(projectDirName: string) {
+  sourceDir(projectDirName: string) {
     this.projectDirName = projectDirName;
     return this;
   }
@@ -246,21 +332,21 @@ class GivenTestingApp extends Parent<Given> {
   }
 }
 
-class GivenTemplatedApp extends Parent<Given> {
+class GivenTemplatedApp extends Parent<GivenApp> {
   private templateApp?: string;
 
-  constructor(parent: Given, private credentials: any) {
+  constructor(parent: GivenApp, private credentials: any) {
     super(parent);
   }
 
-  dir(templateAppDir: string) {
+  sourceDir(templateAppDir: string) {
     this.templateApp = templateAppDir;
     return this;
   }
 
   async execute() {
     try {
-      givenLogger.info(`>>> Given templated application: testing-projects/${this.templateApp}`);
+      givenLogger.info(`>>> Given templated application: templates/${this.templateApp}`);
 
       givenLogger.silly(`GivenTemplatedApp:execute -> rm(.generated-projects/${this.templateApp})`);
       await rm(`.generated-projects/${this.templateApp}`);
@@ -279,16 +365,25 @@ class GivenTemplatedApp extends Parent<Given> {
             this.credentials.developerPassword
           }, .generated-projects/${this.templateApp})`
         );
-        createZetarc(
-          this.credentials.developerLogin,
-          this.credentials.developerPassword,
-          '.generated-projects/' + this.templateApp,
-          this.credentials.platformUrl
-        );
+        if (existsSync('.generated-projects/' + this.templateApp)) {
+          await setAccountToZetarc(
+            `.generated-projects/${this.templateApp}`,
+            this.credentials.developerLogin,
+            this.credentials.developerPassword
+          );
+          await setPlatformUrlToZetarc(`.generated-projects/${this.templateApp}`, this.credentials.platformUrl);
+        } else {
+          createZetarc(
+            this.credentials.developerLogin,
+            this.credentials.developerPassword,
+            '.generated-projects/' + this.templateApp,
+            this.credentials.platformUrl
+          );
+        }
       }
       return '.generated-projects/' + this.templateApp;
     } catch (e) {
-      givenLogger.error(`>>> Given templated application FAILED: testing-projects/${this.templateApp}`, e);
+      givenLogger.error(`>>> Given templated application FAILED: templates/${this.templateApp}`, e);
       throw e;
     }
   }

@@ -42,7 +42,8 @@
     "rollup-plugin-uglify": "4.0.0",
     "rollup-watch": "4.3.1",
     "typescript": "2.9.2",
-    "uglify-es": "3.3.9"
+    "uglify-es": "3.3.9",
+    "injection-js": "2.2.1"
   },
   "publishConfig": {
     "access": "public"

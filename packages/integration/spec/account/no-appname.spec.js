@@ -18,9 +18,11 @@ describe(`As developer with
         /**/ .credentials()
         /*   */ .fromEnv()
         /*   */ .and()
-        /**/ .newApp()
-        /*   */ .dir('no-appname')
-        /*   */ .setAppName('')
+        /**/ .project()
+        /*   */ .newApp()
+        /*     */ .targetDir('no-appname')
+        /*     */ .setAppName('')
+        /*     */ .and()
         /*   */ .and()
         /**/ .apply(this);
 

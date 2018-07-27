@@ -1,11 +1,6 @@
 import { log, error } from '../utils/log';
 import { analyze } from './di';
-import {
-  Service,
-  Config,
-  WorkerDeclaration,
-  ResolvedConfig,
-} from '../common-types';
+import { Service, Config, WorkerDeclaration, ResolvedConfig } from '../common-types';
 import { PathLike, writeFile } from 'fs';
 import { isNode } from '../utils/environment';
 const JSZip = require('jszip');
@@ -16,20 +11,11 @@ const JSZip = require('jszip');
  * @param {Service[]} ignoredServices the list of services to ignore
  * @return {Function[]}
  */
-export const getDeploymentServiceList = (
-  declaration: WorkerDeclaration,
-  ignoredServices: Array<Service>,
-) => {
+export const getDeploymentServiceList = (declaration: WorkerDeclaration, ignoredServices: Array<Service>) => {
   // Ignore specific platform services
   const ignored = ignoredServices.map((Service) => Service.DEPLOYMENT_TYPE);
-  const { platform } = analyze(declaration);
-  return Array.from(
-    new Set(
-      platform.filter(
-        (Service: Service) => ignored.indexOf(Service.DEPLOYMENT_TYPE) === -1,
-      ),
-    ),
-  );
+  const { platform } = analyze(declaration, []);
+  return Array.from(new Set(platform.filter((Service: Service) => ignored.indexOf(Service.DEPLOYMENT_TYPE) === -1)));
 };
 
 /**
@@ -38,23 +24,15 @@ export const getDeploymentServiceList = (
  * @param {Service[]} ignoredServices the list of services to ignore
  * @return {string[]}
  */
-export const getDeploymentIdList = (
-  declaration: WorkerDeclaration,
-  ignoredServices: Array<Service>,
-) =>
-  getDeploymentServiceList(declaration, ignoredServices).map(
-    (Service: Service) => Service.DEPLOYMENT_TYPE,
-  );
+export const getDeploymentIdList = (declaration: WorkerDeclaration, ignoredServices: Array<Service>) =>
+  getDeploymentServiceList(declaration, ignoredServices).map((Service: Service) => Service.DEPLOYMENT_TYPE);
 
 /**
  * Get bootstrap provisioning items
  * @param {ZetaPushConfig} config
  * @param {Service[]} services the services to bootstrap
  */
-export const getBootstrapProvision = (
-  config: ResolvedConfig,
-  services: Array<Service>,
-) => {
+export const getBootstrapProvision = (config: ResolvedConfig, services: Array<Service>) => {
   return {
     businessId: config.appName,
     items: services.map((Service: Service) => ({
@@ -66,10 +44,10 @@ export const getBootstrapProvision = (
         description: `${Service.DEPLOYMENT_TYPE}`,
         options: Service.DEPLOYMENT_OPTIONS || {},
         forbiddenVerbs: [],
-        enabled: true,
-      },
+        enabled: true
+      }
     })),
-    calls: [],
+    calls: []
   };
 };
 
@@ -82,7 +60,7 @@ export const getBootstrapProvision = (
 export const getRuntimeProvision = (
   config: ResolvedConfig,
   declaration: WorkerDeclaration,
-  ignoredServices: Array<Service>,
+  ignoredServices: Array<Service>
 ): {
   businessId: string;
   items: Array<{ name: string; item: Object }>;
@@ -101,10 +79,10 @@ export const getRuntimeProvision = (
         description: `${Service.DEPLOYMENT_TYPE}`,
         options: Service.DEPLOYMENT_OPTIONS || {},
         forbiddenVerbs: [],
-        enabled: true,
-      },
+        enabled: true
+      }
     })),
-    calls: [],
+    calls: []
   };
 };
 
@@ -117,7 +95,7 @@ export const getRuntimeProvision = (
  */
 export const generateProvisioningContent = (
   config: ResolvedConfig,
-  services: Array<Service>,
+  services: Array<Service>
 ): Promise<{ provision: Object; json: string }> =>
   new Promise((resolve, reject) => {
     const provision = getBootstrapProvision(config, services);
@@ -132,23 +110,17 @@ export const generateProvisioningContent = (
  * @param {Service[]} services the services to bootstrap
  * @returns {Promise<{object, string}>} The provisioning object and the file content
  */
-export const generateProvisioningFile = (
-  filepath: PathLike,
-  config: ResolvedConfig,
-  services: Array<Service>,
-) =>
+export const generateProvisioningFile = (filepath: PathLike, config: ResolvedConfig, services: Array<Service>) =>
   new Promise((resolve, reject) => {
-    generateProvisioningContent(config, services).then(
-      ({ json, provision }) => {
-        writeFile(filepath, json, (failure) => {
-          if (failure) {
-            reject({ failure, config });
-            return error('provisioning', failure);
-          }
-          resolve(provision);
-        });
-      },
-    );
+    generateProvisioningContent(config, services).then(({ json, provision }) => {
+      writeFile(filepath, json, (failure) => {
+        if (failure) {
+          reject({ failure, config });
+          return error('provisioning', failure);
+        }
+        resolve(provision);
+      });
+    });
   });
 
 export const createProvisioningArchive = (appJson: string) => {
