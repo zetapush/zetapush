@@ -158,7 +158,7 @@ export class Client {
   helper: ClientHelper;
   constructor(options: ClientOptions);
   addConnectionStatusListener(listener: ConnectionStatusListener): ConnectionStatusHandler;
-  connect(): Promise<void>;
+  connect(credentials?: Credentials): Promise<void>;
   createService<T>(declaration: ServiceDeclaration<T>): T;
   createAsyncMacroService<T>(declaration: ServiceDeclaration<T>): T;
   createAsyncTaskService<T>(declaration: TaskServiceDeclaration<T>): T;
