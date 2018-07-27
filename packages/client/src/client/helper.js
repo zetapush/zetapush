@@ -438,47 +438,44 @@ export class ClientHelper {
       throw new Error('`Proxy` is not support in your environment');
     }
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
-    return new Proxy(
-      {},
-      {
-        get: (target, method) => {
-          return (parameters) => {
-            const channel = `${prefix()}/call`;
-            const uniqRequestId = this.getUniqRequestId();
-            const subscriptions = {};
-            return new Promise((resolve, reject) => {
-              const handler = ({ data = {} }) => {
-                const { result = {}, errors = [], requestId } = data;
-                if (requestId === uniqRequestId) {
-                  // Handle errors
-                  if (errors.length > 0) {
-                    reject(errors);
-                  } else {
-                    resolve(result);
-                  }
-                  this.unsubscribe(subscriptions);
+    return new Proxy(Object.create(null), {
+      get: (target, method) => {
+        return (parameters) => {
+          const channel = `${prefix()}/call`;
+          const uniqRequestId = this.getUniqRequestId();
+          const subscriptions = {};
+          return new Promise((resolve, reject) => {
+            const handler = ({ data = {} }) => {
+              const { result = {}, errors = [], requestId } = data;
+              if (requestId === uniqRequestId) {
+                // Handle errors
+                if (errors.length > 0) {
+                  reject(errors);
+                } else {
+                  resolve(result);
                 }
-              };
-              // Create dynamic listener method
-              const listener = {
-                [method]: handler,
-                [DEFAULT_MACRO_CHANNEL]: handler,
-              };
-              // Ad-Hoc subscription
-              this.subscribe(prefix, listener, subscriptions);
-              // Publish message on channel
-              this.publish(channel, {
-                debug: 1,
-                hardFail: false,
-                name: method,
-                parameters,
-                requestId: uniqRequestId,
-              });
+                this.unsubscribe(subscriptions);
+              }
+            };
+            // Create dynamic listener method
+            const listener = {
+              [method]: handler,
+              [DEFAULT_MACRO_CHANNEL]: handler,
+            };
+            // Ad-Hoc subscription
+            this.subscribe(prefix, listener, subscriptions);
+            // Publish message on channel
+            this.publish(channel, {
+              debug: 1,
+              hardFail: false,
+              name: method,
+              parameters,
+              requestId: uniqRequestId,
             });
-          };
-        },
+          });
+        };
       },
-    );
+    });
   }
 
   /**
