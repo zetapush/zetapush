@@ -116,7 +116,7 @@ interface SmartClientDeployment {
 type ConnectionStatusHandler = number;
 
 type ProxyService = {
-  [method: string]: <Input, Output>(parameters: Input) => Output;
+  [method: string]: <Input, Output>(parameters?: Input) => Promise<Output>;
 }
 
 export interface ClientOptions extends Options {
