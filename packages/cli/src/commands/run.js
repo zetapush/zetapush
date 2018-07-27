@@ -14,7 +14,11 @@ const { log, error, warn, info, trace } = require('@zetapush/core');
  * @param {WorkerDeclaration} declaration
  */
 const run = (command, config, declaration) => {
-  const runner = new WorkerRunner(command.skipProvisionning, config);
+  const runner = new WorkerRunner(
+    command.skipProvisionning,
+    command.skipBootstrap,
+    config,
+  );
   const spinner = ora('Starting worker... \n');
 
   runner.on(WorkerRunnerEvents.BOOTSTRAPING, ({ client }) => {
