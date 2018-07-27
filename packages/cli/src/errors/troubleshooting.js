@@ -24,6 +24,7 @@ const DOC_BASE_URL =
 const DOC_SOURCE_BASE_URL =
   process.env.ZP_DOC_SOURCE_BASE_URL ||
   'https://raw.githubusercontent.com/zetapush/documentation/master';
+
 const HELP_CACHE_EXPIRATION =
   process.env.ZP_HELP_CACHE_EXPIRATION || 7 * 24 * 60 * 60 * 1000;
 
@@ -203,7 +204,7 @@ class CacheErrorHelper extends ErrorHelper {
 }
 
 const evaluate = (message, err) => {
-  return message.replace(/\$\{([^}]+)\}/g, (_, variable) => {
+  return message.replace(/\$\{([^\\?}]+)[\\]?\}/g, (_, variable) => {
     let value = err;
     for (let part of variable.split('.')) {
       value = value[part];
@@ -277,6 +278,7 @@ const EXIT_CODES = {
   'INJECTION-01': 71,
   'SERVICE-04': 94,
   'SERVICE-05': 95,
+  'BOOTSTRAP-01': 110,
 };
 
 module.exports = {

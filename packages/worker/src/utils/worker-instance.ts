@@ -61,8 +61,14 @@ export class WorkerInstance {
             return {
               success: false,
               result: {
-                error: error,
-                class: api.constructor.name,
+                code: 'EBOOTFAIL',
+                message:
+                  'onApplicationBootstrap error on class ' +
+                  api.constructor.name +
+                  ' : ' +
+                  error.toString(),
+                context: {},
+                location: api.constructor.name,
               },
             };
           }

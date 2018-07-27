@@ -80,7 +80,8 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
       code == 'ETIMEDOUT' ||
       code == 'ECONNRESET' ||
       code == 'ECONNREFUSED' ||
-      code == 'EPIPE'
+      code == 'EPIPE' ||
+      code == 'ENOTFOUND'
     );
   }
 
