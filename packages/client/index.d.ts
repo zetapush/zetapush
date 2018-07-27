@@ -165,6 +165,7 @@ export class Client {
   createAsyncService<T>(declaration: ServiceDeclaration<T>): T;
   createProxyMacroService(deploymentId?: string): ProxyService;
   createProxyService(deploymentId: string): ProxyService;
+  createProxyTaskService(deploymentId?: string): ProxyService;
   disconnect(): Promise<void>;
   isConnected(): boolean;
   getAppName(): string;
