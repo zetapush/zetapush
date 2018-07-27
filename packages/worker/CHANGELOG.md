@@ -3,16 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.31.3](https://github.com/zetapush/zetapush/compare/v0.31.2...v0.31.3) (2018-07-25)
-
-
-### Features
-
-* **context-id:** add context id in injected cloud service methods context ([64e9796](https://github.com/zetapush/zetapush/commit/64e9796))
-* **context-id:** use Proxy to wrap context id ([0c22f02](https://github.com/zetapush/zetapush/commit/0c22f02))
+## [0.31.4](https://github.com/zetapush/zetapush/compare/v0.31.3...v0.31.4) (2018-07-27)
 
 
 
+
+**Note:** Version bump only for package @zetapush/worker
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
