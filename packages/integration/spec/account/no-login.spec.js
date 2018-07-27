@@ -12,9 +12,10 @@ describe(`As developer with
       /*   */ .login('')
       /*   */ .password('password')
       /*   */ .and()
-      /**/ .testingApp()
-      /*   */ .projectName('empty-app')
-      /*   */ .latestVersion()
+      /**/ .project()
+      /*   */ .template()
+      /*     */ .sourceDir('empty-app')
+      /*     */ .and()
       /*   */ .and()
       /**/ .apply(this);
   }, 15 * 60 * 1000);

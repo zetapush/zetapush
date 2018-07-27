@@ -12,9 +12,10 @@ describe(`As developer with
       /*   */ .login('accountnotexists@zetapush.com')
       /*   */ .password('password')
       /*   */ .and()
-      /**/ .testingApp()
-      /*   */ .projectName('empty-app')
-      /*   */ .latestVersion()
+      /**/ .project()
+      /*   */ .template()
+      /*     */ .sourceDir('empty-app')
+      /*     */ .and()
       /*   */ .and()
       /**/ .apply(this);
   }, 30 * 60 * 1000);
