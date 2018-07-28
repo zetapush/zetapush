@@ -17,8 +17,8 @@ import { IllegalStateError } from '../../common/api/exception/IllegalStateError'
 
 export class AccountCreationManagerConfigurerImpl extends AbstractParent<RegistrationConfigurer>
   implements AccountConfigurer, Configurer<AccountCreationManager> {
-  private accountUuidConfigurer: UuidGeneratorConfigurerImpl<AccountConfigurer>;
-  private initialStatusConfigurer: AccountStatusConfigurerImpl;
+  private accountUuidConfigurer?: UuidGeneratorConfigurerImpl<AccountConfigurer>;
+  private initialStatusConfigurer?: AccountStatusConfigurerImpl;
 
   constructor(parentConfigurer: RegistrationConfigurer, private injector: Injector) {
     super(parentConfigurer);
@@ -40,11 +40,17 @@ export class AccountCreationManagerConfigurerImpl extends AbstractParent<Registr
   }
 
   async build(): Promise<AccountCreationManager> {
+    if (!this.accountUuidConfigurer) {
+      throw new IllegalStateError('No uuid generator configured for account creation management');
+    }
+    if (!this.initialStatusConfigurer) {
+      throw new IllegalStateError('No initial status configured for account creation management');
+    }
     const userService = this.injector.get(Simple);
     const uuidGenerator = await this.accountUuidConfigurer.build();
     const initalStatusProvider = await this.initialStatusConfigurer.build();
     // TODO: allow developer to provide custom mapper (manually configured or auto discovered and injected ?)
-    const additionalAccountDetailsProvider = null;
+    const additionalAccountDetailsProvider = undefined;
     return new UsernamePasswordAccountCreationManager(
       userService,
       uuidGenerator,

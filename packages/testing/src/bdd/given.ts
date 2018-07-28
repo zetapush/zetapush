@@ -15,7 +15,7 @@ import copydir from 'copy-dir';
 import { TestContext, Test } from '../utils/types';
 import { existsSync } from 'fs';
 import { createApplication } from '@zetapush/common';
-import { Config } from '@zetapush/common/lib';
+import { Config } from '@zetapush/common';
 
 export const given = () => new Given();
 

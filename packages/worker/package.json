@@ -25,13 +25,12 @@
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@zetapush/common": "^0.30.1",
-    "@zetapush/cometd": "^0.30.1",
-    "@zetapush/client": "^0.30.1",
-    "@zetapush/platform": "^0.30.1"
+    "@zetapush/common": "0.31.4",
+    "@zetapush/cometd": "0.31.4",
+    "@zetapush/client": "0.31.4",
+    "@zetapush/platform": "0.31.4"
   },
   "devDependencies": {
-    "@types/request": "^2.47.1",
     "cross-env": "5.2.0",
     "rimraf": "2.6.2",
     "rollup": "0.62.0",

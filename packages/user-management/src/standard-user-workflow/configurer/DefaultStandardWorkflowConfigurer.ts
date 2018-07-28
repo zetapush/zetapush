@@ -29,8 +29,8 @@ import { StandardAccountStatus } from '../core/Account';
 export class DefaultUserWorkflowConfigurer {
   constructor(
     private userManagementConfigurer: StandardUserWorkflowConfigurer,
-    private zetapushContext,
-    private properties
+    private zetapushContext: any,
+    private properties: any
   ) {}
 
   configure() {
@@ -110,7 +110,7 @@ export class DefaultUserWorkflowConfigurer {
           .textTemplate(/*new MustacheTemplateProvider('templates/email/reset-password.txt')*/);
   }
 
-  configureUserProfile(profileConfigurer) {
+  configureUserProfile(profileConfigurer: any) {
     // profileConfigurer
     //   .fields()
   }

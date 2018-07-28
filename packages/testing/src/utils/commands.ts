@@ -11,22 +11,13 @@ import * as process from 'process';
 const rimraf = require('rimraf');
 import { fetch } from '@zetapush/common';
 const kill = require('tree-kill');
-import {
-  commandLogger,
-  SubProcessLoggerStream,
-  subProcessLogger,
-} from './logger';
+import { commandLogger, SubProcessLoggerStream, subProcessLogger } from './logger';
 import { PassThrough } from 'stream';
 
 const PLATFORM_URL = 'https://celtia.zetapush.com/zbo/pub/business';
 
 export const rm = (path: PathLike) =>
-  new Promise((resolve, reject) =>
-    rimraf(
-      path.toString(),
-      (failure: any) => (failure ? reject(failure) : resolve()),
-    ),
-  );
+  new Promise((resolve, reject) => rimraf(path.toString(), (failure: any) => (failure ? reject(failure) : resolve())));
 
 export const getCurrentEnv = (dir: PathLike) => {
   // get current zetapush version for each module
@@ -38,9 +29,7 @@ export const getCurrentEnv = (dir: PathLike) => {
         try {
           const packageJson = path.join(modulesDir, m, 'package.json');
           if (fs.existsSync(packageJson)) {
-            versions[m] = JSON.parse(
-              fs.readFileSync(packageJson).toString(),
-            ).version;
+            versions[m] = JSON.parse(fs.readFileSync(packageJson).toString()).version;
           } else {
             versions[m] = 'none';
           }
@@ -75,15 +64,8 @@ export const getCurrentEnv = (dir: PathLike) => {
  * @param {string} developerPassword
  * @param {string} dir Name of the application folder
  */
-export const npmInit = (
-  developerLogin: string,
-  developerPassword: string,
-  dir: PathLike,
-  platformUrl?: string,
-) => {
-  commandLogger.info(
-    `npmInit(${developerLogin}, ${developerPassword}, ${dir}, ${platformUrl})`,
-  );
+export const npmInit = (developerLogin: string, developerPassword: string, dir: PathLike, platformUrl?: string) => {
+  commandLogger.info(`npmInit(${developerLogin}, ${developerPassword}, ${dir}, ${platformUrl})`);
   if (npmVersion().major < 5) {
     throw new Error('Minimum required npm version is 5.6.0');
   }
@@ -94,7 +76,7 @@ export const npmInit = (
       commandLogger.debug(
         `npmInit() -> [npx @zetapush/create ${relativeDir} --developer-login xxx --developer-password xxx ${
           platformUrl ? '--platform-url ' + platformUrl : ''
-        }]`,
+        }]`
       );
       cmd = execa(
         'npx',
@@ -105,15 +87,15 @@ export const npmInit = (
           developerLogin,
           '--developer-password',
           developerPassword,
-          ...(platformUrl ? ['--platform-url', platformUrl] : []),
+          ...(platformUrl ? ['--platform-url', platformUrl] : [])
         ],
-        { cwd: '.generated-projects' },
+        { cwd: '.generated-projects' }
       );
     } else {
       commandLogger.debug(
         `npmInit() -> [npm init @zetapush ${relativeDir} --developer-login xxx --developer-password xxx ${
           platformUrl ? '--platform-url ' + platformUrl : ''
-        }]`,
+        }]`
       );
       cmd = execa(
         'npm',
@@ -125,17 +107,17 @@ export const npmInit = (
           developerLogin,
           '--developer-password',
           developerPassword,
-          ...(platformUrl ? ['--platform-url', platformUrl] : []),
+          ...(platformUrl ? ['--platform-url', platformUrl] : [])
         ],
-        { cwd: '.generated-projects' },
+        { cwd: '.generated-projects' }
       );
     }
   } else if (useSymlinkedDependencies()) {
-    const createPath = path.join(__dirname, '../../..', 'create', 'index.js');
+    const createPath = getZetapushModuleDirectoryPath('create', 'index.js');
     commandLogger.debug(
       `npmInit() -> [node ${createPath} ${relativeDir} --developer-login xxx --developer-password xxx ${
         platformUrl ? '--platform-url ' + platformUrl : ''
-      }]`,
+      }]`
     );
     cmd = execa(
       'node',
@@ -146,15 +128,15 @@ export const npmInit = (
         developerLogin,
         '--developer-password',
         developerPassword,
-        ...(platformUrl ? ['--platform-url', platformUrl] : []),
+        ...(platformUrl ? ['--platform-url', platformUrl] : [])
       ],
-      { cwd: '.generated-projects' },
+      { cwd: '.generated-projects' }
     );
   } else {
     commandLogger.debug(
       `npmInit() -> [npx @zetapush/create@canary ${relativeDir} --force-current-version --developer-login xxx --developer-password xxx ${
         platformUrl ? '--platform-url ' + platformUrl : ''
-      }]`,
+      }]`
     );
     cmd = execa(
       'npx',
@@ -166,9 +148,9 @@ export const npmInit = (
         developerLogin,
         '--developer-password',
         developerPassword,
-        ...(platformUrl ? ['--platform-url', platformUrl] : []),
+        ...(platformUrl ? ['--platform-url', platformUrl] : [])
       ],
-      { cwd: '.generated-projects' },
+      { cwd: '.generated-projects' }
     );
   }
   cmd.stdout.pipe(new SubProcessLoggerStream('silly'));
@@ -187,19 +169,36 @@ export const npmInit = (
   return cmd;
 };
 
+const getZetapushModuleDirectoryPath = (module: string, file?: string) => {
+  // __dirname = <zetapush>/packages/integration/node_modules/@zetapush/testing/lib/utils/
+  // target module path = <zetapush>/packages/<module>
+  if (path.dirname(path.join(__dirname, '../../../../..')).endsWith('packages')) {
+    return path.join(__dirname, '../../../../../..', module, file || '');
+  }
+  // __dirname = <zetapush>/packages/testing/lib/utils/
+  // target module path = <zetapush>/packages/<module>
+  if (path.dirname(path.join(__dirname, '../..')).endsWith('packages')) {
+    return path.join(__dirname, '../../..', module, file || '');
+  }
+  // cwd = <zetapush>/packages/integration
+  // target module path = <zetapush>/packages/<module>
+  if (fs.existsSync(path.join(process.cwd(), 'packages'))) {
+    return path.join(process.cwd(), 'packages', module, file || '');
+  }
+  throw new Error("Can't determine where ZetaPush sources are");
+};
+
 /**
  * Run 'zeta push' command
  * @param {string} dir Full path of the application folder
  */
 export const zetaPush = (dir: PathLike) => {
   return new Promise((resolve, reject) => {
-    commandLogger.info(
-      `zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}]`,
-    );
+    commandLogger.info(`zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}]`);
     const stdout: Array<string | Buffer> = [];
     const stderr: Array<string | Buffer> = [];
     const cmd = execa.shell(`npm run deploy -- ${zpLogLevel()}`, {
-      cwd: dir.toString(),
+      cwd: dir.toString()
     });
     const out = new PassThrough();
     const err = new PassThrough();
@@ -213,15 +212,12 @@ export const zetaPush = (dir: PathLike) => {
         code,
         signal,
         stdout: stdout.join('\n'),
-        stderr: stderr.join('\n'),
+        stderr: stderr.join('\n')
       };
-      subProcessLogger.silly(
-        `zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}] -> `,
-        {
-          code,
-          signal,
-        },
-      );
+      subProcessLogger.silly(`zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}] -> `, {
+        code,
+        signal
+      });
       resolve(res);
     });
   });
@@ -237,7 +233,7 @@ export const zetaRun = async (dir: PathLike) => {
     const stdout: Array<string | Buffer> = [];
     const stderr: Array<string | Buffer> = [];
     const cmd = execa.shell(`npm run start -- ${zpLogLevel()}`, {
-      cwd: dir.toString(),
+      cwd: dir.toString()
     });
     const out = new PassThrough();
     const err = new PassThrough();
@@ -251,15 +247,12 @@ export const zetaRun = async (dir: PathLike) => {
         code,
         signal,
         stdout: stdout.join('\n'),
-        stderr: stderr.join('\n'),
+        stderr: stderr.join('\n')
       };
-      subProcessLogger.silly(
-        `zetaRun(${dir}) -> [npm run start -- ${zpLogLevel()}] -> `,
-        {
-          code,
-          signal,
-        },
-      );
+      subProcessLogger.silly(`zetaRun(${dir}) -> [npm run start -- ${zpLogLevel()}] -> `, {
+        code,
+        signal
+      });
       resolve(res);
     });
   });
@@ -273,7 +266,7 @@ export const readZetarc = async (dir: PathLike) => {
   try {
     commandLogger.debug(`readZetarc(${dir})`);
     const content = readFileSync(`${dir}/.zetarc`, {
-      encoding: 'utf-8',
+      encoding: 'utf-8'
     });
     commandLogger.debug(`readZetarc(${dir}) -> `, { content });
     return JSON.parse(content);
@@ -300,7 +293,7 @@ export const deleteAccountFromZetarc = async (dir: PathLike) => {
   }
 
   writeFileSync(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
-    encoding: 'utf-8',
+    encoding: 'utf-8'
   });
 
   return jsonContent;
@@ -327,7 +320,7 @@ export const setAppNameToZetarc = async (dir: PathLike, appName: string) => {
   }
 
   writeFileSync(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
-    encoding: 'utf-8',
+    encoding: 'utf-8'
   });
 
   return jsonContent;
@@ -339,11 +332,7 @@ export const setAppNameToZetarc = async (dir: PathLike, appName: string) => {
  * @param {string} login
  * @param {string} password
  */
-export const setAccountToZetarc = async (
-  dir: PathLike,
-  login: string,
-  password: string,
-) => {
+export const setAccountToZetarc = async (dir: PathLike, login: string, password: string) => {
   let jsonContent;
   if (existsSync(`${dir}/.zetarc`)) {
     const content = readFileSync(`${dir}/.zetarc`, { encoding: 'utf-8' });
@@ -365,7 +354,7 @@ export const setAccountToZetarc = async (
   }
 
   writeFileSync(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
-    encoding: 'utf-8',
+    encoding: 'utf-8'
   });
 
   return jsonContent;
@@ -377,10 +366,7 @@ export const setAccountToZetarc = async (
  * @param {string} login
  * @param {string} password
  */
-export const setPlatformUrlToZetarc = async (
-  dir: PathLike,
-  platformUrl?: string,
-) => {
+export const setPlatformUrlToZetarc = async (dir: PathLike, platformUrl?: string) => {
   commandLogger.debug(`setPlatformUrlToZetarc(${dir}, ${platformUrl})`);
 
   let jsonContent;
@@ -398,7 +384,7 @@ export const setPlatformUrlToZetarc = async (
   }
 
   writeFileSync(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
-    encoding: 'utf-8',
+    encoding: 'utf-8'
   });
 
   return jsonContent;
@@ -417,9 +403,7 @@ export const nodeVersion = () => {
 export const npmVersion = () => {
   commandLogger.debug('npmVersion() -> [npm --version]');
   const { stdout } = execa.sync('npm', ['--version']);
-  const [major, minor, patch] = stdout
-    .split('.')
-    .map((v: string) => parseInt(v, 10));
+  const [major, minor, patch] = stdout.split('.').map((v: string) => parseInt(v, 10));
   return { major, minor, patch, str: stdout };
 };
 
@@ -439,14 +423,14 @@ export const npmInstall = async (dir: PathLike, version: string) => {
   jsonContent.dependencies['@zetapush/platform'] = version;
 
   writeFileSync(`${dir}/package.json`, JSON.stringify(jsonContent), {
-    encoding: 'utf-8',
+    encoding: 'utf-8'
   });
 
   try {
     commandLogger.debug(`npmInstall(${dir}, ${version}) -> [npm install]`);
     const res = execa.shellSync('npm install', { cwd: dir.toString() });
     commandLogger.silly(`npmInstall(${dir}, ${version}) -> [npm install] -> `, {
-      exitCode: res.code,
+      exitCode: res.code
     });
     subProcessLogger.silly('\n' + res.stdout);
     subProcessLogger.warn('\n' + res.stderr);
@@ -471,31 +455,22 @@ export const npmInstallLatestVersion = async (dir: PathLike) => {
   await clearDependencies(dir);
 
   try {
-    commandLogger.silly(
-      'npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save]',
-    );
+    commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save]');
     const resCli = execa.shellSync('npm install @zetapush/cli@canary --save', {
-      cwd: dir.toString(),
+      cwd: dir.toString()
     });
-    commandLogger.silly(
-      'npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save] -> ',
-      { exitCode: resCli.code },
-    );
+    commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save] -> ', {
+      exitCode: resCli.code
+    });
     subProcessLogger.silly('\n' + resCli.stdout);
     subProcessLogger.warn('\n' + resCli.stderr);
-    commandLogger.silly(
-      'npmInstallLatestVersion() -> [npm install @zetapush/platform@canary --save]',
-    );
-    const restPf = execa.shellSync(
-      'npm install @zetapush/platform@canary --save',
-      {
-        cwd: dir.toString(),
-      },
-    );
-    commandLogger.silly(
-      'npmInstallLatestVersion() -> [npm install @zetapush/platform@canary --save] -> ',
-      { exitCode: restPf.code },
-    );
+    commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/platform@canary --save]');
+    const restPf = execa.shellSync('npm install @zetapush/platform@canary --save', {
+      cwd: dir.toString()
+    });
+    commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/platform@canary --save] -> ', {
+      exitCode: restPf.code
+    });
     subProcessLogger.silly('\n' + restPf.stdout);
     subProcessLogger.warn('\n' + restPf.stderr);
 
@@ -513,46 +488,20 @@ export const npmInstallLatestVersion = async (dir: PathLike) => {
 };
 
 export const useSymlinkedDependencies = () => {
-  return (
-    <any>process.env.ZETAPUSH_LOCAL_DEV === 'true' ||
-    <any>process.env.ZETAPUSH_LOCAL_DEV === true
-  );
+  return <any>process.env.ZETAPUSH_LOCAL_DEV === 'true' || <any>process.env.ZETAPUSH_LOCAL_DEV === true;
 };
 
 export const symlinkLocalDependencies = async (dir: PathLike) => {
   try {
     commandLogger.silly(`symlinkLocalDependencies(${dir})`);
-    await rm(`${dir}/node_modules/@zetapush/*`);
-    fs.symlinkSync(
-      path.resolve(__dirname, '../../..', 'core'),
-      `${dir}/node_modules/@zetapush/common`,
-      'dir',
-    );
-    fs.symlinkSync(
-      path.resolve(__dirname, '../../..', 'cli'),
-      `${dir}/node_modules/@zetapush/cli`,
-      'dir',
-    );
-    fs.symlinkSync(
-      path.resolve(__dirname, '../../..', 'platform'),
-      `${dir}/node_modules/@zetapush/platform`,
-      'dir',
-    );
-    fs.symlinkSync(
-      path.resolve(__dirname, '../../..', 'cometd'),
-      `${dir}/node_modules/@zetapush/cometd`,
-      'dir',
-    );
-    fs.symlinkSync(
-      path.resolve(__dirname, '../../..', 'client'),
-      `${dir}/node_modules/@zetapush/client`,
-      'dir',
-    );
-    fs.symlinkSync(
-      path.resolve(__dirname, '../../..', 'worker'),
-      `${dir}/node_modules/@zetapush/worker`,
-      'dir',
-    );
+    for (let moduleName of fs.readdirSync(path.join(dir.toString(), 'node_modules', '@zetapush'))) {
+      await rm(`${dir}/node_modules/@zetapush/${moduleName}`);
+      fs.symlinkSync(getZetapushModuleDirectoryPath(moduleName), `${dir}/node_modules/@zetapush/${moduleName}`, 'dir');
+      commandLogger.silly(
+        `symlink ${getZetapushModuleDirectoryPath(moduleName)} -> ${dir}/node_modules/@zetapush/${moduleName}`
+      );
+    }
+    commandLogger.silly(`symlinkLocalDependencies(${dir}) DONE`);
   } catch (e) {
     commandLogger.error(`symlinkLocalDependencies(${dir}) FAILED`, e);
     throw e;
@@ -570,7 +519,7 @@ export const clearDependencies = async (dir: PathLike) => {
   delete jsonContent.dependencies;
 
   writeFileSync(`${dir}/package.json`, JSON.stringify(jsonContent), {
-    encoding: 'utf-8',
+    encoding: 'utf-8'
   });
 };
 
@@ -578,22 +527,20 @@ export const createZetarc = (
   developerLogin: string,
   developerPassword: string,
   dir: PathLike,
-  platformUrl?: string,
+  platformUrl?: string
 ) => {
-  commandLogger.debug(
-    `createZetarc(${developerLogin}, ${developerPassword}, ${dir}, ${platformUrl})`,
-  );
+  commandLogger.debug(`createZetarc(${developerLogin}, ${developerPassword}, ${dir}, ${platformUrl})`);
   fs.writeFileSync(
     dir + '/.zetarc',
     JSON.stringify(
       {
         platformUrl: platformUrl || PLATFORM_URL,
         developerLogin,
-        developerPassword,
+        developerPassword
       },
       null,
-      2,
-    ),
+      2
+    )
   );
 };
 
@@ -604,25 +551,17 @@ export const nukeApp = (dir: PathLike) => {
     const creds = await readZetarc(dir);
     if (creds.appName != undefined) {
       try {
-        commandLogger.silly(
-          `nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName}`,
-        );
+        commandLogger.silly(`nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName}`);
         const res = await fetch({
           method: 'DELETE',
           config: creds,
           pathname: `orga/business/nuke/${creds.appName}`,
-          debugName: 'nukeApp',
+          debugName: 'nukeApp'
         });
-        commandLogger.silly(
-          `nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName} -> `,
-          res,
-        );
+        commandLogger.silly(`nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName} -> `, res);
         resolve(res);
       } catch (err) {
-        commandLogger.error(
-          `nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName}`,
-          err,
-        );
+        commandLogger.error(`nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName}`, err);
         resolve(err); //TODO : make reject when orga/business/nuke will send JSON response
       }
     } else {
@@ -655,9 +594,7 @@ export class Runner {
       const getStatus = async () => {
         if (Date.now() - start > this.timeout) {
           commandLogger.error('Runner:waitForWorkerUp() -> timeout');
-          reject(
-            new Error(`Worker for ${this.dir} not up after ${this.timeout}ms`),
-          );
+          reject(new Error(`Worker for ${this.dir} not up after ${this.timeout}ms`));
           return;
         }
         commandLogger.silly('Runner:waitForWorkerUp() -> getStatus()');
@@ -668,21 +605,15 @@ export class Runner {
             const res = await fetch({
               config: creds,
               pathname: `orga/business/live/${creds.appName}`,
-              debugName: 'waitForWorkerUp',
+              debugName: 'waitForWorkerUp'
             });
             commandLogger.silly('Runner:waitForWorkerUp() -> fetch() -> ', res);
             for (let node in res.nodes) {
               for (let item in res.nodes[node].items) {
                 if (res.nodes[node].items[item].itemId === 'queue') {
                   if (res.nodes[node].items[item].liveData != undefined) {
-                    if (
-                      res.nodes[node].items[item].liveData['queue.workers']
-                        .length > 0
-                    ) {
-                      commandLogger.silly(
-                        'Runner:waitForWorkerUp() -> getStatus() -> ',
-                        res,
-                      );
+                    if (res.nodes[node].items[item].liveData['queue.workers'].length > 0) {
+                      commandLogger.silly('Runner:waitForWorkerUp() -> getStatus() -> ', res);
                       resolve();
                       return;
                     }
@@ -692,10 +623,7 @@ export class Runner {
             }
           }
         } catch (e) {
-          commandLogger.silly(
-            'Runner:waitForWorkerUp() -> getStatus() FAILED',
-            e,
-          );
+          commandLogger.silly('Runner:waitForWorkerUp() -> getStatus() FAILED', e);
         }
         setTimeout(getStatus, 300);
       };
@@ -716,8 +644,8 @@ export class Runner {
 
   run(quiet = false) {
     commandLogger.info(`Runner:run() -> [npm run start -- ${zpLogLevel()}]`);
-    this.cmd = execa('npm', ['run', 'start', '--', zpLogLevel()], {
-      cwd: this.dir,
+    this.cmd = execa.shell(`npm run start -- ${zpLogLevel()}`, {
+      cwd: this.dir
     });
     if (this.cmd && !quiet) {
       this.cmd.stdout.pipe(new SubProcessLoggerStream('silly'));

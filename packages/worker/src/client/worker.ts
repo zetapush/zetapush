@@ -1,6 +1,6 @@
 import { Authentication, Client, uuid } from '@zetapush/client';
-import { Queue, TaskRequest } from '@zetapush/platform';
-
+import { Queue, QueueTask, ConfigureTask, TaskRequest } from '@zetapush/platform';
+import { LogLevel, Logs, Context } from '@zetapush/platform';
 import { WorkerInstance, TaskDispatcherWorkerInstance } from '../utils/worker-instance';
 
 const DEFAULT_NAMESPACE = '';
@@ -112,10 +112,10 @@ export class WorkerClient extends Client {
    * Subscribe a task worker
    */
   subscribeTaskWorker(worker: any, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
+    const instance = this.newWorkerInstance(worker, deploymentId);
     const logs = this.createService<Logs>({
       Type: Logs
     });
-    const instance = this.newWorkerInstance(worker, deploymentId);
     const queue = this.createService<Worker>({
       deploymentId,
       listener: {

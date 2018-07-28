@@ -44,7 +44,7 @@ describe(`As developer with
         expect(failure).toBe(false);
       });
     },
-    60 * 1000 * 10,
+    60 * 1000 * 10
   );
 
   /**
@@ -79,7 +79,7 @@ describe(`As developer with
         expect(failure).toBe(true);
       });
     },
-    60 * 1000 * 2,
+    60 * 1000 * 2
   );
 
   /**
@@ -106,13 +106,13 @@ describe(`As developer with
       // worker can't start due to runtime error
       let failure = false;
       try {
-        await this.context.runner.run((quiet = false));
+        await this.context.runner.run();
       } catch (error) {
         failure = true;
       }
       expect(failure).toBe(true);
     },
-    60 * 1000 * 10,
+    60 * 1000 * 10
   );
 
   /**
@@ -150,7 +150,7 @@ describe(`As developer with
         expect(helloReceived).toBe(false);
       });
     },
-    60 * 1000 * 10,
+    60 * 1000 * 10
   );
 
   /**

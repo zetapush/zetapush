@@ -1,4 +1,3 @@
-export { CloudServiceInstance } from './CloudServiceInstance';
 export * from './Context';
 export * from '@zetapush/common/lib/metadata';
 export { Options } from './Options';

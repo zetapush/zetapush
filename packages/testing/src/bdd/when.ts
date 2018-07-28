@@ -81,22 +81,24 @@ export const runInWorker = (
       deps: services
     };
 
-    const runner = new WorkerRunner(false, <ResolvedConfig>zetarc, transports, new TestWorkerInstanceFactory(), [
+    const runner = new WorkerRunner(false, false, <ResolvedConfig>zetarc, transports, new TestWorkerInstanceFactory(), [
       factoryProvider
     ]);
 
     // listen to events in order to log information to help developer
-    runner.on(WorkerRunnerEvents.BOOTSTRAPING, ({ client }) => {
+    runner.on(WorkerRunnerEvents.BOOTSTRAPING, () => {
       runInWorkerLogger.debug('Bootstraping worker...');
     });
-    runner.on(WorkerRunnerEvents.UPLOADED, ({ recipe }) => runInWorkerLogger.debug('Worker uploaded', recipe.recipeId));
+    runner.on(WorkerRunnerEvents.UPLOADED, ({ recipe }: any) =>
+      runInWorkerLogger.debug('Worker uploaded', recipe.recipeId)
+    );
     runner.on(WorkerRunnerEvents.QUEUE_SERVICE_DEPLOYING, () => runInWorkerLogger.debug('Queue service deploying...'));
-    runner.on(WorkerRunnerEvents.QUEUE_SERVICE_READY, ({ recipe }) =>
+    runner.on(WorkerRunnerEvents.QUEUE_SERVICE_READY, ({ recipe }: any) =>
       runInWorkerLogger.debug(`Queue service ready on ${recipe.recipeId}`)
     );
     runner.on(WorkerRunnerEvents.CONNECTING, () => runInWorkerLogger.debug(`Connecting Worker...`));
     runner.on(WorkerRunnerEvents.CONNECTED, () => runInWorkerLogger.debug(`Worker connected`));
-    runner.on(WorkerRunnerEvents.CREATED_SERVICES, ({ services }) =>
+    runner.on(WorkerRunnerEvents.CREATED_SERVICES, ({ services }: any) =>
       runInWorkerLogger.debug(`Create services`, services)
     );
     runner.on(WorkerRunnerEvents.PLATFORM_SERVICES_READY, () => runInWorkerLogger.debug(`Platform services created`));
@@ -114,7 +116,7 @@ export const runInWorker = (
       }
     });
 
-    runner.on(WorkerRunnerEvents.UPLOAD_FAILED, ({ failure }) => {
+    runner.on(WorkerRunnerEvents.UPLOAD_FAILED, ({ failure }: any) => {
       runInWorkerLogger.error('Worker upload failed');
       runner.destroy();
       reject(failure);

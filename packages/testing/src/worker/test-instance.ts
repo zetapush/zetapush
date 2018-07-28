@@ -27,14 +27,15 @@ export class TestWorkerInstanceFactory implements WorkerInstanceFactory {
   create(worker: any, deploymentId: string, options: WorkerClientOptions): TestWorkerInstance {
     return new TestWorkerInstance({
       timeout: options.timeout,
-      worker
+      worker,
+      bootLayers: worker.bootLayers
     });
   }
 }
 
 export class TestWorkerInstance extends TaskDispatcherWorkerInstance {
-  constructor({ timeout, worker }: { timeout: number; worker: any }) {
-    super({ timeout, worker });
+  constructor({ timeout, worker, bootLayers }: { timeout: number; worker: any; bootLayers: any }) {
+    super({ timeout, worker, bootLayers });
   }
 
   async directCall(namespace: string, name: string, ...parameters: any[]) {

@@ -1,4 +1,4 @@
-const { fetch } = require('@zetapush/core');
+const { fetch } = require('@zetapush/common');
 const {
   log,
   error,

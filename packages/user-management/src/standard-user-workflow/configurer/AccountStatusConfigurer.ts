@@ -6,8 +6,8 @@ import { MissingMandatoryConfigurationError } from '../../common/configurer/Conf
 
 export class AccountStatusConfigurerImpl extends AbstractParent<AccountConfigurer>
   implements AccountStatusConfigurer, Configurer<AccountStatusProvider> {
-  private accountStatus: AccountStatus;
-  private accountStatusProvider: AccountStatusProvider;
+  private accountStatus?: AccountStatus;
+  private accountStatusProvider?: AccountStatusProvider;
 
   constructor(parentConfigurer: AccountConfigurer) {
     super(parentConfigurer);

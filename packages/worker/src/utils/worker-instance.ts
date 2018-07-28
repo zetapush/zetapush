@@ -1,7 +1,5 @@
 import { Context, TaskRequest, CloudServiceInstance } from '@zetapush/platform';
-import { timeoutify } from './async';
 import { inject } from './context';
-import { TaskRequest } from '@zetapush/platform';
 
 import { timeoutify } from '@zetapush/common';
 
@@ -12,9 +10,8 @@ const DEFAULT_ERROR_CODE = 'API_ERROR';
 
 export interface WorkerInstance {
   setWorker(worker: any): void;
-  dispatch({
-    data: { request, taskId }
-  }: TaskRequest): Promise<{ result: any; taskId: string; requestId: string; success: boolean }>;
+  dispatch(request: TaskRequest, context: Context): Promise<{ result: any; success: boolean }>;
+  configure(): Promise<{ result: any; success: boolean }>;
 }
 
 export class TaskDispatcherWorkerInstance implements WorkerInstance {
