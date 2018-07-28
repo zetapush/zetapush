@@ -1,12 +1,12 @@
 import { Writable } from 'stream';
-import { setVerbosity } from '@zetapush/common';
+import { setVerbosity, getZetaFilePath } from '@zetapush/common';
 import * as process from 'process';
 const winston = require('winston');
 const path = require('path');
 const chalk = require('chalk');
 const jsonStringify = require('fast-safe-stringify');
 
-const logPath = path.join(__dirname, '..', '..', '.logs');
+const logPath = getZetaFilePath('.logs');
 
 const fixedSize = (str: string, size: number) => {
   return str.padEnd(size, ' ').substr(0, size);

@@ -19,7 +19,7 @@ describe(`As developer with
         /*   */ .fromEnv()
         /*   */ .and()
         /**/ .project()
-        /*   */ .newApp()
+        /*   */ .newProject()
         /*     */ .targetDir('no-appname')
         /*     */ .setAppName('')
         /*     */ .and()

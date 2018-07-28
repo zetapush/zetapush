@@ -14,7 +14,9 @@ import {
   filter,
   BLACKLIST,
   createProvisioningArchive,
-  generateProvisioningContent
+  generateProvisioningContent,
+  debugObject,
+  trace
 } from '@zetapush/common';
 import { EventEmitter } from 'events';
 import { WorkerInstance } from '../utils/worker-instance';
@@ -32,12 +34,15 @@ export enum WorkerRunnerEvents {
   CONNECTED = 'connected',
   PLATFORM_SERVICES_READY = 'platform-services-ready',
   CREATED_SERVICES = 'created-services',
+  CONFIGURING_APP = 'configuring-app',
+  CONFIGURED_APP = 'configured-app',
   STARTING = 'starting',
   STARTED = 'started',
 
   RELOADING = 'reloading',
   RELOADED = 'reloaded',
 
+  CONFIGURE_APP_FAILED = 'configure-app-failed',
   START_FAILED = 'start-failed',
   RELOAD_FAILED = 'reload-failed'
 }
@@ -119,8 +124,11 @@ export class WorkerRunner extends EventEmitter {
    * @fires WorkerRunnerEvents#CONNECTING
    * @fires WorkerRunnerEvents#CONNECTED
    * @fires WorkerRunnerEvents#PLATFORM_SERVICES_READY
+   * @fires WorkerRunnerEvents#CONFIGURING_APP
+   * @fires WorkerRunnerEvents#CONFIGURED_APP
    * @fires WorkerRunnerEvents#STARTING
    * @fires WorkerRunnerEvents#STARTED
+   * @fires WorkerRunnerEvents#CONFIGURE_APP_FAILED
    * @fires WorkerRunnerEvents#START_FAILED
    * @fires WorkerRunnerEvents#RELOADING
    * @fires WorkerRunnerEvents#RELOADED
@@ -172,42 +180,47 @@ export class WorkerRunner extends EventEmitter {
         .then(() => this.start(client, config, declaration))
         .then((instance) => {
           this.currentInstance = instance;
-          const checkBoostrap = () => {
-            return new Promise((resolve, reject) => {
-              if (!this.skipBootstrap) {
-                instance.configure().then((res) => {
-                  if (res.success == false) {
-                    reject(res.result);
-                  } else {
-                    resolve();
-                  }
-                });
-              } else {
-                resolve();
-              }
-            });
-          };
-          return checkBoostrap()
-            .then(() => {
-              this.emit(WorkerRunnerEvents.STARTED, {
-                instance,
-                client,
-                config,
-                declaration
-              });
-            })
-            .catch((err) => {
-              this.emit(WorkerRunnerEvents.START_FAILED, {
-                failure: err,
-                client,
-                config,
-                declaration
-              });
-            });
+        })
+        .then(() => this.checkApplicationBootstrap())
+        .then(() => {
+          if (!this.currentInstance) {
+            throw new IllegalStateError(
+              'No current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
+            );
+          }
+          const instance = this.currentInstance;
+          this.emit(WorkerRunnerEvents.STARTED, {
+            instance,
+            client,
+            config,
+            declaration
+          });
+          trace('Worker successfully started');
+          resolve({
+            instance,
+            client,
+            config,
+            declaration
+          });
+          // .catch((err) => {
+          //   this.emit(WorkerRunnerEvents.START_FAILED, {
+          //     failure: err,
+          //     client,
+          //     config,
+          //     declaration
+          //   });
+          // });
         })
         .catch((failure) => {
+          trace('Failed to start worker', failure);
           // TODO: reaise error instead ?
           this.emit(WorkerRunnerEvents.START_FAILED, {
+            failure,
+            client,
+            config,
+            declaration
+          });
+          reject({
             failure,
             client,
             config,
@@ -268,6 +281,49 @@ export class WorkerRunner extends EventEmitter {
     this.removeAllListeners();
   }
 
+  private checkApplicationBootstrap() {
+    return new Promise((resolve, reject) => {
+      if (!this.currentInstance) {
+        throw new IllegalStateError(
+          'No current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
+        );
+      }
+      const instance = this.currentInstance;
+      const client = this.client;
+      const config = this.config;
+      const declaration = this.currentDeclaration;
+      if (!this.skipBootstrap) {
+        this.emit(WorkerRunnerEvents.CONFIGURING_APP, {
+          instance,
+          client,
+          config,
+          declaration
+        });
+        instance.configure().then((res) => {
+          debugObject('bootstrap-configure', { res });
+          if (res.success == false) {
+            this.emit(WorkerRunnerEvents.CONFIGURE_APP_FAILED, {
+              failure: res,
+              client,
+              config,
+              declaration
+            });
+            reject(res.result);
+          } else {
+            this.emit(WorkerRunnerEvents.CONFIGURED_APP, {
+              instance,
+              client,
+              config,
+              declaration
+            });
+            resolve();
+          }
+        });
+      } else {
+        resolve();
+      }
+    });
+  }
   /**
    * Ask progression during deployment of services
    */

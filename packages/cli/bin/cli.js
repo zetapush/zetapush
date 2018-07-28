@@ -2,7 +2,7 @@
 
 // FirstClass TypeScript Support
 require('ts-node').register({
-  ignore: '/node_modules/',
+  ignore: '/node_modules/'
 });
 
 const program = require('commander');
@@ -10,10 +10,7 @@ const program = require('commander');
 const { version } = require('../package.json');
 
 const { DEFAULTS } = require('@zetapush/common');
-const {
-  helpMessageRun,
-  helpMessagePush,
-} = require('../src/utils/helper-messages');
+const { helpMessageRun, helpMessagePush } = require('../src/utils/helper-messages');
 const { setVerbosity, error } = require('@zetapush/common');
 const { identity } = require('../src/utils/validator');
 
@@ -24,26 +21,14 @@ const troubleshoot = require('../src/commands/troubleshoot');
 
 const { load } = require('../src/loader/worker');
 
-const {
-  ErrorAnalyzer,
-  errorHelper,
-  displayHelp,
-} = require('../src/errors/troubleshooting');
+const { ErrorAnalyzer, errorHelper, displayHelp } = require('../src/errors/troubleshooting');
 const { ConfigLoadIssueAnalyzer } = require('../src/errors/config-load-issue');
-const {
-  MissingNpmDependencyErrorAnalyzer,
-} = require('../src/errors/npm-dependency-issue');
+const { MissingNpmDependencyErrorAnalyzer } = require('../src/errors/npm-dependency-issue');
 const { NetworkIssueAnalyzer } = require('../src/errors/network-issue');
-const {
-  AccessDeniedIssueAnalyzer,
-} = require('../src/errors/access-denied-issue');
+const { AccessDeniedIssueAnalyzer } = require('../src/errors/access-denied-issue');
 const { InjectionIssueAnalyzer } = require('../src/errors/injection-issue');
-const {
-  CustomCloudServiceStartErrorAnalyzer,
-} = require('../src/errors/custom-cloud-service-start-issue');
-const {
-  OnApplicationBoostrapErrorAnalyser,
-} = require('../src/errors/bootstrap-issue');
+const { CustomCloudServiceStartErrorAnalyzer } = require('../src/errors/custom-cloud-service-start-issue');
+const { OnApplicationBoostrapErrorAnalyser } = require('../src/errors/bootstrap-issue');
 
 ErrorAnalyzer.register(new ConfigLoadIssueAnalyzer());
 ErrorAnalyzer.register(new NetworkIssueAnalyzer());
@@ -69,42 +54,17 @@ program
     '-v, --verbose',
     'Verbosity level (-v=error+warn+info, -vv=error+warn+info+log, -vvv=error+warn+info+log+trace)',
     increaseVerbosity,
-    1,
+    1
   );
 
 program
   .command('run')
   .usage('[options]')
-  .option(
-    '-f, --front <front>',
-    'Push front on cloud platform',
-    identity,
-    DEFAULTS.FRONT_FOLDER_PATH,
-  )
-  .option(
-    '-w, --worker <worker>',
-    'Push worker on cloud platform',
-    identity,
-    DEFAULTS.WORKER_FOLDER_PATH,
-  )
-  .option(
-    '-s, --skip-provisioning',
-    'Skip provisioning steps',
-    () => true,
-    false,
-  )
-  .option(
-    '--serve-front',
-    'Run local http server to serve your front code',
-    () => true,
-    false,
-  )
-  .option(
-    '--skip-bootstrap',
-    'Discard all onApplicationBootstrap methods on run',
-    () => true,
-    false,
-  )
+  .option('-f, --front <front>', 'Push front on cloud platform', identity, DEFAULTS.FRONT_FOLDER_PATH)
+  .option('-w, --worker <worker>', 'Push worker on cloud platform', identity, DEFAULTS.WORKER_FOLDER_PATH)
+  .option('-s, --skip-provisioning', 'Skip provisioning steps', () => true, false)
+  .option('--serve-front', 'Run local http server to serve your front code', () => true, false)
+  .option('--skip-bootstrap', 'Discard all onApplicationBootstrap methods on run', () => true, false)
   .description('Run your code')
   .action((command) =>
     createApp(command)
@@ -115,7 +75,7 @@ program
       .catch((failure) => {
         error('Run failed', failure);
         displayHelp(failure);
-      }),
+      })
   )
   .on('--help', () => {
     console.log(helpMessageRun());
@@ -124,18 +84,8 @@ program
 program
   .command('push')
   .usage('[options]')
-  .option(
-    '-f, --front <front>',
-    'Push front on cloud platform',
-    identity,
-    DEFAULTS.FRONT_FOLDER_PATH,
-  )
-  .option(
-    '-w, --worker <worker>',
-    'Push worker on cloud platform',
-    identity,
-    DEFAULTS.WORKER_FOLDER_PATH,
-  )
+  .option('-f, --front <front>', 'Push front on cloud platform', identity, DEFAULTS.FRONT_FOLDER_PATH)
+  .option('-w, --worker <worker>', 'Push worker on cloud platform', identity, DEFAULTS.WORKER_FOLDER_PATH)
   .description('Push your application on ZetaPush platform')
   .action((command) =>
     createApp(command)
@@ -146,7 +96,7 @@ program
       .catch((failure) => {
         error('Push failed', failure);
         displayHelp(failure);
-      }),
+      })
   )
   .on('--help', () => {
     console.log(helpMessagePush());
@@ -155,15 +105,8 @@ program
 program
   .command('troubleshoot')
   .arguments('error code')
-  .option(
-    '-f, --force-refresh',
-    'Force refresh of cache',
-    () => (errorHelper.refresh = true),
-    false,
-  )
-  .description(
-    'Display help to resolve a particular error (ex: NET-01, NET-02, ...)',
-  )
+  .option('-f, --force-refresh', 'Force refresh of cache', () => (errorHelper.refresh = true), false)
+  .description('Display help to resolve a particular error (ex: NET-01, NET-02, ...)')
   .action((errorCode, command) => {
     troubleshoot(errorCode, command);
   });

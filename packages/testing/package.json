@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/testing",
-  "version": "0.30.1",
+  "version": "0.31.4",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-testing.js",
   "main": "lib/index.js",
@@ -25,10 +25,10 @@
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@zetapush/common": "^0.30.1",
-    "@zetapush/client": "^0.30.1",
-    "@zetapush/worker": "^0.30.1",
-    "@zetapush/cometd": "^0.30.1",
+    "@zetapush/common": "0.31.4",
+    "@zetapush/client": "0.31.4",
+    "@zetapush/worker": "0.31.4",
+    "@zetapush/cometd": "0.31.4",
     "rimraf": "2.6.2",
     "copy-dir": "0.3.0",
     "tree-kill": "1.2.0",
@@ -37,10 +37,10 @@
     "winston": "3.0.0"
   },
   "devDependencies": {
-    "@types/execa": "^0.9.0",
-    "@types/jasmine": "^2.8.8",
-    "@types/node": "^10.5.2",
-    "@types/rimraf": "^2.0.2",
+    "@types/execa": "0.9.0",
+    "@types/jasmine": "2.8.8",
+    "@types/node": "10.5.2",
+    "@types/rimraf": "2.0.2",
     "cross-env": "5.2.0",
     "injection-js": "2.2.1",
     "jasmine": "3.1.0",

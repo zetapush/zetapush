@@ -23,7 +23,7 @@ describe(`AccountCreationManager`, () => {
       .apply(this);
   });
 
-  fit(
+  it(
     `configured with
       - uuid: TimestampBasedUuidGenerator
       - account status = 'WAITING_FOR_CONFIRMATION'

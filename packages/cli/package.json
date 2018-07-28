@@ -15,10 +15,11 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "@zetapush/client": "^0.31.4",
-    "@zetapush/cometd": "^0.31.4",
-    "@zetapush/platform": "^0.31.4",
-    "@zetapush/worker": "^0.31.4",
+    "@zetapush/common": "0.31.4",
+    "@zetapush/client": "0.31.4",
+    "@zetapush/cometd": "0.31.4",
+    "@zetapush/platform": "0.31.4",
+    "@zetapush/worker": "0.31.4",
     "chalk": "2.4.1",
     "commander": "2.16.0",
     "cosmiconfig": "5.0.5",
@@ -36,6 +37,8 @@
     "ts-node": "7.0.0",
     "typescript": "2.9.2",
     "zip-dir": "1.0.2"
+  },
+  "devDependencies": {
   },
   "publishConfig": {
     "access": "public"

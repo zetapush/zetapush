@@ -40,7 +40,7 @@ export interface AccountCreationManager {
    * @returns information about the created account or null if account couldn't be handled
    * @throws {AccountCreationError} when creation couldn't be created
    */
-  createAccount(accountCreationDetails: AccountCreationDetails): Promise<Account>;
+  createAccount(accountCreationDetails: AccountCreationDetails): Promise<Account | null>;
 }
 
 export class AccountCreationError extends Error {

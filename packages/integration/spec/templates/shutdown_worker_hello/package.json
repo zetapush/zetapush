@@ -9,8 +9,8 @@
     "troubleshoot": "zeta troubleshoot"
   },
   "dependencies": {
-    "@zetapush/cli": "*",
-    "@zetapush/platform": "*",
+    "@zetapush/cli":  "0.31.4",
+    "@zetapush/platform":  "0.31.4",
     "power-off": "^1.1.2"
   }
 }

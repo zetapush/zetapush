@@ -69,9 +69,7 @@ export class UsernamePasswordAccountCreationManager implements AccountCreationMa
       const { value: accountId } = await this.uuidGenerator.generate();
       const accountStatus = await this.accountStatusProvider.getStatus();
       const userProfile = await this.getUserProfile(details);
-      // FIXME: update platform
-      debugger;
-      const result = await this.userService.createUser(<any>{
+      const result = await this.userService.createUser({
         accountId,
         accountStatus,
         login: details.username,
@@ -90,10 +88,15 @@ export class UsernamePasswordAccountCreationManager implements AccountCreationMa
       // TODO: catch errors and handle them
       if (e.code === 'MISSING_MANDATORY_FIELDS') {
         // TODO
+        return null;
       } else if (e.code === 'ACCOUNT_EXISTS') {
         throw new UsernameAlreadyUsedError(`Username "${details.username}" is already used`, accountCreationDetails);
       } else if (e.code === 'KEY_BADCHAR') {
         // TODO
+        return null;
+      } else {
+        // TODO
+        return null;
       }
     }
   }
