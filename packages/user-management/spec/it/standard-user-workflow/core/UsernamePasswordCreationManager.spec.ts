@@ -60,7 +60,7 @@ describe(`AccountCreationManager`, () => {
         expect(account).not.toBeNull();
         expect(account.accountId).toBeDefined();
         expect(account.accountStatus).toBe(StandardAccountStatus.WaitingConfirmation);
-        expect(account.userProfile).toEqual({
+        expect(<any>account.userProfile).toEqual({
           firstname: 'Odile',
           lastname: 'DERAY'
         });
