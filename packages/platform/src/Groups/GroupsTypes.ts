@@ -1,10 +1,4 @@
-import {
-  OwnerResource,
-  PageContent,
-  PageDirection,
-  Pagination,
-  StringAnyMap,
-} from '../CommonTypes';
+import { OwnerResource, PageContent, PageDirection, Pagination, StringAnyMap } from '../CommonTypes';
 
 export interface DeviceAvailability {
   /**User inquiring about availability*/

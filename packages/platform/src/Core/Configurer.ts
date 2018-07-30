@@ -9,19 +9,15 @@ export class Configurer extends Service {
     return `${Configurer.DEPLOYMENT_TYPE}_0`;
   }
 
-  protected $configure(
-    parameters: object | null,
-    deploymentId: string,
-    verb: string,
-  ) {
+  protected $configure(parameters: object | null, deploymentId: string, verb: string) {
     return this.$publish('admin', {
       requests: [
         {
           parameters,
           deploymentId,
-          verb,
-        },
-      ],
+          verb
+        }
+      ]
     });
   }
 }

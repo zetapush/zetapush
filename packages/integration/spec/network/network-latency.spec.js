@@ -46,6 +46,6 @@ describe(`As developer with
       // expect(true).toBe(true);
       // await nukeApp(fullPathProject);
     },
-    10 * 60 * 1000,
+    10 * 60 * 1000
   );
 });

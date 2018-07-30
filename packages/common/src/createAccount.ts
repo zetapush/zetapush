@@ -22,20 +22,20 @@ export const createAccount = (config: Config) =>
           owner: {
             firstName: `YourFirstName`,
             lastName: `YourLastname`,
-            email: config.developerLogin,
-          },
+            email: config.developerLogin
+          }
         },
         credentials: {
-          password: config.developerPassword,
-        },
-      },
+          password: config.developerPassword
+        }
+      }
     }),
-    debugName: 'createAccount',
+    debugName: 'createAccount'
   })
     .then((business: any) => ({
       ...config,
       appName: business.businessId,
-      envName: '',
+      envName: ''
     }))
     .catch((failure: any) => {
       try {
@@ -47,6 +47,6 @@ export const createAccount = (config: Config) =>
         todo(`Catch 'createAccount' failure`, exception);
       }
       return {
-        ...config,
+        ...config
       };
     });

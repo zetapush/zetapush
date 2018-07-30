@@ -9,9 +9,7 @@ const DICTIONARY = 'abcdefghijklmnopqrstuvwxyz0123456789';
  */
 export const uuid = (entropy = 7, dictionary = DICTIONARY) =>
   Array.from(Array(entropy)).reduce((previous) => {
-    const next = dictionary.charAt(
-      Math.floor(Math.random() * dictionary.length),
-    );
+    const next = dictionary.charAt(Math.floor(Math.random() * dictionary.length));
     return `${previous}${next}`;
   }, '');
 

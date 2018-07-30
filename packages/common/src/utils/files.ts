@@ -15,9 +15,7 @@ export const mkdirs = (file: string) => {
 };
 
 export const getZetaFilePath = (...relativePath: string[]) => {
-  const p = path.normalize(
-    path.resolve(os.homedir(), '.zeta', ...relativePath),
-  );
+  const p = path.normalize(path.resolve(os.homedir(), '.zeta', ...relativePath));
   mkdirs(p);
   return p;
 };

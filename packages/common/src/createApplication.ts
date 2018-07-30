@@ -9,7 +9,7 @@ const getPreferedCluster = (config: Config) =>
   fetch({
     config,
     pathname: 'orga/cluster/list',
-    debugName: 'getPreferedCluster',
+    debugName: 'getPreferedCluster'
   }).then((clusters: any[]) => {
     const [cluster] = clusters.filter(({ preferred }) => Boolean(preferred));
     return cluster;
@@ -18,8 +18,7 @@ const getPreferedCluster = (config: Config) =>
  * Get developer profile info
  * @param {Object} config
  */
-const whoami = (config: Config) =>
-  fetch({ config, pathname: 'auth/whoami', debugName: 'whoami' });
+const whoami = (config: Config) => fetch({ config, pathname: 'auth/whoami', debugName: 'whoami' });
 /**
  * Create business application
  * @param {Object} config
@@ -35,9 +34,9 @@ const create = (config: Config, orga: any, cluster: any) =>
       orgaId: orga.id,
       cluster: cluster.id,
       name: `app@${getNameSuffix()}`,
-      description: getDescription(),
+      description: getDescription()
     }),
-    debugName: 'createApplication',
+    debugName: 'createApplication'
   });
 
 export const createApplication = (config: Config) =>
@@ -46,10 +45,9 @@ export const createApplication = (config: Config) =>
     .then((application: any) => ({
       ...config,
       appName: application.businessId,
-      envName: '',
+      envName: ''
     }));
 
 const getNameSuffix = () => `${new Date().toISOString()}`;
 
-const getDescription = () =>
-  `Application created from zeta command line the ${new Date().toUTCString()}`;
+const getDescription = () => `Application created from zeta command line the ${new Date().toUTCString()}`;

@@ -28,7 +28,7 @@ describe(`As developer with
         expect(code).toBe(errorCode);
       });
     },
-    15 * 60 * 1000,
+    15 * 60 * 1000
   );
 
   it(
@@ -39,6 +39,6 @@ describe(`As developer with
         expect(code).toBe(errorCode);
       });
     },
-    15 * 60 * 1000,
+    15 * 60 * 1000
   );
 });

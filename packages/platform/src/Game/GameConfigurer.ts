@@ -18,7 +18,7 @@ export class GameConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Game.DEFAULT_DEPLOYMENT_ID,
-      '/game/registerGame',
+      '/game/registerGame'
     );
   }
 }

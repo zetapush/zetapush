@@ -1,10 +1,4 @@
-import {
-  PageContent,
-  PageDirection,
-  Pagination,
-  StringAnyMap,
-  StringObjectMap,
-} from '../CommonTypes';
+import { PageContent, PageDirection, Pagination, StringAnyMap, StringObjectMap } from '../CommonTypes';
 
 export interface SearchData {
   /**Type name*/

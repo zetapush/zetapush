@@ -3,15 +3,7 @@ const os = require('os');
 const fs = require('fs');
 
 const { compress } = require('../utils/compress-folder');
-const {
-  upload,
-  filter,
-  BLACKLIST,
-  log,
-  error,
-  mkdir,
-  trace,
-} = require('@zetapush/common');
+const { upload, filter, BLACKLIST, log, error, mkdir, trace } = require('@zetapush/common');
 const { generateProvisioningFile } = require('../utils/provisioning');
 const { getProgression } = require('../utils/progression');
 const troubleshooting = require('../errors/troubleshooting');

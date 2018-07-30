@@ -64,14 +64,7 @@ export class Client {
    * Create a new ZetaPush Client
    * @param {ClientConfig} config
    */
-  constructor({
-    platformUrl = API_URL,
-    appName,
-    forceHttps = FORCE_HTTPS,
-    authentication,
-    resource,
-    transports,
-  } = {}) {
+  constructor({ platformUrl = API_URL, appName, forceHttps = FORCE_HTTPS, authentication, resource, transports } = {}) {
     /**
      * @access private
      * @type {ClientHelper}
@@ -82,7 +75,7 @@ export class Client {
       forceHttps,
       authentication,
       resource,
-      transports,
+      transports
     });
   }
   /**
@@ -152,7 +145,7 @@ export class Client {
     return this.helper.createAsyncService({
       deploymentId,
       listener,
-      Type,
+      Type
     });
   }
   /**
@@ -173,7 +166,7 @@ export class Client {
     return this.helper.createAsyncMacroService({
       deploymentId,
       listener,
-      Type,
+      Type
     });
   }
   /**
@@ -193,7 +186,7 @@ export class Client {
   createAsyncTaskService({ deploymentId, Type }) {
     return this.helper.createAsyncTaskService({
       deploymentId,
-      Type,
+      Type
     });
   }
   /**
@@ -289,7 +282,7 @@ export class Client {
     return this.helper.createService({
       deploymentId,
       listener,
-      Type,
+      Type
     });
   }
   /**
@@ -418,15 +411,13 @@ export class Client {
 /**
  * Add shorthand connection status method
  */
-Object.getOwnPropertyNames(ConnectionStatusListener.prototype).forEach(
-  (method) => {
-    // Only implements unsupported methods
-    if (!Client.prototype.hasOwnProperty(method)) {
-      Client.prototype[method] = function addListener(listener) {
-        return this.addConnectionStatusListener({
-          [method]: listener,
-        });
-      };
-    }
-  },
-);
+Object.getOwnPropertyNames(ConnectionStatusListener.prototype).forEach((method) => {
+  // Only implements unsupported methods
+  if (!Client.prototype.hasOwnProperty(method)) {
+    Client.prototype[method] = function addListener(listener) {
+      return this.addConnectionStatusListener({
+        [method]: listener
+      });
+    };
+  }
+});

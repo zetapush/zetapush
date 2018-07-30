@@ -15,7 +15,7 @@ const compress = (folder, options = {}) =>
       resolve({
         folder,
         options,
-        buffer,
+        buffer
       });
     });
   });

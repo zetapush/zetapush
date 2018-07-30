@@ -4,7 +4,7 @@ import {
   MacroScriptParamConstraint,
   MacroTypeDefinition,
   StringAnyMap,
-  ZetaApiError,
+  ZetaApiError
 } from '../CommonTypes';
 
 export interface MacroCompletion {
@@ -90,7 +90,7 @@ export enum MacroDebugStepType {
   /**Terminate execution*/
   TERMINATE = 'TERMINATE',
   /**Step into the next macrvo call*/
-  STEP_INTO = 'STEP_INTO',
+  STEP_INTO = 'STEP_INTO'
 }
 export interface MacroDebugToken {
   /**Token suitable for use by debug verbs*/
@@ -264,7 +264,7 @@ export enum TraceLevel {
   /**Currently unused*/
   WARN = 'WARN',
   /**Currently unused*/
-  INFO = 'INFO',
+  INFO = 'INFO'
 }
 export enum TraceType {
   /**A macro is starting*/
@@ -274,5 +274,5 @@ export enum TraceType {
   /**User comment*/
   CMT = 'CMT',
   /**Developer-generated*/
-  USR = 'USR',
+  USR = 'USR'
 }

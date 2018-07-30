@@ -5,7 +5,7 @@ import {
   StackListRequest,
   StackListResponse,
   StackListeners,
-  StackRequest,
+  StackRequest
 } from './StackTypes';
 
 /**
