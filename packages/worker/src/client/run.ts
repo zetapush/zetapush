@@ -236,13 +236,13 @@ export class WorkerRunner extends EventEmitter {
         'No client or no current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
       );
     }
-    let previous = getDeploymentIdList(this.currentDeclaration, [Queue]);
+    let previous = getDeploymentIdList(this.currentDeclaration, this.customProviders || [], [Queue]);
     this.emit(WorkerRunnerEvents.RELOADING, {
       client: this.client,
       config: this.config,
       declaration: reloaded
     });
-    let next = getDeploymentIdList(reloaded, [Queue]);
+    let next = getDeploymentIdList(reloaded, this.customProviders || [], [Queue]);
     const deploymentListHasChange = !equals(previous, next);
     const tasks = [];
     if (deploymentListHasChange) {
@@ -354,12 +354,12 @@ export class WorkerRunner extends EventEmitter {
     });
   }
 
-  private createServices(client: WorkerClient, config: ResolvedConfig, declaration: WorkerDeclaration) {
+  private async createServices(client: WorkerClient, config: ResolvedConfig, declaration: WorkerDeclaration) {
     const api = client.createAsyncService({
       Type: Queue
     });
 
-    const { items } = getRuntimeProvision(config, declaration, [Queue]);
+    const { items } = getRuntimeProvision(config, declaration, this.customProviders || [], [Queue]);
     const services = items.map(({ item }) => item);
 
     this.emit(WorkerRunnerEvents.CREATED_SERVICES, {
@@ -369,7 +369,7 @@ export class WorkerRunner extends EventEmitter {
       declaration
     });
 
-    return (<any>api).createServices({ services });
+    return await (<any>api).createServices({ services });
   }
 
   private connectClientAndCreateServices(

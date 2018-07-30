@@ -1,6 +1,7 @@
 import { Injectable, Inject, timeoutify, DEFAULT_INJECTOR_INSTANCE } from '@zetapush/common';
 import { WorkerClientOptions, WorkerInstanceFactory, TaskDispatcherWorkerInstance } from '@zetapush/worker';
 import { runInWorkerLogger } from '../utils/logger';
+import { inject } from '@zetapush/worker';
 require('reflect-metadata');
 
 export class Wrapper {
@@ -42,29 +43,23 @@ export class TestWorkerInstance extends TaskDispatcherWorkerInstance {
     try {
       // Wrap request context
       const context = {
+        contextId: 'ZetaTest',
         owner: 'ZetaTest'
       };
-      const result = await timeoutify(() => this.worker[namespace][name](parameters, context), this.timeout);
+      // Api instance
+      const tasker = this.worker[namespace];
+      // Inject context in a proxified worker namespace
+      const injected = inject(tasker, context.contextId);
+      // Delegate task to
+      const result = await timeoutify(() => injected[name](parameters, context), this.timeout);
       runInWorkerLogger.debug('WorkerInstance::result', result);
       return {
         result,
-        taskId: 'ZetaTest',
-        requestId: 'ZetaTest',
         success: true
       };
     } catch (e) {
-      let { code = 'ZETA_TEST_API_ERROR', message } = e;
-      if (e && e.constructor && e.constructor.name == 'ExpectationFailed') {
-        code = 'JASMINE_EXPECTATION_FAILED';
-        message = new (<any>global).jasmine.ExceptionFormatter().message(e);
-      }
-      runInWorkerLogger.error('WorkerInstance::error', { code, message });
-      return {
-        result: { code, message },
-        taskId: 'ZetaTest',
-        requestId: 'ZetaTest',
-        success: false
-      };
+      runInWorkerLogger.warn('WorkerInstance::error', e);
+      throw e;
     }
   }
 }

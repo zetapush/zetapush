@@ -1,4 +1,4 @@
-const { rm, npmInit, zetaPush, readZetarc, nukeApp } = require('@zetapush/testing');
+const { rm, npmInit, zetaPush, readZetarc, nukeProject } = require('@zetapush/testing');
 const { consoleUserAction, frontUserAction } = require('@zetapush/testing');
 const PATTERN = /Hello World from JavaScript (\d+)/;
 
@@ -18,7 +18,7 @@ describe(`As developer with
 
   afterEach(async () => {
     try {
-      await nukeApp(fullPathProject);
+      await nukeProject(fullPathProject);
     } catch (e) {
       console.warn('Failed to nuke app for nominal case. Skipping the error', e);
     }

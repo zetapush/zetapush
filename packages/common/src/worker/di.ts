@@ -36,8 +36,9 @@ const getInjectionMetadata = (target: any) => {
   if (!params) {
     return params;
   }
-  const deps = constructDependencies(target, params);
-  return params.map((v: any, i: number) => ({ injected: v, reflectiveDependency: deps[i] }));
+  // FIXME: handle @Inject
+  // const deps = constructDependencies(target, params);
+  return params.map((v: any, i: number) => ({ injected: v, reflectiveDependency: /*deps[i]*/ null }));
 };
 
 const isToken = (reflectiveDependency: any) => Boolean(reflectiveDependency) && reflectiveDependency.key.token;

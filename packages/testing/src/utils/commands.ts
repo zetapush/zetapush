@@ -9,7 +9,7 @@ import * as process from 'process';
 // const writeFile = util.promisify(fs.writeFile);
 // const exists = util.promisify(fs.exists);
 const rimraf = require('rimraf');
-import { fetch } from '@zetapush/common';
+import { fetch, ResolvedConfig } from '@zetapush/common';
 const kill = require('tree-kill');
 import { commandLogger, SubProcessLoggerStream, subProcessLogger } from './logger';
 import { PassThrough } from 'stream';
@@ -544,24 +544,33 @@ export const createZetarc = (
   );
 };
 
-export const nukeApp = (dir: PathLike) => {
-  commandLogger.info(`nukeApp(${dir})`);
+export const nukeProject = (dir: PathLike) => {
+  commandLogger.info(`nukeProject(${dir})`);
   return new Promise(async (resolve, reject) => {
-    commandLogger.silly(`nukeApp(${dir}) -> readZetarc(${dir})`);
+    commandLogger.silly(`nukeProject(${dir}) -> readZetarc(${dir})`);
     const creds = await readZetarc(dir);
-    if (creds.appName != undefined) {
+    nukeApp(creds)
+      .then(() => resolve())
+      .catch((e) => reject(e));
+  });
+};
+
+export const nukeApp = (zetarc: ResolvedConfig) => {
+  commandLogger.info(`nukeApp(${zetarc})`);
+  return new Promise(async (resolve, reject) => {
+    if (zetarc && zetarc.appName) {
       try {
-        commandLogger.silly(`nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName}`);
+        commandLogger.silly(`nukeApp(${zetarc}) -> DELETE orga/business/nuke/${zetarc.appName}`);
         const res = await fetch({
           method: 'DELETE',
-          config: creds,
-          pathname: `orga/business/nuke/${creds.appName}`,
+          config: zetarc,
+          pathname: `orga/business/nuke/${zetarc.appName}`,
           debugName: 'nukeApp'
         });
-        commandLogger.silly(`nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName} -> `, res);
+        commandLogger.silly(`nukeApp(${zetarc}) -> DELETE orga/business/nuke/${zetarc.appName} -> `, res);
         resolve(res);
       } catch (err) {
-        commandLogger.error(`nukeApp(${dir}) -> DELETE orga/business/nuke/${creds.appName}`, err);
+        commandLogger.error(`nukeApp(${zetarc}) -> DELETE orga/business/nuke/${zetarc.appName}`, err);
         resolve(err); //TODO : make reject when orga/business/nuke will send JSON response
       }
     } else {

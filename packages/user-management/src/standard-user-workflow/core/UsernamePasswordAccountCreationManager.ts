@@ -85,6 +85,7 @@ export class UsernamePasswordAccountCreationManager implements AccountCreationMa
         userProfile
       };
     } catch (e) {
+      console.error(e);
       // TODO: catch errors and handle them
       if (e.code === 'MISSING_MANDATORY_FIELDS') {
         // TODO

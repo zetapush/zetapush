@@ -3,6 +3,7 @@ import { analyze } from './di';
 import { Service, Config, WorkerDeclaration, ResolvedConfig } from '../common-types';
 import { PathLike, writeFile } from 'fs';
 import { isNode } from '../utils/environment';
+import { Provider } from 'injection-js';
 const JSZip = require('jszip');
 
 /**
@@ -11,10 +12,14 @@ const JSZip = require('jszip');
  * @param {Service[]} ignoredServices the list of services to ignore
  * @return {Function[]}
  */
-export const getDeploymentServiceList = (declaration: WorkerDeclaration, ignoredServices: Array<Service>) => {
+export const getDeploymentServiceList = (
+  declaration: WorkerDeclaration,
+  customProviders: Provider[],
+  ignoredServices: Array<Service>
+) => {
   // Ignore specific platform services
   const ignored = ignoredServices.map((Service) => Service.DEPLOYMENT_TYPE);
-  const { platform } = analyze(declaration, []);
+  const { platform } = analyze(declaration, customProviders || []);
   return Array.from(new Set(platform.filter((Service: Service) => ignored.indexOf(Service.DEPLOYMENT_TYPE) === -1)));
 };
 
@@ -24,8 +29,14 @@ export const getDeploymentServiceList = (declaration: WorkerDeclaration, ignored
  * @param {Service[]} ignoredServices the list of services to ignore
  * @return {string[]}
  */
-export const getDeploymentIdList = (declaration: WorkerDeclaration, ignoredServices: Array<Service>) =>
-  getDeploymentServiceList(declaration, ignoredServices).map((Service: Service) => Service.DEPLOYMENT_TYPE);
+export const getDeploymentIdList = (
+  declaration: WorkerDeclaration,
+  customProviders: Provider[],
+  ignoredServices: Array<Service>
+) =>
+  getDeploymentServiceList(declaration, customProviders || [], ignoredServices).map(
+    (Service: Service) => Service.DEPLOYMENT_TYPE
+  );
 
 /**
  * Get bootstrap provisioning items
@@ -60,13 +71,14 @@ export const getBootstrapProvision = (config: ResolvedConfig, services: Array<Se
 export const getRuntimeProvision = (
   config: ResolvedConfig,
   declaration: WorkerDeclaration,
+  customProviders: Provider[],
   ignoredServices: Array<Service>
 ): {
   businessId: string;
   items: Array<{ name: string; item: Object }>;
   calls: any[];
 } => {
-  const services = getDeploymentServiceList(declaration, ignoredServices);
+  const services = getDeploymentServiceList(declaration, customProviders, ignoredServices);
   log(`Provisioning`, ...services);
   return {
     businessId: config.appName,
