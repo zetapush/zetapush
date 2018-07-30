@@ -1,9 +1,4 @@
-import {
-  PageContent,
-  PageDirection,
-  Pagination,
-  StringAnyMap,
-} from '../CommonTypes';
+import { PageContent, PageDirection, Pagination, StringAnyMap } from '../CommonTypes';
 
 export interface LogConfig {
   /**Config for the root logger. The sink defined here (INTERNAL if absent) will be used by default by other loggers.*/
@@ -55,7 +50,7 @@ export enum LogLevel {
   /**Anything that can cause application misbehaviour, but that does not need human intervention.*/
   WARN = 'WARN',
   /**Events meaningful for your application should go there : the creation of a user, a purchase, etc ...*/
-  INFO = 'INFO',
+  INFO = 'INFO'
 }
 export interface LogListRequest {
   /**Start timestamp (inclusive)*/
@@ -97,7 +92,7 @@ export enum LogSinkType {
   /**missing enum desc*/
   INTERNAL = 'INTERNAL',
   /**missing enum desc*/
-  REAL_TIME = 'REAL_TIME',
+  REAL_TIME = 'REAL_TIME'
 }
 export interface LoggerConfig {
   /**Sink name references, as defined in the sinkConfigs section of the LogConfig. When none is given, the root sink is used.*/

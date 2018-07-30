@@ -20,7 +20,7 @@ export enum AggregationItemType {
   /**Averages the item over the period (floating point values).*/
   MEAN = 'MEAN',
   /**Sums the item over the period (integral values only).*/
-  TOTAL = 'TOTAL',
+  TOTAL = 'TOTAL'
 }
 export interface AggregationPush {
   /**Numerical value : long for totals, floating point (double precision IEEE 754) for means*/

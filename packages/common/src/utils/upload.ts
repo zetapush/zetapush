@@ -28,23 +28,17 @@ export const upload = (archive: any, config: ResolvedConfig) =>
       headers: {
         'X-Authorization': JSON.stringify({
           username: developerLogin,
-          password: developerPassword,
+          password: developerPassword
         }),
         Accept: 'application/json',
-        'Content-Type': contentType,
+        'Content-Type': contentType
       },
       method: 'POST',
       url,
-      data: formData,
+      data: formData
     };
     log('Upload archive', url);
-    trace(
-      `credentials`,
-      developerLogin,
-      developerPassword,
-      platformUrl,
-      appName,
-    );
+    trace(`credentials`, developerLogin, developerPassword, platformUrl, appName);
     axios(options)
       .then((response) => {
         debugAxiosResponse(options, 'upload', response);
@@ -68,7 +62,7 @@ export const upload = (archive: any, config: ResolvedConfig) =>
             body: error.response.data,
             statusCode: error.response.status,
             request: options,
-            config,
+            config
           });
         }
         trace('Upload failed:', error);
@@ -83,7 +77,4 @@ export const BLACKLIST = ['node_modules', '.DS_Store', '.git'];
  * @param {String[]} blacklist
  */
 export const filter = (blacklist: string[]) => (filepath: string) =>
-  blacklist.reduce(
-    (filtered, check) => filtered && !filepath.includes(check),
-    true,
-  );
+  blacklist.reduce((filtered, check) => filtered && !filepath.includes(check), true);

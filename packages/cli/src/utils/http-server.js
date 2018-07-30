@@ -16,16 +16,14 @@ const { info } = require('@zetapush/common');
  * @param {Object} config
  */
 const createServer = (command, config) => {
-  const injected = ` data-zp-sandboxid="${
-    config.appName
-  }" data-zp-platform-url="${config.platformUrl}"`;
+  const injected = ` data-zp-sandboxid="${config.appName}" data-zp-platform-url="${config.platformUrl}"`;
   info('Create HTTP Server');
   const server = http.createServer((request, response) => {
     return handler(
       request,
       response,
       {
-        public: command.front,
+        public: command.front
       },
       {
         stat: (filepath) =>
@@ -33,9 +31,9 @@ const createServer = (command, config) => {
             (stats) =>
               filepath.endsWith('.html')
                 ? Object.assign(stats, {
-                    size: stats.size + injected.length,
+                    size: stats.size + injected.length
                   })
-                : stats,
+                : stats
           ),
         createReadStream(filepath) {
           const stream = fs.createReadStream(filepath);
@@ -46,17 +44,16 @@ const createServer = (command, config) => {
               if (filepath.endsWith('.html') && HTML_PATTERN.test(content)) {
                 content = content.replace(
                   HTML_PATTERN,
-                  (markup, attributes, position, html) =>
-                    `<html${attributes}${injected}>`,
+                  (markup, attributes, position, html) => `<html${attributes}${injected}>`
                 );
               }
               this.push(content);
               callback();
-            },
+            }
           });
           return stream.pipe(template);
-        },
-      },
+        }
+      }
     );
   });
   return findFreePort(3000).then(
@@ -70,7 +67,7 @@ const createServer = (command, config) => {
         } catch (failure) {
           reject(failure);
         }
-      }),
+      })
   );
 };
 

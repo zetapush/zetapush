@@ -5,7 +5,7 @@ import {
   TaskRequest,
   WorkerAdminBulkRequest,
   WorkerAdminBulkResponse,
-  WorkerAdminBulkServiceCreation,
+  WorkerAdminBulkServiceCreation
 } from './QueueTypes';
 
 /**
@@ -125,9 +125,7 @@ export class Queue extends Service {
    * This cannot be used to redeploy the current service.
    * @access public
    * */
-  createServices(
-    body: WorkerAdminBulkServiceCreation,
-  ): Promise<WorkerAdminBulkResponse> {
+  createServices(body: WorkerAdminBulkServiceCreation): Promise<WorkerAdminBulkResponse> {
     return this.$publish('createServices', body);
   }
 }

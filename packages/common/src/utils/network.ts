@@ -11,7 +11,7 @@ export const fetch = ({
   config,
   method = 'GET',
   pathname,
-  debugName = 'fetch',
+  debugName = 'fetch'
 }: {
   anonymous?: boolean;
   body?: any;
@@ -22,13 +22,13 @@ export const fetch = ({
 }): Promise<any> =>
   new Promise((resolve, reject) => {
     const headers: any = {
-      'Content-Type': 'application/json;charset=UTF-8',
+      'Content-Type': 'application/json;charset=UTF-8'
     };
     if (!anonymous) {
       const { developerLogin, developerPassword } = config;
       headers['X-Authorization'] = JSON.stringify({
         username: developerLogin,
-        password: developerPassword,
+        password: developerPassword
       });
     }
     const { platformUrl } = config;
@@ -41,7 +41,7 @@ export const fetch = ({
       data: body,
       headers,
       method,
-      url,
+      url
     };
     log(method, url, body);
     return axios(options)
@@ -57,7 +57,7 @@ export const fetch = ({
           statusCode: error.response && error.response.status,
           request: options,
           body: error.response && error.response.data,
-          config,
+          config
         });
       });
     // request(options, (failure: any, response: Response, body: any) => {
@@ -98,11 +98,7 @@ export const fetch = ({
     // });
   });
 
-export const debugAxiosResponse = (
-  options: AxiosRequestConfig,
-  debugName: string,
-  response: AxiosResponse<any>,
-) => {
+export const debugAxiosResponse = (options: AxiosRequestConfig, debugName: string, response: AxiosResponse<any>) => {
   debugObject(
     `${debugName}`,
     { request: options },
@@ -110,18 +106,14 @@ export const debugAxiosResponse = (
       response: {
         data: response.data,
         statusCode: response.status,
-        headers: response.headers,
-      },
+        headers: response.headers
+      }
     },
-    { body: response.data },
+    { body: response.data }
   );
 };
 
-export const debugAxiosError = (
-  options: AxiosRequestConfig,
-  debugName: string,
-  error: AxiosError,
-) => {
+export const debugAxiosError = (options: AxiosRequestConfig, debugName: string, error: AxiosError) => {
   debugObject(
     `${debugName}-catch`,
     { request: options },
@@ -129,18 +121,18 @@ export const debugAxiosError = (
       error: {
         message: error.message,
         stack: error.stack,
-        name: error.name,
-      },
+        name: error.name
+      }
     },
     {
       response: error.response
         ? {
             data: error.response.data,
             statusCode: error.response.status,
-            headers: error.response.headers,
+            headers: error.response.headers
           }
-        : {},
+        : {}
     },
-    { body: error.response && error.response.data },
+    { body: error.response && error.response.data }
   );
 };

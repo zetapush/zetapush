@@ -9,7 +9,7 @@ import {
   WorkflowTemplateInfoRequest,
   WorkflowTemplateList,
   WorkflowTemplateListResult,
-  WorkflowTransitionRequest,
+  WorkflowTransitionRequest
 } from './WorkflowTypes';
 
 /**
@@ -64,9 +64,7 @@ export class Workflow extends Service {
    * Returns a paginated list of templates.
    * @access public
    * */
-  listTemplates(
-    body: WorkflowTemplateList,
-  ): Promise<WorkflowTemplateListResult> {
+  listTemplates(body: WorkflowTemplateList): Promise<WorkflowTemplateListResult> {
     return this.$publish('listTemplates', body);
   }
   /**
@@ -92,9 +90,7 @@ export class Workflow extends Service {
    * Otherwise, this verb behaves as 'transition'
    * @access public
    * */
-  forceTransition(
-    body: WorkflowTransitionRequest,
-  ): Promise<WorkflowTransitionRequest> {
+  forceTransition(body: WorkflowTransitionRequest): Promise<WorkflowTransitionRequest> {
     return this.$publish('forceTransition', body);
   }
   /**
@@ -114,9 +110,7 @@ export class Workflow extends Service {
    * The data passed to the macro has the type 'WorkflowTransitionInfo'
    * @access public
    * */
-  transition(
-    body: WorkflowTransitionRequest,
-  ): Promise<WorkflowTransitionRequest> {
+  transition(body: WorkflowTransitionRequest): Promise<WorkflowTransitionRequest> {
     return this.$publish('transition', body);
   }
 }

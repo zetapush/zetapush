@@ -10,7 +10,7 @@ import {
   MacroFunctionRequest,
   MacroFunctionResult,
   MacroPlay,
-  SuMacroPlay,
+  SuMacroPlay
 } from './MacroTypes';
 
 /**

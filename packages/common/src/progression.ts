@@ -15,7 +15,7 @@ const getProgress = (config: Config, recipeId: string) =>
     config,
     method: 'GET',
     pathname: `orga/recipe/status/${config.appName}/${recipeId}`,
-    debugName: 'getProgress',
+    debugName: 'getProgress'
   }).then((progress) => {
     trace('progress', progress.progressDetail);
     return progress;
@@ -30,7 +30,7 @@ export const getLiveStatus = (config: Config) =>
     config,
     method: 'GET',
     pathname: `orga/business/live/${config.appName}`,
-    debugName: 'getLiveStatus',
+    debugName: 'getLiveStatus'
   }).then((response) => {
     const nodes = Object.values(response.nodes);
     return nodes.reduce((reduced, node: any) => {
@@ -40,7 +40,7 @@ export const getLiveStatus = (config: Config) =>
         ...contexts.reduce((acc: any, context: any) => {
           acc[context.name] = context.urls;
           return acc;
-        }, {}),
+        }, {})
       };
     }, {});
   });
@@ -91,21 +91,17 @@ export enum ProgressEvents {
    *
    * @see {ProgressionSuccess}
    */
-  SUCCESS = 'success',
+  SUCCESS = 'success'
 }
 
 export enum ProgressFailureCauses {
   UNRECOVERABLE_ERRORS = 'UNRECOVERABLE_ERRORS',
   LIVE_STATUS_FAILED = 'LIVE_STATUS_FAILED',
   PROGRESSION_UNAVAILABLE = 'PROGRESSION_UNAVAILABLE',
-  PROGRESSION_RETRYING = 'PROGRESSION_RETRYING',
+  PROGRESSION_RETRYING = 'PROGRESSION_RETRYING'
 }
 
-export const defaultBackoff = (
-  delay: number,
-  remainingRetries: number,
-  maxRetries: number,
-) => {
+export const defaultBackoff = (delay: number, remainingRetries: number, maxRetries: number) => {
   if (remainingRetries == maxRetries) {
     return delay;
   }
@@ -138,11 +134,7 @@ export const getDeploymentProgression = (
   recipeId: string,
   pollDelay = 500,
   maxRetries = 10,
-  retryBackoff: (
-    currentDelay: number,
-    remainingRetries: number,
-    maxRetries: number,
-  ) => number = defaultBackoff,
+  retryBackoff: (currentDelay: number, remainingRetries: number, maxRetries: number) => number = defaultBackoff
 ) => {
   const events = new EventEmitter();
 
@@ -159,7 +151,7 @@ export const getDeploymentProgression = (
       events.emit(ProgressEvents.PROGRESSION, {
         progressDetail,
         config,
-        recipeId,
+        recipeId
       });
 
       if (!finished && !hasUnrecoverableErrors) {
@@ -169,7 +161,7 @@ export const getDeploymentProgression = (
           cause: ProgressFailureCauses.UNRECOVERABLE_ERRORS,
           progressDetail,
           config,
-          recipeId,
+          recipeId
         });
         events.removeAllListeners();
       } else {
@@ -179,7 +171,7 @@ export const getDeploymentProgression = (
               fronts,
               progressDetail,
               config,
-              recipeId,
+              recipeId
             });
           })
           .catch((failure) => {
@@ -188,7 +180,7 @@ export const getDeploymentProgression = (
               failure,
               progressDetail,
               config,
-              recipeId,
+              recipeId
             });
             events.removeAllListeners();
           });
@@ -205,8 +197,8 @@ export const getDeploymentProgression = (
           retry: {
             remainingRetries,
             maxRetries,
-            next: currentDelay,
-          },
+            next: currentDelay
+          }
         });
         setTimeout(check, currentDelay);
       } else {
@@ -214,7 +206,7 @@ export const getDeploymentProgression = (
           cause: ProgressFailureCauses.PROGRESSION_UNAVAILABLE,
           failure: ex,
           config,
-          recipeId,
+          recipeId
         });
         events.removeAllListeners();
       }
@@ -237,11 +229,7 @@ export const checkQueueServiceDeployed = (
   recipeId: string,
   pollDelay = 500,
   maxRetries = 10,
-  retryBackoff: (
-    currentDelay: number,
-    remainingRetries: number,
-    maxRetries: number,
-  ) => number = defaultBackoff,
+  retryBackoff: (currentDelay: number, remainingRetries: number, maxRetries: number) => number = defaultBackoff
 ): Promise<string> => {
   return new Promise((resolve, reject) => {
     let remainingRetries = maxRetries;
@@ -261,18 +249,14 @@ export const checkQueueServiceDeployed = (
             cause: ProgressFailureCauses.UNRECOVERABLE_ERRORS,
             progressDetail,
             config,
-            recipeId,
+            recipeId
           });
         } else {
           resolve(recipeId);
         }
       } catch (ex) {
         if (!isFatalServerError(ex) && remainingRetries-- > 0) {
-          currentDelay = retryBackoff(
-            currentDelay,
-            remainingRetries,
-            maxRetries,
-          );
+          currentDelay = retryBackoff(currentDelay, remainingRetries, maxRetries);
           setTimeout(checkDeployed, currentDelay);
         } else {
           error('Progression', ex);

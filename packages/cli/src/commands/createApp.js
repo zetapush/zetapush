@@ -12,9 +12,7 @@ const createApp = (command) =>
       info(`Using application defined in configuration: ${config.appName}`);
       return config;
     }
-    return createApplication(config).then((credentials) =>
-      save(command, credentials),
-    );
+    return createApplication(config).then((credentials) => save(command, credentials));
   });
 
 module.exports = createApp;

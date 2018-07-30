@@ -14,5 +14,5 @@ export const inject = (instance: any, contextId?: string) =>
           return value;
         }
       }
-    },
+    }
   });
