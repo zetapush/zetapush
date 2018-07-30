@@ -8,7 +8,8 @@ import {
   UserProfile,
   AccountCreationError
 } from '../api';
-import { UuidGenerator } from '../../common/api';
+import { UuidGenerator, IllegalArgumentError, IllegalArgumentValueError } from '../../common/api';
+import { IllegalStateError } from '../../common/api/exception/IllegalStateError';
 
 export interface UsernamePasswordAccountDetails extends AccountCreationDetails {
   /**
@@ -60,11 +61,9 @@ export class UsernamePasswordAccountCreationManager implements AccountCreationMa
       return null;
     }
     const details = <UsernamePasswordAccountDetails>accountCreationDetails;
-    // TODO: configure local authentication service
-    // TODO: configure mandatory fields (not really necessary thanks to validator)
-    // TODO: configure public fields
-    // TODO: provide profile information. /!\ not all fields of the profile are public !!!!!!
-    // TODO: store user profile information in a "real" database to dissociate public fields from private fields ?
+    // TODO: configure local authentication service, use default values or retrieve configuration to use it ?
+    // TODO: configure mandatory fields (not really necessary thanks to validator) ?
+    // TODO: configure public fields or use custom search ?
     try {
       const { value: accountId } = await this.uuidGenerator.generate();
       const accountStatus = await this.accountStatusProvider.getStatus();
@@ -78,27 +77,39 @@ export class UsernamePasswordAccountCreationManager implements AccountCreationMa
       });
       // TODO: logs
       console.log('result', result);
-      // TODO: transform raw result to something usable
+      // TODO: transform raw result to something usable ?
       return {
         accountId,
         accountStatus,
         userProfile
       };
     } catch (e) {
+      // TODO: logs
       console.error(e);
-      // TODO: catch errors and handle them
       if (e.code === 'MISSING_MANDATORY_FIELDS') {
-        // TODO
-        return null;
+        // If this error is thrown, it means that ZetaPush has not done its job (the service is not correctly configured).
+        // So the error is not a AccountCreationError.
+        throw new IllegalStateError(`Simple service seems to be misconfigured. 
+          The platform has thrown an error with code MISSING_MANDATORY_FIELDS.
+          It seems that there is a difference between Simple.simpleauth_mandatoryFields configuration and what UsernamePasswordAccountCreationManager provides. 
+          
+          This is a ZetaPush issue, please report this error on Github: https://github.com/zetapush/zetapush/issues/new`);
       } else if (e.code === 'ACCOUNT_EXISTS') {
         throw new UsernameAlreadyUsedError(`Username "${details.username}" is already used`, accountCreationDetails);
       } else if (e.code === 'KEY_BADCHAR') {
-        // TODO
-        return null;
-      } else {
-        // TODO
-        return null;
+        // TODO: add validation to prevent this error sooner ?
+        throw new AccountCreationError(
+          `Username "${details.username} contains forbidden character(s)`,
+          accountCreationDetails,
+          new IllegalArgumentValueError(
+            `Platform doesn't allow character ':' in Simple.login field`,
+            'username',
+            details.username,
+            e
+          )
+        );
       }
+      throw new AccountCreationError(`Account creation for '${details.username} has failed`, accountCreationDetails);
     }
   }
 

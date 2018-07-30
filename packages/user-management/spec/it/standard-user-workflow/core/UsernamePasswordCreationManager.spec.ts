@@ -60,7 +60,7 @@ describe(`AccountCreationManager`, () => {
         expect(account).not.toBeNull();
         expect(account.accountId).toBeDefined();
         expect(account.accountStatus).toBe(StandardAccountStatus.WaitingConfirmation);
-        expect(<any>account.userProfile).toEqual({
+        expect(account.userProfile).toEqual({
           firstname: 'Odile',
           lastname: 'DERAY'
         });
@@ -68,6 +68,12 @@ describe(`AccountCreationManager`, () => {
     },
     10 * 60 * 1000
   );
+
+  // TODO: test account already exists
+
+  // TODO: test with no profile information
+
+  // TODO: test with public fields vs private fields
 
   afterEach(async () => {
     await autoclean(this);

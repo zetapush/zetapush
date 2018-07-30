@@ -44,7 +44,7 @@ export interface AccountCreationManager {
 }
 
 export class AccountCreationError extends Error {
-  constructor(message: string, protected details: AccountCreationDetails) {
+  constructor(message: string, public details: AccountCreationDetails, public cause?: Error) {
     super(message);
   }
 }
@@ -120,7 +120,7 @@ export interface AccountStatusProvider {
 export type AccountStatus = string;
 
 export interface UserProfile {
-  accountId: string;
+  [property: string]: any;
 }
 
 export interface AccountCreationDetails {}
