@@ -52,18 +52,20 @@ export interface SuccessFailureRedirectionConfigurer<P> extends And<P> {
 }
 
 export interface FieldsConfigurer<P> extends And<P> {
-  field(name: string): FieldConfigurer<FieldsConfigurer<P>>;
+  field(name: string): void /* TODO: FieldConfigurer<FieldsConfigurer<P>>*/;
 
-  scan(): ScanConfigurer<P>;
+  scan(model: Type<any>): ScanConfigurer<FieldsConfigurer<P>>;
 }
 
 export interface ScanConfigurer<P> extends And<P> {
-  annotations(model: Type<any>): AnnotationScanConfigurer<ScanConfigurer<P>>;
+  annotations(model: Type<any>): AnnotationsConfigurer<ScanConfigurer<P>>;
 }
 
-export interface AnnotationScanConfigurer<P> extends And<P> {
-  // TODO
+export interface AnnotationsConfigurer<P> extends And<P> {
+  validation(): ValidationConfigurer<AnnotationsConfigurer<P>>;
 }
+
+export interface ValidationConfigurer<P> extends And<P> {}
 
 export interface FieldConfigurer<P> extends And<P> {
   // TODO

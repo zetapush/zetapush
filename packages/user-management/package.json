@@ -29,7 +29,10 @@
   },
   "dependencies": {
     "@zetapush/common": "0.31.4",
-    "injection-js": "2.2.1"
+    "class-validator": "0.8.5",
+    "injection-js": "2.2.1",
+    "jasmine": "3.1.0",
+    "ts-node": "7.0.0"
   },
   "devDependencies": {
     "@types/jasmine": "2.8.8",

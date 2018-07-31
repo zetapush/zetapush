@@ -25,6 +25,8 @@ export class UuidGeneratorConfigurerImpl<P> extends AbstractParent<P>
       this.generatorClass = instanceFuncOrClass;
     } else if (typeof instanceFuncOrClass === 'function') {
       this.generatorFunc = <() => Promise<Uuid>>instanceFuncOrClass;
+    } else {
+      this.generatorClass = instanceFuncOrClass;
     }
     return this;
   }

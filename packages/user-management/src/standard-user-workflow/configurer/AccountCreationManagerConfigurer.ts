@@ -12,8 +12,8 @@ import { AccountCreationManager } from '../api';
 import { UsernamePasswordAccountCreationManager } from '../core';
 import { AccountStatusConfigurerImpl } from './AccountStatusConfigurer';
 import { Injector } from 'injection-js';
-import { Simple } from '@zetapush/platform';
 import { IllegalStateError } from '../../common/api/exception/IllegalStateError';
+import { Simple } from '@zetapush/platform';
 
 export class AccountCreationManagerConfigurerImpl extends AbstractParent<RegistrationConfigurer>
   implements AccountConfigurer, Configurer<AccountCreationManager> {
