@@ -1,13 +1,15 @@
-import { Delegating, Simple, Weak } from '@zetapush/platform';
+import { Delegating } from '@zetapush/platform/es/Delegating';
+import { Simple } from '@zetapush/platform/es/Simple';
+import { Weak } from '@zetapush/platform/es/Weak';
 
 /**
  * ZetaPush deployables names
  */
 const DeployableNames = {
-  AUTH_SIMPLE: 'simple',
-  AUTH_WEAK: 'weak',
-  AUTH_DELEGATING: 'delegating',
-  AUTH_DEVELOPER: 'developer'
+  AUTH_DELEGATING: Delegating.DEPLOYMENT_TYPE,
+  AUTH_DEVELOPER: 'developer',
+  AUTH_SIMPLE: Simple.DEPLOYMENT_TYPE,
+  AUTH_WEAK: Weak.DEPLOYMENT_TYPE
 };
 
 /**

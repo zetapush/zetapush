@@ -22,9 +22,6 @@ const config = {
   ],
   output: {
     format: 'umd',
-    globals: {
-      '@zetapush/platform': 'ZetaPushPlatform'
-    },
     name: 'ZetaPushClient',
     sourcemap: true,
   },
