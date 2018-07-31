@@ -1,0 +1,16 @@
+{
+  "name": "bootstrap_with_gda",
+  "version": "0.1.0",
+  "main": "worker/index.ts",
+  "private": true,
+  "scripts": {
+    "deploy": "zeta push",
+    "start": "zeta run",
+    "troubleshoot": "zeta troubleshoot"
+  },
+  "dependencies": {
+    "@zetapush/cli": "0.31.4",
+    "@zetapush/platform": "0.31.4",
+    "typescript": "3.0.1"
+  }
+}
