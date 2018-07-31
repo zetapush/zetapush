@@ -110,6 +110,9 @@ pipeline {
             dir('packages/user-management') {
               sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js"
             }
+            dir('packages/client') {
+              sh "npm run test:ci"
+            }
           }
           post {
             always {
@@ -135,7 +138,10 @@ pipeline {
               bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& node node_modules\\jasmine\\bin\\jasmine.js"
             }
             dir('packages/user-management') {
-              bat "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' TS_NODE_PROJECT=tsconfig.test.json node -r ts-node\\register node_modules\\jasmine\\bin\\jasmine.js"
+              bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set  ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& set TS_NODE_PROJECT=tsconfig.test.json node -r ts-node\\register node_modules\\jasmine\\bin\\jasmine.js"
+            }
+            dir('packages/client') {
+              bat "npm run test:ci"
             }
           }
           post {
@@ -162,7 +168,10 @@ pipeline {
               bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& node node_modules\\jasmine\\bin\\jasmine.js"
             }
             dir('packages/user-management') {
-              bat "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' TS_NODE_PROJECT=tsconfig.test.json node -r ts-node\\register node_modules\\jasmine\\bin\\jasmine.js"
+              bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set  ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& set TS_NODE_PROJECT=tsconfig.test.json node -r ts-node\\register node_modules\\jasmine\\bin\\jasmine.js"
+            }
+            dir('packages/client') {
+              bat "npm run test:ci"
             }
           }
           post {
@@ -190,6 +199,9 @@ pipeline {
             }
             dir('packages/user-management') {
               sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js"
+            }
+            dir('packages/client') {
+              sh "npm run test:ci"
             }
           }
           post {
