@@ -30,7 +30,16 @@ Dépendences:
 Contient l'ensemble des classes de mapping des services platform-legacy ZetaPush. Le code contenu dans ce package à vocation à être auto généré.
 
 Dépendences:
-- N/A
+- [@zetapush/common](https://github.com/zetapush/zetapush/tree/master/packages/common)
+
+## @zetapush/user-management
+
+[![install size](https://packagephobia.now.sh/badge?p=@zetapush/user-management)](https://packagephobia.now.sh/result?p=@zetapush/user-management)
+
+Contient l'ensemble de l'API de gestion des utilisateurs.
+
+Dépendences:
+- [@zetapush/common](https://github.com/zetapush/zetapush/tree/master/packages/common)
 
 
 ## @zetapush/common
