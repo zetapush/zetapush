@@ -14,7 +14,6 @@ import { UuidGeneratorConfigurerImpl } from '../../common/configurer/Uuid';
 import { AccountCreationManager } from '../api';
 import { UsernamePasswordAccountCreationManager } from '../core';
 import { AccountStatusConfigurerImpl } from './AccountStatusConfigurer';
-
 import { IllegalStateError } from '../../common/api/exception/IllegalStateError';
 import { Simple } from '@zetapush/platform';
 
