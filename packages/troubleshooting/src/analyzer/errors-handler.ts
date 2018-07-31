@@ -1,9 +1,16 @@
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const { error } = require('@zetapush/common');
+// NodeJS modules
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+// ZetaPush modules
+import { error } from '@zetapush/common';
 
-const displayError = (steps) => {
+// Local Types
+type Log = any;
+type Step = any;
+type Config = any;
+
+export const displayError = (steps: Step[]) => {
   steps.forEach((step) => {
     if (step.hasUnrecoverableErrors) {
       error(
@@ -15,14 +22,14 @@ const displayError = (steps) => {
   });
 };
 
-const getErrorsFromAssociatedLogsStr = (step) => {
+const getErrorsFromAssociatedLogsStr = (step: Step) => {
   return step.associatedLogs
-    .filter((e) => e.level.name == 'ERROR')
-    .map((e) => e.message.replace(/^(.*)$/g, '          $1'))
+    .filter((log: Log) => log.level.name == 'ERROR')
+    .map((log: Log) => log.message.replace(/^(.*)$/g, '          $1'))
     .join('\n');
 };
 
-const writeLogs = (config, logs, steps) => {
+export const writeLogs = (config: Config, logs: Log[], steps: Step[]) => {
   const workingDir = os.homedir();
   const zetaDir = path.join(workingDir, '.zeta');
   fs.existsSync(zetaDir) || fs.mkdirSync(zetaDir);
@@ -41,14 +48,14 @@ const writeLogs = (config, logs, steps) => {
   return logFile;
 };
 
-const getErrorsStr = (step) => {
+const getErrorsStr = (step: Step) => {
   if (!step.hasUnrecoverableErrors) {
     return '';
   }
-  return step.errors.map((e) => e.message.replace(/^(.*)$/g, '          - $1')).join('\n');
+  return step.errors.map((e: any) => e.message.replace(/^(.*)$/g, '          - $1')).join('\n');
 };
 
-const getStepName = (step, steps) => {
+const getStepName = (step: Step, steps: Step[]) => {
   for (let s of steps) {
     if (s.id == step) {
       return s.name;
@@ -57,11 +64,11 @@ const getStepName = (step, steps) => {
   return step;
 };
 
-const formatDate = (ts) => {
+const formatDate = (ts: number) => {
   return new Date(ts).toISOString();
 };
 
-const getLogsStr = (logs, steps) => {
+const getLogsStr = (logs: Log[], steps: Step[]) => {
   return logs
     .map(
       (log) =>
@@ -72,8 +79,6 @@ const getLogsStr = (logs, steps) => {
     .join('\n');
 };
 
-const fixedSize = (str, max) => {
+const fixedSize = (str: string, max: number) => {
   return str.length > max ? str.substring(0, max - 3) + '...' : str.padEnd(max, ' ');
 };
-
-module.exports = { writeLogs, displayError };

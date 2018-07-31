@@ -1,4 +1,5 @@
-const { fetch } = require('@zetapush/common');
+const ProgressBar = require('node-progress-bars');
+
 const {
   log,
   error,
@@ -9,10 +10,7 @@ const {
   ProgressEvents,
   ProgressFailureCauses
 } = require('@zetapush/common');
-const ProgressBar = require('node-progress-bars');
-
-const errorsHandler = require('../errors/errors-handler');
-const troubleshooting = require('../errors/troubleshooting');
+const { displayHelp, displayError, writeLogs } = require('@zetapush/troubleshooting');
 
 const getProgressionColor = (step) => {
   if (step.hasUnrecoverableErrors) return 'red';
@@ -64,21 +62,21 @@ const getProgression = (config, recipeId) => {
       warn('Failed to get progression. Retrying...', failure);
     } else if (cause === ProgressFailureCauses.LIVE_STATUS_FAILED) {
       error(`Unable to get Application status`, failure);
-      await troubleshooting.displayHelp(failure);
+      await displayHelp(failure);
     } else if (cause === ProgressFailureCauses.PROGRESSION_UNAVAILABLE) {
       error('Failed to get progression', failure);
-      await troubleshooting.displayHelp(failure);
+      await displayHelp(failure);
     } else {
       const { steps, logs } = progressDetail;
       process.stdout.removeAllListeners('before:newlines'); // FIXME: ugly hack required to avoid duplication of unfinished progressbars
       console.log();
       // display errors in console
-      errorsHandler.displayError(steps);
+      displayError(steps);
       // write logs in a file for debugging
-      const logFile = errorsHandler.writeLogs(config, logs, steps);
+      const logFile = writeLogs(config, logs, steps);
       info(`A complete log of this run can be found in:
             ${logFile}`);
-      await troubleshooting.displayHelp(progressDetail);
+      await displayHelp(progressDetail);
     }
   });
 };

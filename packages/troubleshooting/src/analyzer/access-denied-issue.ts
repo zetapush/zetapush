@@ -1,20 +1,22 @@
-const { ErrorAnalyzer } = require('./troubleshooting');
-const { trace, fetch } = require('@zetapush/common');
+// ZetaPush modules
+import { trace, fetch, todo } from '@zetapush/common';
+// Project modules
+import { ErrorAnalyzer, ErrorContextToAnalyze, ExitCode } from './error-analyzer';
 
-class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
-  hasDeveloperLogin(err) {
+export class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
+  hasDeveloperLogin(err: ErrorContextToAnalyze) {
     return err.config && err.config.developerLogin;
   }
 
-  hasDeveloperPassword(err) {
+  hasDeveloperPassword(err: ErrorContextToAnalyze) {
     return err.config && err.config.developerPassword;
   }
 
-  hasAppName(err) {
+  hasAppName(err: ErrorContextToAnalyze) {
     return err.config && err.config.appName;
   }
 
-  async isDeveloperAccountExists(config) {
+  async isDeveloperAccountExists(config: any) {
     try {
       await fetch({
         config,
@@ -33,25 +35,25 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
     }
   }
 
-  async isAppExistsForOrga(config) {
+  async isAppExistsForOrga(config: any) {
     try {
       const { content } = await fetch({
         config,
         pathname: '/orga/business/list',
         debugName: 'isAppExistsForOrga'
       });
-      return content.filter((app) => app.businessId == config.appName).length > 0;
+      return content.filter((app: any) => app.businessId == config.appName).length > 0;
     } catch (e) {
       trace('get apps for orga failed', e);
       return false;
     }
   }
 
-  isAccountNotConfirmed(err) {
+  isAccountNotConfirmed(err: ErrorContextToAnalyze) {
     return err.body && err.body.context && err.body.context && err.body.context.reason == 'ACCOUNT_DISABLED';
   }
 
-  async getError(err) {
+  async getError(err: ErrorContextToAnalyze) {
     if (err.statusCode != 403 && err.code != 'CONFIG_MISSING_REQUIRED_INFO') {
       trace('not access denied error and not no config');
       return null;
@@ -59,32 +61,30 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
     trace('access denied', err);
     if (!this.hasDeveloperLogin(err)) {
       trace('no developer login');
-      return { code: 'ACCOUNT-01' };
+      return { code: ExitCode.ACCOUNT_01 };
     }
     if (!this.hasDeveloperPassword(err)) {
       trace('no developer password');
-      return { code: 'ACCOUNT-02' };
+      return { code: ExitCode.ACCOUNT_02 };
     }
     if (this.isAccountNotConfirmed(err)) {
       trace('account not validated');
-      return { code: 'ACCOUNT-05' };
+      return { code: ExitCode.ACCOUNT_05 };
     }
     if (!(await this.isDeveloperAccountExists(err.config))) {
       trace("account doesn't exists");
-      return { code: 'ACCOUNT-03' };
+      return { code: ExitCode.ACCOUNT_03 };
     }
     if (!this.hasAppName(err)) {
       trace('no app name');
-      return { code: 'ACCOUNT-04' };
+      return { code: ExitCode.ACCOUNT_04 };
     }
     if (!(await this.isAppExistsForOrga(err.config))) {
       trace("account exists but application doesn't belong to the account");
-      return { code: 'ACCOUNT-06' };
+      return { code: ExitCode.ACCOUNT_06 };
     }
     // TODO: not allowed to push (missing authorization for orga)
     todo('other forbidden reason');
     return null;
   }
 }
-
-module.exports = { AccessDeniedIssueAnalyzer };

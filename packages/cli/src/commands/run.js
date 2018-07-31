@@ -1,11 +1,12 @@
 const process = require('process');
 const ora = require('ora');
+
+const { log, error, warn, info, trace } = require('@zetapush/common');
+const { displayHelp } = require('@zetapush/troubleshooting');
 const { WorkerRunner, WorkerRunnerEvents } = require('@zetapush/worker');
 
-const troubleshooting = require('../errors/troubleshooting');
 const WorkerLoader = require('../loader/worker');
 const { createServer } = require('../utils/http-server');
-const { log, error, warn, info, trace } = require('@zetapush/common');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
 /**
@@ -52,7 +53,7 @@ const run = (command, config, declaration) => {
     runner.destroy();
     spinner.stop();
     error('Failed to start worker', failure);
-    troubleshooting.displayHelp(failure);
+    displayHelp(failure);
   });
   runner.on(WorkerRunnerEvents.RELOAD_FAILED, ({ failure }) => {
     spinner.stop();
@@ -64,7 +65,7 @@ const run = (command, config, declaration) => {
       runner.destroy();
       spinner.stop();
       error('ZetaPush Celtia Error', failure);
-      troubleshooting.displayHelp(failure);
+      displayHelp(failure);
     });
   });
 
