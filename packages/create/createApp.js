@@ -277,7 +277,11 @@ function run(
   command
 ) {
   const versionStr = version ? '@'+version : '';
-  const dependencies = [`@zetapush/cli${versionStr}`, `@zetapush/platform${versionStr}`];
+  const dependencies = [
+    `@zetapush/core${versionStr}`,
+    `@zetapush/cli${versionStr}`,
+    `@zetapush/platform${versionStr}`
+  ];
 
   // Firstclass TypeScript support
   if (!command.javascript) {

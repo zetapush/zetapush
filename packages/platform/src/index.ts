@@ -1,5 +1,5 @@
 export * from './Core/index';
-export * from './Metadata/index';
+export * from './Annotations/index';
 export * from './CommonTypes';
 
 export * from './Aggreg/index';

@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@zetapush/common": "0.31.4",
-    "injection-js": "2.2.1"
+    "@zetapush/core": "0.31.4"
   },
   "devDependencies": {
     "@types/jasmine": "2.8.8",
@@ -41,7 +41,6 @@
     "jasmine": "3.1.0",
     "jasmine-reporters": "2.3.1",
     "jasmine-ts-console-reporter": "3.1.1",
-    "reflect-metadata": "0.1.12",
     "request": "2.85.0",
     "rimraf": "2.6.2",
     "rollup": "0.62.0",

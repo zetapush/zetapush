@@ -1,4 +1,5 @@
-import { Provider, Type } from 'injection-js';
+import { Type } from '@zetapush/core';
+
 import { AccountStatus, AccountStatusProvider } from '../../standard-user-workflow/api';
 import { UuidGenerator, Uuid } from '../api';
 
