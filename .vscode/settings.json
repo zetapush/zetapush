@@ -1,0 +1,16 @@
+{
+  "triggerTaskOnSave.tasks": {
+    "testing [prepublish]": [
+      "packages/testing/**"
+    ],
+    "common [prepublish]": [
+      "packages/common/**"
+    ],
+    "worker [prepublish]": [
+      "packages/worker/**"
+    ],
+    "user-management [prepublish]": [
+      "packages/user-management/**"
+    ]
+  },
+}
