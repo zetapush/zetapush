@@ -1,11 +1,11 @@
+import { Injector, ReflectiveInjector, Injectable } from '@zetapush/core';
+import { Simple, Userdir } from '@zetapush/platform';
+import { given, autoclean, runInWorker } from '@zetapush/testing';
+
 import { TimestampBasedUuidGenerator } from '../../../../src/common/core';
 import { AccountCreationManagerConfigurerImpl } from '../../../../src/standard-user-workflow/configurer/AccountCreationManagerConfigurer';
 import { StandardAccountStatus } from '../../../../src/standard-user-workflow/core';
-import { ReflectiveInjector, Injectable } from 'injection-js';
 import { AccountCreationManager } from '../../../../src/standard-user-workflow/api';
-import { given, autoclean, runInWorker } from '@zetapush/testing';
-import { Injector } from 'injection-js';
-import { Simple, Userdir } from '@zetapush/platform';
 
 describe(`AccountCreationManager`, () => {
   const registrationConfigurer = jasmine.createSpyObj('registrationConfigurer', ['account', 'welcome', 'confirmation']);

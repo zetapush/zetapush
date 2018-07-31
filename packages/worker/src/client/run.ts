@@ -1,18 +1,16 @@
 import { WorkerClient, Worker, WorkerInstanceFactory } from './worker';
-import { Weak, Queue, Service } from '@zetapush/platform';
+import { Provider } from '@zetapush/core';
+import { Weak, Queue } from '@zetapush/platform';
 import {
   instantiate,
   WorkerDeclaration,
   ResolvedConfig,
   checkQueueServiceDeployed,
-  generateProvisioningFile,
   getDeploymentIdList,
   getRuntimeProvision,
   equals,
   fetch,
   upload,
-  filter,
-  BLACKLIST,
   createProvisioningArchive,
   generateProvisioningContent,
   debugObject,
@@ -20,8 +18,6 @@ import {
 } from '@zetapush/common';
 import { EventEmitter } from 'events';
 import { WorkerInstance } from '../utils/worker-instance';
-import { resolve } from 'path';
-import { Provider } from 'injection-js';
 
 export enum WorkerRunnerEvents {
   BOOTSTRAPING = 'bootstraping',

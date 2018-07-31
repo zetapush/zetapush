@@ -1,5 +1,5 @@
 import { UuidGenerator, Uuid, IllegalArgumentError } from '../api';
-import { Injectable } from '@zetapush/common';
+import { Injectable } from '@zetapush/core';
 
 /**
  * Generate a unique identifier based on two factors:

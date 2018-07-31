@@ -14,7 +14,7 @@ const config = {
       main: true,
     }),
     commonjs({
-      include: ['node_modules/**', '../cometd/**'],
+      include: ['node_modules/**'],
     }),
     ts({
       typescript
@@ -22,8 +22,7 @@ const config = {
     json()
   ],
   output: {
-    name: 'ZetaPush',
-    format: 'umd',
+    format: 'cjs',
     sourcemap: true,
   },
 };

@@ -24,6 +24,14 @@
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "prepublish": "npm run clean && npm run build"
   },
+  "dependencies": {
+    "@zetapush/core": "0.31.4",
+    "axios": "0.18.0",
+    "core-js": "2.5.7",
+    "isomorphic-form-data": "2.0.0",
+    "jszip": "3.1.5",
+    "esm": "3.0.72"
+  },
   "devDependencies": {
     "@types/core-js": "2.5.0",
     "@types/jszip": "3.1.4",
@@ -40,15 +48,6 @@
     "rollup-watch": "4.3.1",
     "typescript": "2.9.2",
     "uglify-es": "3.3.9"
-  },
-  "dependencies": {
-    "injection-js": "2.2.1",
-    "axios": "0.18.0",
-    "core-js": "2.5.7",
-    "isomorphic-form-data": "2.0.0",
-    "jszip": "3.1.5",
-    "reflect-metadata": "0.1.12",
-    "esm": "3.0.72"
   },
   "publishConfig": {
     "access": "public"

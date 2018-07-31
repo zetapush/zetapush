@@ -1,4 +1,10 @@
-import 'reflect-metadata';
+import { ReflectiveInjector, Provider } from '@zetapush/core';
+
+// import { constructDependencies, ReflectiveDependency } from 'injection-js/reflective_provider';
+// const { constructDependencies, ReflectiveDependency } = require('esm')(module)('injection-js/reflective_provider');
+// require = require('esm')(module)
+// const { constructDependencies } = require('esm')(module)('injection-js/reflective_provider');
+// type InjectionJsReflectiveDependency = ReflectiveDependency;
 
 import { DEFAULTS } from '../defaults';
 import { log, error } from '../utils/log';
@@ -6,13 +12,7 @@ import { log, error } from '../utils/log';
 import { CloudServiceInstance } from './CloudServiceInstance';
 
 import { CustomCloudService, WorkerDeclaration, Service, ServerClient } from '../common-types';
-import { ReflectiveInjector, Provider } from 'injection-js';
-// import { constructDependencies, ReflectiveDependency } from 'injection-js/reflective_provider';
-// const { constructDependencies, ReflectiveDependency } = require('esm')(module)('injection-js/reflective_provider');
-// require = require('esm')(module)
-const { constructDependencies } = require('esm')(module)('injection-js/reflective_provider');
 
-// type InjectionJsReflectiveDependency = ReflectiveDependency;
 type InjectionJsReflectiveDependency = any;
 
 class ScanOutput {
