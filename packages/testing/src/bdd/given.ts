@@ -208,6 +208,11 @@ class GivenCredentials extends Parent<Given> {
     return this;
   }
 
+  app(appName: string) {
+    this.appName = appName;
+    return this;
+  }
+
   newApp() {
     this.createApp = true;
     return this;

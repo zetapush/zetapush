@@ -105,15 +105,13 @@ export const runInWorker = (
     runner.on(WorkerRunnerEvents.STARTING, () => {
       runInWorkerLogger.debug('Starting worker...');
     });
-    runner.on(WorkerRunnerEvents.STARTED, ({ instance }: any) => {
+    runner.on(WorkerRunnerEvents.STARTED, ({ instance }: { instance: TestWorkerInstance }) => {
       runInWorkerLogger.debug('Worker started');
-      try {
-        instanceWrapper.instance = instance;
-        (<TestWorkerInstance>instance).directCall('ZetaTest', 'test');
-        resolve();
-      } catch (e) {
-        reject(e);
-      }
+      instanceWrapper.instance = instance;
+      instance
+        .directCall('ZetaTest', 'test')
+        .then(() => resolve())
+        .catch((e) => reject(e));
     });
 
     runner.on(WorkerRunnerEvents.UPLOAD_FAILED, ({ failure }: any) => {

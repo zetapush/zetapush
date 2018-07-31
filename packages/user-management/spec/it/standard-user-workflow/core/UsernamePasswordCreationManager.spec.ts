@@ -5,7 +5,7 @@ import { ReflectiveInjector, Injectable } from 'injection-js';
 import { AccountCreationManager } from '../../../../src/standard-user-workflow/api';
 import { given, autoclean, runInWorker } from '@zetapush/testing';
 import { Injector } from 'injection-js';
-import { Simple } from '@zetapush/platform';
+import { Simple, Userdir } from '@zetapush/platform';
 
 describe(`AccountCreationManager`, () => {
   const registrationConfigurer = jasmine.createSpyObj('registrationConfigurer', ['account', 'welcome', 'confirmation']);
@@ -34,7 +34,7 @@ describe(`AccountCreationManager`, () => {
       - accountStatus = 'WAITING_FOR_CONFIRMATION'
       - userProfile = {firstname: 'Odile', lastname: 'DERAY'}`,
     async () => {
-      await runInWorker(this, [Simple], async (simple: Simple, injector: Injector) => {
+      await runInWorker(this, [Simple, Userdir], async (simple: Simple, userdir: Userdir, injector: Injector) => {
         // GIVEN
         // create configurer + inject services
         const configurer = new AccountCreationManagerConfigurerImpl(registrationConfigurer, injector);
@@ -54,6 +54,7 @@ describe(`AccountCreationManager`, () => {
             lastname: 'DERAY'
           }
         });
+        console.log('account', account);
         // THEN
         expect(account).toBeDefined();
         expect(account).not.toBeNull();
@@ -67,6 +68,12 @@ describe(`AccountCreationManager`, () => {
     },
     10 * 60 * 1000
   );
+
+  // TODO: test account already exists
+
+  // TODO: test with no profile information
+
+  // TODO: test with public fields vs private fields
 
   afterEach(async () => {
     await autoclean(this);

@@ -11,7 +11,9 @@ pipeline {
     ZETAPUSH_LOG_LEVEL = 'silly'
     ZETAPUSH_PLATFORM_URL = 'http://hq.zpush.io:9080/zbo/pub/business/'
     ZETAPUSH_LOCAL_DEV = 'true'
+    NPM_REGISTRY = "${env.NEXUS_URL}repository/npm/"
   }
+
 
   stages {
     stage('Clean') {
@@ -23,8 +25,7 @@ pipeline {
         }
       }
       steps {
-        //sh 'npm cache clear --force'
-        sh 'npm i'
+        sh "npm --registry ${env.NPM_REGISTRY} i"
         sh 'npm run lerna:clean -- --yes'
       }
     }
@@ -38,36 +39,36 @@ pipeline {
         }
       }
       steps {
-        sh 'npm i'
+        sh "npm --registry ${env.NPM_REGISTRY} i"
         sh 'npm run lerna:bootstrap'
       }
     }
 
-    // stage('Publish on private registry') {
-    //   agent { 
-    //     docker {
-    //       image 'node:10.4.1'
-    //       label 'docker'
-    //       args '-u 0:0'
-    //     }
-    //   }
-    //   steps {
-    //     withCredentials([usernamePassword(credentialsId: 'npm-publish-on-public-registry', usernameVariable: 'NPM_USER', passwordVariable: 'NPM_PASS')]) {
-    //       script {
-    //         def response = httpRequest(
-    //           url: "https://registry.npmjs.org/-/user/org.couchdb.user:${env.NPM_USER}",
-    //           contentType: 'APPLICATION_JSON',
-    //           acceptType: 'APPLICATION_JSON',
-    //           httpMode: 'PUT',
-    //           requestBody: "{\"name\":\"${env.NPM_USER}\", \"password\": \"${env.NPM_PASS}\"}"
-    //         )
-    //         def json = readJSON(text: response.content)
-    //         sh "npm set //registry.npmjs.org/:_authToken ${json.token}"
-    //       }
-    //       sh 'npm run lerna:publish:canary -- --yes'
-    //     }
-    //   }
-    // }*
+    stage('Publish on private registry') {
+      agent { 
+        docker {
+          image 'node:10.4.1'
+          label 'docker'
+          args '-u 0:0'
+        }
+      }
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'npm-publish-on-public-registry', usernameVariable: 'NPM_USER', passwordVariable: 'NPM_PASS')]) {
+          script {
+            def response = httpRequest(
+              url: "https://registry.npmjs.org/-/user/org.couchdb.user:${env.NPM_USER}",
+              contentType: 'APPLICATION_JSON',
+              acceptType: 'APPLICATION_JSON',
+              httpMode: 'PUT',
+              requestBody: "{\"name\":\"${env.NPM_USER}\", \"password\": \"${env.NPM_PASS}\"}"
+            )
+            def json = readJSON(text: response.content)
+            sh "npm set //registry.npmjs.org/:_authToken ${json.token}"
+          }
+          sh 'npm run lerna:publish:canary -- --yes'
+        }
+      }
+    }
     
     /**
      * This stage is needed for Ubuntu slave because
@@ -83,8 +84,7 @@ pipeline {
         }
       }
       steps {
-        //sh 'npm cache clear --force'
-        sh 'npm i'
+        sh "npm --registry ${env.NPM_REGISTRY} i"
         sh 'npm run lerna:clean -- --yes'
         sh "chown -R ${env.JENKINS_UID}:${env.JENKINS_GID} ."
       }
@@ -99,20 +99,22 @@ pipeline {
             }
           }
           steps {
-            // sh 'npm cache clear --force'
-            sh 'npm i'
-            sh 'npm run lerna:clean -- --yes'
-            sh 'npm run lerna:bootstrap'
+            retry(3) {
+              sh "npm --registry ${env.NPM_REGISTRY} i"
+              sh 'npm run lerna:clean -- --yes'
+              sh "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+            }
             dir('packages/integration') {
-              // sh 'npm cache clear --force'
-              // sh 'npm i'
               sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' node node_modules/jasmine/bin/jasmine.js"
+            }
+            dir('packages/user-management') {
+              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js"
             }
           }
           post {
             always {
               junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
-              deleteDir()
+              // deleteDir()
             }
           }
         }
@@ -124,20 +126,22 @@ pipeline {
             }
           }
           steps {
-            // bat 'npm cache clear --force'
-            bat 'npm i'
-            bat 'npm run lerna:clean -- --yes'
-            bat 'npm run lerna:bootstrap'
+            retry(3) {
+              bat "npm --registry ${env.NPM_REGISTRY} i"
+              bat 'npm run lerna:clean -- --yes'
+              bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+            }
             dir('packages/integration') {
-              // bat 'npm cache clear --force'
-              // bat 'npm i'
               bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& node node_modules\\jasmine\\bin\\jasmine.js"
+            }
+            dir('packages/user-management') {
+              bat "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' TS_NODE_PROJECT=tsconfig.test.json node -r ts-node\\register node_modules\\jasmine\\bin\\jasmine.js"
             }
           }
           post {
             always {
               junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
-              deleteDir()
+              // deleteDir()
             }
           }
         }
@@ -149,20 +153,22 @@ pipeline {
             }
           }
           steps {
-            // bat 'npm cache clear --force'
-            bat 'npm i'
-            bat 'npm run lerna:clean -- --yes'
-            bat 'npm run lerna:bootstrap'
+            retry(3) {
+              bat "npm --registry ${env.NPM_REGISTRY} i"
+              bat 'npm run lerna:clean -- --yes'
+              bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+            }
             dir('packages/integration') {
-              // bat 'npm cache clear --force'
-              // bat 'npm i'
               bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& node node_modules\\jasmine\\bin\\jasmine.js"
+            }
+            dir('packages/user-management') {
+              bat "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' TS_NODE_PROJECT=tsconfig.test.json node -r ts-node\\register node_modules\\jasmine\\bin\\jasmine.js"
             }
           }
           post {
             always {
               junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
-              deleteDir()
+              // deleteDir()
             }
           }
         }
@@ -174,20 +180,22 @@ pipeline {
             }
           }
           steps {
-            // sh 'npm cache clear --force'
-            sh 'npm i'
-            sh 'npm run lerna:clean -- --yes'
-            sh 'npm run lerna:bootstrap'
+            retry(3) {
+              sh "npm --registry ${env.NPM_REGISTRY} i"
+              sh 'npm run lerna:clean -- --yes'
+              sh "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+            }
             dir('packages/integration') {
-              // sh 'npm cache clear --force'
-              // sh 'npm i'
               sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' node node_modules/jasmine/bin/jasmine.js"
+            }
+            dir('packages/user-management') {
+              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js"
             }
           }
           post {
             always {
               junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
-              deleteDir()
+              // deleteDir()
             }
           }
         }

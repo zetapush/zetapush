@@ -7,7 +7,7 @@ const core = require('@zetapush/common');
  * @param {WorkerDeclaration} declaration
  * @return {string[]}
  */
-const getDeploymentIdList = (declaration) => core.getDeploymentIdList(declaration, [Queue]);
+const getDeploymentIdList = (declaration) => core.getDeploymentIdList(declaration, [], [Queue]);
 
 /**
  * Get bootstrap provisioning items
@@ -21,7 +21,7 @@ const getBootstrapProvision = (config) => core.getBootstrapProvision(config, [Wo
  * @param {ZetaPushConfig} config
  * @param {WorkerDeclaration} declaration
  */
-const getRuntimeProvision = (config, declaration) => core.getRuntimeProvision(config, declaration, [Queue]);
+const getRuntimeProvision = (config, declaration) => core.getRuntimeProvision(config, declaration, [], [Queue]);
 
 /**
  * Generate a normalized file used by ZBO to provision ZetaPush Services
