@@ -20,14 +20,14 @@ export enum Idempotence {
   /**The operation will fail if the entity already exists*/
   FAIL_IF_EXISTING = 'FAIL_IF_EXISTING',
   /**The operation will not fail if the entity already exists in a similar form.*/
-  IGNORE_IDENTICAL = 'IGNORE_IDENTICAL',
+  IGNORE_IDENTICAL = 'IGNORE_IDENTICAL'
 }
 
 export enum PageDirection {
   /**Descending order*/
   DESC = 'DESC',
   /**Ascending order*/
-  ASC = 'ASC',
+  ASC = 'ASC'
 }
 export interface Pagination {
   /**Page size (minimum 1)*/
@@ -113,7 +113,7 @@ export enum FileType {
   /**Normal file*/
   FILE = 'FILE',
   /**Directory. May contain other files.*/
-  DIR = 'DIR',
+  DIR = 'DIR'
 }
 export interface FileUploadComplete {
   /**File tags*/

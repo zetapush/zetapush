@@ -1,5 +1,5 @@
-const { zetaPush, zetaRun } = require('../utils/commands');
-const { given, consoleUserAction } = require('../utils/tdd');
+const { zetaPush, zetaRun } = require('@zetapush/testing');
+const { given, consoleUserAction } = require('@zetapush/testing');
 
 describe(`As developer with
         - no developerLogin
@@ -12,9 +12,10 @@ describe(`As developer with
       /*   */ .login('')
       /*   */ .password('password')
       /*   */ .and()
-      /**/ .testingApp()
-      /*   */ .projectName('empty-app')
-      /*   */ .latestVersion()
+      /**/ .project()
+      /*   */ .template()
+      /*     */ .sourceDir('empty-app')
+      /*     */ .and()
       /*   */ .and()
       /**/ .apply(this);
   }, 15 * 60 * 1000);
@@ -23,21 +24,21 @@ describe(`As developer with
     "Should fail with errorCode 'ACCOUNT-01' (51) for 'zeta push'",
     async () => {
       await consoleUserAction('zeta push', async () => {
-        const code = await zetaPush(this.context.projectDir);
+        const { code } = await zetaPush(this.context.projectDir);
         expect(code).toBe(errorCode);
       });
     },
-    15 * 60 * 1000,
+    15 * 60 * 1000
   );
 
   it(
     "Should fail with errorCode 'ACCOUNT-01' (51) for 'zeta run'",
     async () => {
       await consoleUserAction('zeta run', async () => {
-        const code = await zetaRun(this.context.projectDir);
+        const { code } = await zetaRun(this.context.projectDir);
         expect(code).toBe(errorCode);
       });
     },
-    15 * 60 * 1000,
+    15 * 60 * 1000
   );
 });

@@ -9,7 +9,7 @@ import {
   MacroServiceDebugConfig,
   MacroServiceStatus,
   MacroUploadReport,
-  SuMacroPlay,
+  SuMacroPlay
 } from './MacroTypes';
 
 /**Macro-command service. An admin defines macro-commands that can sequentially call any number of other api verbs, loop on collections of data, make decisions, etc... End-users play them, with contextual parameters*/
@@ -30,7 +30,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/macro/create',
+      '/macro/create'
     );
   }
   /**
@@ -46,7 +46,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/macro/exec/**',
+      '/macro/exec/**'
     );
   }
   /**
@@ -58,7 +58,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/macro/list',
+      '/macro/list'
     );
   }
   /**
@@ -70,7 +70,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/macro/mcreate',
+      '/macro/mcreate'
     );
   }
   /**
@@ -83,7 +83,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/macro/run',
+      '/macro/run'
     );
   }
   /**
@@ -96,7 +96,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/macro/validate',
+      '/macro/validate'
     );
   }
   /**
@@ -113,7 +113,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/debug/configure',
+      '/debug/configure'
     );
   }
   /**
@@ -125,7 +125,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/debug/disable',
+      '/debug/disable'
     );
   }
   /**
@@ -139,7 +139,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/debug/enable',
+      '/debug/enable'
     );
   }
   /**
@@ -154,7 +154,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/debug/livedebugToken',
+      '/debug/livedebugToken'
     );
   }
   /**
@@ -166,7 +166,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/debug/status',
+      '/debug/status'
     );
   }
 }

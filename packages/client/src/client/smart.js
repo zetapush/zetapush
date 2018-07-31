@@ -34,14 +34,7 @@ export class SmartClient extends Client {
    * Create a new ZetaPush SmartClient
    * @param {SmartClientConfig} config
    */
-  constructor({
-    platformUrl,
-    deployment,
-    appName,
-    forceHttps,
-    resource,
-    transports,
-  } = {}) {
+  constructor({ platformUrl, deployment, appName, forceHttps, resource, transports } = {}) {
     const persistence = new SessionPersistenceStrategy({ appName });
 
     /**
@@ -57,19 +50,19 @@ export class SmartClient extends Client {
         return Authentication.simple({
           login,
           password,
-          deploymentId: deployment && deployment.simple,
+          deploymentId: deployment && deployment.simple
         });
       } else {
         if (this.isStronglyAuthenticated(session)) {
           return Authentication.simple({
             login: token,
             password: null,
-            deploymentId: deployment && deployment.simple,
+            deploymentId: deployment && deployment.simple
           });
         } else {
           return Authentication.weak({
             token,
-            deploymentId: deployment && deployment.weak,
+            deploymentId: deployment && deployment.weak
           });
         }
       }
@@ -81,7 +74,7 @@ export class SmartClient extends Client {
       authentication,
       forceHttps,
       resource,
-      transports,
+      transports
     });
     /**
      * @access protected
@@ -106,7 +99,7 @@ export class SmartClient extends Client {
         if (session.token) {
           persistence.set(session);
         }
-      },
+      }
     });
     // Properly disconnect client to avoir ghost connections
     /*
@@ -139,9 +132,7 @@ export class SmartClient extends Client {
    * @return {boolean}
    */
   isStronglyAuthenticated(session = this.persistence.get()) {
-    return (
-      !this.isWeaklyAuthenticated(session) && typeof session.token === 'string'
-    );
+    return !this.isWeaklyAuthenticated(session) && typeof session.token === 'string';
   }
   /**
    * @return {boolean}

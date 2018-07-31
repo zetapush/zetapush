@@ -8,7 +8,7 @@ import {
   GamePlay,
   GameRunnerRegistration,
   GameStart,
-  GameState,
+  GameState
 } from './GameTypes';
 
 /**

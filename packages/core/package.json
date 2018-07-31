@@ -37,6 +37,8 @@
     "typescript": "2.9.2",
     "uglify-es": "3.3.9"
   },
+  "dependencies": {
+  },
   "publishConfig": {
     "access": "public"
   }

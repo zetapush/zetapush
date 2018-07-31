@@ -24,5 +24,5 @@ import {
   UploadedFile,
   ZetaApiError,
   ZpfsDiskUsage,
-  ZpfsRequest,
+  ZpfsRequest
 } from '../CommonTypes';

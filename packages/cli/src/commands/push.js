@@ -1,11 +1,11 @@
 const path = require('path');
 const os = require('os');
+const fs = require('fs');
 
-const compress = require('../utils/compress');
-const { log, error } = require('../utils/log');
-const { getProgression } = require('../utils/progression');
+const { compress } = require('../utils/compress-folder');
+const { upload, filter, BLACKLIST, log, error, mkdir, trace } = require('@zetapush/common');
 const { generateProvisioningFile } = require('../utils/provisioning');
-const { upload, filter, BLACKLIST, mkdir } = require('../utils/upload');
+const { getProgression } = require('../utils/progression');
 const troubleshooting = require('../errors/troubleshooting');
 
 /**
@@ -21,18 +21,15 @@ const archive = (command, config, declaration) => {
   const rootArchive = `${root}.zip`;
   const workerArchive = path.join(root, `worker.zip`);
   const frontArchive = path.join(root, `front.zip`);
+  trace(`zipping worker (${workerArchive}) and front (${frontArchive}) into ${rootArchive}...`);
 
   const options = {
-    filter: filter(BLACKLIST),
+    filter: filter(BLACKLIST)
   };
 
   return mkdir(root)
-    .then(() =>
-      compress(command.front, { ...options, ...{ saveTo: frontArchive } }),
-    )
-    .then(() =>
-      compress(command.worker, { ...options, ...{ saveTo: workerArchive } }),
-    )
+    .then(() => compress(command.front, { ...options, ...{ saveTo: frontArchive } }))
+    .then(() => compress(command.worker, { ...options, ...{ saveTo: workerArchive } }))
     .then(() => generateProvisioningFile(app, config))
     .then(() => compress(root, { ...options, ...{ saveTo: rootArchive } }))
     .then(() => rootArchive);
@@ -47,7 +44,7 @@ const archive = (command, config, declaration) => {
 const push = (command, config, declaration) => {
   log(`Execute command <push> ${command.worker}`);
   archive(command, config, declaration)
-    .then((archived) => upload(archived, config))
+    .then((rootArchive) => upload(fs.createReadStream(rootArchive), config))
     .then((recipe) => {
       log('Uploaded', recipe.recipeId);
       const { recipeId } = recipe;

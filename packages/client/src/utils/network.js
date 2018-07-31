@@ -16,15 +16,8 @@ const normalizePlatformUrl = (platformUrl) => {
  * @param {{platformUrl: string, appName: string, forceHttps: boolean, transports: Transports}} parameters
  * @return {Promise}
  */
-export const getSandboxConfig = ({
-  platformUrl,
-  appName,
-  forceHttps,
-  transports,
-}) => {
-  const normalizedSecuresPlatformUrl = normalizePlatformUrl(
-    getSecureUrl(platformUrl, forceHttps),
-  );
+export const getSandboxConfig = ({ platformUrl, appName, forceHttps, transports }) => {
+  const normalizedSecuresPlatformUrl = normalizePlatformUrl(getSecureUrl(platformUrl, forceHttps));
   const url = `${normalizedSecuresPlatformUrl}${appName}`;
   const options = { protocol: forceHttps ? HTTPS_PROTOCOL : HTTP_PROTOCOL };
   return (
@@ -34,7 +27,7 @@ export const getSandboxConfig = ({
       // TODO: Replace by a server side implementation when available
       .then(({ servers, businessId = appName }) => ({
         appName: businessId,
-        servers: servers.map((server) => getSecureUrl(server, forceHttps)),
+        servers: servers.map((server) => getSecureUrl(server, forceHttps))
       }))
   );
 };

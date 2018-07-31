@@ -18,7 +18,7 @@ export class NotifConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Notif.DEFAULT_DEPLOYMENT_ID,
-      '/notifs/createApp',
+      '/notifs/createApp'
     );
   }
 }

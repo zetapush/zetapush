@@ -1,0 +1,67 @@
+{
+  "name": "@zetapush/user-management",
+  "version": "0.31.4",
+  "description": "Zeta Push Next",
+  "browser": "dist/zetapush-user-management.js",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "jsnext:main": "es/index.js",
+  "files": [
+    "dist",
+    "lib",
+    "es",
+    "index.d.ts"
+  ],
+  "repository": "https://github.com/zetapush/zetapush",
+  "author": "ci@zetapush.com",
+  "license": "MIT",
+  "scripts": {
+    "clean": "rimraf lib dist es .deploy .esdoc",
+    "build:commonjs": "tsc --outDir lib",
+    "build:es": "tsc --module ES2015 --moduleResolution Node --outDir es",
+    "build:umd": "cross-env NODE_ENV=development rollup -c -i src/index.ts -o dist/zetapush-user-management.js",
+    "build:umd:min": "cross-env NODE_ENV=production rollup -c -i src/index.ts -o dist/zetapush-user-management.min.js",
+    "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "test": "npm run clean && npm run build:commonjs && jasmine",
+    "test:debug": "cross-env TS_NODE_PROJECT=tsconfig.test.json node -r esm -r ts-node/register --inspect-brk=9231 node_modules/jasmine/bin/jasmine.js",
+    "prepublish": "npm run clean && npm run build",
+    "build:api-doc": "typedoc --out ./docs ./src/index.ts"
+  },
+  "dependencies": {
+    "@zetapush/common": "0.31.4",
+    "injection-js": "2.2.1"
+  },
+  "devDependencies": {
+    "@types/jasmine": "2.8.8",
+    "@zetapush/platform": "0.31.4",
+    "@zetapush/testing": "0.31.4",
+    "@zetapush/worker": "0.31.4",
+    "catharsis": "0.8.9",
+    "cross-env": "5.2.0",
+    "jasmine": "3.1.0",
+    "jasmine-reporters": "2.3.1",
+    "jasmine-ts-console-reporter": "3.1.1",
+    "reflect-metadata": "0.1.12",
+    "request": "2.85.0",
+    "rimraf": "2.6.2",
+    "rollup": "0.62.0",
+    "rollup-plugin-commonjs": "9.1.3",
+    "rollup-plugin-json": "3.0.0",
+    "rollup-plugin-node-resolve": "3.3.0",
+    "rollup-plugin-typescript": "0.8.1",
+    "rollup-plugin-uglify": "4.0.0",
+    "rollup-watch": "4.3.1",
+    "taffydb": "2.7.3",
+    "ts-jsdoc": "3.0.1",
+    "ts-node": "7.0.0",
+    "ts2jsdoc": "0.1.2",
+    "tsdoc": "0.0.4",
+    "typedoc": "0.11.1",
+    "typescript": "2.9.2",
+    "uglify-es": "3.3.10",
+    "underscore": "1.9.1"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

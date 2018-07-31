@@ -1,12 +1,6 @@
 import { Configurer } from '../Core/index';
 import { Trigger } from './Trigger';
-import {
-  ApiTriggerId,
-  ApiTriggerListener,
-  MassTriggers,
-  TriggerId,
-  TriggerListener,
-} from './TriggerTypes';
+import { ApiTriggerId, ApiTriggerListener, MassTriggers, TriggerId, TriggerListener } from './TriggerTypes';
 
 /**Register callbacks for events and trigger them when needed.*/
 export class TriggerConfigurer extends Configurer {
@@ -25,7 +19,7 @@ export class TriggerConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Trigger.DEFAULT_DEPLOYMENT_ID,
-      '/trigger/addApiListener',
+      '/trigger/addApiListener'
     );
   }
   /**
@@ -38,7 +32,7 @@ export class TriggerConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Trigger.DEFAULT_DEPLOYMENT_ID,
-      '/trigger/addListener',
+      '/trigger/addListener'
     );
   }
   /**
@@ -50,7 +44,7 @@ export class TriggerConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Trigger.DEFAULT_DEPLOYMENT_ID,
-      '/trigger/removeApiListener',
+      '/trigger/removeApiListener'
     );
   }
   /**
@@ -62,7 +56,7 @@ export class TriggerConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Trigger.DEFAULT_DEPLOYMENT_ID,
-      '/trigger/removeListener',
+      '/trigger/removeListener'
     );
   }
   /**
@@ -75,7 +69,7 @@ export class TriggerConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Trigger.DEFAULT_DEPLOYMENT_ID,
-      '/trigger/setListeners',
+      '/trigger/setListeners'
     );
   }
 }

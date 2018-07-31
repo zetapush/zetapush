@@ -1,13 +1,7 @@
 import { Authentication, Client, uuid } from '@zetapush/client';
-import {
-  Queue as Worker,
-  QueueTask,
-  ConfigureTask,
-  TaskRequest,
-} from '@zetapush/platform';
+import { Queue, QueueTask, ConfigureTask, TaskRequest } from '@zetapush/platform';
 import { LogLevel, Logs, Context } from '@zetapush/platform';
-
-import { WorkerInstance } from '../utils/worker-instance';
+import { WorkerInstance, TaskDispatcherWorkerInstance } from '../utils/worker-instance';
 
 const DEFAULT_NAMESPACE = '';
 
@@ -16,7 +10,7 @@ interface ListenerMessage<T> {
   channel: string;
 }
 
-interface WorkerClientOptions {
+export interface WorkerClientOptions {
   platformUrl: string;
   appName: string;
   forceHttps: boolean;
@@ -26,6 +20,18 @@ interface WorkerClientOptions {
   resource: string;
   timeout: number;
   capacity: number;
+}
+
+export class Worker extends Queue {
+  static get DEPLOYMENT_OPTIONS() {
+    return {
+      queue_auth_id: 'developer'
+    };
+  }
+}
+
+export interface WorkerInstanceFactory {
+  create(worker: any, deploymentId: string, options: WorkerClientOptions): WorkerInstance;
 }
 
 export class WorkerClient extends Client {
@@ -38,23 +44,31 @@ export class WorkerClient extends Client {
    */
   private timeout: number;
   /**
+   * A factory used to instantiate a WorkerInstance
+   */
+  private workerInstanceFactory?: WorkerInstanceFactory;
+  private options: WorkerClientOptions;
+  /**
    * WorkerClient constructor
    */
-  constructor({
-    platformUrl,
-    appName,
-    forceHttps,
-    transports,
-    developerLogin,
-    developerPassword,
-    resource = `node_js_worker_${uuid()}`,
-    timeout = 60 * 1000,
-    capacity = 100,
-  }: WorkerClientOptions) {
+  constructor(
+    {
+      platformUrl,
+      appName,
+      forceHttps,
+      transports,
+      developerLogin,
+      developerPassword,
+      resource = `node_js_worker_${uuid()}`,
+      timeout = 60 * 1000,
+      capacity = 100
+    }: WorkerClientOptions,
+    workerInstanceFactory?: WorkerInstanceFactory
+  ) {
     const authentication = () =>
       Authentication.developer({
         login: developerLogin,
-        password: developerPassword,
+        password: developerPassword
       });
     /**
      * Call Client constructor with specific parameters
@@ -65,7 +79,7 @@ export class WorkerClient extends Client {
       forceHttps,
       authentication,
       resource,
-      transports,
+      transports
     });
     /**
      * @access private
@@ -77,21 +91,30 @@ export class WorkerClient extends Client {
      * @type {number}
      */
     this.timeout = timeout;
+    /**
+     * @access private
+     * @type {Function}
+     */
+    this.workerInstanceFactory = workerInstanceFactory;
+    this.options = {
+      platformUrl,
+      appName,
+      forceHttps,
+      transports,
+      developerLogin,
+      developerPassword,
+      resource,
+      timeout,
+      capacity
+    };
   }
   /**
    * Subscribe a task worker
    */
-  subscribeTaskWorker(
-    worker: any,
-    deploymentId = Worker.DEFAULT_DEPLOYMENT_ID,
-  ) {
-    const instance = new WorkerInstance({
-      timeout: this.timeout,
-      worker,
-      bootLayers: worker.bootLayers,
-    });
+  subscribeTaskWorker(worker: any, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
+    const instance = this.newWorkerInstance(worker, deploymentId);
     const logs = this.createService<Logs>({
-      Type: Logs,
+      Type: Logs
     });
     const queue = this.createService<Worker>({
       deploymentId,
@@ -108,7 +131,7 @@ export class WorkerClient extends Client {
               ...response,
               taskId,
               contextId: request.contextId,
-              requestId: request.requestId,
+              requestId: request.requestId
             });
           } else {
             // Unable to dispatch task
@@ -119,75 +142,81 @@ export class WorkerClient extends Client {
           queue.done({
             result: res.result,
             taskId: task.data.taskId,
-            success: res.success,
+            success: res.success
           });
-        },
+        }
       },
-      Type: Worker,
+      Type: Worker
     });
     queue.register({
-      capacity: this.capacity,
+      capacity: this.capacity
     });
     return instance;
   }
-  private getRequestContext(
-    request: TaskRequest,
-    logs: Logs,
-    deploymentId: string,
-  ): Context {
+  private getRequestContext(request: TaskRequest, logs: Logs, deploymentId: string): Context {
     const { contextId, data, owner = '', originator } = request;
     const { name } = data;
-    const namespace = () =>
-      data.namespace === DEFAULT_NAMESPACE ? 'default' : data.namespace;
+    const namespace = () => (data.namespace === DEFAULT_NAMESPACE ? 'default' : data.namespace);
     // Base log options
     const options = {
       contextId,
       custom: {},
       owner: originator ? originator.owner : '',
       resource: originator ? originator.resource : '',
-      logger: `${deploymentId}.${namespace()}.${name}`,
+      logger: `${deploymentId}.${namespace()}.${name}`
     };
     const logger = Object.freeze({
       trace(...messages: any[]) {
         logs.log({
           ...options,
           data: { messages },
-          level: LogLevel.TRACE,
+          level: LogLevel.TRACE
         });
       },
       debug(...messages: any[]) {
         logs.log({
           ...options,
           data: { messages },
-          level: LogLevel.DEBUG,
+          level: LogLevel.DEBUG
         });
       },
       info(...messages: any[]) {
         logs.log({
           ...options,
           data: { messages },
-          level: LogLevel.INFO,
+          level: LogLevel.INFO
         });
       },
       warn(...messages: any[]) {
         logs.log({
           ...options,
           data: { messages },
-          level: LogLevel.WARN,
+          level: LogLevel.WARN
         });
       },
       error(...messages: any[]) {
         logs.log({
           ...options,
           data: { messages },
-          level: LogLevel.ERROR,
+          level: LogLevel.ERROR
         });
-      },
+      }
     });
     return Object.freeze({
       contextId,
       owner,
-      logger,
+      logger
     });
+  }
+
+  private newWorkerInstance(worker: any, deploymentId: string) {
+    if (!this.workerInstanceFactory) {
+      return new TaskDispatcherWorkerInstance({
+        timeout: this.timeout,
+        worker,
+        bootLayers: worker.bootLayers
+      });
+    }
+    return this.workerInstanceFactory.create(worker, deploymentId, this.options);
   }
 }

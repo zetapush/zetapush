@@ -14,7 +14,7 @@ import {
   ListingEntryInfo,
   SnapshotCreationRequest,
   ZpfsDiskUsage,
-  ZpfsRequest,
+  ZpfsRequest
 } from '../CommonTypes';
 
 /**

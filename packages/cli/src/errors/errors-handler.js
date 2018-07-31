@@ -1,15 +1,15 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
-const { error } = require('../utils/log');
+const { error } = require('@zetapush/common');
 
 const displayError = (steps) => {
   steps.forEach((step) => {
     if (step.hasUnrecoverableErrors) {
       error(
         `${step.name} failed\n        Causes:\n${getErrorsStr(
-          step,
-        )}\n\n        Error logs:\n${getErrorsFromAssociatedLogsStr(step)}`,
+          step
+        )}\n\n        Error logs:\n${getErrorsFromAssociatedLogsStr(step)}`
       );
     }
   });
@@ -35,7 +35,7 @@ const writeLogs = (config, logs, steps) => {
     app-name=${config.appName}
 ------------------------------------------------------------
 
-`,
+`
   );
   fs.appendFileSync(logFile, getLogsStr(logs, steps));
   return logFile;
@@ -45,9 +45,7 @@ const getErrorsStr = (step) => {
   if (!step.hasUnrecoverableErrors) {
     return '';
   }
-  return step.errors
-    .map((e) => e.message.replace(/^(.*)$/g, '          - $1'))
-    .join('\n');
+  return step.errors.map((e) => e.message.replace(/^(.*)$/g, '          - $1')).join('\n');
 };
 
 const getStepName = (step, steps) => {
@@ -67,19 +65,15 @@ const getLogsStr = (logs, steps) => {
   return logs
     .map(
       (log) =>
-        `${fixedSize(getStepName(log.step, steps), 50)} ${fixedSize(
-          log.category.name,
-          20,
-        )} | ${formatDate(log.timestamp)} [${log.level.name}] ${log.category
-          .context || ''} ${log.message}`,
+        `${fixedSize(getStepName(log.step, steps), 50)} ${fixedSize(log.category.name, 20)} | ${formatDate(
+          log.timestamp
+        )} [${log.level.name}] ${log.category.context || ''} ${log.message}`
     )
     .join('\n');
 };
 
 const fixedSize = (str, max) => {
-  return str.length > max
-    ? str.substring(0, max - 3) + '...'
-    : str.padEnd(max, ' ');
+  return str.length > max ? str.substring(0, max - 3) + '...' : str.padEnd(max, ' ');
 };
 
 module.exports = { writeLogs, displayError };

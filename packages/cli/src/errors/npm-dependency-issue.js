@@ -1,5 +1,5 @@
 const { ErrorAnalyzer } = require('./troubleshooting');
-const { trace } = require('../utils/log');
+const { trace } = require('@zetapush/common');
 
 class MissingNpmDependencyErrorAnalyzer extends ErrorAnalyzer {
   hasNpmInstallFailed(progress) {
@@ -22,15 +22,8 @@ class MissingNpmDependencyErrorAnalyzer extends ErrorAnalyzer {
 
   getMissingDependency(progress) {
     for (let log of progress.logs) {
-      if (
-        log.message.match(
-          'npm ERR! notarget No matching version found for (.+)',
-        )
-      ) {
-        return log.message.replace(
-          /npm ERR! notarget No matching version found for (.+)/g,
-          '$1',
-        );
+      if (log.message.match('npm ERR! notarget No matching version found for (.+)')) {
+        return log.message.replace(/npm ERR! notarget No matching version found for (.+)/g, '$1');
       }
     }
     return '';
@@ -38,15 +31,8 @@ class MissingNpmDependencyErrorAnalyzer extends ErrorAnalyzer {
 
   getUsedBy(progress) {
     for (let log of progress.logs) {
-      if (
-        log.message.match(
-          'npm ERR! notarget It was specified as a dependency of (.+)',
-        )
-      ) {
-        return log.message.replace(
-          /npm ERR! notarget It was specified as a dependency of (.+)/g,
-          '$1',
-        );
+      if (log.message.match('npm ERR! notarget It was specified as a dependency of (.+)')) {
+        return log.message.replace(/npm ERR! notarget It was specified as a dependency of (.+)/g, '$1');
       }
     }
     return '';
@@ -56,11 +42,7 @@ class MissingNpmDependencyErrorAnalyzer extends ErrorAnalyzer {
     let cantFindFile = false;
     let isNodeModulesPath = false;
     for (let log of progress.logs) {
-      if (
-        log.message.match(
-          'npm ERR! enoent This is related to npm not being able to find a file',
-        )
-      ) {
+      if (log.message.match('npm ERR! enoent This is related to npm not being able to find a file')) {
         cantFindFile = true;
       }
       if (log.message.match('npm ERR! path .*node_modules')) {
@@ -75,21 +57,15 @@ class MissingNpmDependencyErrorAnalyzer extends ErrorAnalyzer {
       trace('not npm dependency issue');
       return null;
     }
-    if (
-      this.hasNpmInstallFailed(progress) &&
-      this.hasNpmDependencyDownloadError(progress)
-    ) {
+    if (this.hasNpmInstallFailed(progress) && this.hasNpmDependencyDownloadError(progress)) {
       trace('npm dependency download error');
       return {
         code: 'DEPENDENCY-01',
         missingDependency: this.getMissingDependency(progress),
-        usedBy: this.getUsedBy(progress),
+        usedBy: this.getUsedBy(progress)
       };
     }
-    if (
-      this.hasNpmInstallFailed(progress) &&
-      this.hasNpmDependencyReadError(progress)
-    ) {
+    if (this.hasNpmInstallFailed(progress) && this.hasNpmDependencyReadError(progress)) {
       trace('npm dependency read error');
       return { code: 'DEPENDENCY-02' };
     }

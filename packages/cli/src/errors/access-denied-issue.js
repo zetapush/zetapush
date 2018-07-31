@@ -1,6 +1,5 @@
 const { ErrorAnalyzer } = require('./troubleshooting');
-const { trace } = require('../utils/log');
-const { fetch } = require('../utils/network');
+const { trace, fetch } = require('@zetapush/common');
 
 class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
   hasDeveloperLogin(err) {
@@ -23,8 +22,9 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
         pathname: '/auth/login',
         body: JSON.stringify({
           username: config.developerLogin,
-          password: config.developerPassword,
+          password: config.developerPassword
         }),
+        debugName: 'isDeveloperAccountExists'
       });
       return true;
     } catch (e) {
@@ -38,10 +38,9 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
       const { content } = await fetch({
         config,
         pathname: '/orga/business/list',
+        debugName: 'isAppExistsForOrga'
       });
-      return (
-        content.filter((app) => app.businessId == config.appName).length > 0
-      );
+      return content.filter((app) => app.businessId == config.appName).length > 0;
     } catch (e) {
       trace('get apps for orga failed', e);
       return false;
@@ -49,7 +48,7 @@ class AccessDeniedIssueAnalyzer extends ErrorAnalyzer {
   }
 
   isAccountNotConfirmed(err) {
-    return err.body && err.body.includes('ACCOUNT_DISABLED');
+    return err.body && err.body.context && err.body.context && err.body.context.reason == 'ACCOUNT_DISABLED';
   }
 
   async getError(err) {

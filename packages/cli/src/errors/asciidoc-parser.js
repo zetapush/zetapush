@@ -1,5 +1,5 @@
 const conditions = require('./conditions');
-const { trace } = require('../utils/log');
+const { trace } = require('@zetapush/common');
 
 const parse = (content) => {
   let parsed = content
@@ -19,56 +19,24 @@ const parse = (content) => {
     .replace(/```([^`]+)```/g, '{whiteBright.bgBlackBright $1}')
     .replace(
       /\[source(, ?\w+)?[^\]]*\](\n[.]([^\n]+))?(\n(={4}|-{4})\n)(.+?)(\4)/gms,
-      (_, language, __, legend, ___, ____, code) =>
-        highlight(language, legend, code),
+      (_, language, __, legend, ___, ____, code) => highlight(language, legend, code)
     )
     .replace(/`([^`]+)`/g, '{whiteBright.bgBlackBright $1}')
     // handle Admonitions
-    .replace(
-      /\[CAUTION\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
-      (_, __, legend, ___, ____, content) =>
-        admonition('☢|', 'red.bold', legend, 'red.underline', content, ''),
+    .replace(/\[CAUTION\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms, (_, __, legend, ___, ____, content) =>
+      admonition('☢|', 'red.bold', legend, 'red.underline', content, '')
     )
-    .replace(
-      /\[IMPORTANT\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
-      (_, __, legend, ___, ____, content) =>
-        admonition(
-          '❗|',
-          'redBright.bold',
-          legend,
-          'redBright.underline',
-          content,
-          '',
-        ),
+    .replace(/\[IMPORTANT\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms, (_, __, legend, ___, ____, content) =>
+      admonition('❗|', 'redBright.bold', legend, 'redBright.underline', content, '')
     )
-    .replace(
-      /\[WARNING\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
-      (_, __, legend, ___, ____, content) =>
-        admonition(
-          '/!\\\\|',
-          'yellow.bold',
-          legend,
-          'yellow.underline',
-          content,
-          '',
-        ),
+    .replace(/\[WARNING\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms, (_, __, legend, ___, ____, content) =>
+      admonition('/!\\\\|', 'yellow.bold', legend, 'yellow.underline', content, '')
     )
-    .replace(
-      /\[NOTE\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
-      (_, __, legend, ___, ____, content) =>
-        admonition('ℹ|', 'blue.bold', legend, 'blue.underline', content, ''),
+    .replace(/\[NOTE\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms, (_, __, legend, ___, ____, content) =>
+      admonition('ℹ|', 'blue.bold', legend, 'blue.underline', content, '')
     )
-    .replace(
-      /\[TIP\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms,
-      (_, __, legend, ___, ____, content) =>
-        admonition(
-          '⛭|',
-          'yellow.bold',
-          legend,
-          'yellow.underline',
-          content,
-          '',
-        ),
+    .replace(/\[TIP\](\n[.]([^\n]+))?(\n(={4})\n)(.+?)(\3)/gms, (_, __, legend, ___, ____, content) =>
+      admonition('⛭|', 'yellow.bold', legend, 'yellow.underline', content, '')
     );
   // handle tabs
   parsed = parseTabContainer(parsed);
@@ -85,9 +53,7 @@ const admonition = (icon, iconStyle, legend, legendStyle, text, textStyle) => {
   const lines = fillLines(text).split('\n');
   let middle = Math.floor(lines.length / 2);
   if (legend) {
-    let legendStr = legendStyle
-      ? '{' + legendStyle + ' ' + legend + '}'
-      : legend;
+    let legendStr = legendStyle ? '{' + legendStyle + ' ' + legend + '}' : legend;
     decoratedLines.push(addIcon(icon, iconStyle) + ' ' + legendStr);
     middle -= 1;
   }
@@ -102,10 +68,7 @@ const admonition = (icon, iconStyle, legend, legendStyle, text, textStyle) => {
 };
 
 const addIcon = (icon, iconStyle, lineNumber = 0, middle = 1) => {
-  let iconStr =
-    lineNumber == middle
-      ? icon
-      : icon.replace(/\\\\/g, ' ').replace(/[^|]/g, ' ');
+  let iconStr = lineNumber == middle ? icon : icon.replace(/\\\\/g, ' ').replace(/[^|]/g, ' ');
   return iconStyle ? '{' + iconStyle + ' ' + iconStr + '}' : iconStr;
 };
 
@@ -125,12 +88,12 @@ const fillLines = (content, fillChar = ' ', extraSpaces = 2) => {
 };
 
 const parseTabContainer = (content) => {
-  return content.replace(
-    /^\[role="?tab-container"?\]\n.+?\n(.+)\[role="?tab-container-end"?\]\s-/gms,
-    function(_, tabContainerContent) {
-      return parseTabs(tabContainerContent);
-    },
-  );
+  return content.replace(/^\[role="?tab-container"?\]\n.+?\n(.+)\[role="?tab-container-end"?\]\s-/gms, function(
+    _,
+    tabContainerContent
+  ) {
+    return parseTabs(tabContainerContent);
+  });
 };
 
 const parseTabs = (content) => {
@@ -147,7 +110,7 @@ const parseTabs = (content) => {
         } else {
           return '';
         }
-      },
+      }
     );
   }
   return parsed;

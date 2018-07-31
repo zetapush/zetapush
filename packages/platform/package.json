@@ -25,7 +25,7 @@
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
-    "injection-js": "2.2.1"
+    "@zetapush/common": "0.31.4"
   },
   "devDependencies": {
     "cross-env": "5.2.0",
@@ -38,7 +38,7 @@
     "rollup-plugin-uglify": "4.0.0",
     "rollup-watch": "4.3.1",
     "typescript": "2.9.2",
-    "uglify-es": "3.3.9"
+    "uglify-es": "3.3.10"
   },
   "publishConfig": {
     "access": "public"

@@ -22,7 +22,7 @@ export class TemplateConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Template.DEFAULT_DEPLOYMENT_ID,
-      '/template/add',
+      '/template/add'
     );
   }
   /**
@@ -35,7 +35,7 @@ export class TemplateConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Template.DEFAULT_DEPLOYMENT_ID,
-      '/template/create',
+      '/template/create'
     );
   }
   /**
@@ -47,7 +47,7 @@ export class TemplateConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Template.DEFAULT_DEPLOYMENT_ID,
-      '/template/list',
+      '/template/list'
     );
   }
 }

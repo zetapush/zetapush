@@ -1,13 +1,8 @@
 import { CometD, Transports } from '@zetapush/cometd';
-import { Macro, Queue } from '@zetapush/platform';
+import { Macro } from '@zetapush/platform/es/Macro';
+import { Queue } from '@zetapush/platform/es/Queue';
 import { ConnectionStatusListener } from '../connection/connection-status.js';
-import {
-  getSandboxConfig,
-  isDerivedOf,
-  merge,
-  shuffle,
-  uuid,
-} from '../utils/index.js';
+import { getSandboxConfig, isDerivedOf, merge, shuffle, uuid } from '../utils/index.js';
 
 /**
  * CometD Messages enumeration
@@ -16,7 +11,7 @@ import {
 const Message = {
   RECONNECT_HANDSHAKE_VALUE: 'handshake',
   RECONNECT_NONE_VALUE: 'none',
-  RECONNECT_RETRY_VALUE: 'retry',
+  RECONNECT_RETRY_VALUE: 'retry'
 };
 
 /**
@@ -57,20 +52,18 @@ export class ClientHelper {
     forceHttps = false,
     authentication,
     resource = null,
-    transports = Transports,
+    transports = Transports
   } = {}) {
     // Merge config with overloaded environement
     const options = merge(
       {
         platformUrl,
-        appName,
+        appName
       },
-      transports.getOverloadedConfigFromEnvironement(),
+      transports.getOverloadedConfigFromEnvironement()
     );
     // Validate mandatory parameters
-    const mandatory = ['appName', 'platformUrl'].filter(
-      (property) => !options[property],
-    );
+    const mandatory = ['appName', 'platformUrl'].filter((property) => !options[property]);
     if (mandatory.length) {
       throw new Error(`Missing mandatory parameter(s) ${mandatory.join(', ')}`);
     }
@@ -116,14 +109,14 @@ export class ClientHelper {
     this.config = getSandboxConfig({
       ...options,
       forceHttps,
-      transports,
+      transports
     }).catch((error) => {
       // Notify error in connection to server step
       this.connectionToServerFail(error);
       // Return empty config
       return {
         appName,
-        servers: [],
+        servers: []
       };
     });
     /**
@@ -181,86 +174,75 @@ export class ClientHelper {
       this.updateServerUrl();
     };
 
-    this.cometd.addListener(
-      '/meta/handshake',
-      ({ ext, successful, advice, error }) => {
-        this.cometd._debug('ClientHelper::/meta/handshake', {
-          ext,
-          successful,
-          advice,
-          error,
-        });
-        if (successful) {
-          const { authentication = null } = ext;
-          this.initialized(authentication);
-        } else {
-          this.handshakeFailure(error);
-        }
-      },
-    );
+    this.cometd.addListener('/meta/handshake', ({ ext, successful, advice, error }) => {
+      this.cometd._debug('ClientHelper::/meta/handshake', {
+        ext,
+        successful,
+        advice,
+        error
+      });
+      if (successful) {
+        const { authentication = null } = ext;
+        this.initialized(authentication);
+      } else {
+        this.handshakeFailure(error);
+      }
+    });
 
-    this.cometd.addListener(
-      '/meta/handshake',
-      ({ advice, error, ext, successful }) => {
-        this.cometd._debug('ClientHelper::/meta/handshake', {
-          ext,
-          successful,
-          advice,
-          error,
-        });
-        // AuthNegotiation
-        if (!successful) {
-          if (typeof advice === 'undefined') {
-            return;
-          }
-          if (Message.RECONNECT_NONE_VALUE === advice.reconnect) {
-            this.authenticationFailed(error);
-          } else if (Message.RECONNECT_HANDSHAKE_VALUE === advice.reconnect) {
-            this.negotiationFailed(error);
-          }
+    this.cometd.addListener('/meta/handshake', ({ advice, error, ext, successful }) => {
+      this.cometd._debug('ClientHelper::/meta/handshake', {
+        ext,
+        successful,
+        advice,
+        error
+      });
+      // AuthNegotiation
+      if (!successful) {
+        if (typeof advice === 'undefined') {
+          return;
         }
-      },
-    );
+        if (Message.RECONNECT_NONE_VALUE === advice.reconnect) {
+          this.authenticationFailed(error);
+        } else if (Message.RECONNECT_HANDSHAKE_VALUE === advice.reconnect) {
+          this.negotiationFailed(error);
+        }
+      }
+    });
 
-    this.cometd.addListener(
-      '/meta/connect',
-      ({ advice, channel, successful }) => {
-        this.cometd._debug('ClientHelper::/meta/connect', {
-          advice,
-          channel,
-          successful,
-        });
-        // ConnectionListener
-        if (this.cometd.isDisconnected()) {
-          this.connected = false;
-          // Notify connection will close
-          this.connectionWillClose();
-        } else {
-          this.wasConnected = this.connected;
-          this.connected = successful;
-          if (!this.wasConnected && this.connected) {
-            this.cometd.batch(this, () => {
-              // Unqueue subscriptions
-              this.subscribeQueue.forEach(
-                ({ prefix, listener, subscriptions }) => {
-                  this.subscribe(prefix, listener, subscriptions);
-                },
-              );
+    this.cometd.addListener('/meta/connect', ({ advice, channel, successful }) => {
+      this.cometd._debug('ClientHelper::/meta/connect', {
+        advice,
+        channel,
+        successful
+      });
+      // ConnectionListener
+      if (this.cometd.isDisconnected()) {
+        this.connected = false;
+        // Notify connection will close
+        this.connectionWillClose();
+      } else {
+        this.wasConnected = this.connected;
+        this.connected = successful;
+        if (!this.wasConnected && this.connected) {
+          this.cometd.batch(this, () => {
+            // Unqueue subscriptions
+            this.subscribeQueue.forEach(({ prefix, listener, subscriptions }) => {
+              this.subscribe(prefix, listener, subscriptions);
             });
-            // Notify connection is established
-            this.connectionEstablished();
-          } else if (this.wasConnected && !this.connected) {
-            // Notify connection is broken
-            this.connectionBroken();
-          }
+          });
+          // Notify connection is established
+          this.connectionEstablished();
+        } else if (this.wasConnected && !this.connected) {
+          // Notify connection is broken
+          this.connectionBroken();
         }
-      },
-    );
+      }
+    });
 
     this.cometd.addListener('/meta/disconnect', ({ channel, successful }) => {
       this.cometd._debug('ClientHelper::/meta/disconnect', {
         channel,
-        successful,
+        successful
       });
       if (this.cometd.isDisconnected()) {
         this.connected = false;
@@ -277,7 +259,7 @@ export class ClientHelper {
   addConnectionStatusListener(listener) {
     this.connectionListeners.push({
       enabled: true,
-      listener: Object.assign(new ConnectionStatusListener(), listener),
+      listener: Object.assign(new ConnectionStatusListener(), listener)
     });
     return this.connectionListeners.length - 1;
   }
@@ -287,11 +269,9 @@ export class ClientHelper {
   authenticationFailed(error) {
     this.userId = null;
     this.userInfo = null;
-    this.connectionListeners
-      .filter(({ enabled }) => enabled)
-      .forEach(({ listener }) => {
-        listener.onFailedHandshake(error);
-      });
+    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
+      listener.onFailedHandshake(error);
+    });
   }
   /**
    * Connect client using CometD Transport
@@ -306,7 +286,7 @@ export class ClientHelper {
           url: `${this.serverUrl}/strd`,
           backoffIncrement: 1000,
           maxBackoff: 60000,
-          appendMessageTypeToURL: false,
+          appendMessageTypeToURL: false
         });
         // Send handshake fields
         this.cometd.handshake(this.getHandshakeFields());
@@ -320,11 +300,9 @@ export class ClientHelper {
    * Notify listeners when connection is broken
    */
   connectionBroken() {
-    this.connectionListeners
-      .filter(({ enabled }) => enabled)
-      .forEach(({ listener }) => {
-        listener.onConnectionBroken();
-      });
+    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
+      listener.onConnectionBroken();
+    });
   }
   /**
    * Notify listeners when connection is closed
@@ -332,41 +310,33 @@ export class ClientHelper {
   connectionClosed() {
     this.userId = null;
     this.userInfo = null;
-    this.connectionListeners
-      .filter(({ enabled }) => enabled)
-      .forEach(({ listener }) => {
-        listener.onConnectionClosed();
-      });
+    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
+      listener.onConnectionClosed();
+    });
   }
   /**
    * Notify listeners when connection is established
    */
   connectionEstablished() {
-    this.connectionListeners
-      .filter(({ enabled }) => enabled)
-      .forEach(({ listener }) => {
-        listener.onConnectionEstablished();
-      });
+    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
+      listener.onConnectionEstablished();
+    });
   }
   /**
    * Notify listeners when connection to server fail
    */
   connectionToServerFail(failure) {
-    this.connectionListeners
-      .filter(({ enabled }) => enabled)
-      .forEach(({ listener }) => {
-        listener.onConnectionToServerFail(failure);
-      });
+    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
+      listener.onConnectionToServerFail(failure);
+    });
   }
   /**
    * Notify listeners when connection will close
    */
   connectionWillClose() {
-    this.connectionListeners
-      .filter(({ enabled }) => enabled)
-      .forEach(({ listener }) => {
-        listener.onConnectionWillClose();
-      });
+    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
+      listener.onConnectionWillClose();
+    });
   }
   /**
    * Create a promise based service
@@ -374,11 +344,7 @@ export class ClientHelper {
    * @param {{listener: Object, Type: class, deploymentId: string}} parameters
    * @return {Object} service
    */
-  createAsyncService({
-    listener,
-    Type,
-    deploymentId = Type.DEFAULT_DEPLOYMENT_ID,
-  }) {
+  createAsyncService({ listener, Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID }) {
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     const $publish = this.getAsyncServicePublisher(prefix);
     // Create service by publisher
@@ -386,7 +352,7 @@ export class ClientHelper {
       listener,
       prefix,
       Type,
-      $publish,
+      $publish
     });
   }
   /**
@@ -394,11 +360,7 @@ export class ClientHelper {
    * @param {{listener: Object, Type: class, deploymentId: string}} parameters
    * @return {Object} service
    */
-  createAsyncMacroService({
-    listener,
-    Type,
-    deploymentId = Type.DEFAULT_DEPLOYMENT_ID,
-  }) {
+  createAsyncMacroService({ listener, Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID }) {
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     const $publish = this.getAsyncMacroPublisher(prefix);
     // Create service by publisher
@@ -406,7 +368,7 @@ export class ClientHelper {
       listener,
       prefix,
       Type,
-      $publish,
+      $publish
     });
   }
   /**
@@ -423,7 +385,7 @@ export class ClientHelper {
       listener: {},
       prefix,
       Type,
-      $publish,
+      $publish
     });
   }
 
@@ -460,7 +422,7 @@ export class ClientHelper {
             // Create dynamic listener method
             const listener = {
               [method]: handler,
-              [DEFAULT_MACRO_CHANNEL]: handler,
+              [DEFAULT_MACRO_CHANNEL]: handler
             };
             // Ad-Hoc subscription
             this.subscribe(prefix, listener, subscriptions);
@@ -470,11 +432,11 @@ export class ClientHelper {
               hardFail: false,
               name: method,
               parameters,
-              requestId: uniqRequestId,
+              requestId: uniqRequestId
             });
           });
         };
-      },
+      }
     });
   }
 
@@ -513,7 +475,7 @@ export class ClientHelper {
             // Create dynamic listener method
             const listener = {
               [DEFAULT_TASK_CHANNEL]: onSuccess,
-              [DEFAULT_ERROR_CHANNEL]: onError,
+              [DEFAULT_ERROR_CHANNEL]: onError
             };
             // Ad-Hoc subscription
             this.subscribe(prefix, listener, subscriptions);
@@ -522,13 +484,13 @@ export class ClientHelper {
               data: {
                 name: method,
                 namespace,
-                parameters,
+                parameters
               },
-              requestId: uniqRequestId,
+              requestId: uniqRequestId
             });
           });
         };
-      },
+      }
     });
   }
 
@@ -569,19 +531,19 @@ export class ClientHelper {
               // Create dynamic listener method
               const listener = {
                 [method]: onSuccess,
-                [DEFAULT_ERROR_CHANNEL]: onError,
+                [DEFAULT_ERROR_CHANNEL]: onError
               };
               // Ad-Hoc subscription
               this.subscribe(prefix, listener, subscriptions);
               // Publish message on channel
               this.publish(channel, {
                 ...parameters,
-                requestId: uniqRequestId,
+                requestId: uniqRequestId
               });
             });
           };
-        },
-      },
+        }
+      }
     );
   }
   /**
@@ -592,15 +554,13 @@ export class ClientHelper {
   createService({ listener, Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID }) {
     const isMacroType = isDerivedOf(Type, Macro);
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
-    const $publish = isMacroType
-      ? this.getMacroPublisher(prefix)
-      : this.getServicePublisher(prefix);
+    const $publish = isMacroType ? this.getMacroPublisher(prefix) : this.getServicePublisher(prefix);
     // Create service by publisher
     return this.createServiceByPublisher({
       listener,
       prefix,
       Type,
-      $publish,
+      $publish
     });
   }
   /**
@@ -609,7 +569,7 @@ export class ClientHelper {
    */
   createServiceByPublisher({ listener, prefix, Type, $publish }) {
     const service = new Type({
-      $publish,
+      $publish
     });
     // Store subscription in service instance
     service.$subscriptions = this.subscribe(prefix, listener);
@@ -647,7 +607,7 @@ export class ClientHelper {
         // Create dynamic listener method
         const listener = {
           [name]: handler,
-          [DEFAULT_MACRO_CHANNEL]: handler,
+          [DEFAULT_MACRO_CHANNEL]: handler
         };
         // Ad-Hoc subscription
         this.subscribe(prefix, listener, subscriptions);
@@ -657,7 +617,7 @@ export class ClientHelper {
           hardFail,
           name,
           parameters,
-          requestId: uniqRequestId,
+          requestId: uniqRequestId
         });
       });
     };
@@ -690,14 +650,14 @@ export class ClientHelper {
         // Create dynamic listener method
         const listener = {
           [method]: onSuccess,
-          [DEFAULT_ERROR_CHANNEL]: onError,
+          [DEFAULT_ERROR_CHANNEL]: onError
         };
         // Ad-Hoc subscription
         this.subscribe(prefix, listener, subscriptions);
         // Publish message on channel
         this.publish(channel, {
           ...parameters,
-          requestId: uniqRequestId,
+          requestId: uniqRequestId
         });
       });
     };
@@ -731,7 +691,7 @@ export class ClientHelper {
         // Create dynamic listener method
         const listener = {
           [DEFAULT_TASK_CHANNEL]: onSuccess,
-          [DEFAULT_ERROR_CHANNEL]: onError,
+          [DEFAULT_ERROR_CHANNEL]: onError
         };
         // Ad-Hoc subscription
         this.subscribe(prefix, listener, subscriptions);
@@ -740,9 +700,9 @@ export class ClientHelper {
           data: {
             name,
             namespace,
-            parameters,
+            parameters
           },
-          requestId: uniqRequestId,
+          requestId: uniqRequestId
         });
       });
     };
@@ -776,7 +736,7 @@ export class ClientHelper {
         hardFail,
         name,
         parameters,
-        requestId,
+        requestId
       });
     };
   }
@@ -785,12 +745,10 @@ export class ClientHelper {
    * @return {Object} index
    */
   getQueuedSubscription(subscriptions = {}) {
-    const index = this.subscribeQueue.findIndex(
-      (element) => subscriptions === element.subscriptions,
-    );
+    const index = this.subscribeQueue.findIndex((element) => subscriptions === element.subscriptions);
     return {
       index,
-      queued: index > -1,
+      queued: index > -1
     };
   }
   /**
@@ -861,11 +819,9 @@ export class ClientHelper {
       this.userId = authentication.userId;
       this.userInfo = authentication.userInfo;
     }
-    this.connectionListeners
-      .filter(({ enabled }) => enabled)
-      .forEach(({ listener }) => {
-        listener.onSuccessfulHandshake(authentication);
-      });
+    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
+      listener.onSuccessfulHandshake(authentication);
+    });
   }
   /**
    * Is client connected to ZetaPush
@@ -879,11 +835,9 @@ export class ClientHelper {
    */
   messageLost(channel, data) {
     this.cometd._debug('ClientHelper::messageLost', channel, data);
-    this.connectionListeners
-      .filter(({ enabled }) => enabled)
-      .forEach(({ listener }) => {
-        listener.onMessageLost(channel, data);
-      });
+    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
+      listener.onMessageLost(channel, data);
+    });
   }
   /**
    * Negociate authentication
@@ -891,22 +845,18 @@ export class ClientHelper {
    */
   negotiationFailed(error) {
     this.cometd._debug('ClientHelper::negotiationFailed', error);
-    this.connectionListeners
-      .filter(({ enabled }) => enabled)
-      .forEach(({ listener }) => {
-        listener.onNegotiationFailed(error);
-      });
+    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
+      listener.onNegotiationFailed(error);
+    });
   }
   /**
    * Notify listeners when no server url available
    */
   noServerUrlAvailable() {
     this.cometd._debug('ClientHelper::noServerUrlAvailable');
-    this.connectionListeners
-      .filter(({ enabled }) => enabled)
-      .forEach(({ listener }) => {
-        listener.onNoServerUrlAvailable();
-      });
+    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
+      listener.onNoServerUrlAvailable();
+    });
   }
   /**
    * Wrap CometdD publish method
@@ -918,7 +868,7 @@ export class ClientHelper {
     this.cometd.publish(channel, parameters);
     return {
       channel,
-      parameters,
+      parameters
     };
   }
   /**
@@ -960,7 +910,7 @@ export class ClientHelper {
       this.subscribeQueue.push({
         prefix,
         listener,
-        subscriptions,
+        subscriptions
       });
     }
     // Subscribe if user is connected
@@ -969,10 +919,7 @@ export class ClientHelper {
         if (listener.hasOwnProperty(method)) {
           if (subscriptions[method] === void 0) {
             const channel = `${prefix()}/${method}`;
-            subscriptions[method] = this.cometd.subscribe(
-              channel,
-              listener[method],
-            );
+            subscriptions[method] = this.cometd.subscribe(channel, listener[method]);
           }
         }
       }
@@ -994,7 +941,7 @@ export class ClientHelper {
       } else {
         this.serverUrl = shuffle(servers);
         this.cometd.configure({
-          url: `${this.serverUrl}/strd`,
+          url: `${this.serverUrl}/strd`
         });
         setTimeout(() => {
           this.cometd.handshake(this.getHandshakeFields());

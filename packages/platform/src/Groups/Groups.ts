@@ -24,7 +24,7 @@ import {
   TraceablePaginatedImpersonatedRequest,
   UserGroup,
   UserGroupMembership,
-  UserMembership,
+  UserMembership
 } from './GroupsTypes';
 
 /**
@@ -265,9 +265,7 @@ export class Groups extends Service {
    * Returns the whole list of groups owned by the current user, with their members
    * @access public
    * */
-  listDetailedOwnedGroups(
-    body: TraceablePaginatedImpersonatedRequest,
-  ): Promise<OwnedGroupsWithDetails> {
+  listDetailedOwnedGroups(body: TraceablePaginatedImpersonatedRequest): Promise<OwnedGroupsWithDetails> {
     return this.$publish('listDetailedOwnedGroups', body);
   }
   /**
@@ -308,9 +306,7 @@ export class Groups extends Service {
    * Groups may be owned by anyone, including the current user.
    * @access public
    * */
-  listJoinedGroups(
-    body: TraceablePaginatedImpersonatedRequest,
-  ): Promise<JoinedGroups> {
+  listJoinedGroups(body: TraceablePaginatedImpersonatedRequest): Promise<JoinedGroups> {
     return this.$publish('listJoinedGroups', body);
   }
   /**
@@ -319,9 +315,7 @@ export class Groups extends Service {
    * Returns the whole list of groups owned by the current user
    * @access public
    * */
-  listOwnedGroups(
-    body: TraceablePaginatedImpersonatedRequest,
-  ): Promise<OwnedGroups> {
+  listOwnedGroups(body: TraceablePaginatedImpersonatedRequest): Promise<OwnedGroups> {
     return this.$publish('listOwnedGroups', body);
   }
   /**

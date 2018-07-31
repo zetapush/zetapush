@@ -1,9 +1,4 @@
-import {
-  PageDirection,
-  Pagination,
-  StringAnyMap,
-  StringObjectMap,
-} from '../CommonTypes';
+import { PageDirection, Pagination, StringAnyMap, StringObjectMap } from '../CommonTypes';
 
 export interface UserInfoRequest {
   /**Set of user keys*/

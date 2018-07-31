@@ -18,7 +18,7 @@ export class LogsConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Logs.DEFAULT_DEPLOYMENT_ID,
-      '/logs/configuration',
+      '/logs/configuration'
     );
   }
   /**
@@ -32,7 +32,7 @@ export class LogsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Logs.DEFAULT_DEPLOYMENT_ID,
-      '/logs/configure',
+      '/logs/configure'
     );
   }
   /**
@@ -45,7 +45,7 @@ export class LogsConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Logs.DEFAULT_DEPLOYMENT_ID,
-      '/logs/list',
+      '/logs/list'
     );
   }
 }

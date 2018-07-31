@@ -114,7 +114,7 @@ export enum GameStatus {
   /**The game has been created*/
   CREATED = 'CREATED',
   /**The game is starting*/
-  STARTING = 'STARTING',
+  STARTING = 'STARTING'
 }
 export interface GameType {
   /**Game description*/

@@ -24,7 +24,7 @@ import {
   UploadedFile,
   ZetaApiError,
   ZpfsDiskUsage,
-  ZpfsRequest,
+  ZpfsRequest
 } from '../CommonTypes';
 
 export interface FileCreationRequest {
