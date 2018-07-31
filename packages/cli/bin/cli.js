@@ -9,9 +9,21 @@ const program = require('commander');
 
 const { version } = require('../package.json');
 
-const { DEFAULTS } = require('@zetapush/common');
+const { DEFAULTS, setVerbosity, error } = require('@zetapush/common');
+const {
+  ErrorAnalyzer,
+  errorHelper,
+  displayHelp,
+  ConfigLoadIssueAnalyzer,
+  MissingNpmDependencyErrorAnalyzer,
+  NetworkIssueAnalyzer,
+  AccessDeniedIssueAnalyzer,
+  InjectionIssueAnalyzer,
+  CustomCloudServiceStartErrorAnalyzer,
+  OnApplicationBoostrapErrorAnalyser
+} = require('@zetapush/troubleshooting');
+
 const { helpMessageRun, helpMessagePush } = require('../src/utils/helper-messages');
-const { setVerbosity, error } = require('@zetapush/common');
 const { identity } = require('../src/utils/validator');
 
 const push = require('../src/commands/push');
@@ -20,15 +32,6 @@ const createApp = require('../src/commands/createApp');
 const troubleshoot = require('../src/commands/troubleshoot');
 
 const { load } = require('../src/loader/worker');
-
-const { ErrorAnalyzer, errorHelper, displayHelp } = require('../src/errors/troubleshooting');
-const { ConfigLoadIssueAnalyzer } = require('../src/errors/config-load-issue');
-const { MissingNpmDependencyErrorAnalyzer } = require('../src/errors/npm-dependency-issue');
-const { NetworkIssueAnalyzer } = require('../src/errors/network-issue');
-const { AccessDeniedIssueAnalyzer } = require('../src/errors/access-denied-issue');
-const { InjectionIssueAnalyzer } = require('../src/errors/injection-issue');
-const { CustomCloudServiceStartErrorAnalyzer } = require('../src/errors/custom-cloud-service-start-issue');
-const { OnApplicationBoostrapErrorAnalyser } = require('../src/errors/bootstrap-issue');
 
 ErrorAnalyzer.register(new ConfigLoadIssueAnalyzer());
 ErrorAnalyzer.register(new NetworkIssueAnalyzer());
