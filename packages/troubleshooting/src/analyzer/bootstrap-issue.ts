@@ -1,14 +1,16 @@
-const { ErrorAnalyzer } = require('./troubleshooting');
-const { todo } = require('@zetapush/common');
+// ZetaPush modules
+import { todo } from '@zetapush/common';
+// Project modules
+import { ErrorAnalyzer, ErrorContextToAnalyze, ExitCode } from './error-analyzer';
 
-class OnApplicationBoostrapErrorAnalyser extends ErrorAnalyzer {
-  async getError(err) {
+export class OnApplicationBoostrapErrorAnalyser extends ErrorAnalyzer {
+  async getError(err: ErrorContextToAnalyze) {
     todo(err);
     // FIXME: add test with onApplicationBootstrap and then restore help analysis
     return null;
     // RUN LOCAL
     if (err.code) {
-      err.code = 'BOOTSTRAP-01';
+      err.code = ExitCode.BOOTSTRAP_01;
       return err;
     }
     // PUSH
@@ -16,7 +18,7 @@ class OnApplicationBoostrapErrorAnalyser extends ErrorAnalyzer {
       for (let error of step.errors) {
         if (error.cause.code === 'EBOOTFAIL') {
           return {
-            code: 'BOOTSTRAP-01',
+            code: ExitCode.BOOTSTRAP_01,
             message: error.message
           };
         }
@@ -25,5 +27,3 @@ class OnApplicationBoostrapErrorAnalyser extends ErrorAnalyzer {
     return null;
   }
 }
-
-module.exports = { OnApplicationBoostrapErrorAnalyser };

@@ -1,7 +1,8 @@
-const { ErrorAnalyzer } = require('./troubleshooting');
+// Project modules
+import { ErrorAnalyzer, ErrorContextToAnalyze, ExitCode } from './error-analyzer';
 
-class InjectionIssueAnalyzer extends ErrorAnalyzer {
-  isAnInjectionCustomServiceError(err) {
+export class InjectionIssueAnalyzer extends ErrorAnalyzer {
+  isAnInjectionCustomServiceError(err: ErrorContextToAnalyze) {
     if (!err.message) {
       return { isError: false };
     }
@@ -20,7 +21,7 @@ class InjectionIssueAnalyzer extends ErrorAnalyzer {
     }
   }
 
-  isErrorInConstructorCustomService(err) {
+  isErrorInConstructorCustomService(err: ErrorContextToAnalyze) {
     if (err.message && err.message.includes('Error during instantiation')) {
       return true;
     } else {
@@ -28,17 +29,17 @@ class InjectionIssueAnalyzer extends ErrorAnalyzer {
     }
   }
 
-  async getError(err) {
+  async getError(err: ErrorContextToAnalyze) {
     // INJECTION-01
     const checkInjectionCustomService = this.isAnInjectionCustomServiceError(err);
     if (checkInjectionCustomService.isError) {
-      return { code: 'INJECTION-01' };
+      return { code: ExitCode.INJECTION_01 };
     }
 
     // SERVICE-04
     const checkConstructorError = this.isErrorInConstructorCustomService(err);
     if (checkConstructorError) {
-      return { code: 'SERVICE-04' };
+      return { code: ExitCode.SERVICE_04 };
     }
 
     return null;

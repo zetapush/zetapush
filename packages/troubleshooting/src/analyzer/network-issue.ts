@@ -1,20 +1,24 @@
-const { ErrorAnalyzer } = require('./troubleshooting');
-const dns = require('dns');
-const os = require('os');
-const process = require('process');
+// NodeJS modules
+import dns from 'dns';
+import os from 'os';
+import process from 'process';
+// ZetaPush modules
+import { trace } from '@zetapush/common';
+// Project modules
+import { ErrorAnalyzer, ErrorContextToAnalyze, ExitCode } from './error-analyzer';
+// ThirdPart modules
 const gateway = require('default-gateway');
-const { trace } = require('@zetapush/common');
 const execa = require('execa');
 
-class NetworkIssueAnalyzer extends ErrorAnalyzer {
-  async canReachLocalNetwork(err) {
+export class NetworkIssueAnalyzer extends ErrorAnalyzer {
+  async canReachLocalNetwork(err: ErrorContextToAnalyze) {
     return new Promise((resolve, reject) => {
       try {
         const defaultGateway = gateway.v4.sync();
         trace('default gateway', defaultGateway);
         // if the default gateway is the address of the unreachable network
         // => the local network is not accessible
-        resolve(defaultGateway.gateway != err.failure.address);
+        resolve(defaultGateway.gateway != err.error.address);
       } catch (e) {
         trace('default gateway error', e);
         // fails if there is no result => no defaut gateway => resolve(false)
@@ -29,9 +33,9 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
   }
 
   async canReachGoogle() {
-    return new Promise((resolve, reject) => {
-      dns.lookup('google.com', function(err) {
-        if (err && err.code == 'ENOTFOUND') {
+    return new Promise((resolve) => {
+      dns.lookup('google.com', (failure) => {
+        if (failure && failure.code == 'ENOTFOUND') {
           trace('no access to google');
           resolve(false);
         } else {
@@ -42,24 +46,29 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
     });
   }
 
-  async canReachProxy(err) {
-    return new Promise((resolve, reject) => {
-      dns.lookupService(this.getConfiguredProxy(), function(err) {
-        if (err) {
-          trace('no access to proxy');
-          resolve(false);
-        } else {
-          trace('access to proxy');
-          resolve(true);
-        }
-      });
+  async canReachProxy(err: ErrorContextToAnalyze) {
+    return new Promise((resolve) => {
+      const proxy = this.getConfiguredProxy();
+      if (proxy) {
+        dns.lookupService(proxy, 53, (failure: any) => {
+          if (failure) {
+            trace('no access to proxy');
+            resolve(false);
+          } else {
+            trace('access to proxy');
+            resolve(true);
+          }
+        });
+      } else {
+        resolve(true);
+      }
     });
   }
 
   async canAccessDnsServer() {
-    return new Promise((resolve, reject) => {
-      dns.lookupService('8.8.8.8', 53, function(err, hostname, service) {
-        if (err) {
+    return new Promise((resolve) => {
+      dns.lookupService('8.8.8.8', 53, (failure: any) => {
+        if (failure) {
           trace('no access to external dns server');
           resolve(false);
         } else {
@@ -69,11 +78,11 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
     });
   }
 
-  isNetworkError(err) {
-    if (!err.failure || !err.request) {
+  isNetworkError(err: ErrorContextToAnalyze) {
+    if (!err.error || !err.request) {
       return false;
     }
-    const code = err.failure.code;
+    const code = err.error.code;
     return (
       code == 'EAI_AGAIN' ||
       code == 'ENETUNREACH' ||
@@ -85,9 +94,9 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
     );
   }
 
-  isBehindProxy(err) {
-    const code = err.failure && err.failure.code;
-    return code == 'ENETUNREACH' || (code == 'ECONNREFUSED' && !err.request.url.includes(err.failure.address)); // if address different from URL, request goes through a proxy (TODO: is always working?)
+  isBehindProxy(err: ErrorContextToAnalyze) {
+    const code = err.error && err.error.code;
+    return code == 'ENETUNREACH' || (code == 'ECONNREFUSED' && !err.request.url.includes(err.error.address)); // if address different from URL, request goes through a proxy (TODO: is always working?)
   }
 
   hasActiveExternalNetworkInterface() {
@@ -123,10 +132,10 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
     }
   }
 
-  async getError(err) {
+  async getError(err: ErrorContextToAnalyze) {
     // not a network error, let another analyzer handle the error
     if (!this.isNetworkError(err)) {
-      trace('not a network error');
+      trace('not a network error', typeof err, Object.keys(err));
       return null;
     }
     try {
@@ -135,29 +144,29 @@ class NetworkIssueAnalyzer extends ErrorAnalyzer {
         trace('local network not available');
         if (this.isProxyConfigured()) {
           trace('a proxy is configured but unreachable');
-          return { code: 'NET-03' };
+          return { code: ExitCode.NET_03 };
         }
         trace('no proxy');
-        return { code: 'NET-01' };
+        return { code: ExitCode.NET_01 };
       }
       if (!(await this.canAccessDnsServer()) || !(await this.canReachGoogle())) {
         trace('local network available but not internet');
         if (!this.isBehindProxy(err) && !this.isProxyConfigured()) {
           trace('not behind proxy');
-          return { code: 'NET-02' };
+          return { code: ExitCode.NET_02 };
         }
         if (!(await this.canReachProxy(err))) {
           trace('behind proxy and proxy not reachable');
-          return { code: 'NET-03' };
+          return { code: ExitCode.NET_03 };
         }
         trace('behind proxy and proxy reachable but not internet');
-        return { code: 'NET-04' };
+        return { code: ExitCode.NET_04 };
       }
       // TODO: port blocked (-> test citedia)
-      return { code: 'NET-02' };
+      return { code: ExitCode.NET_02 };
     } catch (e) {
       trace('failed to determine network cause', e);
-      return { code: 'NET-05' };
+      return { code: ExitCode.NET_05 };
     }
   }
 }

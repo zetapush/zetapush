@@ -1,7 +1,11 @@
-const conditions = require('./conditions');
-const { trace } = require('@zetapush/common');
+import { trace } from '@zetapush/common';
+import { isLinux, isWindows } from './os';
 
-const parse = (content) => {
+const conditions: {
+  [property: string]: () => boolean;
+} = { isLinux, isWindows };
+
+export const parse = (content: string) => {
   let parsed = content
     // remove asciidoctor variables
     .replace(/:relative-path:.*/g, '')
@@ -43,12 +47,19 @@ const parse = (content) => {
   return parsed;
 };
 
-const highlight = (language, legend, code) => {
+const highlight = (language: string, legend: string, code: string) => {
   // TODO: handle syntax highlighting like vim ?
   return `{whiteBright.bgBlackBright ${fillLines(code)}\n}`;
 };
 
-const admonition = (icon, iconStyle, legend, legendStyle, text, textStyle) => {
+const admonition = (
+  icon: string,
+  iconStyle: string,
+  legend: string,
+  legendStyle: string,
+  text: string,
+  textStyle: string
+) => {
   const decoratedLines = [];
   const lines = fillLines(text).split('\n');
   let middle = Math.floor(lines.length / 2);
@@ -67,12 +78,12 @@ const admonition = (icon, iconStyle, legend, legendStyle, text, textStyle) => {
   return decoratedLines.join('\n') + '\n';
 };
 
-const addIcon = (icon, iconStyle, lineNumber = 0, middle = 1) => {
+const addIcon = (icon: string, iconStyle: string, lineNumber = 0, middle = 1) => {
   let iconStr = lineNumber == middle ? icon : icon.replace(/\\\\/g, ' ').replace(/[^|]/g, ' ');
   return iconStyle ? '{' + iconStyle + ' ' + iconStr + '}' : iconStr;
 };
 
-const fillLines = (content, fillChar = ' ', extraSpaces = 2) => {
+const fillLines = (content: string, fillChar = ' ', extraSpaces = 2) => {
   let width = 0;
   const lines = content.split('\n');
   for (let line of lines) {
@@ -87,7 +98,7 @@ const fillLines = (content, fillChar = ' ', extraSpaces = 2) => {
   return filledLines.join('\n');
 };
 
-const parseTabContainer = (content) => {
+const parseTabContainer = (content: string) => {
   return content.replace(/^\[role="?tab-container"?\]\n.+?\n(.+)\[role="?tab-container-end"?\]\s-/gms, function(
     _,
     tabContainerContent
@@ -96,13 +107,13 @@ const parseTabContainer = (content) => {
   });
 };
 
-const parseTabs = (content) => {
+const parseTabs = (content: string) => {
   let parsed = content;
   let i = 0; // just in case
   while (parsed.match(/\[role="?tab"?/) && i++ < 5) {
     parsed = parsed.replace(
       /\[role="?tab"?(, ?condition="?([^(]+)\(([^)]*)\)"?)\]\s(.+?)\n(.+(\[role="?tab)?)/gms,
-      function(_, __, condition, parameters, tabName, tabContent) {
+      (_, __, condition: string, parameters, tabName, tabContent) => {
         trace('found tab', tabName, `${condition}(${parameters})`);
         // TODO: handle parameters?
         if (conditions[condition]()) {
