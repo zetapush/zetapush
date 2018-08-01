@@ -16,7 +16,6 @@
   "scripts": {},
   "dependencies": {
     "@zetapush/common": "0.31.4",
-    "@zetapush/client": "0.31.4",
     "@zetapush/cometd": "0.31.4",
     "@zetapush/platform": "0.31.4",
     "@zetapush/troubleshooting": "0.31.4",
