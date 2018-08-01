@@ -22,8 +22,8 @@ export class ClassValidatorValidationConfigurer<P> extends AbstractParent<P>
   }
 }
 
-export function generateValidationSchemaFromObject(object: Function): ValidationSchema {
-  const metadataStorage = getFromContainer(MetadataStorage);
+export function generateValidationSchemaFromObject(object: Function): ClassValidator.ValidationSchema {
+  const metadataStorage = ClassValidator.getFromContainer(ClassValidator.MetadataStorage);
   const validationMetadata = metadataStorage.getTargetValidationMetadatas(object, '', undefined);
 
   return convertValidationMetadataToValidationSchema(object, validationMetadata);
@@ -37,8 +37,8 @@ export function generateValidationSchemaFromObject(object: Function): Validation
 export function convertValidationMetadataToValidationSchema(
   object: Function,
   validationMetadatas: Array<ValidationMetadata>
-): ValidationSchema {
-  const validationSchema: ValidationSchema = {
+): ClassValidator.ValidationSchema {
+  const validationSchema: ClassValidator.ValidationSchema = {
     name: object.name + '_' + new Date().getTime(),
     properties: {}
   };
@@ -71,7 +71,7 @@ export function convertValidationMetadataToValidationSchema(
   });
 
   // Register the Schema
-  registerSchema(validationSchema);
+  ClassValidator.registerSchema(validationSchema);
 
   return validationSchema;
 }

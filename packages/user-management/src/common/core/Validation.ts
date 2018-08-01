@@ -1,15 +1,15 @@
 import { ValidationManager } from '../api/Validation';
-import { ValidationSchema, validate } from 'class-validator';
+import * as ClassValidator from 'class-validator';
 import { ValidationErrorContext, ConstraintValidationError, ValidationError } from '../api';
 
 /**
  * ValidationManager implementation with "class-validator" library
  */
 export class ClassValidatorManager implements ValidationManager {
-  constructor(private validationSchema: ValidationSchema) {}
+  constructor(private validationSchema: ClassValidator.ValidationSchema) {}
 
   async validate(object: Object) {
-    const errors = await validate(this.validationSchema.name, object);
+    const errors = await ClassValidator.validate(this.validationSchema.name, object);
 
     if (errors.length > 0) {
       const validationErrorContext: Array<ValidationErrorContext> = [];
@@ -41,7 +41,7 @@ export class ClassValidatorManager implements ValidationManager {
  * ValidationManager implementation without any validation
  */
 export class NoOpValidationManager implements ValidationManager {
-  constructor(private validationSchema?: ValidationSchema) {}
+  constructor(private validationSchema?: ClassValidator.ValidationSchema) {}
 
   async validate(object?: Object) {
     // Do nothing because all is valid in this case
