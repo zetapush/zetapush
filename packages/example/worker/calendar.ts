@@ -1,4 +1,4 @@
-import { Injectable } from '@zetapush/platform';
+import { Injectable } from '@zetapush/core';
 
 @Injectable()
 export class Calendar {

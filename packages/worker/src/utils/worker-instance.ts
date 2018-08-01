@@ -1,7 +1,8 @@
-import { Context, TaskRequest, CloudServiceInstance } from '@zetapush/platform';
-import { inject } from './context';
-
+import { Context } from '@zetapush/core';
 import { timeoutify } from '@zetapush/common';
+import { TaskRequest } from '@zetapush/platform';
+
+import { inject } from './context';
 
 /**
  * Default error code

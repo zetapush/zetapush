@@ -16,7 +16,6 @@
   "scripts": {},
   "dependencies": {
     "@zetapush/common": "0.31.4",
-    "@zetapush/client": "0.31.4",
     "@zetapush/cometd": "0.31.4",
     "@zetapush/platform": "0.31.4",
     "@zetapush/troubleshooting": "0.31.4",
@@ -30,7 +29,6 @@
     "node-progress-bars": "1.0.8",
     "ora": "2.1.0",
     "prompt-sync": "4.1.6",
-    "reflect-metadata": "0.1.12",
     "resolve-cwd": "2.0.0",
     "serve-handler": "3.3.0",
     "ts-node": "7.0.0",

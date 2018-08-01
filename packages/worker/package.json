@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@zetapush/common": "0.31.4",
-    "@zetapush/cometd": "0.31.4",
+    "@zetapush/core": "0.31.4",
     "@zetapush/client": "0.31.4",
     "@zetapush/platform": "0.31.4"
   },
@@ -41,8 +41,7 @@
     "rollup-plugin-uglify": "4.0.0",
     "rollup-watch": "4.3.1",
     "typescript": "2.9.2",
-    "uglify-es": "3.3.9",
-    "injection-js": "2.2.1"
+    "uglify-es": "3.3.9"
   },
   "publishConfig": {
     "access": "public"

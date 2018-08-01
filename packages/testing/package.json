@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@zetapush/common": "0.31.4",
+    "@zetapush/core": "0.31.4",
     "@zetapush/client": "0.31.4",
     "@zetapush/worker": "0.31.4",
     "@zetapush/cometd": "0.31.4",
@@ -42,7 +43,6 @@
     "@types/node": "10.5.2",
     "@types/rimraf": "2.0.2",
     "cross-env": "5.2.0",
-    "injection-js": "2.2.1",
     "jasmine": "3.1.0",
     "jasmine-reporters": "2.3.1",
     "rollup": "0.62.0",
@@ -53,8 +53,7 @@
     "rollup-plugin-uglify": "4.0.0",
     "rollup-watch": "4.3.1",
     "typescript": "2.9.2",
-    "uglify-es": "3.3.9",
-    "reflect-metadata": "0.1.12"
+    "uglify-es": "3.3.9"
   },
   "publishConfig": {
     "access": "public"

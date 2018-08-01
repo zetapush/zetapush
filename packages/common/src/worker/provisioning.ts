@@ -1,9 +1,11 @@
+import { Provider } from '@zetapush/core';
+
 import { log, error } from '../utils/log';
 import { analyze } from './di';
 import { Service, Config, WorkerDeclaration, ResolvedConfig } from '../common-types';
 import { PathLike, writeFile } from 'fs';
 import { isNode } from '../utils/environment';
-import { Provider } from 'injection-js';
+
 const JSZip = require('jszip');
 
 /**

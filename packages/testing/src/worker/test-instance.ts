@@ -1,8 +1,8 @@
-import { Injectable, Inject, timeoutify, DEFAULT_INJECTOR_INSTANCE } from '@zetapush/common';
-import { WorkerClientOptions, WorkerInstanceFactory, TaskDispatcherWorkerInstance } from '@zetapush/worker';
+import { timeoutify, DEFAULT_INJECTOR_INSTANCE } from '@zetapush/common';
+import { Injectable } from '@zetapush/core';
+import { inject, TaskDispatcherWorkerInstance, WorkerClientOptions, WorkerInstanceFactory } from '@zetapush/worker';
+
 import { runInWorkerLogger } from '../utils/logger';
-import { inject } from '@zetapush/worker';
-require('reflect-metadata');
 
 export class Wrapper {
   constructor(

@@ -1,3 +1,10 @@
+import { existsSync } from 'fs';
+
+import { createApplication } from '@zetapush/common';
+import { Config } from '@zetapush/common';
+
+import copydir from 'copy-dir';
+
 import { givenLogger, envLogger } from '../utils/logger';
 import {
   readZetarc,
@@ -11,11 +18,7 @@ import {
   Runner,
   getCurrentEnv
 } from '../utils/commands';
-import copydir from 'copy-dir';
 import { TestContext, Test } from '../utils/types';
-import { existsSync } from 'fs';
-import { createApplication } from '@zetapush/common';
-import { Config } from '@zetapush/common';
 
 export const given = () => new Given();
 

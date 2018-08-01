@@ -1,12 +1,13 @@
-import { userActionLogger, frontUserActionLogger, runInWorkerLogger } from '../utils/logger';
 import { WeakClient } from '@zetapush/client';
-import { WorkerRunner, WorkerRunnerEvents } from '@zetapush/worker';
 import { ResolvedConfig, Service } from '@zetapush/common';
+import { FactoryProvider } from '@zetapush/core';
+import { WorkerRunner, WorkerRunnerEvents } from '@zetapush/worker';
+
+import { userActionLogger, frontUserActionLogger, runInWorkerLogger } from '../utils/logger';
 import { Context, ContextWrapper } from '../utils/types';
+import { Wrapper, TestWorkerInstanceFactory, TestWorkerInstance, TestDeclaration } from '../worker/test-instance';
 
 const transports = require('@zetapush/cometd/lib/node/Transports');
-import { FactoryProvider } from 'injection-js';
-import { Wrapper, TestWorkerInstanceFactory, TestWorkerInstance, TestDeclaration } from '../worker/test-instance';
 
 export const userAction = async (name: string, func: () => any) => {
   try {
