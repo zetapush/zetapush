@@ -5,8 +5,14 @@ import { UuidGenerator, Uuid, Variables, Location, Token, TokenGenerator, TokenR
 import { AxiosInstance } from 'axios';
 import { UserRepository } from '../api/User';
 import { ConfirmationUrlProvider, AccountConfirmationContext } from '../../standard-user-workflow/api/Confirmation';
+import { Provider } from '@zetapush/core';
 
 export interface And<P> {
+  /**
+   * Continue chaining to go back to parent configurer.
+   *
+   * @returns the parent configurer
+   */
   and(): P;
 }
 
@@ -17,6 +23,138 @@ export interface Alternative<S> {
 }
 
 export interface StandardUserWorkflowConfigurer {
+  /**
+   * Configure registration process of the end users in your application.
+   *
+   * By default the registration process is configured like this:
+   * 1. End user registers himself to your application and provides account details
+   * 2. An email with a link to confirm its account is sent to the end user
+   * 3. The end user clicks on the link to confirm its account
+   * 4. The account is confirmed and the user can now login into your application.
+   *
+   * This configurer lets you configure many aspects of this default process.
+   *
+   * Configure end users account fields used for registration
+   * ========================================================
+   *
+   * Configure fields used for creating end user accounts using class
+   * ----------------------------------------------------------------
+   *
+   * You can indicate which fields are used for account creation by
+   * simply provide a class definition:
+   * @example
+   * ```
+   * class MyEndUsersAccountCreationDetails {
+   *   public username: string;
+   *   public password: string;
+   *   public confirmPassword: string;
+   *   public email: string;
+   * }
+   *
+   * .registration()
+   *   .account()
+   *     .fields()
+   *       .scan(MyEndUsersAccountDetails)
+   * ```
+   *
+   * Besides, you can benefit of TypeScript decorators to annotate
+   * each field with validation constraints:
+   * @example
+   * ```
+   * class MyEndUsersAccountCreationDetails {
+   *   @Required()
+   *   @Length(10, 20)
+   *   public username: string;
+   *   @Required()
+   *   @Length(6, 20)
+   *   public password: string;
+   *   @Required()
+   *   @SameAs('password')
+   *   public confirmPassword: string;
+   *   @IsEmail()
+   *   @Required()
+   *   public email: string;
+   * }
+   *
+   * .registration()
+   *   .account()
+   *     .fields()
+   *       .scan(MyEndUsersAccountDetails)
+   * ```
+   *
+   *
+   * Configure fields used for creating end user accounts manually
+   * -------------------------------------------------------------
+   *
+   * TODO
+   *
+   * Configure initial account status
+   * --------------------------------
+   *
+   * As said above, when account is created, the user must confirm it.
+   * So by default, the account status is initially set to "WAITING_FOR_CONFIRMATION"
+   * (`StandardAccountStatus.WaitingConfirmation`, {@link StandardAccountStatus}).
+   *
+   * For example, if you don't need confirmation, you can set initial status to "ACTIVE"
+   * (`StandardAccountStatus.Active`, {@link StandardAccountStatus}):
+   * @example
+   * ```
+   * .registration()
+   *   .account()
+   *     .initialStatus()
+   *       .value(StandardAccountStatus.Active)
+   * ```
+   *
+   * Configure account uuid generation
+   * ---------------------------------
+   *
+   * When a end user account is created a unique technical identifier is generated.
+   *
+   * By default, a 20 characters uuid is generated. You can choose another uuid generator:
+   * @example
+   * ```
+   * .registration()
+   *   .account()
+   *     .uuid()
+   *       .generator(() => Math.random())
+   * ```
+   *
+   * Configure OAuth accounts
+   * ========================
+   *
+   * TODO
+   *
+   * Configure Google
+   * ----------------
+   *
+   * TODO
+   *
+   * Configure Facebook
+   * ------------------
+   *
+   * TODO
+   *
+   * Configure Github
+   * ----------------
+   *
+   * TODO
+   *
+   * Configure any other OAuth provider
+   * ----------------------------------
+   *
+   * TODO
+   *
+   * Configure account confirmation
+   * ==============================
+   *
+   * TODO
+   *
+   * Configure welcome message
+   * =========================
+   *
+   * TODO
+   *
+   */
   registration(): RegistrationConfigurer;
 
   login(): LoginConfigurer;
@@ -28,6 +166,7 @@ export interface StandardUserWorkflowConfigurer {
 
 export interface UuidConfigurer<P> extends And<P> {
   generator(func: () => Promise<Uuid>): UuidConfigurer<P>;
+  generator(provider: Provider): UuidConfigurer<P>;
   generator(instance: UuidGenerator): UuidConfigurer<P>;
   generator(generatorClass: Type<UuidGenerator>): UuidConfigurer<P>;
 }
@@ -96,7 +235,7 @@ export interface FieldsConfigurer<P> extends And<P> {
 }
 
 export interface ScanConfigurer<P> extends And<P> {
-  annotations(model: Type<any>): AnnotationsConfigurer<ScanConfigurer<P>>;
+  annotations(): AnnotationsConfigurer<ScanConfigurer<P>>;
 }
 
 export interface AnnotationsConfigurer<P> extends And<P> {
@@ -141,9 +280,7 @@ export interface AccountConfigurer extends And<RegistrationConfigurer> {
   storage(userStorageInstance: UserRepository): AccountConfigurer;
 }
 
-export interface RegistrationFieldsConfigurer extends FieldConfigurer<RegistrationConfigurer> {
-  scan(): ScanConfigurer<RegistrationFieldsConfigurer>;
-}
+export interface RegistrationFieldsConfigurer extends FieldsConfigurer<RegistrationConfigurer> {}
 
 export interface AccountStatusConfigurer extends And<AccountConfigurer> {
   value(accountStatus: AccountStatus): AccountStatusConfigurer;

@@ -1,6 +1,12 @@
 import { Provider, Type, ValueProvider, InjectionToken, Injector, ReflectiveInjector } from '@zetapush/core';
 import { IllegalStateError, IllegalArgumentValueError } from '../api';
 
+/**
+ * An effective configurer must implement this interface.
+ *
+ * It provides a getProviders method that provides a list of dependencies
+ * to instantiate a concrete class used by the workflow.
+ */
 export interface Configurer {
   getProviders(): Promise<Provider[]>;
 }

@@ -132,20 +132,6 @@ export interface AccountConfirmationTemplateVariables extends Variables {
 }
 
 /**
- * The AccountConfirmationMessageManager is used to manage the confirmation messages.
- *
- * It uses the send the confirmation message to let the user validate his account.
- * To do this, you need to use a Message instance that will be anything.
- * For example a Message can by an Email.
- */
-export interface AccountConfirmationMessageManager {
-  send(message: Message): Promise<SentMessage>;
-}
-export abstract class AccountConfirmationMessageManagerInjectable implements AccountConfirmationMessageManager {
-  abstract send(message: Message): Promise<SentMessage>;
-}
-
-/**
  * The information about the account of a user.
  * The account has:
  * - a unique technical identifier (accountId)
@@ -190,7 +176,11 @@ export abstract class AccountStatusProviderInjectable implements AccountStatusPr
 }
 
 /**
- * Define the status of an account (example : 'active' / 'waitingConfirmation' / 'disabled')
+ * Define the status of an account (example : 'active', 'disabled', ...).
+ *
+ * The default behavior provides default statuses through {@link StandardAccountStatus} enum.
+ *
+ * @see StandardAccountStatus
  */
 export type AccountStatus = string;
 
