@@ -1,6 +1,6 @@
 
 import { Injectable } from '@zetapush/core';
-import { Context } from '@zetapush/platform';
+import { Context } from '@zetapush/platform-legacy';
 
 import { Calendar } from './calendar';
 import { Storage } from './storage';

@@ -19,9 +19,9 @@ const config = {
         'node_modules/**',
         '../client/**',
         '../cometd/**',
-        '../core/**',
-        '../platform/**',
         '../common/**',
+        '../core/**',
+        '../platform-legacy/**',
       ],
     }),
     ts({
@@ -34,7 +34,7 @@ const config = {
     globals: {
       '@zetapush/client': 'ZetaPushClient',
       '@zetapush/common': 'ZetaPushCommon',
-      '@zetapush/platform': 'ZetaPushPlatform',
+      '@zetapush/platform-legacy': 'ZetaPushPlatformLegacy',
     },
     name: 'ZetaPushWorker',
     sourcemap: true,

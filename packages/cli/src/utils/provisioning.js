@@ -1,4 +1,4 @@
-const { Queue, Weak } = require('@zetapush/platform');
+const { Queue, Weak } = require('@zetapush/platform-legacy');
 const { Worker } = require('@zetapush/worker');
 const core = require('@zetapush/common');
 

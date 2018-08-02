@@ -1,7 +1,7 @@
 import { Context } from '@zetapush/core';
 import { Authentication, Client, uuid } from '@zetapush/client';
-import { Queue, QueueTask, TaskRequest } from '@zetapush/platform';
-import { LogLevel, Logs } from '@zetapush/platform';
+import { Queue, QueueTask, TaskRequest } from '@zetapush/platform-legacy';
+import { LogLevel, Logs } from '@zetapush/platform-legacy';
 import { WorkerInstance, TaskDispatcherWorkerInstance } from '../utils/worker-instance';
 
 const DEFAULT_NAMESPACE = '';

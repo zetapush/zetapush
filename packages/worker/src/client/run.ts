@@ -1,6 +1,6 @@
 import { WorkerClient, Worker, WorkerInstanceFactory } from './worker';
 import { Provider } from '@zetapush/core';
-import { Weak, Queue } from '@zetapush/platform';
+import { Weak, Queue } from '@zetapush/platform-legacy';
 import {
   instantiate,
   WorkerDeclaration,

@@ -100,10 +100,10 @@
       }
     },
     {
-      "label": "platform [prepublish]",
+      "label": "platform-legacy [prepublish]",
       "type": "npm",
       "script": "prepublish",
-      "path": "packages/platform/",
+      "path": "packages/platform-legacy/",
       "problemMatcher": [
         "$tsc"
       ],

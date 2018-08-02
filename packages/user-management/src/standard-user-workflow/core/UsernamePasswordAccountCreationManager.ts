@@ -1,4 +1,4 @@
-import { Simple } from '@zetapush/platform';
+import { Simple } from '@zetapush/platform-legacy';
 import {
   AccountCreationManager,
   AccountCreationDetails,

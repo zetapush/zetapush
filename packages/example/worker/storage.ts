@@ -1,5 +1,5 @@
 import { Injectable } from '@zetapush/core';
-import { Stack } from '@zetapush/platform';
+import { Stack } from '@zetapush/platform-legacy';
 
 @Injectable()
 export class Storage {

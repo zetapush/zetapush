@@ -280,7 +280,7 @@ function run(
   const dependencies = [
     `@zetapush/core${versionStr}`,
     `@zetapush/cli${versionStr}`,
-    `@zetapush/platform${versionStr}`
+    `@zetapush/platform-legacy${versionStr}`
   ];
 
   // Firstclass TypeScript support

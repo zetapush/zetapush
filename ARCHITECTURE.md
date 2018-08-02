@@ -14,6 +14,25 @@ Le code de @zetapush/cometd est un fork du projet CometD, la lib officiel ne sup
 Dépendences:
 - N/A
 
+## @zetapush/core
+
+[![install size](https://packagephobia.now.sh/badge?p=@zetapush/core)](https://packagephobia.now.sh/result?p=@zetapush/core)
+
+Fournit l'ensemble des classes et interfaces relatives à l'injection de dépendances.
+
+Dépendences:
+- N/A
+
+## @zetapush/platform-legacy
+
+[![install size](https://packagephobia.now.sh/badge?p=@zetapush/platform-legacy)](https://packagephobia.now.sh/result?p=@zetapush/platform-legacy)
+
+Contient l'ensemble des classes de mapping des services platform-legacy ZetaPush. Le code contenu dans ce package à vocation à être auto généré.
+
+Dépendences:
+- N/A
+
+
 ## @zetapush/common
 
 [![install size](https://packagephobia.now.sh/badge?p=@zetapush/common)](https://packagephobia.now.sh/result?p=@zetapush/common)
@@ -21,16 +40,7 @@ Dépendences:
 Contient l'ensemble des fonctionnalités communes aux paquets internes.
 
 Dépendences:
-- N/A
-
-## @zetapush/platform
-
-[![install size](https://packagephobia.now.sh/badge?p=@zetapush/platform)](https://packagephobia.now.sh/result?p=@zetapush/platform)
-
-Contient l'ensemble des class de mapping des services platforme ZetaPush. Le code contenu dans ce package à vocation à être auto généré.
-
-Dépendences:
-- [@zetapush/common](https://github.com/zetapush/zetapush/tree/master/packages/common)
+- [@zetapush/core](https://github.com/zetapush/zetapush/tree/master/packages/core)
 
 ## @zetapush/user-management
 
@@ -49,7 +59,7 @@ Surcouche au protocole CometD. Ce package contient les différents client de con
 
 Dépendences:
 - [@zetapush/cometd](https://github.com/zetapush/zetapush/tree/master/packages/cometd)
-- [@zetapush/platform](https://github.com/zetapush/zetapush/tree/master/packages/platform)
+- [@zetapush/platform-legacy](https://github.com/zetapush/zetapush/tree/master/packages/platform-legacy)
 
 ## @zetapush/worker
 
@@ -58,8 +68,19 @@ Dépendences:
 C'est le SDK utilisé en interne au sein d'un **worker** NodeJS connecté à la plateforme ZetaPush. Il assure la communication en ZetaPush et le code écrit par le developpeur.
 
 Dépendences:
-- [@zetapush/client](https://github.com/zetapush/zetapush/tree/master/packages/core)
-- [@zetapush/platform](https://github.com/zetapush/zetapush/tree/master/packages/platform)
+- [@zetapush/common](https://github.com/zetapush/zetapush/tree/master/packages/common)
+- [@zetapush/core](https://github.com/zetapush/zetapush/tree/master/packages/core)
+- [@zetapush/client](https://github.com/zetapush/zetapush/tree/master/packages/client)
+- [@zetapush/platform-legacy](https://github.com/zetapush/zetapush/tree/master/packages/platform-legacy)
+
+## @zetapush/troubleshooting
+
+[![install size](https://packagephobia.now.sh/badge?p=@zetapush/troubleshooting)](https://packagephobia.now.sh/result?p=@zetapush/troubleshooting)
+
+Contient l'ensemble de l'API de gestion des erreurs.
+
+Dépendences:
+- [@zetapush/common](https://github.com/zetapush/zetapush/tree/master/packages/common)
 
 ## @zetapush/cli
 
@@ -69,8 +90,9 @@ Outil en ligne de commande permettant de publier son code JavaScript (ses cloud 
 
 Dépendences:
 - [@zetapush/cometd](https://github.com/zetapush/zetapush/tree/master/packages/cometd)
-- [@zetapush/client](https://github.com/zetapush/zetapush/tree/master/packages/core)
-- [@zetapush/platform](https://github.com/zetapush/zetapush/tree/master/packages/platform)
+- [@zetapush/common](https://github.com/zetapush/zetapush/tree/master/packages/common)
+- [@zetapush/platform-legacy](https://github.com/zetapush/zetapush/tree/master/packages/platform-legacy)
+- [@zetapush/troubleshooting](https://github.com/zetapush/zetapush/tree/master/packages/troubleshooting)
 - [@zetapush/worker](https://github.com/zetapush/zetapush/tree/master/packages/worker)
 
 ## @zetapush/create

@@ -420,7 +420,7 @@ export const npmInstall = async (dir: PathLike, version: string) => {
   const content = readFileSync(`${dir}/package.json`, { encoding: 'utf-8' });
   let jsonContent = JSON.parse(content);
   jsonContent.dependencies['@zetapush/cli'] = version;
-  jsonContent.dependencies['@zetapush/platform'] = version;
+  jsonContent.dependencies['@zetapush/platform-legacy'] = version;
 
   writeFileSync(`${dir}/package.json`, JSON.stringify(jsonContent), {
     encoding: 'utf-8'
@@ -464,11 +464,11 @@ export const npmInstallLatestVersion = async (dir: PathLike) => {
     });
     subProcessLogger.silly('\n' + resCli.stdout);
     subProcessLogger.warn('\n' + resCli.stderr);
-    commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/platform@canary --save]');
-    const restPf = execa.shellSync('npm install @zetapush/platform@canary --save', {
+    commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/platform-legacy@canary --save]');
+    const restPf = execa.shellSync('npm install @zetapush/platform-legacy@canary --save', {
       cwd: dir.toString()
     });
-    commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/platform@canary --save] -> ', {
+    commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/platform-legacy@canary --save] -> ', {
       exitCode: restPf.code
     });
     subProcessLogger.silly('\n' + restPf.stdout);

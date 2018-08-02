@@ -1,7 +1,7 @@
 describe('AsyncMacro', () => {
   jasmine.DEFAULT_TIMEOUT_INTERVAL = 25000
 
-  class HelloMacro extends ZetaPushPlatform.Macro {
+  class HelloMacro extends ZetaPushPlatformLegacy.Macro {
     hello(parameters) {
       return this.$publish('hello', parameters);
     }
@@ -34,7 +34,7 @@ describe('AsyncMacro', () => {
 
     expect(typeof service).toBe('object')
     expect(typeof service.call).toBe('function')
-    expect(service instanceof ZetaPushPlatform.Macro).toBeTruthy()
+    expect(service instanceof ZetaPushPlatformLegacy.Macro).toBeTruthy()
 
     client.connect()
       .then(() => service.hello({
