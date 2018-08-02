@@ -4,10 +4,15 @@ import { Context } from '@zetapush/platform-legacy';
 
 import { Calendar } from './calendar';
 import { Storage } from './storage';
+import { LoggerConfig } from './logger';
 
 @Injectable()
 export default class Api {
-  constructor(private storage: Storage, private calendar: Calendar) {}
+  constructor(
+    private storage: Storage,
+    private calendar: Calendar,
+    config: LoggerConfig
+  ) {}
   add(item: any) {
     return this.storage.push(item);
   }
