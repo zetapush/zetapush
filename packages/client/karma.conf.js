@@ -9,10 +9,16 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: [
+      'jasmine'
+    ],
 
     // list of files / patterns to load in the browser
-    files: ['../platform/dist/zetapush-platform.js', 'dist/zetapush-client.js', 'test/**/*.spec.js'],
+    files: [
+      '../platform-legacy/dist/zetapush-platform-legacy.js',
+      'dist/zetapush-client.js',
+      'test/**/*.spec.js'
+    ],
 
     // list of files to exclude
     exclude: ['test/sandbox-alias.spec.js'],
@@ -24,7 +30,10 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress', 'junit'],
+    reporters: [
+      'progress',
+      'junit'
+    ],
     junitReporter: {
       outputDir: 'test/reports', // results will be saved as $outputDir/$browserName.xml
       outputFile: `junit-${os.type()}-${os.release()}` // if included, results will be saved as $outputDir/$browserName/$outputFile

@@ -17,11 +17,11 @@ const config = {
     commonjs({
       include: [
         'node_modules/**',
-        '../client/**',
         '../cometd/**',
-        '../core/**',
-        '../platform/**',
         '../common/**',
+        '../core/**',
+        '../client/**',
+        '../worker/**',
       ],
     }),
     ts({
@@ -35,7 +35,7 @@ const config = {
     globals: {
       '@zetapush/client': 'ZetaPushClient',
       '@zetapush/common': 'ZetaPushCommon',
-      '@zetapush/platform': 'ZetaPushPlatform',
+      '@zetapush/platform-legacy': 'ZetaPushPlatformLegacy',
     },
     sourcemap: true,
   },

@@ -10,6 +10,6 @@
   },
   "dependencies": {
     "@zetapush/cli":  "0.31.4",
-    "@zetapush/platform":  "0.31.4"
+    "@zetapush/platform-legacy":  "0.31.4"
   }
 }

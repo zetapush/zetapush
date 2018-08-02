@@ -15,7 +15,7 @@ const config = {
       // browser: true,
     }),
     commonjs({
-      include: ['node_modules/**', '../common/**'],
+      include: ['node_modules/**'],
     }),
     ts({
       typescript,
@@ -23,11 +23,8 @@ const config = {
     json(),
   ],
   output: {
-    name: 'ZetaPushPlatform',
+    name: 'ZetaPushPlatformLegacy',
     format: 'umd',
-    globals: {
-      '@zetapush/common': 'ZetaPushCommon',
-    },
     sourcemap: true,
   },
 };

@@ -13,7 +13,7 @@ const config = {
       main: true,
     }),
     commonjs({
-      include: ['node_modules/**', '../cometd/**', '../platform/**'],
+      include: ['node_modules/**', '../cometd/**', '../platform-legacy/**'],
     }),
     babel({
       exclude: 'node_modules/**',

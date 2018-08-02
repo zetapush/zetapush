@@ -1,5 +1,5 @@
 import { Injector, ReflectiveInjector, Injectable } from '@zetapush/core';
-import { Simple, Userdir } from '@zetapush/platform';
+import { Simple, Userdir } from '@zetapush/platform-legacy';
 import { given, autoclean, runInWorker } from '@zetapush/testing';
 
 import { TimestampBasedUuidGenerator } from '../../../../src/common/core';

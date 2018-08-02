@@ -1,5 +1,5 @@
 import 'jasmine';
-import { Simple } from '@zetapush/platform';
+import { Simple } from '@zetapush/platform-legacy';
 import { UuidGenerator } from '../../../../src/common/api';
 import { AccountStatusProvider } from '../../../../src/standard-user-workflow/api';
 import {
