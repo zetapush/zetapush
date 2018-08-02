@@ -27,7 +27,7 @@ const config = {
     format: 'umd',
     globals: {
       '@zetapush/common': 'ZetaPushCommon',
-      '@zetapush/platform': 'ZetaPushPlatform',
+      '@zetapush/platform-legacy': 'ZetaPushPlatformLegacy',
       '@zetapush/client': 'ZetaPushClient',
       '@zetapush/worker': 'ZetaPushWorker'
     },

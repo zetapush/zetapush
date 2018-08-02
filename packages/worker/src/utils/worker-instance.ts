@@ -1,6 +1,6 @@
 import { Context } from '@zetapush/core';
 import { timeoutify } from '@zetapush/common';
-import { TaskRequest } from '@zetapush/platform';
+import { TaskRequest } from '@zetapush/platform-legacy';
 
 import { inject } from './context';
 

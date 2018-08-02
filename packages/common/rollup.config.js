@@ -15,7 +15,7 @@ const config = {
       browser: true,
     }),
     commonjs({
-      include: ['node_modules/**'],
+      include: ['node_modules/**', '../core/**'],
       exclude: ['node_modules/isomorphic-form-data'],
     }),
     ts({

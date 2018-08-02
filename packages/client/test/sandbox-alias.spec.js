@@ -22,7 +22,7 @@ describe('WeakClient', () => {
     it('Should connect', (done) => {
       const client = this.client
       const service = client.createService({
-        Type: ZetaPushPlatform.Macro,
+        Type: ZetaPushPlatformLegacy.Macro,
         listener: {
           welcome(message) {
             expect(message.data.result.message).toBe('Hello, CI!!')

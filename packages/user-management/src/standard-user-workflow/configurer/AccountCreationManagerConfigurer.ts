@@ -1,5 +1,5 @@
 import { Injector } from '@zetapush/core';
-import { Simple } from '@zetapush/platform';
+import { Simple } from '@zetapush/platform-legacy';
 
 import { AbstractParent } from '../../common/configurer/AbstractParent';
 import {

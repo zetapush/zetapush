@@ -1,5 +1,5 @@
 import { CometD, Transports } from '@zetapush/cometd';
-import { Macro, Queue } from '@zetapush/platform';
+import { Macro, Queue } from '@zetapush/platform-legacy';
 import { ConnectionStatusListener } from '../connection/connection-status.js';
 import { getSandboxConfig, isDerivedOf, merge, shuffle, uuid } from '../utils/index.js';
 
