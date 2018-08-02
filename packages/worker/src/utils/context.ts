@@ -1,4 +1,4 @@
-import { CloudServiceInstance } from '@zetapush/platform';
+import { CloudServiceInstance } from '@zetapush/common';
 
 export const inject = (instance: any, contextId?: string) =>
   new Proxy(instance, {
@@ -14,5 +14,5 @@ export const inject = (instance: any, contextId?: string) =>
           return value;
         }
       }
-    },
+    }
   });

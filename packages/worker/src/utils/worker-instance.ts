@@ -1,5 +1,7 @@
-import { Context, TaskRequest, CloudServiceInstance } from '@zetapush/platform';
-import { timeoutify } from './async';
+import { Context } from '@zetapush/core';
+import { timeoutify } from '@zetapush/common';
+import { TaskRequest } from '@zetapush/platform-legacy';
+
 import { inject } from './context';
 
 /**
@@ -7,15 +9,21 @@ import { inject } from './context';
  */
 const DEFAULT_ERROR_CODE = 'API_ERROR';
 
-export class WorkerInstance {
+export interface WorkerInstance {
+  setWorker(worker: any): void;
+  dispatch(request: TaskRequest, context: Context): Promise<{ result: any; success: boolean }>;
+  configure(): Promise<{ result: any; success: boolean }>;
+}
+
+export class TaskDispatcherWorkerInstance implements WorkerInstance {
   /**
    * Worker instance timeout
    */
-  private timeout: number;
+  protected timeout: number;
   /**
    * Worker implementation
    */
-  private worker: any;
+  protected worker: any;
   /**
    * Bootstraps layers
    */
@@ -24,15 +32,7 @@ export class WorkerInstance {
   /**
    *
    */
-  constructor({
-    timeout,
-    worker,
-    bootLayers,
-  }: {
-    timeout: number;
-    worker: any;
-    bootLayers: any;
-  }) {
+  constructor({ timeout, worker, bootLayers }: { timeout: number; worker: any; bootLayers: any }) {
     /**
      * @access private
      * @type {number}
@@ -62,14 +62,10 @@ export class WorkerInstance {
               success: false,
               result: {
                 code: 'EBOOTFAIL',
-                message:
-                  'onApplicationBootstrap error on class ' +
-                  api.constructor.name +
-                  ' : ' +
-                  error.toString(),
+                message: 'onApplicationBootstrap error on class ' + api.constructor.name + ' : ' + error.toString(),
                 context: {},
-                location: api.constructor.name,
-              },
+                location: api.constructor.name
+              }
             };
           }
         }
@@ -77,7 +73,7 @@ export class WorkerInstance {
     }
     return {
       success: true,
-      result: {},
+      result: {}
     };
   }
 
@@ -102,21 +98,19 @@ export class WorkerInstance {
       // Inject context in a proxified worker namespace
       const injected = inject(tasker, context.contextId);
       // Delegate task to
-      const result = await timeoutify(
-        () => injected[name](parameters, context),
-        this.timeout,
-      );
+      const result = await timeoutify(() => injected[name](parameters, context), this.timeout);
       return {
         result,
-        success: true,
+        success: true
       };
     } catch ({ code = DEFAULT_ERROR_CODE, message }) {
       return {
         result: { code, message },
-        success: false,
+        success: false
       };
     }
   }
+
   setWorker(worker: any) {
     this.worker = worker;
   }

@@ -4,12 +4,12 @@ const clean = (object = {}) =>
     .reduce(
       (cleaned, [property, value]) => ({
         ...cleaned,
-        [property]: value,
+        [property]: value
       }),
-      {},
+      {}
     );
 
 export const merge = (base, overrides) => ({
   ...base,
-  ...clean(overrides),
+  ...clean(overrides)
 });

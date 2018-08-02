@@ -27,8 +27,8 @@
     "test:ci": "karma start karma.conf.js"
   },
   "dependencies": {
-    "@zetapush/cometd": "^0.31.4",
-    "@zetapush/platform": "^0.31.4"
+    "@zetapush/cometd": "0.31.4",
+    "@zetapush/platform-legacy": "0.31.4"
   },
   "devDependencies": {
     "@babel/cli": "7.0.0-beta.53",
@@ -42,6 +42,7 @@
     "karma-chrome-launcher": "2.2.0",
     "karma-cli": "1.0.1",
     "karma-jasmine": "1.1.2",
+    "karma-junit-reporter": "1.2.0",
     "rimraf": "2.6.2",
     "rollup": "0.62.0",
     "rollup-plugin-babel": "4.0.0-beta.7",

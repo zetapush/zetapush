@@ -1,37 +1,49 @@
 // Karma configuration
 // Generated on Thu Aug 18 2016 08:59:14 GMT+0200 (CEST)
+const os = require('os');
 
-module.exports = function (config) {
+module.exports = function(config) {
   config.set({
-
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: [
+      'jasmine'
+    ],
 
     // list of files / patterns to load in the browser
     files: [
-      '../platform/dist/zetapush-platform.js',
+      '../platform-legacy/dist/zetapush-platform-legacy.js',
       'dist/zetapush-client.js',
-      'test/**/*.spec.js',
+      'test/**/*.spec.js'
     ],
 
     // list of files to exclude
-    exclude: [
-      'test/sandbox-alias.spec.js',
-    ],
+    exclude: ['test/sandbox-alias.spec.js'],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-    },
+    preprocessors: {},
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: [
+      'progress',
+      'junit'
+    ],
+    junitReporter: {
+      outputDir: 'test/reports', // results will be saved as $outputDir/$browserName.xml
+      outputFile: `junit-${os.type()}-${os.release()}` // if included, results will be saved as $outputDir/$browserName/$outputFile
+      // suite: '', // suite will become the package name attribute in xml testsuite element
+      // useBrowserName: true, // add browser name to report and classes names
+      // nameFormatter: undefined, // function (browser, result) to customize the name attribute in xml testcase element
+      // classNameFormatter: undefined, // function (browser, result) to customize the classname attribute in xml testcase element
+      // properties: {} // key value pair of properties to add to the <properties> section of the report
+      // xmlVersion: null // use '1' if reporting to be per SonarQube 6.2 XML format
+    },
 
     // web server port
     port: 9876,
@@ -60,8 +72,6 @@ module.exports = function (config) {
 
     // Custom Launchers
     // configure custom launchers
-    customLaunchers: {
-
-    }
-  })
-}
+    customLaunchers: {}
+  });
+};
