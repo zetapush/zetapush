@@ -1,7 +1,8 @@
-// import { Injectable, Gda,GdaConfigurer, GdaDataType } from "../../../../../platform"
-import { Injectable, Gda, GdaConfigurer, GdaDataType } from '@zetapush/platform';
+import { Gda, GdaConfigurer, GdaDataType } from '../../../../../platform-legacy';
+import { Injectable } from '@zetapush/core';
+// import { Injectable, Gda, GdaConfigurer, GdaDataType } from '@zetapush/platform-legacy';
 
-@Injectable()
+@Injectable
 export class Provide {
   constructor(private gdac: GdaConfigurer, private gda: Gda) {}
 
@@ -14,12 +15,6 @@ export class Provide {
         }
       ],
       name: 'test'
-    });
-    await this.gda.put({
-      column: 'test',
-      data: 'Python is better',
-      key: 'test',
-      table: 'test'
     });
   }
 }
