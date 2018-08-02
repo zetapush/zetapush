@@ -1,4 +1,4 @@
-import { Bootstrapable, Context, Injectable } from '@zetapush/platform';
+import { Bootstrapable, Context, Injectable } from '@zetapush/core';
 import { LogsConfigurer, LogLevel, LogSinkType, Queue } from '@zetapush/platform-legacy';
 
 @Injectable()
