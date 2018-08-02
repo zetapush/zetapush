@@ -11,8 +11,8 @@ describe('Public API', () => {
   it('Should define a ZetaPushClient.WeakClient class', () => {
     expect(typeof ZetaPushClient.WeakClient).toBe('function')
   })
-  it('Should define a ZetaPushPlatform object', () => {
-    expect(typeof ZetaPushPlatform).toBe('object')
+  it('Should define a ZetaPushPlatformLegacy object', () => {
+    expect(typeof ZetaPushPlatformLegacy).toBe('object')
   })
   it('Should define a ZetaPushClient.Authentication class', () => {
     expect(typeof ZetaPushClient.Authentication).toBe('function')

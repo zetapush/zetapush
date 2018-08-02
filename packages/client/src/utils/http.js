@@ -28,10 +28,7 @@ export const API_URL = 'https://celtia.zetapush.com/zbo/pub/business';
  * @access private
  * @type boolean
  */
-export const FORCE_HTTPS =
-  typeof location === 'undefined'
-    ? false
-    : location.protocol === HTTPS_PROTOCOL;
+export const FORCE_HTTPS = typeof location === 'undefined' ? false : location.protocol === HTTPS_PROTOCOL;
 
 /**
  * @access private

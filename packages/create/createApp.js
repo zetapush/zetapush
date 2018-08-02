@@ -66,8 +66,9 @@ function getCurrentVersion(command) {
   if(!command.forceCurrentVersion) {
     return null
   }
-  console.log("__dirname=", __dirname);
-  return JSON.parse(fs.readFileSync(__dirname + '/package.json')).version
+  const version = JSON.parse(fs.readFileSync(__dirname + '/package.json')).version
+  logger.trace(`using current version (${version})`)
+  return version;
 }
 
 function validateOptions({ appName, developerLogin, developerPassword, platformUrl }) {
@@ -276,7 +277,11 @@ function run(
   command
 ) {
   const versionStr = version ? '@'+version : '';
-  const dependencies = [`@zetapush/cli${versionStr}`, `@zetapush/platform${versionStr}`];
+  const dependencies = [
+    `@zetapush/core${versionStr}`,
+    `@zetapush/cli${versionStr}`,
+    `@zetapush/platform-legacy${versionStr}`
+  ];
 
   // Firstclass TypeScript support
   if (!command.javascript) {

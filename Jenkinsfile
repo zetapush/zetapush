@@ -7,9 +7,13 @@ pipeline {
   }
 
   environment {
-    ZETAPUSH_DEVELOPER_ACCOUNT = credentials('jenkins-zetapush-celtia-account')
+    ZETAPUSH_DEVELOPER_ACCOUNT = credentials('jenkins-zp-account')
     ZETAPUSH_LOG_LEVEL = 'silly'
+    ZETAPUSH_PLATFORM_URL = 'http://hq.zpush.io:9080/zbo/pub/business/'
+    ZETAPUSH_LOCAL_DEV = 'true'
+    NPM_REGISTRY = "${env.NEXUS_URL}repository/npm/"
   }
+
 
   stages {
     stage('Clean') {
@@ -21,9 +25,7 @@ pipeline {
         }
       }
       steps {
-        echo "${ZETAPUSH_DEVELOPER_ACCOUNT}"
-        sh 'npm cache clear --force'
-        sh 'npm i'
+        sh "npm --registry ${env.NPM_REGISTRY} i"
         sh 'npm run lerna:clean -- --yes'
       }
     }
@@ -37,7 +39,7 @@ pipeline {
         }
       }
       steps {
-        sh 'npm i'
+        sh "npm --registry ${env.NPM_REGISTRY} i"
         sh 'npm run lerna:bootstrap'
       }
     }
@@ -68,6 +70,11 @@ pipeline {
       }
     }
     
+    /**
+     * This stage is needed for Ubuntu slave because
+     * Original build is node in Docker and may be executed on same Unbuntu slave
+     * as Ubuntu slave (without Docker this time).
+     */
     stage('Clear again and fix permissions') {
       agent { 
         docker {
@@ -77,8 +84,7 @@ pipeline {
         }
       }
       steps {
-        sh 'npm cache clear --force'
-        sh 'npm i'
+        sh "npm --registry ${env.NPM_REGISTRY} i"
         sh 'npm run lerna:clean -- --yes'
         sh "chown -R ${env.JENKINS_UID}:${env.JENKINS_GID} ."
       }
@@ -93,17 +99,25 @@ pipeline {
             }
           }
           steps {
+            retry(3) {
+              sh "npm --registry ${env.NPM_REGISTRY} i"
+              sh 'npm run lerna:clean -- --yes'
+              sh "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+            }
             dir('packages/integration') {
-              echo "${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}"
-              echo "${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}"
-              sh 'npm i'
               sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' node node_modules/jasmine/bin/jasmine.js"
+            }
+            dir('packages/user-management') {
+              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js"
+            }
+            dir('packages/client') {
+              sh "npm run test:ci"
             }
           }
           post {
             always {
               junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
-              deleteDir()
+              // deleteDir()
             }
           }
         }
@@ -115,15 +129,25 @@ pipeline {
             }
           }
           steps {
+            retry(3) {
+              bat "npm --registry ${env.NPM_REGISTRY} i"
+              bat 'npm run lerna:clean -- --yes'
+              bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+            }
             dir('packages/integration') {
-              bat 'npm i'
               bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& node node_modules\\jasmine\\bin\\jasmine.js"
+            }
+            dir('packages/user-management') {
+              bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set  ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& set TS_NODE_PROJECT=tsconfig.test.json node -r ts-node\\register node_modules\\jasmine\\bin\\jasmine.js"
+            }
+            dir('packages/client') {
+              bat "npm run test:ci"
             }
           }
           post {
             always {
               junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
-              deleteDir()
+              // deleteDir()
             }
           }
         }
@@ -135,15 +159,25 @@ pipeline {
             }
           }
           steps {
+            retry(3) {
+              bat "npm --registry ${env.NPM_REGISTRY} i"
+              bat 'npm run lerna:clean -- --yes'
+              bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+            }
             dir('packages/integration') {
-              bat 'npm i'
               bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& node node_modules\\jasmine\\bin\\jasmine.js"
+            }
+            dir('packages/user-management') {
+              bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set  ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& set TS_NODE_PROJECT=tsconfig.test.json node -r ts-node\\register node_modules\\jasmine\\bin\\jasmine.js"
+            }
+            dir('packages/client') {
+              bat "npm run test:ci"
             }
           }
           post {
             always {
               junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
-              deleteDir()
+              // deleteDir()
             }
           }
         }
@@ -155,15 +189,25 @@ pipeline {
             }
           }
           steps {
+            retry(3) {
+              sh "npm --registry ${env.NPM_REGISTRY} i"
+              sh 'npm run lerna:clean -- --yes'
+              sh "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+            }
             dir('packages/integration') {
-              sh 'npm i'
               sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' node node_modules/jasmine/bin/jasmine.js"
+            }
+            dir('packages/user-management') {
+              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js"
+            }
+            dir('packages/client') {
+              sh "npm run test:ci"
             }
           }
           post {
             always {
               junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
-              deleteDir()
+              // deleteDir()
             }
           }
         }
@@ -198,13 +242,51 @@ pipeline {
         }
       }
     }
+
+    stage('Generate API documentation') {
+      when {
+        branch 'docs/api'
+      }
+
+      agent { 
+        docker {
+          image 'node:10.4.1'
+          label 'docker'
+          args '-u 0:0'
+        }
+      }
+
+      steps {
+        // checkout gh-pages
+        dir('target/documentation') {
+          git(url: 'git@github.com:zetapush/zetapush.git', branch: 'gh-pages')
+        }
+
+        sh 'cd packages/platform && npm i'
+        sh 'cd packages/platform && npm run build:api-doc'
+
+
+        // copy new documentation to gh-pages local repo
+        sh 'cp -rf packages/platform/docs/* target/documentation'
+
+        // commit
+        sh 'cd target/documentation && git add .'
+        sh 'cd target/documentation && git commit -m "Update generated documentation"'
+        // push on gh-pages
+        sshagent(['github-ssh']) {
+          sh 'mkdir ~/.ssh'
+          sh 'ssh-keyscan github.com >> ~/.ssh/known_hosts'
+          sh 'cd target/documentation && git push origin gh-pages'
+        }
+      }
+    }
   }
     
 
   post {
     failure {
       slackSend(
-          message: """ZetaPush celtia client : ${env.BRANCH_NAME} failed to build
+          message: """ZetaPush celtia client: ${env.BRANCH_NAME} failed to build
                       - <${env.BUILD_URL}/consoleFull|View logs>""",
           color: '#ff0000'
       )
@@ -217,7 +299,7 @@ pipeline {
     }      
     success {
       slackSend(
-          message: """ZetaPush celtia client : ${env.BRANCH_NAME} success
+          message: """ZetaPush celtia client: ${env.BRANCH_NAME} success
                       - <${env.BUILD_URL}/consoleFull|View logs>""",
           color: '#00ff00'
       )

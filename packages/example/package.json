@@ -7,8 +7,9 @@
     "start": "zeta run -vvv"
   },
   "dependencies": {
+    "@zetapush/core": "*",
     "@zetapush/cli": "*",
-    "@zetapush/platform": "*",
+    "@zetapush/platform-legacy": "*",
     "typescript": "^2.9.1"
   }
 }

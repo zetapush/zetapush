@@ -58,7 +58,8 @@ You can use injected platform services with to following.
 > Dependency injection use [injection-js](https://github.com/mgechev/injection-js)
 
 ```js
-const { Inject, Stack } = require('@zetapush/platform');
+const { Inject } = require('@zetapush/core');
+const { Stack } = require('@zetapush/platform-legacy');
 
 module.exports = class Api {
   static get parameters() {

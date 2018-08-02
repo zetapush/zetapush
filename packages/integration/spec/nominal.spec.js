@@ -1,11 +1,5 @@
-const {
-  rm,
-  npmInit,
-  zetaPush,
-  readZetarc,
-  nukeApp,
-} = require('./utils/commands');
-const { consoleUserAction, frontUserAction } = require('./utils/tdd');
+const { rm, npmInit, zetaPush, readZetarc, nukeProject } = require('@zetapush/testing');
+const { consoleUserAction, frontUserAction } = require('@zetapush/testing');
 const PATTERN = /Hello World from JavaScript (\d+)/;
 
 describe(`As developer with
@@ -17,18 +11,16 @@ describe(`As developer with
   beforeEach(async () => {
     this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
     this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
+    this.platformUrl = process.env.ZETAPUSH_PLATFORM_URL;
     // clean
     await rm(fullPathProject);
   });
 
   afterEach(async () => {
     try {
-      await nukeApp(fullPathProject);
+      await nukeProject(fullPathProject);
     } catch (e) {
-      console.warn(
-        'Failed to nuke app for nominal case. Skipping the error',
-        e,
-      );
+      console.warn('Failed to nuke app for nominal case. Skipping the error', e);
     }
   });
 
@@ -40,16 +32,12 @@ describe(`As developer with
     async () => {
       // 1) npm init
       await consoleUserAction('1) npm init', async () => {
-        await npmInit(
-          this.developerLogin,
-          this.developerPassword,
-          fullPathProject,
-        );
+        await npmInit(this.developerLogin, this.developerPassword, fullPathProject, this.platformUrl);
       });
 
       // 2) zeta push
       await consoleUserAction('2) zeta push', async () => {
-        zetaPush(fullPathProject);
+        await zetaPush(fullPathProject);
       });
 
       let zetarc = await readZetarc(fullPathProject);
@@ -66,6 +54,6 @@ describe(`As developer with
         expect(PATTERN.test(message)).toBe(true);
       });
     },
-    20 * 60 * 1000,
+    20 * 60 * 1000
   );
 });

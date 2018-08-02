@@ -30,5 +30,4 @@ class MemoryStorage {
  * @type {Storage}
  * @access protected
  */
-export const platformStorage =
-  typeof localStorage === 'undefined' ? new MemoryStorage() : localStorage;
+export const platformStorage = typeof localStorage === 'undefined' ? new MemoryStorage() : localStorage;

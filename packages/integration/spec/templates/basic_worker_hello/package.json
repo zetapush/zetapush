@@ -1,5 +1,5 @@
 {
-  "name": "broken-worker-case",
+  "name": "basic-worker-case",
   "version": "0.1.0",
   "main": "worker/index.js",
   "private": true,
@@ -9,7 +9,8 @@
     "troubleshoot": "zeta troubleshoot"
   },
   "dependencies": {
-    "@zetapush/cli": "*",
-    "@zetapush/platform": "*"
+    "@zetapush/cli":  "0.31.4",
+    "@zetapush/core":  "0.31.4",
+    "@zetapush/platform-legacy":  "0.31.4"
   }
 }

@@ -35,19 +35,12 @@ export class WeakClient extends Client {
    * Create a new ZetaPush WeakClient
    * @param {WeakClientConfig} config
    */
-  constructor({
-    platformUrl,
-    appName,
-    deploymentId,
-    forceHttps,
-    resource,
-    transports,
-  } = {}) {
+  constructor({ platformUrl, appName, deploymentId, forceHttps, resource, transports } = {}) {
     const authentication = () => {
       const token = this.getToken();
       const handshake = Authentication.weak({
         deploymentId,
-        token,
+        token
       });
       return handshake;
     };
@@ -60,7 +53,7 @@ export class WeakClient extends Client {
       forceHttps,
       authentication,
       resource,
-      transports,
+      transports
     });
     // Handle successful handshake
     const onSuccessfulHandshake = ({ publicToken, userId, token }) => {

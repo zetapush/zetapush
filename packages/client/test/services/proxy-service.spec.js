@@ -16,14 +16,14 @@ describe('Proxy Service API', () => {
     const client = new ZetaPushClient.WeakClient({
       platformUrl, appName
     })
-    const service = client.createProxyService(ZetaPushPlatform.Macro.DEFAULT_DEPLOYMENT_ID)
+    const service = client.createProxyService(ZetaPushPlatformLegacy.Macro.DEFAULT_DEPLOYMENT_ID)
     expect(typeof service).toBe('object')
   })
   it('createProxyService returned object should support arbitrary properties as defined method', () => {
     const client = new ZetaPushClient.WeakClient({
       platformUrl, appName
     })
-    const service = client.createProxyService(ZetaPushPlatform.Macro.DEFAULT_DEPLOYMENT_ID)
+    const service = client.createProxyService(ZetaPushPlatformLegacy.Macro.DEFAULT_DEPLOYMENT_ID)
     const method = String(Math.random())
     expect(typeof service[method]).toBe('function')
   })
@@ -31,7 +31,7 @@ describe('Proxy Service API', () => {
     const client = new ZetaPushClient.WeakClient({
       platformUrl, appName
     })
-    const service = client.createProxyService(ZetaPushPlatform.Macro.DEFAULT_DEPLOYMENT_ID)
+    const service = client.createProxyService(ZetaPushPlatformLegacy.Macro.DEFAULT_DEPLOYMENT_ID)
     client.connect()
       .then(() => done())
   })
