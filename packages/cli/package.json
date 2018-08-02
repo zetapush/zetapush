@@ -32,7 +32,7 @@
     "resolve-cwd": "2.0.0",
     "serve-handler": "3.3.0",
     "ts-node": "7.0.0",
-    "typescript": "2.9.2",
+    "typescript": "3.0.1",
     "zip-dir": "1.0.2"
   },
   "devDependencies": {

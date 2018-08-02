@@ -35,7 +35,7 @@
     "rollup-plugin-typescript": "0.8.1",
     "rollup-plugin-uglify": "4.0.0",
     "rollup-watch": "4.3.1",
-    "typescript": "2.9.2",
+    "typescript": "3.0.1",
     "uglify-es": "3.3.10"
   },
   "publishConfig": {
