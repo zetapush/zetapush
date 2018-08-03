@@ -1,5 +1,4 @@
-import { FuncCallUuidGenerator } from '../../../../src/common/core';
-import { IllegalArgumentError } from '../../../../src/common/api';
+import { FuncCallUuidGenerator, IllegalArgumentError } from '../../../../src';
 
 describe(`FuncCallUuidGenerator`, () => {
   it(`configured with
@@ -13,10 +12,10 @@ describe(`FuncCallUuidGenerator`, () => {
   it(`configured with
       - no function
      should
-      - fail indicating that function is required`, () => {
-    expect(() => {
+      - fail indicating that function is required`, async () => {
+    expect(async () => {
       const generator = new FuncCallUuidGenerator(null);
-      generator.generate();
+      await generator.generate();
     }).toThrowError(IllegalArgumentError, 'Generator function is required');
   });
 });

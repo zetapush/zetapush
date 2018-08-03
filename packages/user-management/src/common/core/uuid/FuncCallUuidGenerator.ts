@@ -1,4 +1,4 @@
-import { UuidGenerator, Uuid, IllegalArgumentError } from '../api';
+import { UuidGenerator, Uuid, IllegalArgumentError } from '../../api';
 
 /**
  * Simple implementation that just delegates to a function call.

@@ -7,9 +7,9 @@ import {
   AccountStatusProvider,
   UserProfile,
   AccountCreationError
-} from '../api';
-import { UuidGenerator, IllegalArgumentError, IllegalArgumentValueError } from '../../common/api';
-import { IllegalStateError } from '../../common/api/exception/IllegalStateError';
+} from '../../api';
+import { UuidGenerator, IllegalArgumentError, IllegalArgumentValueError } from '../../../common/api';
+import { IllegalStateError } from '../../../common/api/exception/IllegalStateError';
 
 export interface UsernamePasswordAccountDetails extends AccountCreationDetails {
   /**

@@ -1,7 +1,7 @@
 import { Type } from '@zetapush/core';
 
 import { AccountStatus, AccountStatusProvider } from '../../standard-user-workflow/api';
-import { UuidGenerator, Uuid } from '../api';
+import { UuidGenerator, Uuid, Variables, TemplateManager, Location, Token, TokenGenerator } from '../api';
 
 export interface And<P> {
   and(): P;
@@ -29,17 +29,46 @@ export interface UuidConfigurer<P> extends And<P> {
 
 export interface EmailConfigurer<P> extends And<P> {
   from(email: string): EmailConfigurer<P>;
+  subject(subject: string): EmailConfigurer<P>;
   // from(): EmailConfigurer<P>;
+  smtp(): SmtpEmailConfigurer<EmailConfigurer<P>>;
+  ovh(): OvhEmailConfigurer<EmailConfigurer<P>>;
+  mailjet(): MailjetEmailConfigurer<EmailConfigurer<P>>;
 
-  htmlTemplate /* TODO */(): EmailInliningConfigurer<EmailConfigurer<P>>;
+  htmlTemplate /* TODO */(): EmailTemplateConfigurer<EmailConfigurer<P>>;
 
-  textTemplate /* TODO */(): EmailConfigurer<P>;
+  textTemplate /* TODO */(): TemplateConfigurer<EmailConfigurer<P>>;
 }
 
-export interface EmailInliningConfigurer<P> extends And<P> {
-  inlineCss /* TODO */(): EmailInliningConfigurer<P>;
+export interface SmtpEmailConfigurer<P> extends And<P> {
+  host(smtpHost: string): SmtpEmailConfigurer<P>;
+  port(smtpPort: string): SmtpEmailConfigurer<P>;
+  username(smtpUsername: string): SmtpEmailConfigurer<P>;
+  password(smtpPassword: string): SmtpEmailConfigurer<P>;
+  ssl(enableSsl: boolean): SmtpEmailConfigurer<P>;
+  starttls(enableTls: boolean): SmtpEmailConfigurer<P>;
+}
 
-  inlineImages /* TODO */(): EmailInliningConfigurer<P>;
+export interface OvhEmailConfigurer<P> extends And<P> {
+  url(ovhUrl: string): OvhEmailConfigurer<P>;
+  username(ovhUsername: string): OvhEmailConfigurer<P>;
+  password(ovhPassword: string): OvhEmailConfigurer<P>;
+}
+export interface MailjetEmailConfigurer<P> extends And<P> {
+  url(mailjetUrl: string): MailjetEmailConfigurer<P>;
+  apiKeyPublic(mailjetApiKeyPublic: string): MailjetEmailConfigurer<P>;
+  apiKeyPrivate(mailjetApiKeyPrivate: string): MailjetEmailConfigurer<P>;
+}
+
+export interface TemplateConfigurer<P> extends And<P> {
+  template(location: Location): EmailTemplateConfigurer<P>;
+  template(func: (variables: Variables) => string): EmailTemplateConfigurer<P>;
+}
+
+export interface EmailTemplateConfigurer<P> extends TemplateConfigurer<P> {
+  inlineCss /* TODO */(): EmailTemplateConfigurer<P>;
+
+  inlineImages /* TODO */(): EmailTemplateConfigurer<P>;
 }
 
 export interface SmsConfigurer<P> extends And<P> {
@@ -70,6 +99,14 @@ export interface ValidationConfigurer<P> extends And<P> {}
 
 export interface FieldConfigurer<P> extends And<P> {
   // TODO
+}
+
+export interface TokenGeneratorConfigurer<P> extends And<P> {
+  validity(duration: number): TokenGeneratorConfigurer<P>;
+
+  generator(func: () => Promise<Token>): TokenGeneratorConfigurer<P>;
+  generator(instance: TokenGenerator): TokenGeneratorConfigurer<P>;
+  generator(generatorClass: Type<TokenGenerator>): TokenGeneratorConfigurer<P>;
 }
 
 //==================== account registration ====================//
@@ -112,6 +149,8 @@ export interface RegistrationConfirmationConfigurer extends And<RegistrationConf
   sms(): SmsConfigurer<RegistrationConfirmationConfigurer>;
 
   redirection(): SuccessFailureRedirectionConfigurer<RegistrationConfirmationConfigurer>;
+
+  token(): TokenGeneratorConfigurer<RegistrationConfirmationConfigurer>;
 }
 
 //==================== account login ====================//

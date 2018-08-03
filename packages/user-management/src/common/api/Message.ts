@@ -12,16 +12,18 @@ export interface MessageSender {
  * Utils types / interfaces
  * ================================
  */
-export interface Message {
-  to: MessageTarget;
-  body?: MessageBody;
-  subject?: MessageSubject;
+
+/**
+ * Just a marker interface
+ */
+export interface Message {}
+
+export interface Recipient {}
+
+export interface Sender {}
+
+export interface Content {}
+
+export interface SentMessage {
+  message: Message;
 }
-
-export interface MessageTarget {}
-
-export interface MessageBody {}
-
-export interface MessageSubject {}
-
-export interface SentMessage extends Message {}

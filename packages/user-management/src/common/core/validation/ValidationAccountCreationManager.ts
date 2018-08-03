@@ -1,10 +1,10 @@
-import { ValidationManager } from '../api/Validation';
+import { ValidationManager } from '../../api/Validation';
 import {
   AccountCreationManager,
   Account,
   AccountCreationDetails,
   AccountCreationError
-} from '../../standard-user-workflow/api';
+} from '../../../standard-user-workflow/api';
 import { ValidationError } from 'class-validator';
 
 export class ValidationAccountCreationManager implements AccountCreationManager {

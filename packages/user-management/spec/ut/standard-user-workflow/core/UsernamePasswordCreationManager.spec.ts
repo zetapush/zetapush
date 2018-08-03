@@ -1,12 +1,12 @@
 import 'jasmine';
 import { Simple } from '@zetapush/platform-legacy';
-import { UuidGenerator } from '../../../../src/common/api';
-import { AccountStatusProvider } from '../../../../src/standard-user-workflow/api';
 import {
+  UuidGenerator,
+  AccountStatusProvider,
   UsernamePasswordAccountCreationManager,
-  UsernameAlreadyUsedError
-} from '../../../../src/standard-user-workflow/core';
-import { StandardAccountStatus } from '../../../../src/standard-user-workflow/core';
+  UsernameAlreadyUsedError,
+  StandardAccountStatus
+} from '../../../../src';
 
 describe(`UsernamePasswordAccountCreationManager`, () => {
   const userService = jasmine.createSpyObj('Simple', ['createUser']);

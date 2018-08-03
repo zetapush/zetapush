@@ -1,6 +1,6 @@
-import { ValidationManager } from '../api/Validation';
+import { ValidationManager } from '../../api/Validation';
 import * as ClassValidator from 'class-validator';
-import { ValidationErrorContext, ConstraintValidationError, ValidationError } from '../api';
+import { ValidationErrorContext, ConstraintValidationError, ValidationError } from '../../api';
 
 /**
  * ValidationManager implementation with "class-validator" library

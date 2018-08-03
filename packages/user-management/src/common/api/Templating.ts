@@ -4,7 +4,7 @@
  * ================================
  */
 export interface TemplateManager {
-  loadAndParse(location: Location, variables: Variables): Promise<Template>;
+  loadAndParse(location: Location, variables: Variables): Promise<ParsedTemplate>;
 }
 
 export interface ResourceResolver {
@@ -12,7 +12,7 @@ export interface ResourceResolver {
 }
 
 export interface TemplateParser {
-  parse(resource: Resource, variables: Variables): Promise<ParsedTemplate>;
+  parse(template: Template, variables: Variables): Promise<ParsedTemplate>;
 }
 
 /**
@@ -20,14 +20,18 @@ export interface TemplateParser {
  * Utils types / interfaces
  * ================================
  */
-export interface Template {}
+export interface Template {
+  resource: Resource;
+}
 
-export interface StringTemplate extends Template {}
+export interface ParsedTemplate {}
 
-export interface ParsedTemplate extends Template {}
+export interface Variables {
+  [property: string]: any;
+}
 
-export interface Variables {}
-
-export interface Resource {}
+export interface Resource {
+  content(): string;
+}
 
 export interface Location {}

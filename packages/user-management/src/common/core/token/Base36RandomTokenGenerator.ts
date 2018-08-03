@@ -1,5 +1,5 @@
-import { TokenGenerator, Token } from '../api/Token';
-import { IllegalArgumentError } from '../api/exception';
+import { TokenGenerator, Token } from '../../api/Token';
+import { IllegalArgumentError } from '../../api/exception';
 
 export class Base36RandomTokenGenerator implements TokenGenerator {
   constructor(private length = 20) {
@@ -8,7 +8,7 @@ export class Base36RandomTokenGenerator implements TokenGenerator {
     }
   }
 
-  generate(): Token {
+  async generate(): Promise<Token> {
     let value = '';
     do {
       value += Math.random()

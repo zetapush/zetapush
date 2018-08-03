@@ -1,1 +1,3 @@
-export interface ConfigurationProperties {}
+export interface ConfigurationProperties {
+  get(key: string): any;
+}

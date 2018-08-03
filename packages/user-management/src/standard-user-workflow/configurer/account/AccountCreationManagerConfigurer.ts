@@ -9,10 +9,9 @@ import {
   RegistrationFieldsConfigurer,
   UuidConfigurer,
   AccountConfigurer
-} from '../../common/configurer/grammar';
-import { UuidGeneratorConfigurerImpl } from '../../common/configurer/Uuid';
-import { AccountCreationManager } from '../api';
-import { UsernamePasswordAccountCreationManager } from '../core';
+} from '../../../common/configurer/grammar';
+import { UuidGeneratorConfigurerImpl } from '../../../common/configurer/fields/UuidConfigurer';
+import { AccountCreationManager } from '../../api';
 import { AccountStatusConfigurerImpl } from './AccountStatusConfigurer';
 import { IllegalStateError } from '../../common/api/exception/IllegalStateError';
 import { Simple } from '@zetapush/platform';

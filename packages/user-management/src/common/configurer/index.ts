@@ -1,3 +1,7 @@
+export * from './email';
+export * from './fields';
+export * from './registration';
+
 import { StandardUserWorkflowConfigurer } from './grammar';
 import { TimestampBasedUuidGenerator } from '../core';
 import { StaticAccountStatusProvider, UsernamePasswordAccountDetails } from '../../standard-user-workflow/core';

@@ -1,4 +1,4 @@
-import { Token, Message, SentMessage } from '../../common/api';
+import { Token, Message, SentMessage, EmailAddress } from '../../common/api';
 
 /**
  * The account creation manager is in charge to create a user account based
@@ -202,4 +202,8 @@ export interface PendingAccountConfirmation {
 
 export interface AccountDetails {
   accountId: string;
+}
+
+export interface EmailAddressProvider {
+  getEmailAddress(account: Account): Promise<EmailAddress>;
 }

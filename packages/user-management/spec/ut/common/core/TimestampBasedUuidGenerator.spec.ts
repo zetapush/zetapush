@@ -1,5 +1,4 @@
-import { TimestampBasedUuidGenerator } from '../../../../src/common/core';
-import { IllegalArgumentError } from '../../../../src/common/api';
+import { TimestampBasedUuidGenerator, IllegalArgumentError } from '../../../../src';
 
 describe(`TimestampBasedUuidGenerator`, () => {
   it(`configured with
@@ -23,10 +22,10 @@ describe(`TimestampBasedUuidGenerator`, () => {
   it(`configured with
       - length = 0
      should
-      - throw an error`, () => {
-    expect(() => {
+      - throw an error`, async () => {
+    expect(async () => {
       const generator = new TimestampBasedUuidGenerator(0);
-      generator.generate();
+      await generator.generate();
     }).toThrowError(IllegalArgumentError, 'Uuid size must contain at least one character');
   });
 });

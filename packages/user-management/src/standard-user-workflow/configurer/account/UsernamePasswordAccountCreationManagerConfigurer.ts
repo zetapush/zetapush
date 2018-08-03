@@ -1,4 +1,4 @@
-import { UsernamePasswordAccountCreationManager } from '../core';
+import { UsernamePasswordAccountCreationManager } from '../../core';
 
 export class UsernamePasswordAccountCreationManagerConfigurer {
   async build(): Promise<UsernamePasswordAccountCreationManager | null> {

@@ -1,8 +1,8 @@
-import { AccountStatusConfigurer, Configurer, AccountConfigurer } from '../../common/configurer/grammar';
-import { AccountStatus, AccountStatusProvider } from '../api';
-import { AbstractParent } from '../../common/configurer/AbstractParent';
-import { StaticAccountStatusProvider } from '../core';
-import { MissingMandatoryConfigurationError } from '../../common/configurer/ConfigurerError';
+import { AccountStatusConfigurer, Configurer, AccountConfigurer } from '../../../common/configurer/grammar';
+import { AccountStatus, AccountStatusProvider } from '../../api';
+import { AbstractParent } from '../../../common/configurer/AbstractParent';
+import { StaticAccountStatusProvider } from '../../core';
+import { MissingMandatoryConfigurationError } from '../../../common/configurer/ConfigurerError';
 
 export class AccountStatusConfigurerImpl extends AbstractParent<AccountConfigurer>
   implements AccountStatusConfigurer, Configurer<AccountStatusProvider> {

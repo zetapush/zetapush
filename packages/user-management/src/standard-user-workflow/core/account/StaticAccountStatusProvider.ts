@@ -1,4 +1,4 @@
-import { AccountStatusProvider, AccountStatus } from '../api';
+import { AccountStatusProvider, AccountStatus } from '../../api';
 
 export class StaticAccountStatusProvider implements AccountStatusProvider {
   constructor(private accountStatus: AccountStatus) {}

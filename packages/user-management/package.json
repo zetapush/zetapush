@@ -29,12 +29,12 @@
   },
   "dependencies": {
     "@zetapush/common": "0.31.4",
-    "@zetapush/core": "0.31.4",
-    "class-validator": "0.8.5",
-    "injection-js": "2.2.1",
     "jasmine": "3.1.0",
     "ts-node": "7.0.0",
-    "@zetapush/core": "0.31.4"
+    "@zetapush/core": "0.31.4",
+    "axios": "0.18.0",
+    "class-validator": "0.8.5",
+    "injection-js": "2.2.1"
   },
   "devDependencies": {
     "@types/jasmine": "2.8.8",
@@ -47,6 +47,7 @@
     "jasmine-reporters": "2.3.1",
     "jasmine-ts-console-reporter": "3.1.1",
     "request": "2.85.0",
+    "reflect-metadata": "0.1.12",
     "rimraf": "2.6.2",
     "rollup": "0.63.5",
     "rollup-plugin-commonjs": "9.1.3",

@@ -1,9 +1,9 @@
-import { AbstractParent } from './AbstractParent';
-import { ValidationManager } from '../api/Validation';
-import { ClassValidatorManager, NoOpValidationManager } from '../core/Validation';
-import { generateValidationSchemaFromObject, ClassValidatorValidationConfigurer } from './Validation';
-import { Configurer, ValidationConfigurer, AnnotationsConfigurer } from './grammar';
-import { Type } from '@zetapush/platform';
+import { AbstractParent } from '../AbstractParent';
+import { ValidationManager } from '../../api/Validation';
+import { ClassValidatorManager, NoOpValidationManager } from '../../core/validation/ValidationManager';
+import { generateValidationSchemaFromObject, ClassValidatorValidationConfigurer } from './ValidationConfigurer';
+import { Configurer, ValidationConfigurer, AnnotationsConfigurer } from '../grammar';
+import { Type } from '../../../../../platform/lib';
 
 /**
  * Default annotations configurer implementation
