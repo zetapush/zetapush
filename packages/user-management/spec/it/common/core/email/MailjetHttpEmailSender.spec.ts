@@ -1,12 +1,16 @@
 import { given, autoclean, runInWorker } from '@zetapush/testing';
 import { MailjetEmailConfigurerImpl } from '../../../../../src';
 import { mock, anyString, anything, when, verify } from 'ts-mockito';
-import { AxiosInstance, AxiosResponse } from 'axios';
+import { AxiosInstance, AxiosResponse, AxiosPromise } from 'axios';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import {} from 'jasmine';
 
 describe(`MailjetHttpEmailSender`, () => {
+  const axiosInstance = axios.create({});
+  const mockAxios = new MockAdapter(axiosInstance);
+  mockAxios.onPost('mailjet-url').reply(200, {});
   const parent = mock(<any>{});
-  const axios: AxiosInstance = mock(<AxiosInstance>{});
-  const successAxiosResponse: AxiosResponse = mock(<Function & AxiosResponse>{});
 
   beforeEach(async () => {
     await given()
@@ -30,9 +34,9 @@ describe(`MailjetHttpEmailSender`, () => {
       - end successfully`, async () => {
     await runInWorker(this, [], async () => {
       // GIVEN
-      when(axios.post(anyString(), anything(), anything())).thenResolve(successAxiosResponse);
+
       // create configurer
-      const configurer = new MailjetEmailConfigurerImpl(parent, { from: 'Kara <kara@zetapush.com>' }, axios);
+      const configurer = new MailjetEmailConfigurerImpl(parent, { from: 'Kara <kara@zetapush.com>' }, axiosInstance);
       configurer
         .apiKeyPublic('public-key')
         .apiKeyPrivate('private-key')
@@ -46,9 +50,10 @@ describe(`MailjetHttpEmailSender`, () => {
           html: '<h1>Yeah !</h1>'
         }
       });
+
       // THEN
       verify(
-        axios.post(
+        axiosInstance.post(
           'mailjet-url',
           {
             Messages: [

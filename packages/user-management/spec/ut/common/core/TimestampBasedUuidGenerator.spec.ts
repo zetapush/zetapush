@@ -23,9 +23,8 @@ describe(`TimestampBasedUuidGenerator`, () => {
       - length = 0
      should
       - throw an error`, async () => {
-    expect(async () => {
+    expect(() => {
       const generator = new TimestampBasedUuidGenerator(0);
-      await generator.generate();
     }).toThrowError(IllegalArgumentError, 'Uuid size must contain at least one character');
   });
 });

@@ -13,9 +13,8 @@ describe(`FuncCallUuidGenerator`, () => {
       - no function
      should
       - fail indicating that function is required`, async () => {
-    expect(async () => {
+    expect(() => {
       const generator = new FuncCallUuidGenerator(null);
-      await generator.generate();
     }).toThrowError(IllegalArgumentError, 'Generator function is required');
   });
 });

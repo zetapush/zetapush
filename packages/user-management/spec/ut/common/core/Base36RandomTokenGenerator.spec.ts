@@ -23,9 +23,8 @@ describe(`Base36RandomTokenGenerator`, () => {
       - length = 0
      should
       - throw an error`, async () => {
-    expect(async () => {
+    expect(() => {
       const generator = new Base36RandomTokenGenerator(0);
-      await generator.generate();
     }).toThrowError(IllegalArgumentError, 'Token size must contain at least one character');
   });
 });

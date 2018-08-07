@@ -2,11 +2,13 @@ import { given, autoclean, runInWorker } from '@zetapush/testing';
 import { MailjetEmailConfigurerImpl } from '../../../../src';
 import { mock, anyString, anything, when, verify } from 'ts-mockito';
 import { AxiosInstance, AxiosResponse } from 'axios';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 
 describe(`TemplatedEmail`, () => {
+  const axiosInstance = axios.create({});
   const parent = mock(<any>{});
-  const axios: AxiosInstance = mock(<AxiosInstance>{});
-  const successAxiosResponse: AxiosResponse = mock(<Function & AxiosResponse>{});
+  const mockAxios = new MockAdapter(axiosInstance);
 
   beforeEach(async () => {
     await given()
@@ -32,7 +34,8 @@ describe(`TemplatedEmail`, () => {
       - end successfully`, async () => {
     await runInWorker(this, [], async () => {
       // GIVEN
-      when(axios.post(anyString(), anything(), anything())).thenResolve(successAxiosResponse);
+      mockAxios.onPost('mailjet-url').reply(200, {});
+
       // // create configurer
       // const configurer = new configurer.apiKeyPublic('public-key').apiKeyPrivate('private-key').url('mailjet-url');
       // const sender = await configurer.build();
@@ -46,7 +49,7 @@ describe(`TemplatedEmail`, () => {
       // });
       // // THEN
       // verify(
-      //   axios.post(
+      //   axiosInstance.post(
       //     'mailjet-url',
       //     {
       //       Messages: [
