@@ -1,7 +1,6 @@
 import { Injector } from '@zetapush/core';
 import { Simple } from '@zetapush/platform-legacy';
 
-import { AbstractParent } from '../../common/configurer/AbstractParent';
 import {
   AccountStatusConfigurer,
   Configurer,
@@ -13,8 +12,9 @@ import {
 import { UuidGeneratorConfigurerImpl } from '../../../common/configurer/fields/UuidConfigurer';
 import { AccountCreationManager } from '../../api';
 import { AccountStatusConfigurerImpl } from './AccountStatusConfigurer';
-import { IllegalStateError } from '../../../common/api';
 import { UsernamePasswordAccountCreationManager } from '../../core';
+import { AbstractParent } from '../../../common/configurer/AbstractParent';
+import { IllegalStateError } from '../../../common/api';
 
 export class AccountCreationManagerConfigurerImpl extends AbstractParent<RegistrationConfigurer>
   implements AccountConfigurer, Configurer<AccountCreationManager> {

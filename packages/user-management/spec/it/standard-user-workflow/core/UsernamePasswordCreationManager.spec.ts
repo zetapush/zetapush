@@ -1,7 +1,6 @@
 import { Simple, Userdir } from '@zetapush/platform-legacy';
 
 import { TimestampBasedUuidGenerator } from '../../../../src/common/core';
-import { AccountCreationManagerConfigurerImpl } from '../../../../src/standard-user-workflow/configurer/AccountCreationManagerConfigurer';
 import { StandardAccountStatus } from '../../../../src/standard-user-workflow/core';
 import { AccountCreationManager } from '../../../../src/standard-user-workflow/api';
 

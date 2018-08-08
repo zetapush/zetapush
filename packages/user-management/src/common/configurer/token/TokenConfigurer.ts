@@ -1,10 +1,10 @@
 import { TokenGeneratorConfigurer, Configurer } from '../grammar';
 import { TokenGenerator, Uuid } from '../../api';
 import { AbstractParent } from '../AbstractParent';
-import { Injector } from '../../../../../common/node_modules/injection-js';
+import { Injector } from 'injection-js';
 import { MissingMandatoryConfigurationError, InstantiationError } from '../ConfigurerError';
 import { FuncCallUuidGenerator } from '../../core/uuid/FuncCallUuidGenerator';
-import { Type } from '../../../../../platform/lib';
+import { Type } from '@zetapush/platform-legacy';
 import { FuncCallTokenGenerator } from '../../core/token/FuncCallTokenGenerator';
 import { ExpirableTokenGenerator } from '../../core';
 

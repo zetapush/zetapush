@@ -1,9 +1,9 @@
-import { AbstractParent } from './AbstractParent';
-import { ValidationManager } from '../api/Validation';
-import { Configurer, ScanConfigurer, AnnotationsConfigurer, FieldsConfigurer, FieldConfigurer } from './grammar';
+import { AbstractParent } from '../AbstractParent';
+import { Configurer, ScanConfigurer, AnnotationsConfigurer, FieldsConfigurer, FieldConfigurer } from '../grammar';
 import { Type } from '@zetapush/platform-legacy';
-import { DefaultScanConfigurer } from './Scan';
-import { NoOpValidationManager } from '../core/Validation';
+import { ValidationManager } from '../../api';
+import { DefaultScanConfigurer } from './ScanConfigurer';
+import { NoOpValidationManager } from '../../core';
 
 /**
  * Default fields configurer implémentation

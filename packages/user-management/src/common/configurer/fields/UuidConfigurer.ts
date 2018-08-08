@@ -1,10 +1,9 @@
 import { Injector, Type } from '@zetapush/core';
-
-import { UuidConfigurer, Configurer } from './grammar';
-import { UuidGenerator, Uuid } from '../api';
-import { AbstractParent } from './AbstractParent';
-import { MissingMandatoryConfigurationError, InstantiationError } from './ConfigurerError';
-import { FuncCallUuidGenerator } from '../core/FuncCallUuidGenerator'
+import { AbstractParent } from '../AbstractParent';
+import { UuidGenerator, Uuid } from '../../api';
+import { Configurer, UuidConfigurer } from '../grammar';
+import { FuncCallUuidGenerator } from '../../core';
+import { MissingMandatoryConfigurationError, InstantiationError } from '../ConfigurerError';
 
 export class UuidGeneratorConfigurerImpl<P> extends AbstractParent<P>
   implements UuidConfigurer<P>, Configurer<UuidGenerator> {

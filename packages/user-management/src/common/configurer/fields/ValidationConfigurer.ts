@@ -1,9 +1,9 @@
-import { AbstractParent } from './AbstractParent';
-import { Configurer, ValidationConfigurer } from './grammar';
-import { ValidationManager, ValidationMetadata } from '../api/Validation';
-import { ValidationSchema, getFromContainer, MetadataStorage, registerSchema } from 'class-validator';
-import { ClassValidatorManager } from '../core/Validation';
+import * as ClassValidator from 'class-validator';
 import { Type } from '@zetapush/platform-legacy';
+import { AbstractParent } from '../AbstractParent';
+import { ValidationConfigurer, Configurer } from '../grammar';
+import { ValidationManager, ValidationMetadata } from '../../api';
+import { ClassValidatorManager } from '../../core';
 
 /**
  * ValidationConfigurer implementation using the "class-validator" library

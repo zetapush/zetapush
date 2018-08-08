@@ -3,7 +3,7 @@ import { ValidationManager } from '../../api/Validation';
 import { ClassValidatorManager, NoOpValidationManager } from '../../core/validation/ValidationManager';
 import { generateValidationSchemaFromObject, ClassValidatorValidationConfigurer } from './ValidationConfigurer';
 import { Configurer, ValidationConfigurer, AnnotationsConfigurer } from '../grammar';
-import { Type } from '../../../../../platform/lib';
+import { Type } from '@zetapush/platform-legacy';
 
 /**
  * Default annotations configurer implementation

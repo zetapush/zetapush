@@ -1,9 +1,10 @@
-import { AbstractParent } from './AbstractParent';
-import { Configurer, AnnotationsConfigurer, ScanConfigurer } from './grammar';
-import { ValidationManager } from '../api/Validation';
-import { DefaultAnnotationsConfigurer } from './Annotations';
 import { Type } from '@zetapush/platform-legacy';
-import { NoOpValidationManager } from '../core/Validation';
+import { AbstractParent } from '../AbstractParent';
+import { ScanConfigurer, AnnotationsConfigurer, Configurer } from '../grammar';
+import { ValidationManager } from '../../api';
+import { DefaultAnnotationsConfigurer } from './AnnotationsConfigurer';
+import { NoOpValidationManager } from '../../core';
+
 /**
  * Default scan configurer implementation
  * The build return a ValidationManager
