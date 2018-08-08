@@ -1,4 +1,11 @@
-import { ReflectiveInjector, Provider } from '@zetapush/core';
+import {
+  ReflectiveInjector,
+  Provider,
+  getConfigurationMetadata,
+  hasConfigurationMetadata,
+  hasConfigurationProviderMetadata,
+  getConfigurationProviderMetadata
+} from '@zetapush/core';
 
 // import { constructDependencies, ReflectiveDependency } from 'injection-js/reflective_provider';
 // const { constructDependencies, ReflectiveDependency } = require('esm')(module)('injection-js/reflective_provider');
@@ -16,17 +23,11 @@ import { CustomCloudService, WorkerDeclaration, Service, ServerClient } from '..
 type InjectionJsReflectiveDependency = any;
 
 class ScanOutput {
-  public custom: Array<CustomCloudService>;
-  public platform: Array<Service>;
-  public bootLayer: Array<Service>;
-  public reflectiveDependencies: Array<InjectionJsReflectiveDependency>;
-
-  constructor() {
-    this.custom = [];
-    this.platform = [];
-    this.bootLayer = [];
-    this.reflectiveDependencies = [];
-  }
+  public configuration: Array<any> = [];
+  public custom: Array<CustomCloudService> = [];
+  public platform: Array<Service> = [];
+  public bootLayer: Array<Service> = [];
+  public reflectiveDependencies: Array<InjectionJsReflectiveDependency> = [];
 }
 
 const getInjectionMetadata = (target: any) => {
@@ -145,6 +146,27 @@ export const analyze = (declaration: WorkerDeclaration, customProviders: Provide
   output.custom = Array.from(new Set(output.custom));
   output.platform = Array.from(new Set(output.platform));
   output.reflectiveDependencies = Array.from(new Set(output.reflectiveDependencies));
+
+  // WIP Support configuration
+  const configured: any[] = [];
+  const env = 'prod';
+  output.custom.forEach((CustomCloudService) => {
+    if (hasConfigurationProviderMetadata(CustomCloudService) && hasConfigurationMetadata(CustomCloudService, env)) {
+      const provider = getConfigurationProviderMetadata(CustomCloudService);
+      const useClass = getConfigurationMetadata(CustomCloudService, env);
+      configured.push({
+        ...provider,
+        useClass
+      });
+    }
+  });
+  output.configuration = configured;
+  output.custom = output.custom.filter((CustomCloudService) => {
+    return !configured.find((provider) => {
+      return provider.provide === CustomCloudService || provider.useClass === CustomCloudService;
+    });
+  });
+
   // Normalized output
   return output;
 };
@@ -178,6 +200,7 @@ const createAsyncService = (client: ServerClient, Type: Service) => {
  * @param {ScanOutput} output
  */
 export const resolve = (client: ServerClient, output: ScanOutput) => [
+  ...output.configuration,
   ...output.platform.map((PlatformService: Service) => ({
     provide: PlatformService,
     useValue: createAsyncService(client, PlatformService)
@@ -268,7 +291,7 @@ export const instantiate = (client: ServerClient, declaration: WorkerDeclaration
       const instance = injector.get(provider.provide);
       CloudServiceInstance.flag(instance);
     });
-    // Convert bootlayer declaration to instances
+    // Convert bootlayer declaration to instance
     output.bootLayer.forEach((layer) => {
       layer.forEach((CloudService: CustomCloudService, key: any) => {
         const instance = injector.get(CloudService);
