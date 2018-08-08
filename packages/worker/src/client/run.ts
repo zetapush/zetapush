@@ -251,6 +251,9 @@ export class WorkerRunner extends EventEmitter {
             'No current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
           );
         }
+        // FIX
+        // Clean customProviders to avoid providers persitance
+        this.customProviders = [];
         // Create a new worker instance
         const worker = instantiate(this.client, reloaded, this.customProviders || []);
         this.currentInstance.setWorker(worker);
