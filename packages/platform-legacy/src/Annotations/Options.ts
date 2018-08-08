@@ -1,8 +1,20 @@
 import { Service as PlatformService } from '../Core/index';
 
-export type Type<T> = { new (...args: any[]): T };
+interface FunctionConstructor {
+  /**
+   * Creates a new function.
+   * @param args A list of arguments the function accepts.
+   */
+  new (...args: string[]): Function;
+  (...args: string[]): Function;
+  readonly prototype: Function;
+}
 
-export type Primitive = string | number | boolean;
+interface Type<T> extends Function {
+  new (...args: any[]): T;
+}
+
+type Primitive = string | number | boolean;
 
 export type ServiceOptions = {
   [property: string]: Primitive;

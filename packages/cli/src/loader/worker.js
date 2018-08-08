@@ -24,6 +24,8 @@ const load = (command) => {
     let worker = require(id);
     if (module.hot) {
       module.hot.accept(id, (filepath) => {
+        // Ensure clear cache
+        delete require.cache[require.resolve(filepath)];
         // Reload worker declaration
         worker = require(filepath);
         // Time tracking
