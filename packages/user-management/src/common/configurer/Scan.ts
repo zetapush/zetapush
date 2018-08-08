@@ -2,7 +2,7 @@ import { AbstractParent } from './AbstractParent';
 import { Configurer, AnnotationsConfigurer, ScanConfigurer } from './grammar';
 import { ValidationManager } from '../api/Validation';
 import { DefaultAnnotationsConfigurer } from './Annotations';
-import { Type } from '@zetapush/platform/src/Metadata/Options';
+import { Type } from '@zetapush/platform-legacy';
 import { NoOpValidationManager } from '../core/Validation';
 /**
  * Default scan configurer implementation
