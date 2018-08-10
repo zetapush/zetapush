@@ -1,6 +1,7 @@
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
+import { sizeSnapshot } from 'rollup-plugin-size-snapshot';
 import ts from 'rollup-plugin-typescript';
 import typescript from 'typescript'
 import { uglify } from 'rollup-plugin-uglify';
@@ -19,7 +20,8 @@ const config = {
     ts({
       typescript
     }),
-    json()
+    json(),
+    sizeSnapshot(),
   ],
   output: {
     format: 'cjs',

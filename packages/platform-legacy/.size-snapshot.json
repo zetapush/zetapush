@@ -1,0 +1,12 @@
+{
+  "dist/zetapush-platform-legacy.js": {
+    "bundled": 118374,
+    "minified": 18702,
+    "gzipped": 3414
+  },
+  "dist/zetapush-platform.min.js": {
+    "bundled": 118374,
+    "minified": 18702,
+    "gzipped": 3414
+  }
+}

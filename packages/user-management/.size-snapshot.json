@@ -1,0 +1,12 @@
+{
+  "dist/zetapush-user-management.js": {
+    "bundled": 157860,
+    "minified": 36591,
+    "gzipped": 10460
+  },
+  "dist/zetapush-user-management.min.js": {
+    "bundled": 157860,
+    "minified": 36591,
+    "gzipped": 10460
+  }
+}
