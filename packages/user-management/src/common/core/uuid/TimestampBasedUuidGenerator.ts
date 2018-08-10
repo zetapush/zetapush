@@ -1,4 +1,4 @@
-import { Injectable } from '@zetapush/core';
+import { Injectable } from 'injection-js';
 import { UuidGenerator, IllegalArgumentError, Uuid } from '../../api';
 
 /**

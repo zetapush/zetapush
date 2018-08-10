@@ -1,4 +1,4 @@
-import { Injector } from '@zetapush/core';
+import { Injector } from 'injection-js';
 import { Simple } from '@zetapush/platform-legacy';
 
 import {

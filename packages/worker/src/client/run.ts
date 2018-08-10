@@ -291,6 +291,7 @@ export class WorkerRunner extends EventEmitter {
       const client = this.client;
       const config = this.config;
       const declaration = this.currentDeclaration;
+
       if (!this.skipBootstrap) {
         this.emit(WorkerRunnerEvents.CONFIGURING_APP, {
           instance,

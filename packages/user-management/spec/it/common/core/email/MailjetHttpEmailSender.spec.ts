@@ -4,7 +4,6 @@ import { mock, anyString, anything, when, verify } from 'ts-mockito';
 import { AxiosInstance, AxiosResponse, AxiosPromise } from 'axios';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import {} from 'jasmine';
 
 describe(`MailjetHttpEmailSender`, () => {
   const axiosInstance = axios.create({});

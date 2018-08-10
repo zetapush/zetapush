@@ -1,5 +1,4 @@
-import { TokenGeneratorConfigurer, Configurer } from '../grammar';
-import { TokenGenerator, Uuid } from '../../api';
+import { Configurer, TokenManagerConfigurer } from '../grammar';
 import { AbstractParent } from '../AbstractParent';
 import { Injector } from 'injection-js';
 import { MissingMandatoryConfigurationError, InstantiationError } from '../ConfigurerError';
@@ -7,27 +6,39 @@ import { FuncCallUuidGenerator } from '../../core/uuid/FuncCallUuidGenerator';
 import { Type } from '@zetapush/platform-legacy';
 import { FuncCallTokenGenerator } from '../../core/token/FuncCallTokenGenerator';
 import { ExpirableTokenGenerator } from '../../core';
+import { DefaultStorageTokenManager } from '../../core/token/DefaultStorageTokenManager';
+import { TokenManagerImpl } from '../../core/token/TokenManagerImpl';
+import { Uuid, TokenGenerator, TokenManager, TokenStorageManager } from '../../api';
+import { Gda, GdaConfigurer } from '@zetapush/platform-legacy';
 
-export class TokenGeneratorConfigurerImpl<P> extends AbstractParent<P>
-  implements TokenGeneratorConfigurer<P>, Configurer<TokenGenerator> {
+export class TokenManagerConfigurerImpl<P> extends AbstractParent<P>
+  implements TokenManagerConfigurer<P>, Configurer<TokenManager> {
   private generatorInstance?: TokenGenerator;
   private generatorClass?: Type<TokenGenerator>;
   private generatorFunc?: () => Promise<Uuid>;
   private validityDuration?: number;
+  private tokenStorageManager: TokenStorageManager;
 
-  constructor(parentConfigurer: P, private injector: Injector) {
+  constructor(parentConfigurer: P, private injector: Injector, private gda: Gda, private gdaConfigurer: GdaConfigurer) {
     super(parentConfigurer);
   }
 
-  validity(duration: number): TokenGeneratorConfigurer<P> {
+  storage(tokenStorageManager?: TokenStorageManager): TokenManagerConfigurer<P> {
+    if (tokenStorageManager) {
+      this.tokenStorageManager = tokenStorageManager;
+    }
+    return this;
+  }
+
+  validity(duration: number): TokenManagerConfigurer<P> {
     this.validityDuration = duration;
     return this;
   }
 
-  generator(func: () => Promise<Uuid>): TokenGeneratorConfigurer<P>;
-  generator(instance: TokenGenerator): TokenGeneratorConfigurer<P>;
-  generator(generatorClass: Type<TokenGenerator>): TokenGeneratorConfigurer<P>;
-  generator(instanceFuncOrClass: any): TokenGeneratorConfigurer<P> {
+  generator(func: () => Promise<Uuid>): TokenManagerConfigurer<P>;
+  generator(instance: TokenGenerator): TokenManagerConfigurer<P>;
+  generator(generatorClass: Type<TokenGenerator>): TokenManagerConfigurer<P>;
+  generator(instanceFuncOrClass: any): TokenManagerConfigurer<P> {
     if ((<TokenGenerator>instanceFuncOrClass).generate) {
       this.generatorInstance = instanceFuncOrClass;
     } else if (instanceFuncOrClass.constructor) {
@@ -40,8 +51,16 @@ export class TokenGeneratorConfigurerImpl<P> extends AbstractParent<P>
     return this;
   }
 
-  async build(): Promise<TokenGenerator> {
+  async build(): Promise<TokenManager> {
     let generator;
+    let storage;
+
+    if (this.tokenStorageManager) {
+      storage = this.tokenStorageManager;
+    } else {
+      storage = new DefaultStorageTokenManager(this.gda, this.gdaConfigurer);
+    }
+
     if (this.generatorInstance) {
       generator = this.generatorInstance;
     }
@@ -57,7 +76,8 @@ export class TokenGeneratorConfigurerImpl<P> extends AbstractParent<P>
     if (this.validityDuration) {
       generator = new ExpirableTokenGenerator(generator, this.validityDuration);
     }
-    return generator;
+
+    return new TokenManagerImpl(generator, storage);
   }
 
   private instiantiate(generatorClass: Type<TokenGenerator>): TokenGenerator {

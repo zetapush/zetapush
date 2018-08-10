@@ -20,6 +20,7 @@ export default class Api {
     private configurable: ConfigurableApi,
     config: LoggerConfig
   ) {}
+  
   add(item: any) {
     return this.storage.push(item);
   }

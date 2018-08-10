@@ -1,7 +1,7 @@
 import { Type } from '@zetapush/core';
 
 import { AccountStatus, AccountStatusProvider } from '../../standard-user-workflow/api';
-import { UuidGenerator, Uuid, Variables, TemplateManager, Location, Token, TokenGenerator } from '../api';
+import { UuidGenerator, Uuid, Variables, Location, Token, TokenGenerator, TokenStorageManager } from '../api';
 
 export interface And<P> {
   and(): P;
@@ -101,12 +101,13 @@ export interface FieldConfigurer<P> extends And<P> {
   // TODO
 }
 
-export interface TokenGeneratorConfigurer<P> extends And<P> {
-  validity(duration: number): TokenGeneratorConfigurer<P>;
+export interface TokenManagerConfigurer<P> extends And<P> {
+  validity(duration: number): TokenManagerConfigurer<P>;
 
-  generator(func: () => Promise<Token>): TokenGeneratorConfigurer<P>;
-  generator(instance: TokenGenerator): TokenGeneratorConfigurer<P>;
-  generator(generatorClass: Type<TokenGenerator>): TokenGeneratorConfigurer<P>;
+  generator(func: () => Promise<Token>): TokenManagerConfigurer<P>;
+  generator(instance: TokenGenerator): TokenManagerConfigurer<P>;
+  generator(generatorClass: Type<TokenGenerator>): TokenManagerConfigurer<P>;
+  storage(tokenStorageManager?: TokenStorageManager): TokenManagerConfigurer<P>;
 }
 
 //==================== account registration ====================//
@@ -150,7 +151,7 @@ export interface RegistrationConfirmationConfigurer extends And<RegistrationConf
 
   redirection(): SuccessFailureRedirectionConfigurer<RegistrationConfirmationConfigurer>;
 
-  token(): TokenGeneratorConfigurer<RegistrationConfirmationConfigurer>;
+  token(): TokenManagerConfigurer<RegistrationConfirmationConfigurer>;
 }
 
 //==================== account login ====================//

@@ -5,28 +5,34 @@ import {
   SmsConfigurer,
   EmailConfigurer,
   RegistrationConfigurer,
-  TokenGeneratorConfigurer
+  TokenManagerConfigurer
 } from '../grammar';
 import { EmailConfigurerImpl } from '../email/EmailConfigurer';
 import { AbstractParent } from '../AbstractParent';
 import { AccountConfirmationManager } from '../../../standard-user-workflow/api';
 import { TemplatedMessageAccountConfirmationManager } from '../../core/confirmation/TemplatedMessageAccountConfirmationManager';
-import { TokenGeneratorConfigurerImpl } from '../token/TokenConfigurer';
 import { Injector } from 'injection-js';
 import { ExtractEmailAddressFromProfileProvider } from '../../../standard-user-workflow/core/account/ExtractEmailAddressFromProfileProvider';
 import { MissingMandatoryConfigurationError } from '../ConfigurerError';
+import { TokenManagerConfigurerImpl } from '../token/TokenConfigurerImpl';
+import { Simple, Gda, GdaConfigurer } from '@zetapush/platform-legacy';
 
 export class RegistrationConfirmationConfigurerImpl extends AbstractParent<RegistrationConfigurer>
   implements RegistrationConfirmationConfigurer, Configurer<AccountConfirmationManager> {
   private emailConfigurer?: EmailConfigurerImpl<RegistrationConfirmationConfigurer>;
-  private tokenConfigurer?: TokenGeneratorConfigurerImpl<RegistrationConfirmationConfigurer>;
+  private tokenConfigurer?: TokenManagerConfigurerImpl<RegistrationConfirmationConfigurer>;
 
-  constructor(parentConfigurer: RegistrationConfigurer, private injector: Injector) {
+  constructor(
+    parentConfigurer: RegistrationConfigurer,
+    private injector: Injector,
+    private gda: Gda,
+    private gdaConfigurer: GdaConfigurer
+  ) {
     super(parentConfigurer);
   }
 
-  token(): TokenGeneratorConfigurer<RegistrationConfirmationConfigurer> {
-    this.tokenConfigurer = new TokenGeneratorConfigurerImpl(this, this.injector);
+  token(): TokenManagerConfigurer<RegistrationConfirmationConfigurer> {
+    this.tokenConfigurer = new TokenManagerConfigurerImpl(this, this.injector, this.gda, this.gdaConfigurer);
     return this.tokenConfigurer;
   }
 
@@ -64,6 +70,7 @@ export class RegistrationConfirmationConfigurerImpl extends AbstractParent<Regis
         tokenGenerator,
         emailAddressProvider,
         sender,
+        this.injector.get(Simple),
         htmlLocation,
         htmlTemplateManager,
         textLocation,

@@ -8,12 +8,40 @@ export interface TokenGenerator {
 }
 
 /**
+ * Allows to store tokens
+ */
+export interface TokenStorageManager {
+  store(token: Token, associatedValue?: AssociatedValueToToken): Promise<Token>;
+  getFromToken(token: Token): Promise<StoredToken>;
+  delete(token: Token): Promise<Token>;
+}
+
+/**
+ * Allows to validate or delete
+ */
+export interface TokenManager {
+  validate(token: Token): Promise<StoredToken>;
+  generate(): Promise<Token>;
+  save(token: Token, associatedValue?: AssociatedValueToToken): Promise<Token>;
+}
+
+/**
  * ================================
  * Utils Type / Interfaces
  * ================================
  */
 export interface Token {
   value: string;
+}
+
+export enum StateToken {
+  UNUSED = 'UNUSED',
+  ALREADY_USED = 'ALREADY_USED'
+}
+
+export interface StoredToken extends Token {
+  state: StateToken;
+  associatedValue?: AssociatedValueToToken;
 }
 
 export class ExpirableToken implements Token {
@@ -27,5 +55,8 @@ export class ExpirableToken implements Token {
     return this.original.value;
   }
 }
+
+// Can be extends with other types
+export type AssociatedValueToToken = string;
 
 export class TokenGenerationError extends Error {}

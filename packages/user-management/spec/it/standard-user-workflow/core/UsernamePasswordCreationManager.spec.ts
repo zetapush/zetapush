@@ -6,6 +6,8 @@ import { AccountCreationManager } from '../../../../src/standard-user-workflow/a
 
 import { given, autoclean, runInWorker } from '@zetapush/testing';
 import { Injector } from 'injection-js';
+import { AccountCreationManagerConfigurerImpl } from '../../../../src/standard-user-workflow/configurer/account/AccountCreationManagerConfigurer';
+import 'jasmine';
 
 describe(`AccountCreationManager`, () => {
   const registrationConfigurer = jasmine.createSpyObj('registrationConfigurer', ['account', 'welcome', 'confirmation']);
