@@ -4,6 +4,8 @@
 /dist/
 /es/
 /lib/
+# Generated build stats
+/.size-snapshot.json
 # Third part dependencies
 /node_modules/
 # Log
