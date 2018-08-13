@@ -1,4 +1,5 @@
 import { ExpirableTokenGenerator, Base36RandomTokenGenerator } from '../../../../src';
+import 'jasmine';
 
 describe(`ExpirableTokenGenerator`, () => {
   it(`configured with

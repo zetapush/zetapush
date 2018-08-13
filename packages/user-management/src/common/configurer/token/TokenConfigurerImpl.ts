@@ -17,16 +17,14 @@ export class TokenManagerConfigurerImpl<P> extends AbstractParent<P>
   private generatorClass?: Type<TokenGenerator>;
   private generatorFunc?: () => Promise<Uuid>;
   private validityDuration?: number;
-  private tokenStorageManager: TokenStorageManager;
+  private tokenStorageManager?: TokenStorageManager;
 
-  constructor(parentConfigurer: P, private injector: Injector, private gda: Gda, private gdaConfigurer: GdaConfigurer) {
+  constructor(parentConfigurer: P, private injector: Injector) {
     super(parentConfigurer);
   }
 
   storage(tokenStorageManager?: TokenStorageManager): TokenManagerConfigurer<P> {
-    if (tokenStorageManager) {
-      this.tokenStorageManager = tokenStorageManager;
-    }
+    this.tokenStorageManager = tokenStorageManager;
     return this;
   }
 
@@ -58,7 +56,7 @@ export class TokenManagerConfigurerImpl<P> extends AbstractParent<P>
     if (this.tokenStorageManager) {
       storage = this.tokenStorageManager;
     } else {
-      storage = new DefaultStorageTokenManager(this.gda, this.gdaConfigurer);
+      storage = this.createDefaultStorage();
     }
 
     if (this.generatorInstance) {
@@ -78,6 +76,16 @@ export class TokenManagerConfigurerImpl<P> extends AbstractParent<P>
     }
 
     return new TokenManagerImpl(generator, storage);
+  }
+
+  private createDefaultStorage() {
+    try {
+      const gda = this.injector.get(Gda);
+      const gdaConfigurer = this.injector.get(GdaConfigurer);
+      return new DefaultStorageTokenManager(gda, gdaConfigurer);
+    } catch (e) {
+      throw new InstantiationError('Failed to instantiate DefaultStorageTokenManager', e);
+    }
   }
 
   private instiantiate(generatorClass: Type<TokenGenerator>): TokenGenerator {

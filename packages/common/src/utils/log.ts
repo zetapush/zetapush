@@ -22,6 +22,9 @@ const conf = {
 export const setVerbosity = (verbosity: number) => {
   conf.loggerVerbosity = verbosity;
 };
+export const getVerbosity = () => {
+  return conf.loggerVerbosity;
+};
 
 export const debugObject = (what: string, ...objects: any[]) => {
   if (conf.loggerVerbosity < 4) return;

@@ -22,17 +22,12 @@ export class RegistrationConfirmationConfigurerImpl extends AbstractParent<Regis
   private emailConfigurer?: EmailConfigurerImpl<RegistrationConfirmationConfigurer>;
   private tokenConfigurer?: TokenManagerConfigurerImpl<RegistrationConfirmationConfigurer>;
 
-  constructor(
-    parentConfigurer: RegistrationConfigurer,
-    private injector: Injector,
-    private gda: Gda,
-    private gdaConfigurer: GdaConfigurer
-  ) {
+  constructor(parentConfigurer: RegistrationConfigurer, private injector: Injector) {
     super(parentConfigurer);
   }
 
   token(): TokenManagerConfigurer<RegistrationConfirmationConfigurer> {
-    this.tokenConfigurer = new TokenManagerConfigurerImpl(this, this.injector, this.gda, this.gdaConfigurer);
+    this.tokenConfigurer = new TokenManagerConfigurerImpl(this, this.injector);
     return this.tokenConfigurer;
   }
 

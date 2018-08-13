@@ -1,4 +1,5 @@
 import { TimestampBasedUuidGenerator, IllegalArgumentError } from '../../../../src';
+import 'jasmine';
 
 describe(`TimestampBasedUuidGenerator`, () => {
   it(`configured with

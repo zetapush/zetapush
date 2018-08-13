@@ -1,5 +1,5 @@
 import { Base36RandomTokenGenerator, IllegalArgumentError } from '../../../../../src';
-import {} from 'jasmine';
+import 'jasmine';
 
 describe(`Base36RandomTokenGenerator`, () => {
   it(`configured with

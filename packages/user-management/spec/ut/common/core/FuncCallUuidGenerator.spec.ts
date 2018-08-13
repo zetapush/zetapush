@@ -1,4 +1,5 @@
 import { FuncCallUuidGenerator, IllegalArgumentError } from '../../../../src';
+import 'jasmine';
 
 describe(`FuncCallUuidGenerator`, () => {
   it(`configured with

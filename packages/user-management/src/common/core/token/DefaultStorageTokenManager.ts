@@ -1,14 +1,17 @@
-import { Token, TokenStorageManager, StoredToken, StateToken, AssociatedValueToToken } from '../../api';
+import { Token, TokenStorageManager, StoredToken, TokenState, AssociatedValueToToken } from '../../api';
 import {
   GetTokenFromStorageError,
   DeleteTokenFromStorageError,
   StoreTokenIntoStorageError,
-  PrepareTokenStorageError
+  TokenStorageInitError,
+  TokenNotFoundError
 } from '../../api/exception/TokenError';
+import { Bootstrappable } from '@zetapush/core';
 import { Gda, GdaConfigurer, GdaDataType, Idempotence } from '@zetapush/platform-legacy';
 import { Injectable } from 'injection-js';
 
 @Injectable()
+@Bootstrappable()
 export class DefaultStorageTokenManager implements TokenStorageManager {
   private STORAGE_TOKEN_NAME_TABLE = 'storagetokennametable';
   private STORAGE_TOKEN_NAME_COLUMN = 'storagetokennamecolumn';
@@ -28,76 +31,56 @@ export class DefaultStorageTokenManager implements TokenStorageManager {
         idempotence: Idempotence.IGNORE_IDENTICAL
       });
     } catch (e) {
-      throw new PrepareTokenStorageError(`Failed to create the table in the database to store the token`, this);
+      throw new TokenStorageInitError(`Failed to create the table in the database to store the token`, e);
     }
   }
 
-  store(token: Token, associatedValue?: AssociatedValueToToken): Promise<Token> {
-    return new Promise<Token>(async (resolve, reject) => {
-      const objToSave = <StoredToken>{
-        value: token.value,
-        state: StateToken.UNUSED,
-        associatedValue
-      };
+  async store(token: Token, associatedValue?: AssociatedValueToToken): Promise<Token> {
+    const objToSave: StoredToken = {
+      token,
+      state: TokenState.UNUSED,
+      associatedValue
+    };
 
-      try {
-        await this.gdaStorage.put({
-          column: this.STORAGE_TOKEN_NAME_COLUMN,
-          table: this.STORAGE_TOKEN_NAME_TABLE,
-          key: token.value,
-          data: objToSave
-        });
-        resolve(token);
-      } catch (e) {
-        reject(
-          new StoreTokenIntoStorageError(
-            `The request to store the token in the storage has failed`,
-            token,
-            this,
-            e.message
-          )
-        );
-      }
-    });
+    try {
+      await this.gdaStorage.put({
+        column: this.STORAGE_TOKEN_NAME_COLUMN,
+        table: this.STORAGE_TOKEN_NAME_TABLE,
+        key: token.value,
+        data: objToSave
+      });
+      return token;
+    } catch (e) {
+      throw new StoreTokenIntoStorageError(`The request to store the token in the storage has failed`, token, e);
+    }
   }
 
-  delete(token: Token): Promise<Token> {
-    return new Promise<Token>(async (resolve, reject) => {
-      try {
-        await this.gdaStorage.removeRow({
-          key: token.value,
-          table: this.STORAGE_TOKEN_NAME_TABLE
-        });
-        resolve(token);
-      } catch (e) {
-        reject(
-          new DeleteTokenFromStorageError(`The request to remove the token from the storage has failed`, token, this)
-        );
-      }
-    });
+  async delete(token: Token): Promise<Token> {
+    try {
+      await this.gdaStorage.removeRow({
+        key: token.value,
+        table: this.STORAGE_TOKEN_NAME_TABLE
+      });
+      return token;
+    } catch (e) {
+      throw new DeleteTokenFromStorageError(`The request to remove the token from the storage has failed`, token, e);
+    }
   }
 
-  getFromToken(token: Token): Promise<StoredToken> {
-    return new Promise<StoredToken>(async (resolve, reject) => {
-      let outputStorage;
-      try {
-        outputStorage = await this.gdaStorage.get({
-          key: token.value,
-          table: this.STORAGE_TOKEN_NAME_TABLE
-        });
-      } catch (e) {
-        reject(new GetTokenFromStorageError(`The request to retrieve the token has failed`, token, this, e.message));
-      }
+  async getFromToken(token: Token): Promise<StoredToken> {
+    let outputStorage;
+    try {
+      outputStorage = await this.gdaStorage.get({
+        key: token.value,
+        table: this.STORAGE_TOKEN_NAME_TABLE
+      });
+    } catch (e) {
+      throw new GetTokenFromStorageError(`The request to retrieve the token has failed`, token, e);
+    }
 
-      let storedToken: StoredToken;
-      if (!outputStorage || !outputStorage.result) {
-        reject(
-          new GetTokenFromStorageError(`The request to retrieve the token from the storage has no result`, token, this)
-        );
-      } else {
-        storedToken = outputStorage.result[this.STORAGE_TOKEN_NAME_COLUMN];
-        resolve(storedToken);
-      }
-    });
+    if (!outputStorage || !outputStorage.result) {
+      throw new TokenNotFoundError(`No matching token found`, token);
+    }
+    return outputStorage.result[this.STORAGE_TOKEN_NAME_COLUMN];
   }
 }

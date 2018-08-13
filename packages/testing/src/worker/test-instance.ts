@@ -10,6 +10,10 @@ export class Wrapper {
     public deps: any[],
     public instanceWrapper: any
   ) {}
+
+  getInjector() {
+    return this.instanceWrapper.instance.worker[DEFAULT_INJECTOR_INSTANCE];
+  }
 }
 
 @Injectable()
@@ -17,10 +21,7 @@ export class TestDeclaration {
   constructor(private wrapper: Wrapper) {}
 
   async test() {
-    await this.wrapper.workerDeclaration(
-      ...this.wrapper.deps,
-      this.wrapper.instanceWrapper.instance.worker[DEFAULT_INJECTOR_INSTANCE]
-    );
+    await this.wrapper.workerDeclaration(this.wrapper.getInjector(), ...this.wrapper.deps);
   }
 }
 

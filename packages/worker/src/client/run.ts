@@ -87,7 +87,8 @@ export class WorkerRunner extends EventEmitter {
     private config: ResolvedConfig,
     private transports: any[],
     private workerInstanceFactory?: WorkerInstanceFactory,
-    private customProviders?: Provider[]
+    private customProviders?: Provider[],
+    private logLevel?: string
   ) {
     super();
   }
@@ -142,6 +143,9 @@ export class WorkerRunner extends EventEmitter {
         },
         this.workerInstanceFactory
       );
+      if (this.logLevel) {
+        client.setLogLevel(this.logLevel);
+      }
       this.client = client;
       this.currentDeclaration = declaration;
 

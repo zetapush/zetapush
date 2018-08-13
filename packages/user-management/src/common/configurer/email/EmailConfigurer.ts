@@ -5,7 +5,8 @@ import {
   MailjetEmailConfigurer,
   EmailTemplateConfigurer,
   Configurer,
-  TemplateConfigurer
+  TemplateConfigurer,
+  TextTemplateConfigurer
 } from '../grammar';
 import { AbstractParent } from '../AbstractParent';
 import { MailjetHttpEmailSender, MailjetAuth } from '../../core';
@@ -14,6 +15,7 @@ import { Email, MessageSender, TemplateManager, Location } from '../../api';
 import axios, { AxiosInstance } from 'axios';
 import { EmailTemplateConfigurerImpl } from '../template/EmailTemplateConfigurer';
 import { TemplateConfigurerImpl } from '../template/TemplateConfigurer';
+import { TextTemplateConfigurerImpl } from '../template/TextTemplateConfigurer';
 
 export interface TemplatedEmailSender {
   sender: MessageSender;
@@ -28,7 +30,7 @@ export class EmailConfigurerImpl<P> extends AbstractParent<P>
   private mailjetConfigurer: MailjetEmailConfigurerImpl<EmailConfigurer<P>>;
   private defaults: Partial<Email> = {};
   private htmlTemplateConfigurer: EmailTemplateConfigurerImpl<EmailConfigurer<P>>;
-  private textTemplateConfigurer: TemplateConfigurerImpl<EmailConfigurer<P>>;
+  private textTemplateConfigurer: TextTemplateConfigurerImpl<EmailConfigurer<P>>;
 
   from(email: string): EmailConfigurer<P> {
     this.defaults.from = email;
@@ -55,8 +57,8 @@ export class EmailConfigurerImpl<P> extends AbstractParent<P>
     this.htmlTemplateConfigurer = new EmailTemplateConfigurerImpl(this);
     return this.htmlTemplateConfigurer;
   }
-  textTemplate(): TemplateConfigurer<EmailConfigurer<P>> {
-    this.textTemplateConfigurer = new TemplateConfigurerImpl(this);
+  textTemplate(): TextTemplateConfigurer<EmailConfigurer<P>> {
+    this.textTemplateConfigurer = new TextTemplateConfigurerImpl(this);
     return this.textTemplateConfigurer;
   }
 
@@ -100,6 +102,7 @@ export class MailjetEmailConfigurerImpl<P> extends AbstractParent<P>
   private mailjetUrl?: string;
   private mailjetApiKeyPublic?: string;
   private mailjetApiKeyPrivate?: string;
+  private axiosInstance: AxiosInstance;
 
   constructor(parent: P, private defaults: Partial<Email>, private axios?: AxiosInstance) {
     super(parent);
@@ -117,6 +120,10 @@ export class MailjetEmailConfigurerImpl<P> extends AbstractParent<P>
     this.mailjetApiKeyPrivate = mailjetApiKeyPrivate;
     return this;
   }
+  httpClient(axios: AxiosInstance) {
+    this.axiosInstance = axios;
+    return this;
+  }
 
   async build(): Promise<MailjetHttpEmailSender> {
     const url = this.mailjetUrl || DEFAULT_MAILJET_URL;
@@ -127,7 +134,7 @@ export class MailjetEmailConfigurerImpl<P> extends AbstractParent<P>
       url,
       new MailjetAuth(this.mailjetApiKeyPublic, this.mailjetApiKeyPrivate),
       this.defaults,
-      this.axios || axios
+      this.axiosInstance || this.axios || axios
     );
   }
 }

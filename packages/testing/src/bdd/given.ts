@@ -1,11 +1,10 @@
 import { existsSync } from 'fs';
 
-import { createApplication } from '@zetapush/common';
 import { Config } from '@zetapush/common';
 
 import copydir from 'copy-dir';
 
-import { givenLogger, envLogger } from '../utils/logger';
+import { givenLogger, envLogger, getLogLevelsFromEnv } from '../utils/logger';
 import {
   readZetarc,
   rm,
@@ -19,6 +18,7 @@ import {
   getCurrentEnv
 } from '../utils/commands';
 import { TestContext, Test } from '../utils/types';
+import { createApplication, DEFAULTS } from '@zetapush/common';
 
 export const given = () => new Given();
 
@@ -82,17 +82,21 @@ class Given {
       if (this.givenApp) {
         projectDir = await this.givenApp.execute();
       }
-      if (this.givenWorker && !projectDir) {
-        givenLogger.warn(
-          "Can't start worker or read zetarc if there is no project directory provided. You may need to configure either newApp(), testingApp() or templatedApp()"
-        );
-      }
       let runner;
-      if (this.givenWorker && projectDir) {
-        runner = await this.givenWorker.execute(projectDir);
+      let dependencies;
+      if (this.givenWorker) {
+        const runnerAndDeps = await this.givenWorker.execute(projectDir);
+        runner = runnerAndDeps.runner;
+        dependencies = runnerAndDeps.dependencies;
       }
       const zetarc = projectDir ? await readZetarc(projectDir) : this.sharedCredentials;
-      const context = { zetarc, projectDir, runner };
+      const context = {
+        zetarc,
+        projectDir,
+        runner,
+        dependencies,
+        logLevel: getLogLevelsFromEnv()
+      };
       if (objToFill) {
         Object.assign(objToFill, {
           context
@@ -185,13 +189,13 @@ class GivenCredentials extends Parent<Given> {
   constructor(parent: Given) {
     super(parent);
     // default behavior uses the env variables
-    this.url = process.env.ZETAPUSH_PLATFORM_URL;
+    this.url = process.env.ZETAPUSH_PLATFORM_URL || DEFAULTS.PLATFORM_URL;
   }
 
   fromEnv() {
     this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
     this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
-    this.url = process.env.ZETAPUSH_PLATFORM_URL;
+    this.url = process.env.ZETAPUSH_PLATFORM_URL || DEFAULTS.PLATFORM_URL;
     this.appName = process.env.ZETAPUSH_PLATFORM_APP_NAME;
     return this;
   }
@@ -402,6 +406,7 @@ class GivenWorker extends Parent<Given> {
   private workerUp = false;
   private timeout?: number;
   private isQuiet = false;
+  private deps?: Function[];
 
   constructor(parent: Given) {
     super(parent);
@@ -423,18 +428,38 @@ class GivenWorker extends Parent<Given> {
     return this;
   }
 
-  async execute(currentDir: string) {
+  dependencies(...deps: Function[]) {
+    this.deps = deps;
+    return this;
+  }
+
+  async execute(currentDir?: string) {
     try {
-      if (this.createRunner) {
-        return new Runner(currentDir);
+      if ((this.createRunner || this.workerUp) && !currentDir) {
+        givenLogger.warn(
+          "Can't start worker or read zetarc if there is no project directory provided. You may need to configure either project().newProject() or project().template()"
+        );
       }
-      if (this.workerUp) {
+      if (this.createRunner && currentDir) {
+        return {
+          runner: new Runner(currentDir),
+          dependencies: this.deps
+        };
+      }
+      if (this.workerUp && currentDir) {
         givenLogger.info(`>>> Given worker: run and wait for worker up ${currentDir}`);
         const runner = new Runner(currentDir, this.timeout);
         runner.run(this.isQuiet);
         await runner.waitForWorkerUp();
-        return runner;
+        return {
+          runner,
+          dependencies: this.deps
+        };
       }
+      return {
+        runner: undefined,
+        dependencies: this.deps
+      };
     } catch (e) {
       givenLogger.error(`>>> Given worker: FAILED ${currentDir}`, e);
       throw e;

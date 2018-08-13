@@ -1,4 +1,4 @@
-import {} from 'jasmine';
+import 'jasmine';
 import { Base36RandomTokenGenerator } from '../../../../../src';
 
 describe(`Base64RandomTokenValidation`, () => {

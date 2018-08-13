@@ -6,6 +6,9 @@
     "common [prepublish]": [
       "packages/common/**"
     ],
+    "core [prepublish]": [
+      "packages/core/**"
+    ],
     "worker [prepublish]": [
       "packages/worker/**"
     ],
@@ -13,4 +16,14 @@
       "packages/user-management/**"
     ]
   },
+  "coverage-gutters.showGutterCoverage": false,
+  "coverage-gutters.showLineCoverage": true,
+  "coverage-gutters.showRulerCoverage": true,
+  "coverage-gutters.xmlname": "cobertura-coverage.xml",
+  "lcov.path": [
+    "packages/user-management/coverage/lcov.info",
+  ],
+  // "jasmineExplorer.logpanel": true,
+  // "jasmineExplorer.nodePath": "~/.nvm/versions/node/v10.8.0/bin/node",
+
 }

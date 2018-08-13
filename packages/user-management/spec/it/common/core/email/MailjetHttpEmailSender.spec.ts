@@ -4,6 +4,7 @@ import { mock, anyString, anything, when, verify } from 'ts-mockito';
 import { AxiosInstance, AxiosResponse, AxiosPromise } from 'axios';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import 'jasmine';
 
 describe(`MailjetHttpEmailSender`, () => {
   const axiosInstance = axios.create({});
@@ -17,10 +18,6 @@ describe(`MailjetHttpEmailSender`, () => {
       /**/ .fromEnv()
       /**/ .newApp()
       /**/ .and()
-      // .worker()
-      // /**/ .dependencies(Simple)
-      // /**/ .bootstrap((simple: Simple) => {})
-      // /**/ .and()
       .apply(this);
   });
 
@@ -31,7 +28,7 @@ describe(`MailjetHttpEmailSender`, () => {
      should 
       - execute valid http request
       - end successfully`, async () => {
-    await runInWorker(this, [], async () => {
+    await runInWorker(this, async () => {
       // GIVEN
 
       // create configurer
@@ -43,7 +40,7 @@ describe(`MailjetHttpEmailSender`, () => {
       const sender = await configurer.build();
       // WHEN
       const result = await sender.send({
-        from: 'odile.deray@zetapush.com',
+        to: ['odile.deray@zetapush.com'],
         subject: 'Mailjet sender test',
         body: {
           html: '<h1>Yeah !</h1>'

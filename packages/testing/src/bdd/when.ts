@@ -61,13 +61,9 @@ export const frontUserAction = async (
   });
 };
 
-export const runInWorker = (
-  testOrContext: Context,
-  services: Service[],
-  workerDeclaration: (...instances: any[]) => void
-) => {
+export const runInWorker = (testOrContext: Context, workerDeclaration: (...instances: any[]) => void) => {
   return new Promise((resolve, reject) => {
-    const { zetarc } = new ContextWrapper(testOrContext).getContext();
+    const { zetarc, dependencies, logLevel } = new ContextWrapper(testOrContext).getContext();
 
     // Worker instance will be available once started but Wrapper needs it now.
     // So we use a wrapper that will be filled later
@@ -79,12 +75,18 @@ export const runInWorker = (
       useFactory: (...deps: any[]): Wrapper => {
         return new Wrapper(workerDeclaration, deps, instanceWrapper);
       },
-      deps: services
+      deps: dependencies || []
     };
 
-    const runner = new WorkerRunner(false, false, <ResolvedConfig>zetarc, transports, new TestWorkerInstanceFactory(), [
-      factoryProvider
-    ]);
+    const runner = new WorkerRunner(
+      false,
+      false,
+      <ResolvedConfig>zetarc,
+      transports,
+      new TestWorkerInstanceFactory(),
+      [factoryProvider],
+      logLevel.cometd
+    );
 
     // listen to events in order to log information to help developer
     runner.on(WorkerRunnerEvents.BOOTSTRAPING, () => {

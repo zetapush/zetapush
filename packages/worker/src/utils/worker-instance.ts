@@ -1,4 +1,4 @@
-import { Context } from '@zetapush/core';
+import { Context, bootstrapRegistry } from '@zetapush/core';
 import { timeoutify } from '@zetapush/common';
 import { TaskRequest } from '@zetapush/platform-legacy';
 
@@ -28,6 +28,11 @@ export class TaskDispatcherWorkerInstance implements WorkerInstance {
    * Bootstraps layers
    */
   private bootLayers: any;
+  /**
+   * Store instances that have been bootstrapped to prevent
+   * calling onApplicationBootstrap several times
+   */
+  private bootstrapped: any[] = [];
 
   /**
    *
@@ -51,30 +56,47 @@ export class TaskDispatcherWorkerInstance implements WorkerInstance {
   }
 
   async configure() {
-    for (let layerIndex in this.bootLayers) {
-      for (let apiIndex in this.bootLayers[layerIndex]) {
-        const api = this.bootLayers[layerIndex][apiIndex];
-        if (typeof api['onApplicationBootstrap'] === 'function') {
-          try {
-            await api['onApplicationBootstrap']();
-          } catch (error) {
-            return {
-              success: false,
-              result: {
-                code: 'EBOOTFAIL',
-                message: 'onApplicationBootstrap error on class ' + api.constructor.name + ' : ' + error.toString(),
-                context: {},
-                location: api.constructor.name
-              }
-            };
-          }
+    try {
+      for (let layerIndex in this.bootLayers) {
+        for (let apiIndex in this.bootLayers[layerIndex]) {
+          const api = this.bootLayers[layerIndex][apiIndex];
+          await this.bootstrap(api);
         }
       }
+      // bootstrap instances lately registered with @Bootstrappable decorator
+      for (let instance of bootstrapRegistry.getInstances()) {
+        await this.bootstrap(instance);
+      }
+      return {
+        success: true,
+        result: {}
+      };
+    } catch (e) {
+      return e;
+    } finally {
+      // no more useful
+      bootstrapRegistry.clear();
+      this.bootstrapped = [];
     }
-    return {
-      success: true,
-      result: {}
-    };
+  }
+
+  private async bootstrap(instance: any) {
+    if (typeof instance['onApplicationBootstrap'] === 'function' && this.bootstrapped.indexOf(instance) == -1) {
+      try {
+        await instance['onApplicationBootstrap']();
+        this.bootstrapped.push(instance);
+      } catch (error) {
+        throw {
+          success: false,
+          result: {
+            code: 'EBOOTFAIL',
+            message: 'onApplicationBootstrap error on class ' + instance.constructor.name + ' : ' + error.toString(),
+            context: {},
+            location: instance.constructor.name
+          }
+        };
+      }
+    }
   }
 
   async dispatch(request: TaskRequest, context: Context) {

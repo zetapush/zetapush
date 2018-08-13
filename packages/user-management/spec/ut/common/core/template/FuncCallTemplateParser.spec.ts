@@ -1,4 +1,5 @@
 import { Variables, FuncCallTemplateParser } from '../../../../../src';
+import 'jasmine';
 
 describe(`FuncCallTemplateParser`, () => {
   it(`should

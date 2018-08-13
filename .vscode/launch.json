@@ -4,33 +4,35 @@
   // Pour plus d'informations, visitez : https://go.microsoft.com/fwlink/?linkid=830387
   "version": "0.2.0",
   "configurations": [
-    // {
-    //   "type": "node",
-    //   "request": "launch",
-    //   "name": "client [tests][debug]",
-    //   "cwd": "${workspaceFolder}/packages/client",
-    //   "runtimeExecutable": "node",
-    //   "runtimeArgs": [
-    //     "--inspect-brk=9230",
-    //   ],
-    //   "args": [
-    //     "node_modules/karma/bin/karma",
-    //     "start",
-    //     "karma.conf.js"
-    //   ],
-    //   "console": "integratedTerminal",
-    //   "port": 9230
-    // },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "client [tests][debug]",
+      "cwd": "${workspaceFolder}/packages/client",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "--inspect-brk=9230",
+      ],
+      "args": [
+        "node_modules/karma/bin/karma",
+        "start",
+        "karma.conf.js"
+      ],
+      "console": "integratedTerminal",
+      "port": 9230
+    },
     {
       "type": "node",
       "request": "launch",
       "name": "user-management [tests][debug]",
       // When using nvm, you can use nvm instance instead of default node version
-      // "runtimeExecutable": "~/.nvm/versions/node/v10.6.0/bin/node",
+      "runtimeExecutable": "~/.nvm/versions/node/v10.8.0/bin/node",
       "cwd": "${workspaceFolder}/packages/user-management",
       "runtimeArgs": [
         "-r",
         "ts-node/register",
+        "-r",
+        "source-map-support/register",
         "--inspect-brk=9231",
       ],
       "args": [
@@ -43,31 +45,59 @@
         "ZETAPUSH_PLATFORM_URL": "http://hq.zpush.io:9080/zbo/pub/business/",
         "ZETAPUSH_LOCAL_DEV": "true",
         "ZETAPUSH_LOG_LEVEL": "silly",
+        "COMETD_LOG_LEVEL": "info",
         "TS_NODE_PROJECT": "tsconfig.test.json"
       }
     },
-    // {
-    //   "type": "node",
-    //   "request": "launch",
-    //   "name": "integration [tests][debug]",
-    //   // When using nvm, you can use nvm instance instead of default node version
-    //   // "runtimeExecutable": "~/.nvm/versions/node/v8.11.2/bin/node",
-    //   "cwd": "${workspaceFolder}/packages/integration",
-    //   "runtimeArgs": [
-    //     "--inspect-brk=9232",
-    //     "node_modules/jasmine/bin/jasmine.js"
-    //   ],
-    //   "args": [
-    //   ],
-    //   "console": "integratedTerminal",
-    //   "port": 9232,
-    //   "envFile": "${env:HOME}/.celtia-env",
-    //   "env": {
-    //     "ZETAPUSH_PLATFORM_URL": "http://hq.zpush.io:9080/zbo/pub/business/",
-    //     "ZETAPUSH_LOCAL_DEV": "true",
-    //     "ZETAPUSH_LOG_LEVEL": "silly",
-    //     "ZETAPUSH_COMMANDS_LOG_LEVEL": "-vvvv"
-    //   }
-    // } 
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "user-management [tests][debug][coverage]",
+      // When using nvm, you can use nvm instance instead of default node version
+      "runtimeExecutable": "~/.nvm/versions/node/v10.8.0/bin/node",
+      "cwd": "${workspaceFolder}/packages/user-management",
+      "runtimeArgs": [
+        "--inspect-brk=9231",
+      ],
+      "args": [
+        "node_modules/.bin/nyc",
+        "node_modules/.bin/ts-node",
+        "node_modules/.bin/jasmine"
+      ],
+      "console": "integratedTerminal",
+      "port": 9231,
+      "envFile": "${env:HOME}/.celtia-env",
+      "env": {
+        "ZETAPUSH_PLATFORM_URL": "http://hq.zpush.io:9080/zbo/pub/business/",
+        "ZETAPUSH_LOCAL_DEV": "true",
+        "ZETAPUSH_LOG_LEVEL": "silly",
+        "COMETD_LOG_LEVEL": "info",
+        "TS_NODE_PROJECT": "tsconfig.test.json"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "integration [tests][debug]",
+      // When using nvm, you can use nvm instance instead of default node version
+      // "runtimeExecutable": "~/.nvm/versions/node/v8.11.2/bin/node",
+      "cwd": "${workspaceFolder}/packages/integration",
+      "runtimeArgs": [
+        "--inspect-brk=9232",
+        "node_modules/jasmine/bin/jasmine.js"
+      ],
+      "args": [
+      ],
+      "console": "integratedTerminal",
+      "port": 9232,
+      "envFile": "${env:HOME}/.celtia-env",
+      "env": {
+        "ZETAPUSH_PLATFORM_URL": "http://hq.zpush.io:9080/zbo/pub/business/",
+        "ZETAPUSH_LOCAL_DEV": "true",
+        "ZETAPUSH_LOG_LEVEL": "silly",
+        "COMETD_LOG_LEVEL": "info",
+        "ZETAPUSH_COMMANDS_LOG_LEVEL": "-vvvv"
+      }
+    } 
   ]
 }

@@ -34,13 +34,14 @@ export interface Token {
   value: string;
 }
 
-export enum StateToken {
+export enum TokenState {
   UNUSED = 'UNUSED',
   ALREADY_USED = 'ALREADY_USED'
 }
 
-export interface StoredToken extends Token {
-  state: StateToken;
+export interface StoredToken {
+  token: Token;
+  state: TokenState;
   associatedValue?: AssociatedValueToToken;
 }
 

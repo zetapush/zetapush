@@ -6,14 +6,20 @@ import { NoOpResourceResolver, UndefinedLocation } from '../../core/resource/NoO
 import { MissingMandatoryConfigurationError } from '../ConfigurerError';
 import { DelegateTemplateManager } from '../../core/template/DelegateTemplateManager';
 
-export class TemplateConfigurerImpl<P> extends AbstractParent<P>
-  implements TemplateConfigurer<P>, Configurer<{ manager: TemplateManager; location: Location }> {
+export abstract class TemplateConfigurerImpl<P, S extends TemplateConfigurer<P, S>> extends AbstractParent<P>
+  implements TemplateConfigurer<P, S>, Configurer<{ manager: TemplateManager; location: Location }> {
+  protected self: S;
   protected parseFunc: (variables: Variables) => string;
 
-  template(location: Location): EmailTemplateConfigurer<P>;
-  template(func: (variables: Variables) => string): EmailTemplateConfigurer<P> {
+  constructor(parent: P) {
+    super(parent);
+  }
+
+  template(location: Location): S;
+  template(func: (variables: Variables) => string): S {
     if (typeof func === 'function') {
       this.parseFunc = func;
+      return this.self;
     }
     throw new Error('Location not implemented');
   }

@@ -1,8 +1,8 @@
-import {} from 'jasmine';
+import 'jasmine';
 import { DefaultStorageTokenManager, Base36RandomTokenGenerator } from '../../../../../src/common/core/token/index';
-import { GetTokenFromStorageError } from '../../../../../src/common/api/exception/TokenError';
-import { StateToken } from '../../../../../src/common/api';
-import { given, autoclean, runInWorker } from '@zetapush/testing';
+import { GetTokenFromStorageError, TokenNotFoundError } from '../../../../../src/common/api/exception/TokenError';
+import { TokenState } from '../../../../../src/common/api';
+import { given, autoclean, runInWorker, bootstrapRegisteredInstances } from '@zetapush/testing';
 import { Gda, GdaConfigurer } from '@zetapush/platform-legacy';
 import { anything } from 'ts-mockito';
 
@@ -10,9 +10,12 @@ describe(`DefaultStorageTokenManager`, () => {
   beforeEach(async () => {
     await given()
       .credentials()
-      .fromEnv()
-      .newApp()
-      .and()
+      /**/ .fromEnv()
+      /**/ .newApp()
+      /**/ .and()
+      .worker()
+      /**/ .dependencies(Gda, GdaConfigurer)
+      /**/ .and()
       .apply(this);
   });
 
@@ -20,59 +23,60 @@ describe(`DefaultStorageTokenManager`, () => {
     await autoclean(this);
   });
 
-  it(`should :
+  it(
+    `should :
         - Store the token in the database
-        - Return the correct token from the database`, async () => {
-    await runInWorker(this, [Gda, GdaConfigurer], async (gda: Gda, gdaConfigurer: GdaConfigurer) => {
-      const tokenGenerator = new Base36RandomTokenGenerator(20);
-      const token = await tokenGenerator.generate();
-      const storageManager = new DefaultStorageTokenManager(gda, gdaConfigurer);
+        - Return the correct token from the database`,
+    async () => {
+      await runInWorker(this, async (_, gda: Gda, gdaConfigurer: GdaConfigurer) => {
+        const token = { value: '123456789' };
+        const storageManager = new DefaultStorageTokenManager(gda, gdaConfigurer);
+        await bootstrapRegisteredInstances();
 
-      // FIXME:
-      // WHY ?? Because the 'onApplicationBootstrap' method is never called, I don't know why...
-      await storageManager.onApplicationBootstrap();
+        const mockAssociatedValue = '123456';
 
-      const mockAssociatedValue = '123456';
+        // Save the token in the database with the StorageTokenManager
+        await storageManager.store(token, mockAssociatedValue);
 
-      // Save the token in the database with the StorageTokenManager
-      await storageManager.store(token, mockAssociatedValue);
+        // Get the token from the database
+        const storedToken = await storageManager.getFromToken(token);
 
-      // Get the token from the database
-      const storedToken = await storageManager.getFromToken(token);
+        expect(storedToken.associatedValue).toEqual(mockAssociatedValue);
+        expect(storedToken.state).toEqual(TokenState.UNUSED);
+        expect(storedToken.token.value).toEqual(token.value);
+      });
+    },
+    5 * 60 * 1000
+  );
 
-      expect(storedToken.associatedValue).toEqual(mockAssociatedValue);
-      expect(storedToken.state).toEqual(StateToken.UNUSED);
-      expect(storedToken.value).toEqual(token.value);
-    });
-  });
-
-  it(`given :
+  it(
+    `given :
         - Want to get an inexisting token
       should :
-        - Return the proper error`, async () => {
-    await runInWorker(this, [Gda, GdaConfigurer], async (gda: Gda, gdaConfigurer: GdaConfigurer) => {
-      const tokenGenerator = new Base36RandomTokenGenerator(20);
-      const token = await tokenGenerator.generate();
-      const newToken = await tokenGenerator.generate();
-      const storageManager = new DefaultStorageTokenManager(gda, gdaConfigurer);
+        - Return the proper error`,
+    async () => {
+      await runInWorker(this, async (_, gda: Gda, gdaConfigurer: GdaConfigurer) => {
+        const token = { value: '123456789' };
+        const newToken = { value: '987654321' };
+        const storageManager = new DefaultStorageTokenManager(gda, gdaConfigurer);
+        await bootstrapRegisteredInstances();
 
-      // FIXME:
-      // WHY ?? Because the 'onApplicationBootstrap' method is never called, I don't know why...
-      await storageManager.onApplicationBootstrap();
+        const mockAssociatedValue = '123456';
 
-      const mockAssociatedValue = '123456';
+        // Save the token in the database with the StorageTokenManager
+        await storageManager.store(token, mockAssociatedValue);
 
-      // Save the token in the database with the StorageTokenManager
-      await storageManager.store(token, mockAssociatedValue);
-
-      // Get the token from the database, should return an error
-      expect(await storageManager.getFromToken(newToken)).toThrow(
-        new GetTokenFromStorageError(
-          `The request to retrieve the token from the storage has no result`,
-          anything(),
-          anything()
-        )
-      );
-    });
-  });
+        // Get the token from the database, should return an error
+        try {
+          await storageManager.getFromToken(newToken);
+          fail('should have failed with GetTokenFromStorageError exception');
+        } catch (e) {
+          expect(() => {
+            throw e;
+          }).toThrowError(TokenNotFoundError, `No matching token found`);
+        }
+      });
+    },
+    5 * 60 * 1000
+  );
 });

@@ -2,6 +2,7 @@ import { Type } from '@zetapush/core';
 
 import { AccountStatus, AccountStatusProvider } from '../../standard-user-workflow/api';
 import { UuidGenerator, Uuid, Variables, Location, Token, TokenGenerator, TokenStorageManager } from '../api';
+import { AxiosInstance } from 'axios';
 
 export interface And<P> {
   and(): P;
@@ -35,9 +36,9 @@ export interface EmailConfigurer<P> extends And<P> {
   ovh(): OvhEmailConfigurer<EmailConfigurer<P>>;
   mailjet(): MailjetEmailConfigurer<EmailConfigurer<P>>;
 
-  htmlTemplate /* TODO */(): EmailTemplateConfigurer<EmailConfigurer<P>>;
+  htmlTemplate(): EmailTemplateConfigurer<EmailConfigurer<P>>;
 
-  textTemplate /* TODO */(): TemplateConfigurer<EmailConfigurer<P>>;
+  textTemplate(): TextTemplateConfigurer<EmailConfigurer<P>>;
 }
 
 export interface SmtpEmailConfigurer<P> extends And<P> {
@@ -58,14 +59,17 @@ export interface MailjetEmailConfigurer<P> extends And<P> {
   url(mailjetUrl: string): MailjetEmailConfigurer<P>;
   apiKeyPublic(mailjetApiKeyPublic: string): MailjetEmailConfigurer<P>;
   apiKeyPrivate(mailjetApiKeyPrivate: string): MailjetEmailConfigurer<P>;
+  httpClient(axios: AxiosInstance): MailjetEmailConfigurer<P>;
 }
 
-export interface TemplateConfigurer<P> extends And<P> {
-  template(location: Location): EmailTemplateConfigurer<P>;
-  template(func: (variables: Variables) => string): EmailTemplateConfigurer<P>;
+export interface TemplateConfigurer<P, S extends TemplateConfigurer<P, S>> extends And<P> {
+  template(location: Location): S;
+  template(func: (variables: Variables) => string): S;
 }
 
-export interface EmailTemplateConfigurer<P> extends TemplateConfigurer<P> {
+export interface TextTemplateConfigurer<P> extends TemplateConfigurer<P, TextTemplateConfigurer<P>> {}
+
+export interface EmailTemplateConfigurer<P> extends TemplateConfigurer<P, EmailTemplateConfigurer<P>> {
   inlineCss /* TODO */(): EmailTemplateConfigurer<P>;
 
   inlineImages /* TODO */(): EmailTemplateConfigurer<P>;

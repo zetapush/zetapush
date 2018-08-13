@@ -18,10 +18,9 @@ describe(`AccountCreationManager`, () => {
       /**/ .fromEnv()
       /**/ .newApp()
       /**/ .and()
-      // .worker()
-      // /**/ .dependencies(Simple)
-      // /**/ .bootstrap((simple: Simple) => {})
-      // /**/ .and()
+      .worker()
+      /**/ .dependencies(Simple, Userdir)
+      /**/ .and()
       .apply(this);
   });
 
@@ -36,7 +35,7 @@ describe(`AccountCreationManager`, () => {
       - accountStatus = 'WAITING_FOR_CONFIRMATION'
       - userProfile = {firstname: 'Odile', lastname: 'DERAY'}`,
     async () => {
-      await runInWorker(this, [Simple, Userdir], async (simple: Simple, userdir: Userdir, injector: Injector) => {
+      await runInWorker(this, async (injector: Injector) => {
         // GIVEN
         // create configurer + inject services
         const configurer = new AccountCreationManagerConfigurerImpl(registrationConfigurer, injector);
@@ -68,7 +67,7 @@ describe(`AccountCreationManager`, () => {
         });
       });
     },
-    10 * 60 * 1000
+    5 * 60 * 1000
   );
 
   // TODO: test account already exists

@@ -23,16 +23,15 @@
     "build:umd": "cross-env NODE_ENV=development rollup -c -i src/index.ts -o dist/zetapush-user-management.js",
     "build:umd:min": "cross-env NODE_ENV=production rollup -c -i src/index.ts -o dist/zetapush-user-management.min.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
-    "test": "npm run clean && npm run build:commonjs:test && ts-node node_modules/jasmine/bin/jasmine.js",
-    "test:debug": "cross-env TS_NODE_PROJECT=tsconfig.test.json node -r esm -r ts-node/register --inspect-brk=9231 node_modules/jasmine/bin/jasmine.js",
+    "test": "npm run clean && npm run build:commonjs:test && node_modules/.bin/nyc ts-node -r source-map-support/register node_modules/.bin/jasmine",
     "prepublish": "npm run clean && npm run build",
     "build:api-doc": "typedoc --out ./docs ./src/index.ts"
   },
   "dependencies": {
     "@zetapush/common": "0.31.4",
-    "jasmine": "3.1.0",
-    "ts-node": "7.0.0",
     "@zetapush/core": "0.31.4",
+    "@zetapush/client": "0.31.4",
+    "@zetapush/platform-legacy": "0.31.4",
     "axios": "0.18.0",
     "class-validator": "0.8.5",
     "injection-js": "2.2.1"
@@ -47,9 +46,11 @@
     "cross-env": "5.2.0",
     "jasmine": "3.1.0",
     "jasmine-reporters": "2.3.1",
+    "jasmine-ts": "0.2.1",
     "jasmine-ts-console-reporter": "3.1.1",
-    "request": "2.85.0",
+    "nyc": "12.0.2",
     "reflect-metadata": "0.1.12",
+    "request": "2.85.0",
     "rimraf": "2.6.2",
     "rollup": "0.63.5",
     "rollup-plugin-commonjs": "9.1.3",
@@ -58,6 +59,7 @@
     "rollup-plugin-typescript": "0.8.1",
     "rollup-plugin-uglify": "4.0.0",
     "rollup-watch": "4.3.1",
+    "source-map-support": "0.5.8",
     "taffydb": "2.7.3",
     "ts-jsdoc": "3.0.1",
     "ts-mockito": "2.3.0",
@@ -71,5 +73,23 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "lcov",
+      "html",
+      "cobertura",
+      "lcovonly"
+    ],
+    "all": true
   }
 }

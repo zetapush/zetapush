@@ -1,4 +1,4 @@
-export * from './Bootstrapable';
+export * from './Bootstrappable';
 export * from './Configurable';
 export * from './Configure';
 export * from './Context';

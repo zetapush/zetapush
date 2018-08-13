@@ -298,6 +298,7 @@ export const instantiate = (client: ServerClient, declaration: WorkerDeclaration
         layer[key] = instance;
       });
     });
+    // instantiate main class and dependencies
     singleton = Object.entries(cleaned).reduce((instance: any, [namespace, CustomCloudService]: any[]) => {
       instance[namespace] = injector.get(CustomCloudService);
       return instance;

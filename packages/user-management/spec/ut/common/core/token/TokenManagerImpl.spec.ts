@@ -1,33 +1,38 @@
 import 'jasmine';
-import { anything } from 'ts-mockito';
-import { StateToken } from '../../../../../src/common/api';
+import { anything, mock, when, instance } from 'ts-mockito';
+import { TokenState, TokenGenerator, TokenStorageManager, ExpirableToken } from '../../../../../src/common/api';
 import { TokenManagerImpl } from '../../../../../src/common/core/token/TokenManagerImpl';
 import {
   AlreadyUsedTokenError,
   ExpiredTokenError,
   GenerateTokenError
 } from '../../../../../src/common/api/exception/TokenError';
+import {
+  TimestampBasedUuidGenerator,
+  DefaultStorageTokenManager,
+  Base36RandomTokenGenerator
+} from '../../../../../src';
 
 describe(`TokenManagerImpl`, () => {
-  const tokenGenerator = jasmine.createSpyObj('TokenGenerator', ['generate']);
-  const tokenStorage = jasmine.createSpyObj('TokenStorageManager', ['store', 'getFromToken', 'delete']);
-  const tokenManager = new TokenManagerImpl(tokenGenerator, tokenStorage);
+  const tokenGenerator: TokenGenerator = mock(Base36RandomTokenGenerator);
+  const tokenStorage: TokenStorageManager = mock(DefaultStorageTokenManager);
 
   it(`configured with
-        - existing token with value '42'
-        - token is not expirable
-        - token was never used
-      should :
-        - Return the correct token`, async () => {
+  - existing token with value '42'
+  - token is not expirable
+  - token was never used
+  should :
+  - Return the correct token`, async () => {
     // GIVEN
-    tokenStorage.getFromToken.and.returnValue({ value: '42', state: StateToken.UNUSED });
+    when(tokenStorage.getFromToken(anything())).thenResolve({ token: { value: '42' }, state: TokenState.UNUSED });
+    const tokenManager = new TokenManagerImpl(tokenGenerator, instance(tokenStorage));
 
     // WHEN
     const returnToken = await tokenManager.validate({ value: '42' });
 
     // THEN
-    expect(returnToken.value).toEqual('42');
-    expect(returnToken.state).toEqual(StateToken.ALREADY_USED);
+    expect(returnToken.token.value).toEqual('42');
+    expect(returnToken.state).toEqual(TokenState.ALREADY_USED);
   });
 
   it(`configured with
@@ -37,14 +42,18 @@ describe(`TokenManagerImpl`, () => {
       should :
         - the TokenManager return an error (the token is already used`, async () => {
     // GIVEN
-    tokenStorage.getFromToken.and.returnValue({ value: '42', state: StateToken.ALREADY_USED });
+    when(tokenStorage.getFromToken(anything())).thenResolve({ token: { value: '42' }, state: TokenState.ALREADY_USED });
+    const tokenManager = new TokenManagerImpl(tokenGenerator, instance(tokenStorage));
 
-    // WHEN / THEN
+    // WHEN
     try {
       await tokenManager.validate({ value: '42' });
-    } catch (error) {
-      const expectedError = new AlreadyUsedTokenError(`This token was already used`, anything(), anything());
-      expect(error).toEqual(expectedError);
+      fail('should have failed with AlreadyUsedTokenError exception');
+    } catch (e) {
+      // THEN
+      expect(() => {
+        throw e;
+      }).toThrowError(AlreadyUsedTokenError, `This token was already used`);
     }
   });
 
@@ -55,14 +64,21 @@ describe(`TokenManagerImpl`, () => {
       should :
         - Return the error : 'ExpiredTokenError'`, async () => {
     // GIVEN
-    tokenStorage.getFromToken.and.returnValue({ value: '42', state: StateToken.UNUSED, expires: 1533886823413 });
+    when(tokenStorage.getFromToken(anything())).thenResolve({
+      token: new ExpirableToken({ value: '42' }, 1533886823413),
+      state: TokenState.UNUSED
+    });
+    const tokenManager = new TokenManagerImpl(tokenGenerator, instance(tokenStorage));
 
-    // WHEN / THEN
+    // WHEN
     try {
       await tokenManager.validate({ value: '42' });
-    } catch (error) {
-      const expectedError = new ExpiredTokenError(`This token is expired`, anything(), anything());
-      expect(error).toEqual(expectedError);
+      fail('should have failed with ExpiredTokenError exception');
+    } catch (e) {
+      // THEN
+      expect(() => {
+        throw e;
+      }).toThrowError(ExpiredTokenError, `This token is expired`);
     }
   });
 
@@ -72,14 +88,18 @@ describe(`TokenManagerImpl`, () => {
       should :
         - Return the error : 'GeneratorTokenError'`, async () => {
     // GIVEN
-    tokenGenerator.generate.and.throwError(new Error());
+    when(tokenGenerator.generate()).thenReject(new Error());
+    const tokenManager = new TokenManagerImpl(instance(tokenGenerator), tokenStorage);
 
-    // WHEN / THEN
+    // WHEN
     try {
       await tokenManager.generate();
-    } catch (error) {
-      const expectedError = new GenerateTokenError(`Failed to generate the token`, anything());
-      expect(error).toEqual(expectedError);
+      fail('should have failed with GenerateTokenError exception');
+    } catch (e) {
+      // THEN
+      expect(() => {
+        throw e;
+      }).toThrowError(GenerateTokenError, `Failed to generate the token`);
     }
   });
 });
