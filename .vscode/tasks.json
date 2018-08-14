@@ -22,6 +22,23 @@
     },
     {
       "type": "npm",
+      "script": "lerna:clean+bootstrap",
+      "label": "lerna [clean+bootstrap]",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
+      "type": "npm",
       "label": "lerna [clean]",
       "script": "lerna:clean",
       "options": {
