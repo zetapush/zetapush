@@ -5,7 +5,7 @@ import { WorkerRunner, WorkerRunnerEvents } from '@zetapush/worker';
 
 import { userActionLogger, frontUserActionLogger, runInWorkerLogger } from '../utils/logger';
 import { Context, ContextWrapper } from '../utils/types';
-import { Wrapper, TestWorkerInstanceFactory, TestWorkerInstance, TestDeclaration } from '../worker/test-instance';
+import { Wrapper, TestWorkerInstanceFactory, TestWorkerInstance, TestWorker } from '../worker/test-instance';
 
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
@@ -62,72 +62,104 @@ export const frontUserAction = async (
 };
 
 export const runInWorker = (testOrContext: Context, workerDeclaration: (...instances: any[]) => void) => {
-  return new Promise((resolve, reject) => {
-    const { zetarc, dependencies, logLevel } = new ContextWrapper(testOrContext).getContext();
+  return new Promise(async (resolve, reject) => {
+    const { zetarc, dependencies, providers, logLevel, configurationFunction } = new ContextWrapper(
+      testOrContext
+    ).getContext();
 
-    // Worker instance will be available once started but Wrapper needs it now.
-    // So we use a wrapper that will be filled later
-    const instanceWrapper: any = {};
-    // Provider is required to provide a Wrapper instance that can't be
-    // created automagically. We need `deps` array.
-    const factoryProvider: FactoryProvider = {
-      provide: Wrapper,
-      useFactory: (...deps: any[]): Wrapper => {
-        return new Wrapper(workerDeclaration, deps, instanceWrapper);
-      },
-      deps: dependencies || []
-    };
+    // let configurationFactoryProvider: FactoryProvider;
+    // // Provider is required to provide a TestConfigurationWrapper instance that can't be
+    // // created automagically. We need `deps` array.
+    // configurationFactoryProvider = {
+    //   provide: TestConfigurationWrapper,
+    //   useFactory: (...deps: any[]): TestConfigurationWrapper => {
+    //     return new TestConfigurationWrapper(configurationFunction || (async () => null), deps, instanceWrapper);
+    //   },
+    //   deps: dependencies || []
+    // };
+    try {
+      const configurationProviders = (configurationFunction && (await configurationFunction())) || [];
+      const resolvedDependencies = typeof dependencies === 'function' ? dependencies() : dependencies;
 
-    const runner = new WorkerRunner(
-      false,
-      false,
-      <ResolvedConfig>zetarc,
-      transports,
-      new TestWorkerInstanceFactory(),
-      [factoryProvider],
-      logLevel.cometd
-    );
+      // Worker instance will be available once started but Wrapper needs it now.
+      // So we use a wrapper that will be filled later
+      const instanceWrapper: any = {};
+      // Provider is required to provide a Wrapper instance that can't be
+      // created automagically. We need `deps` array.
+      const factoryProvider: FactoryProvider = {
+        provide: Wrapper,
+        useFactory: (...deps: any[]): Wrapper => {
+          return new Wrapper(workerDeclaration, deps, instanceWrapper);
+        },
+        deps: resolvedDependencies || []
+      };
 
-    // listen to events in order to log information to help developer
-    runner.on(WorkerRunnerEvents.BOOTSTRAPING, () => {
-      runInWorkerLogger.debug('Bootstraping worker...');
-    });
-    runner.on(WorkerRunnerEvents.UPLOADED, ({ recipe }: any) =>
-      runInWorkerLogger.debug('Worker uploaded', recipe.recipeId)
-    );
-    runner.on(WorkerRunnerEvents.QUEUE_SERVICE_DEPLOYING, () => runInWorkerLogger.debug('Queue service deploying...'));
-    runner.on(WorkerRunnerEvents.QUEUE_SERVICE_READY, ({ recipe }: any) =>
-      runInWorkerLogger.debug(`Queue service ready on ${recipe.recipeId}`)
-    );
-    runner.on(WorkerRunnerEvents.CONNECTING, () => runInWorkerLogger.debug(`Connecting Worker...`));
-    runner.on(WorkerRunnerEvents.CONNECTED, () => runInWorkerLogger.debug(`Worker connected`));
-    runner.on(WorkerRunnerEvents.CREATED_SERVICES, ({ services }: any) =>
-      runInWorkerLogger.debug(`Create services`, services)
-    );
-    runner.on(WorkerRunnerEvents.PLATFORM_SERVICES_READY, () => runInWorkerLogger.debug(`Platform services created`));
-    runner.on(WorkerRunnerEvents.STARTING, () => {
-      runInWorkerLogger.debug('Starting worker...');
-    });
-    runner.on(WorkerRunnerEvents.STARTED, ({ instance }: { instance: TestWorkerInstance }) => {
-      runInWorkerLogger.debug('Worker started');
-      instanceWrapper.instance = instance;
-      instance
-        .directCall('ZetaTest', 'test')
-        .then(() => resolve())
-        .catch((e) => reject(e));
-    });
+      const runner = new WorkerRunner(
+        false,
+        false,
+        <ResolvedConfig>zetarc,
+        transports,
+        new TestWorkerInstanceFactory(),
+        [...(providers || []), ...configurationProviders, /*configurationFactoryProvider, */ factoryProvider],
+        logLevel.cometd
+      );
 
-    runner.on(WorkerRunnerEvents.UPLOAD_FAILED, ({ failure }: any) => {
-      runInWorkerLogger.error('Worker upload failed');
-      runner.destroy();
-      reject(failure);
-    });
-    runner.on(WorkerRunnerEvents.START_FAILED, ({ failure }: any) => {
-      runInWorkerLogger.error('Worker start failed');
-      runner.destroy();
-      reject(failure);
-    });
+      // listen to events in order to log information to help developer
+      runner.on(WorkerRunnerEvents.BOOTSTRAPING, () => {
+        runInWorkerLogger.debug('Bootstraping worker...');
+      });
+      runner.on(WorkerRunnerEvents.UPLOADED, ({ recipe }: any) =>
+        runInWorkerLogger.debug('Worker uploaded', recipe.recipeId)
+      );
+      runner.on(WorkerRunnerEvents.QUEUE_SERVICE_DEPLOYING, () =>
+        runInWorkerLogger.debug('Queue service deploying...')
+      );
+      runner.on(WorkerRunnerEvents.QUEUE_SERVICE_READY, ({ recipe }: any) =>
+        runInWorkerLogger.debug(`Queue service ready on ${recipe.recipeId}`)
+      );
+      runner.on(WorkerRunnerEvents.CONNECTING, () => runInWorkerLogger.debug(`Connecting Worker...`));
+      runner.on(WorkerRunnerEvents.CONNECTED, () => runInWorkerLogger.debug(`Worker connected`));
+      runner.on(WorkerRunnerEvents.CREATED_SERVICES, ({ services }: any) =>
+        runInWorkerLogger.debug(`Create services`, services)
+      );
+      runner.on(WorkerRunnerEvents.PLATFORM_SERVICES_READY, () => runInWorkerLogger.debug(`Platform services created`));
+      runner.on(WorkerRunnerEvents.WORKER_CREATED, ({ instance }: { instance: TestWorkerInstance }) => {
+        instanceWrapper.instance = instance;
+      });
+      runner.on(WorkerRunnerEvents.CONFIGURING_APP, () => {
+        runInWorkerLogger.debug(`Configuring application (onApplicationBootstrap)...`);
+      });
+      runner.on(WorkerRunnerEvents.CONFIGURED_APP, () =>
+        runInWorkerLogger.debug(`Application configured (onApplicationBootstrap)...`)
+      );
+      runner.on(WorkerRunnerEvents.STARTING, () => {
+        runInWorkerLogger.debug('Starting worker...');
+      });
+      runner.on(WorkerRunnerEvents.STARTED, ({ instance }: { instance: TestWorkerInstance }) => {
+        runInWorkerLogger.debug('Worker started');
+        instance
+          .directCall('ZetaTest', 'test')
+          .then(() => resolve())
+          .catch((e) => reject(e));
+      });
 
-    runner.run({ ZetaTest: TestDeclaration });
+      runner.on(WorkerRunnerEvents.UPLOAD_FAILED, ({ failure }: any) => {
+        runInWorkerLogger.error('Worker upload failed');
+        runner.destroy();
+        reject(failure);
+      });
+      runner.on(WorkerRunnerEvents.CONFIGURE_APP_FAILED, () =>
+        runInWorkerLogger.warn(`Application configuration failed (onApplicationBootstrap)...`)
+      );
+      runner.on(WorkerRunnerEvents.START_FAILED, ({ failure }: any) => {
+        runInWorkerLogger.error('Worker start failed');
+        runner.destroy();
+        reject(failure);
+      });
+
+      runner.run(TestWorker);
+    } catch (e) {
+      reject(e);
+    }
   });
 };

@@ -1,55 +1,32 @@
 import { AbstractParent } from '../AbstractParent';
-import { UuidGenerator, Uuid } from '../../api';
-import { Configurer, UuidConfigurer } from '../grammar';
+import { UuidGenerator, Uuid, UuidGeneratorInjectable } from '../../api';
+import { UuidConfigurer } from '../grammar';
 import { FuncCallUuidGenerator } from '../../core';
 import { MissingMandatoryConfigurationError, InstantiationError } from '../ConfigurerError';
 import { Type } from '@zetapush/platform-legacy';
-import { Injector } from 'injection-js';
+import { InstanceHelper } from '../InstanceHelper';
+import { Provider } from '@zetapush/core';
+import { SimpleProviderRegistry, Configurer } from '../Configurer';
 
-export class UuidGeneratorConfigurerImpl<P> extends AbstractParent<P>
-  implements UuidConfigurer<P>, Configurer<UuidGenerator> {
-  private generatorInstance?: UuidGenerator;
-  private generatorClass?: Type<UuidGenerator>;
-  private generatorFunc?: () => Promise<Uuid>;
+export class UuidGeneratorConfigurerImpl<P> extends AbstractParent<P> implements UuidConfigurer<P>, Configurer {
+  private generatorInstanceHelper: InstanceHelper<UuidGenerator, Uuid>;
 
-  constructor(parentConfigurer: P, private injector: Injector) {
+  constructor(parentConfigurer: P) {
     super(parentConfigurer);
+    this.generatorInstanceHelper = new InstanceHelper(UuidGeneratorInjectable, FuncCallUuidGenerator);
   }
 
   generator(func: () => Promise<Uuid>): UuidConfigurer<P>;
   generator(instance: UuidGenerator): UuidConfigurer<P>;
   generator(generatorClass: Type<UuidGenerator>): UuidConfigurer<P>;
   generator(instanceFuncOrClass: any): UuidConfigurer<P> {
-    if (instanceFuncOrClass instanceof UuidGenerator) {
-      this.generatorInstance = instanceFuncOrClass;
-    } else if (instanceFuncOrClass.constructor) {
-      this.generatorClass = instanceFuncOrClass;
-    } else if (typeof instanceFuncOrClass === 'function') {
-      this.generatorFunc = <() => Promise<Uuid>>instanceFuncOrClass;
-    } else {
-      this.generatorClass = instanceFuncOrClass;
-    }
+    this.generatorInstanceHelper.register(instanceFuncOrClass);
     return this;
   }
 
-  async build(): Promise<UuidGenerator> {
-    if (this.generatorInstance) {
-      return this.generatorInstance;
-    }
-    if (this.generatorFunc) {
-      return new FuncCallUuidGenerator(this.generatorFunc);
-    }
-    if (this.generatorClass) {
-      return this.instiantiate(this.generatorClass);
-    }
-    throw new MissingMandatoryConfigurationError('No configuration provided for UUID generation');
-  }
-
-  private instiantiate(generatorClass: Type<UuidGenerator>): UuidGenerator {
-    try {
-      return this.injector.get(generatorClass, null) || new generatorClass();
-    } catch (e) {
-      throw new InstantiationError('Failed to instantiate UuidGenerator', e);
-    }
+  async getProviders(): Promise<Provider[]> {
+    const providerRegistry = new SimpleProviderRegistry();
+    providerRegistry.registerProvider(this.generatorInstanceHelper.getProvider());
+    return providerRegistry.getProviders();
   }
 }

@@ -1,5 +1,5 @@
-import { Context, bootstrapRegistry } from '@zetapush/core';
-import { timeoutify } from '@zetapush/common';
+import { Context } from '@zetapush/core';
+import { timeoutify, trace } from '@zetapush/common';
 import { TaskRequest } from '@zetapush/platform-legacy';
 
 import { inject } from './context';
@@ -63,10 +63,6 @@ export class TaskDispatcherWorkerInstance implements WorkerInstance {
           await this.bootstrap(api);
         }
       }
-      // bootstrap instances lately registered with @Bootstrappable decorator
-      for (let instance of bootstrapRegistry.getInstances()) {
-        await this.bootstrap(instance);
-      }
       return {
         success: true,
         result: {}
@@ -74,8 +70,6 @@ export class TaskDispatcherWorkerInstance implements WorkerInstance {
     } catch (e) {
       return e;
     } finally {
-      // no more useful
-      bootstrapRegistry.clear();
       this.bootstrapped = [];
     }
   }
@@ -85,12 +79,13 @@ export class TaskDispatcherWorkerInstance implements WorkerInstance {
       try {
         await instance['onApplicationBootstrap']();
         this.bootstrapped.push(instance);
-      } catch (error) {
+      } catch (err) {
+        trace('onApplicationBootstrap error on class ' + instance.constructor.name + ' : ' + err.toString(), err);
         throw {
           success: false,
           result: {
             code: 'EBOOTFAIL',
-            message: 'onApplicationBootstrap error on class ' + instance.constructor.name + ' : ' + error.toString(),
+            message: 'onApplicationBootstrap error on class ' + instance.constructor.name + ' : ' + err.toString(),
             context: {},
             location: instance.constructor.name
           }

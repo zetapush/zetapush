@@ -63,7 +63,7 @@
     "taffydb": "2.7.3",
     "ts-jsdoc": "3.0.1",
     "ts-mockito": "2.3.0",
-    "ts-node": "7.0.0",
+    "ts-node": "7.0.1",
     "ts2jsdoc": "0.1.2",
     "tsdoc": "0.0.4",
     "typedoc": "0.11.1",

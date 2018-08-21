@@ -1,3 +1,4 @@
 export * from './AccountCreationManagerConfigurer';
 export * from './AccountStatusConfigurer';
-export * from './UsernamePasswordAccountCreationManagerConfigurer';
+export * from './RegistrationConfigurerImpl';
+export * from './LoginPasswordAuthenticationConfigurer';

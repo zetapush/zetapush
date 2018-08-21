@@ -1,7 +1,7 @@
 import { TestContext, Test, ContextWrapper, Context } from '../utils/types';
 import { cleanLogger } from '../utils/logger';
 import { nukeApp, nukeProject } from '../utils/commands';
-import { ResolvedConfig } from '../../../worker/node_modules/@zetapush/common/lib';
+import { ResolvedConfig } from '@zetapush/common';
 
 export const autoclean = async (testOrContext: Context) => {
   const context = new ContextWrapper(testOrContext).getContext();

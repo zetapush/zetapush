@@ -6,6 +6,7 @@ import {
   AccountCreationError
 } from '../../../standard-user-workflow/api';
 import * as ClassValidator from 'class-validator';
+import { ValidationError } from '../../api';
 
 export class ValidationAccountCreationManager implements AccountCreationManager {
   constructor(private validator: ValidationManager, private delegate: AccountCreationManager) {}
@@ -15,10 +16,10 @@ export class ValidationAccountCreationManager implements AccountCreationManager 
       try {
         this.validator.validate(accountCreationDetails);
       } catch (error) {
-        if (error instanceof ClassValidator.ValidationError) {
-          reject(new AccountCreationError('VALIDATION_FAILED', error));
+        if (error instanceof ValidationError) {
+          reject(new AccountCreationError('VALIDATION_FAILED', accountCreationDetails, error));
         } else {
-          reject(new AccountCreationError('UNKNOWN_ERROR', error));
+          reject(new AccountCreationError('UNKNOWN_ERROR', accountCreationDetails, error));
         }
       }
       resolve(this.delegate.createAccount(accountCreationDetails));

@@ -52,12 +52,11 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "user-management [tests][debug][coverage]",
+      "name": "user-management [tests][coverage]",
       // When using nvm, you can use nvm instance instead of default node version
       "runtimeExecutable": "~/.nvm/versions/node/v10.8.0/bin/node",
       "cwd": "${workspaceFolder}/packages/user-management",
       "runtimeArgs": [
-        "--inspect-brk=9231",
       ],
       "args": [
         "node_modules/.bin/nyc",
@@ -65,7 +64,6 @@
         "node_modules/.bin/jasmine"
       ],
       "console": "integratedTerminal",
-      "port": 9231,
       "envFile": "${env:HOME}/.celtia-env",
       "env": {
         "ZETAPUSH_PLATFORM_URL": "http://hq.zpush.io:9080/zbo/pub/business/",

@@ -1,12 +1,7 @@
-import { Token, TokenStorageManager, TokenGenerator } from '../Token';
+import { Token } from '../Token';
+import { BaseError } from './BaseError';
 
-export class TokenStorageInitError extends Error {
-  constructor(message: string, public cause?: Error) {
-    super(message);
-  }
-}
-
-export abstract class TokenError extends Error {
+export abstract class TokenError extends BaseError {
   constructor(message: string, public token?: Token, public cause?: Error) {
     super(message);
   }
@@ -36,6 +31,12 @@ export class ExpiredTokenError extends TokenError {
   }
 }
 
+export class InvalidTokenError extends TokenError {
+  constructor(message: string, token: Token) {
+    super(message, token);
+  }
+}
+
 export class GetTokenFromStorageError extends TokenError {
   constructor(message: string, token: Token, cause?: Error) {
     super(message, token, cause);
@@ -57,11 +58,5 @@ export class DeleteTokenFromStorageError extends TokenError {
 export class StoreTokenIntoStorageError extends TokenError {
   constructor(message: string, token: Token, cause?: Error) {
     super(message, token, cause);
-  }
-}
-
-export class NoAccountAssociatedToTokenError extends TokenError {
-  constructor(message: string, token: Token) {
-    super(message, token);
   }
 }

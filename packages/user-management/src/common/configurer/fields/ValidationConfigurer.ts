@@ -1,24 +1,29 @@
 import * as ClassValidator from 'class-validator';
 import { Type } from '@zetapush/platform-legacy';
 import { AbstractParent } from '../AbstractParent';
-import { ValidationConfigurer, Configurer } from '../grammar';
-import { ValidationManager, ValidationMetadata } from '../../api';
+import { ValidationConfigurer } from '../grammar';
+import { ValidationManager, ValidationMetadata, ValidationManagerInjectable } from '../../api';
 import { ClassValidatorManager } from '../../core';
+import { Configurer, SimpleProviderRegistry } from '../Configurer';
+import { Provider } from '@zetapush/core';
 
 /**
  * ValidationConfigurer implementation using the "class-validator" library
  */
 export class ClassValidatorValidationConfigurer<P> extends AbstractParent<P>
-  implements Configurer<ValidationManager>, ValidationConfigurer<P> {
-  private validationManager!: ValidationManager;
-
+  implements Configurer, ValidationConfigurer<P> {
   constructor(parent: P, private model: Type<any>) {
     super(parent);
   }
 
-  async build(): Promise<ValidationManager> {
-    this.validationManager = new ClassValidatorManager(generateValidationSchemaFromObject(this.model));
-    return this.validationManager;
+  async getProviders(): Promise<Provider[]> {
+    const providerRegistry = new SimpleProviderRegistry();
+    providerRegistry.registerFactory(
+      ValidationManagerInjectable,
+      [],
+      () => new ClassValidatorManager(generateValidationSchemaFromObject(this.model))
+    );
+    return providerRegistry.getProviders();
   }
 }
 

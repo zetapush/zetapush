@@ -1,17 +1,15 @@
 import {
+  Injector,
   ReflectiveInjector,
   Provider,
+  FactoryProvider,
+  ClassProvider,
+  ValueProvider,
   getConfigurationMetadata,
   hasConfigurationMetadata,
   hasConfigurationProviderMetadata,
   getConfigurationProviderMetadata
 } from '@zetapush/core';
-
-// import { constructDependencies, ReflectiveDependency } from 'injection-js/reflective_provider';
-// const { constructDependencies, ReflectiveDependency } = require('esm')(module)('injection-js/reflective_provider');
-// require = require('esm')(module)
-// const { constructDependencies } = require('esm')(module)('injection-js/reflective_provider');
-// type InjectionJsReflectiveDependency = ReflectiveDependency;
 
 import { DEFAULTS } from '../defaults';
 import { log, error } from '../utils/log';
@@ -73,28 +71,48 @@ export const scan = (CustomCloudService: CustomCloudService, output = new ScanOu
           }
         }
       });
-      if (output.bootLayer[layer] === undefined) {
-        output.bootLayer.push(addToScan);
-      } else {
-        output.bootLayer[layer] = output.bootLayer[layer].concat(addToScan);
-      }
+      registerInBootLayers(addToScan, output, layer);
       for (let sc of toScan) {
         scan(sc.provider, sc.output, layer + 1);
       }
     }
-    if (CustomCloudService.DEFAULT_DEPLOYMENT_ID) {
-      output.platform.push(CustomCloudService);
-    } else {
-      // Add CustomCloudService
-      output.custom.push(CustomCloudService);
-    }
+    registerCloudService(CustomCloudService, output);
+    registerInBootLayers([CustomCloudService], output, layer);
   }
   return output;
 };
 
+const registerCloudService = (type: CustomCloudService, output: ScanOutput) => {
+  if (type.DEFAULT_DEPLOYMENT_ID) {
+    output.platform.push(type);
+  } else {
+    // Add CustomCloudService
+    output.custom.push(type);
+  }
+};
+
+const registerInBootLayers = (types: CustomCloudService[], output: ScanOutput, layer: number) => {
+  if (output.bootLayer[layer] === undefined) {
+    output.bootLayer.push(types);
+  } else {
+    output.bootLayer[layer] = output.bootLayer[layer].concat(types);
+  }
+};
+
 export const scanProvider = (provider: Provider, output = new ScanOutput()) => {
-  if ((<any>provider).deps) {
-    (<any>provider).deps.map((dep: Service) => scan(dep, output));
+  const deps = (<FactoryProvider>provider).deps;
+  const useClass = (<ClassProvider>provider).useClass;
+  const useValue = (<ValueProvider>provider).useValue;
+  if (deps) {
+    deps.map((dep: Service) => {
+      scan(dep, output);
+    });
+  } else if (useClass) {
+    scan(useClass, output);
+  } else if (useValue) {
+    const type = (<ValueProvider>provider).provide;
+    registerCloudService(type, output);
+    registerInBootLayers([type], output, 0);
   }
 };
 
@@ -124,7 +142,7 @@ export const analyze = (declaration: WorkerDeclaration, customProviders: Provide
   });
   customProviders.map((provider: Provider) => scanProvider(provider, output));
   output.bootLayer.reverse();
-  output.bootLayer.push(baseApi);
+  // output.bootLayer.push(baseApi);
   // Removing duplicate of bootlayer
   let matchs = -1;
   while (matchs !== 0) {
@@ -298,7 +316,7 @@ export const instantiate = (client: ServerClient, declaration: WorkerDeclaration
         layer[key] = instance;
       });
     });
-    // instantiate main class and dependencies
+    // instantiate main class
     singleton = Object.entries(cleaned).reduce((instance: any, [namespace, CustomCloudService]: any[]) => {
       instance[namespace] = injector.get(CustomCloudService);
       return instance;
@@ -307,6 +325,7 @@ export const instantiate = (client: ServerClient, declaration: WorkerDeclaration
     singleton.bootLayers = output.bootLayer;
   } catch (ex) {
     error('instantiate', ex);
+    throw ex;
   }
   log('instantiate', singleton);
   return singleton;

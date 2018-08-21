@@ -1,19 +1,20 @@
 import { AbstractParent } from '../AbstractParent';
-import { Configurer, ScanConfigurer, AnnotationsConfigurer, FieldsConfigurer, FieldConfigurer } from '../grammar';
+import { ScanConfigurer, AnnotationsConfigurer, FieldsConfigurer, FieldConfigurer } from '../grammar';
 import { Type } from '@zetapush/platform-legacy';
-import { ValidationManager } from '../../api';
+import { ValidationManager, ValidationManagerInjectable } from '../../api';
 import { DefaultScanConfigurer } from './ScanConfigurer';
 import { NoOpValidationManager } from '../../core';
+import { Configurer, SimpleProviderRegistry } from '../Configurer';
+import { Provider } from '@zetapush/core';
 
 /**
  * Default fields configurer implémentation
  * The build return a ValidationManager (without any validation process)
  */
-export class DefaultFieldsConfigurer<P> extends AbstractParent<P>
-  implements Configurer<ValidationManager>, FieldsConfigurer<P> {
+export class DefaultFieldsConfigurer<P> extends AbstractParent<P> implements Configurer, FieldsConfigurer<P> {
   private scanBuilder: any;
 
-  constructor(private parent: P) {
+  constructor(parent: P) {
     super(parent);
   }
 
@@ -26,11 +27,13 @@ export class DefaultFieldsConfigurer<P> extends AbstractParent<P>
     // TODO: To implements
   }
 
-  async build(): Promise<ValidationManager> {
+  async getProviders(): Promise<Provider[]> {
+    const providerRegistry = new SimpleProviderRegistry();
     if (!this.scanBuilder) {
-      return new NoOpValidationManager();
+      providerRegistry.registerClass(ValidationManagerInjectable, NoOpValidationManager);
     } else {
-      return this.scanBuilder.build();
+      await providerRegistry.registerConfigurer(this.scanBuilder);
     }
+    return providerRegistry.getProviders();
   }
 }

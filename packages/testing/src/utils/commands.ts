@@ -1,19 +1,14 @@
 const execa = require('execa');
 import { ExecaChildProcess } from 'execa';
-// import * as util from 'util';
 import * as fs from 'fs';
 import { PathLike, readFileSync, writeFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import * as process from 'process';
-// const readFile = util.promisify(fs.readFile);
-// const writeFile = util.promisify(fs.writeFile);
-// const exists = util.promisify(fs.exists);
 const rimraf = require('rimraf');
 import { fetch, ResolvedConfig } from '@zetapush/common';
 const kill = require('tree-kill');
 import { commandLogger, SubProcessLoggerStream, subProcessLogger } from './logger';
 import { PassThrough } from 'stream';
-import { bootstrapRegistry } from '@zetapush/core';
 
 const PLATFORM_URL = 'https://celtia.zetapush.com/zbo/pub/business';
 
@@ -667,32 +662,4 @@ export class Runner {
 
 export const zpLogLevel = () => {
   return process.env.ZETAPUSH_COMMANDS_LOG_LEVEL || '-vvv';
-};
-
-export const bootstrapRegisteredInstances = async () => {
-  const bootstrapped: any[] = [];
-  commandLogger.info(`bootstrapRegisteredInstances()`);
-  for (let instance of bootstrapRegistry.getInstances()) {
-    if (typeof instance['onApplicationBootstrap'] === 'function' && bootstrapped.indexOf(instance) == -1) {
-      try {
-        commandLogger.silly(`bootstrapRegisteredInstances() -> bootstrapping`, instance);
-        await instance['onApplicationBootstrap']();
-        bootstrapped.push(instance);
-        commandLogger.silly(`bootstrapRegisteredInstances() -> bootstrapped`, instance);
-      } catch (error) {
-        commandLogger.error(`bootstrapRegisteredInstances() -> FAILED`, instance);
-        throw {
-          success: false,
-          result: {
-            code: 'EBOOTFAIL',
-            message: 'onApplicationBootstrap error on class ' + instance.constructor.name + ' : ' + error.toString(),
-            context: {},
-            location: instance.constructor.name
-          }
-        };
-      }
-    }
-  }
-  bootstrapRegistry.clear();
-  commandLogger.debug(`bootstrapRegisteredInstances() -> DONE`);
 };

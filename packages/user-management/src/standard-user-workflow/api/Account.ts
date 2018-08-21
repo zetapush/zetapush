@@ -1,4 +1,6 @@
 import { Token, Message, SentMessage, EmailAddress } from '../../common/api';
+import { BaseError } from '../../common/api/exception/BaseError';
+import { Credentials } from './Credentials';
 
 /**
  * The account creation manager is in charge to create a user account based
@@ -25,8 +27,8 @@ import { Token, Message, SentMessage, EmailAddress } from '../../common/api';
  * Likewise, each AccountCreationManager may be configured to set initial account status
  * through an AccountStatusProvider. The aim is to be able to control the account lifecycle.
  *
- * @see UsernamePasswordAccountCreationManager
- * @see UsernamePasswordAccountDetails
+ * @see LoginPasswordAccountCreationManager
+ * @see LoginPasswordAccountDetails
  * @see AccountDetailsProvider
  * @see AccountStatusProvider
  */
@@ -42,8 +44,11 @@ export interface AccountCreationManager {
    */
   createAccount(accountCreationDetails: AccountCreationDetails): Promise<Account | null>;
 }
+export abstract class AccountCreationManagerInjectable implements AccountCreationManager {
+  abstract createAccount(accountCreationDetails: AccountCreationDetails): Promise<Account | null>;
+}
 
-export class AccountCreationError extends Error {
+export class AccountCreationError extends BaseError {
   constructor(message: string, public details: AccountCreationDetails, public cause?: Error) {
     super(message);
   }
@@ -65,6 +70,9 @@ export interface AccountDetailsProvider {
    * @param original the original object that may contain user profile information
    */
   getUserProfile(original: any): Promise<UserProfile>;
+}
+export abstract class AccountDetailsProviderInjectable implements AccountDetailsProvider {
+  abstract getUserProfile(original: any): Promise<UserProfile>;
 }
 
 /**
@@ -104,10 +112,14 @@ export interface AccountConfirmationManager {
   /**
    * Confirm a pending confirmation account
    *
-   * @param {Token} token Unique token to validate a specific account
+   * @param {PendingAccountConfirmation} confirmation Unique token to validate a specific account
    * @returns {Promise<ConfirmedAccount} Object with the accountId, the status of the account and the user profile
    */
-  confirm(token: Token): Promise<ConfirmedAccount>;
+  confirm(confirmation: PendingAccountConfirmation): Promise<ConfirmedAccount>;
+}
+export abstract class AccountConfirmationManagerInjectable implements AccountConfirmationManager {
+  abstract askConfirmation(accountToConfirm: Account): Promise<PendingAccountConfirmation>;
+  abstract confirm(confirmation: PendingAccountConfirmation): Promise<ConfirmedAccount>;
 }
 
 /**
@@ -119,6 +131,9 @@ export interface AccountConfirmationManager {
  */
 export interface AccountConfirmationMessageManager {
   send(message: Message): Promise<SentMessage>;
+}
+export abstract class AccountConfirmationMessageManagerInjectable implements AccountConfirmationMessageManager {
+  abstract send(message: Message): Promise<SentMessage>;
 }
 
 /**
@@ -138,7 +153,7 @@ export interface AccountConfirmationMessageManager {
 export interface Account {
   accountId: string;
   accountStatus: AccountStatus;
-  userProfile: UserProfile;
+  profile: UserProfile;
 }
 
 /**
@@ -161,6 +176,9 @@ export interface AccountStatusProvider {
    */
   getStatus(): Promise<AccountStatus>;
 }
+export abstract class AccountStatusProviderInjectable implements AccountStatusProvider {
+  abstract getStatus(): Promise<AccountStatus>;
+}
 
 /**
  * Define the status of an account (example : 'active' / 'waitingConfirmation' / 'disabled')
@@ -181,7 +199,10 @@ export interface UserProfile {
  * login process with an email confirmation, the needed informations are
  * the login, the email, the password (x2 for confirmation password).
  */
-export interface AccountCreationDetails {}
+export interface AccountCreationDetails {
+  credentials: Credentials;
+  profile?: UserProfile;
+}
 
 /**
  * This is returned when an account is validated.
@@ -196,7 +217,7 @@ export interface ConfirmedAccount extends Account {}
  * Returned when you ask an account confirmation
  */
 export interface PendingAccountConfirmation {
-  createdAccountId: string;
+  createdAccount: Partial<Account>;
   token: Token;
 }
 
@@ -206,4 +227,7 @@ export interface AccountDetails {
 
 export interface EmailAddressProvider {
   getEmailAddress(account: Account): Promise<EmailAddress>;
+}
+export abstract class EmailAddressProviderInjectable {
+  abstract getEmailAddress(account: Account): Promise<EmailAddress>;
 }

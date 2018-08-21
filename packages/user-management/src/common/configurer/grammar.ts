@@ -1,15 +1,18 @@
 import { Type } from '@zetapush/core';
 
 import { AccountStatus, AccountStatusProvider } from '../../standard-user-workflow/api';
-import { UuidGenerator, Uuid, Variables, Location, Token, TokenGenerator, TokenStorageManager } from '../api';
+import { UuidGenerator, Uuid, Variables, Location, Token, TokenGenerator, TokenRepository } from '../api';
 import { AxiosInstance } from 'axios';
+import { UserRepository } from '../api/User';
 
 export interface And<P> {
   and(): P;
 }
 
-export interface Configurer<T> {
-  build(): Promise<T>;
+// TODO: add this everywhere the user can choose an implementation (ex: mail through SMTP, OVH or Mailjet)
+export interface Alternative<S> {
+  enable(enable: boolean): S;
+  enable(enable: () => boolean): S;
 }
 
 export interface StandardUserWorkflowConfigurer {
@@ -111,12 +114,14 @@ export interface TokenManagerConfigurer<P> extends And<P> {
   generator(func: () => Promise<Token>): TokenManagerConfigurer<P>;
   generator(instance: TokenGenerator): TokenManagerConfigurer<P>;
   generator(generatorClass: Type<TokenGenerator>): TokenManagerConfigurer<P>;
-  storage(tokenStorageManager?: TokenStorageManager): TokenManagerConfigurer<P>;
+
+  storage(tokenStorageClass: Type<TokenRepository>): TokenManagerConfigurer<P>;
+  storage(tokenStorageInstance: TokenRepository): TokenManagerConfigurer<P>;
 }
 
 //==================== account registration ====================//
 
-export interface RegistrationConfigurer extends And<AccountConfigurer> {
+export interface RegistrationConfigurer extends And<StandardUserWorkflowConfigurer> {
   account(): AccountConfigurer;
 
   welcome(): RegistrationWelcomeConfigurer;
@@ -130,6 +135,9 @@ export interface AccountConfigurer extends And<RegistrationConfigurer> {
   initialStatus(): AccountStatusConfigurer;
 
   fields(): RegistrationFieldsConfigurer;
+
+  storage(userStorageClass: Type<UserRepository>): AccountConfigurer;
+  storage(userStorageInstance: UserRepository): AccountConfigurer;
 }
 
 export interface RegistrationFieldsConfigurer extends FieldConfigurer<RegistrationConfigurer> {

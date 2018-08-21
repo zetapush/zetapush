@@ -1,16 +1,11 @@
-import { EmailTemplateConfigurer, Configurer } from '../grammar';
-import { AbstractParent } from '../AbstractParent';
-import { Location, Variables, TemplateManager } from '../../api';
-import { FuncCallTemplateParser } from '../../core';
-import { DelegateTemplateManager } from '../../core/template/DelegateTemplateManager';
-import { NoOpResourceResolver } from '../../core/resource/NoOpResourceResolver';
-import { MissingMandatoryConfigurationError } from '../ConfigurerError';
+import { EmailTemplateConfigurer } from '../grammar';
 import { TemplateConfigurerImpl } from './TemplateConfigurer';
+import { Configurer, Scope } from '../Configurer';
 
 export class EmailTemplateConfigurerImpl<P> extends TemplateConfigurerImpl<P, EmailTemplateConfigurer<P>>
-  implements EmailTemplateConfigurer<P>, Configurer<{ manager: TemplateManager; location?: Location }> {
-  constructor(parent: P) {
-    super(parent);
+  implements EmailTemplateConfigurer<P>, Configurer {
+  constructor(parent: P, scope: Scope) {
+    super(parent, scope);
     this.self = this;
   }
 
@@ -21,7 +16,7 @@ export class EmailTemplateConfigurerImpl<P> extends TemplateConfigurerImpl<P, Em
     throw new Error('Method not implemented.');
   }
 
-  async build() {
-    return super.build();
+  async getProviders() {
+    return super.getProviders();
   }
 }

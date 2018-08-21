@@ -1,18 +1,17 @@
-import { Token, TokenStorageManager, StoredToken, TokenState, AssociatedValueToToken } from '../../api';
+import { Token, TokenRepository, StoredToken, TokenState, AssociatedValueToToken, BootstrapError } from '../../api';
 import {
   GetTokenFromStorageError,
   DeleteTokenFromStorageError,
   StoreTokenIntoStorageError,
-  TokenStorageInitError,
   TokenNotFoundError
 } from '../../api/exception/TokenError';
-import { Bootstrappable } from '@zetapush/core';
 import { Gda, GdaConfigurer, GdaDataType, Idempotence } from '@zetapush/platform-legacy';
-import { Injectable } from 'injection-js';
+import { Injectable } from '@zetapush/core';
+
+export class TokenStorageInitError extends BootstrapError {}
 
 @Injectable()
-@Bootstrappable()
-export class DefaultStorageTokenManager implements TokenStorageManager {
+export class GdaTokenRepository implements TokenRepository {
   private STORAGE_TOKEN_NAME_TABLE = 'storagetokennametable';
   private STORAGE_TOKEN_NAME_COLUMN = 'storagetokennamecolumn';
 

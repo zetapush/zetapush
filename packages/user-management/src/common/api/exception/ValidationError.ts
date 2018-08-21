@@ -1,5 +1,7 @@
-export class ValidationError extends Error {
-  constructor(message: string, context: Array<ValidationErrorContext>) {
+import { BaseError } from './BaseError';
+
+export class ValidationError extends BaseError {
+  constructor(message: string, public context: Array<ValidationErrorContext>) {
     super(message);
   }
 }

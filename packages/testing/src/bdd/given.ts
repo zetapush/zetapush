@@ -17,8 +17,9 @@ import {
   Runner,
   getCurrentEnv
 } from '../utils/commands';
-import { TestContext, Test } from '../utils/types';
+import { TestContext, ConfigurationFunction, Dependencies } from '../utils/types';
 import { createApplication, DEFAULTS } from '@zetapush/common';
+import { Provider, InjectionToken } from '@zetapush/core';
 
 export const given = () => new Given();
 
@@ -82,19 +83,15 @@ class Given {
       if (this.givenApp) {
         projectDir = await this.givenApp.execute();
       }
-      let runner;
-      let dependencies;
+      let runnerAndDeps;
       if (this.givenWorker) {
-        const runnerAndDeps = await this.givenWorker.execute(projectDir);
-        runner = runnerAndDeps.runner;
-        dependencies = runnerAndDeps.dependencies;
+        runnerAndDeps = await this.givenWorker.execute(projectDir);
       }
       const zetarc = projectDir ? await readZetarc(projectDir) : this.sharedCredentials;
       const context = {
         zetarc,
         projectDir,
-        runner,
-        dependencies,
+        ...runnerAndDeps,
         logLevel: getLogLevelsFromEnv()
       };
       if (objToFill) {
@@ -406,35 +403,91 @@ class GivenWorker extends Parent<Given> {
   private workerUp = false;
   private timeout?: number;
   private isQuiet = false;
-  private deps?: Function[];
+  private deps?: Dependencies;
+  private provs?: Provider[];
+  private configurationFunc?: ConfigurationFunction;
 
   constructor(parent: Given) {
     super(parent);
   }
 
+  /**
+   * Create a runner instance before executing the test
+   */
   runner() {
     this.createRunner = true;
     return this;
   }
 
+  /**
+   * Wait for the worker to be up before executing the test
+   */
   up(timeout: number) {
     this.workerUp = true;
     this.timeout = timeout;
     return this;
   }
 
+  /**
+   * The worker runs in quiet mode (less output in console/logs)
+   */
   quiet() {
     this.isQuiet = true;
     return this;
   }
 
-  dependencies(...deps: Function[]) {
+  /**
+   * Indicates the dependencies that are used in the test. The dependencies are injected in
+   * the function run by `runInWorker`. This is useful to retrieve an instance constructed
+   * by dependency injection.
+   *
+   * @param deps the dependencies that must be injected in the test (@see runInWorker function)
+   */
+  dependencies(...deps: Array<Function | InjectionToken<any>>): GivenWorker {
     this.deps = deps;
+    return this;
+  }
+
+  /**
+   * This function is like `dependencies` except that instead of using an array, it uses
+   * a function that will be called later. This is mandatory when using `scopedDependency`
+   * function.
+   *
+   * @param func a function that will provide the dependencies that must be injected in the test (@see runInWorker function)
+   */
+  dependenciesWithScope(func: () => Array<Function | InjectionToken<any>>): GivenWorker {
+    this.deps = func;
+    return this;
+  }
+
+  /**
+   * When you are using Cloud Services, you may want to override a particular implementation
+   * with your own. You can do so by registering a provider.
+   *
+   * @param providers list of providers to override default providers
+   */
+  providers(...providers: Provider[]) {
+    this.provs = providers;
+    return this;
+  }
+
+  /**
+   * This function is used to configure the Cloud Service you want to test.
+   *
+   * @param func the function used to configure the worker (it MUST return an array of providers)
+   */
+  configuration(func: ConfigurationFunction) {
+    this.configurationFunc = func;
     return this;
   }
 
   async execute(currentDir?: string) {
     try {
+      const deps = {
+        dependencies: this.deps,
+        providers: this.provs,
+        configurationFunction: this.configurationFunc
+      };
       if ((this.createRunner || this.workerUp) && !currentDir) {
         givenLogger.warn(
           "Can't start worker or read zetarc if there is no project directory provided. You may need to configure either project().newProject() or project().template()"
@@ -443,7 +496,7 @@ class GivenWorker extends Parent<Given> {
       if (this.createRunner && currentDir) {
         return {
           runner: new Runner(currentDir),
-          dependencies: this.deps
+          ...deps
         };
       }
       if (this.workerUp && currentDir) {
@@ -453,12 +506,12 @@ class GivenWorker extends Parent<Given> {
         await runner.waitForWorkerUp();
         return {
           runner,
-          dependencies: this.deps
+          ...deps
         };
       }
       return {
         runner: undefined,
-        dependencies: this.deps
+        ...deps
       };
     } catch (e) {
       givenLogger.error(`>>> Given worker: FAILED ${currentDir}`, e);

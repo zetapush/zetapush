@@ -1,11 +1,12 @@
-import { AccountStatusConfigurer, Configurer, AccountConfigurer } from '../../../common/configurer/grammar';
-import { AccountStatus, AccountStatusProvider } from '../../api';
+import { AccountStatusConfigurer, AccountConfigurer } from '../../../common/configurer/grammar';
+import { AccountStatus, AccountStatusProvider, AccountStatusProviderInjectable } from '../../api';
 import { AbstractParent } from '../../../common/configurer/AbstractParent';
 import { StaticAccountStatusProvider } from '../../core';
-import { MissingMandatoryConfigurationError } from '../../../common/configurer/ConfigurerError';
+import { Configurer, SimpleProviderRegistry } from '../../../common/configurer';
+import { Provider } from '@zetapush/core';
 
 export class AccountStatusConfigurerImpl extends AbstractParent<AccountConfigurer>
-  implements AccountStatusConfigurer, Configurer<AccountStatusProvider> {
+  implements AccountStatusConfigurer, Configurer {
   private accountStatus?: AccountStatus;
   private accountStatusProvider?: AccountStatusProvider;
 
@@ -23,13 +24,18 @@ export class AccountStatusConfigurerImpl extends AbstractParent<AccountConfigure
     return this;
   }
 
-  async build(): Promise<AccountStatusProvider> {
+  async getProviders(): Promise<Provider[]> {
+    const providerRegistry = new SimpleProviderRegistry();
     if (this.accountStatus) {
-      return new StaticAccountStatusProvider(this.accountStatus);
+      providerRegistry.registerFactory(
+        AccountStatusProviderInjectable,
+        [],
+        () => new StaticAccountStatusProvider(this.accountStatus!)
+      );
     }
     if (this.accountStatusProvider) {
-      return this.accountStatusProvider;
+      providerRegistry.registerInstance(AccountStatusProviderInjectable, this.accountStatusProvider);
     }
-    throw new MissingMandatoryConfigurationError('No configuration provided for initial account status');
+    return providerRegistry.getProviders();
   }
 }

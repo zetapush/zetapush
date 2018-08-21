@@ -1,10 +1,15 @@
 import { Template, Variables, Location } from '../Templating';
+import { BaseError } from './BaseError';
 
-export abstract class TemplateError extends Error {}
+export class TemplateError extends BaseError {
+  constructor(message: string, public cause?: Error) {
+    super(message);
+  }
+}
 
 export class TemplateParseError extends TemplateError {
-  constructor(message: string, public template: Template, public variables: Variables, public cause?: Error) {
-    super(message);
+  constructor(message: string, public template: Template, public variables: Variables, cause?: Error) {
+    super(message, cause);
   }
 }
 
@@ -15,7 +20,7 @@ export class TemplateEvaluationError extends TemplateParseError {
 }
 
 export class TemplateResolutionError extends TemplateError {
-  constructor(message: string, public location: Location, public cause?: Error) {
-    super(message);
+  constructor(message: string, public location: Location, cause?: Error) {
+    super(message, cause);
   }
 }

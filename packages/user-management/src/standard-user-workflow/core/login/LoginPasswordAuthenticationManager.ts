@@ -3,9 +3,9 @@ import { Account } from '../../api/Account';
 import { LoginPasswordCredentials } from '../../api/Credentials';
 import { Client } from '@zetapush/client';
 import { Simple } from '@zetapush/platform-legacy';
-import { FailedGetUserProfileError } from '../../api/exceptions/AccountAuthenticationError';
+import { FailedGetUserProfileError } from '../exceptions/AccountAuthenticationError';
 
-export class UsernamePasswordAuthenticationManager implements AuthenticationManager {
+export class LoginPasswordAuthenticationManager implements AuthenticationManager {
   constructor(private client: Client, private authService: Simple) {}
 
   async login(credentials: LoginPasswordCredentials): Promise<Account> {

@@ -1,19 +1,20 @@
 import { Type } from '@zetapush/platform-legacy';
 import { AbstractParent } from '../AbstractParent';
-import { ScanConfigurer, AnnotationsConfigurer, Configurer } from '../grammar';
-import { ValidationManager } from '../../api';
+import { ScanConfigurer, AnnotationsConfigurer } from '../grammar';
+import { ValidationManager, ValidationManagerInjectable } from '../../api';
 import { DefaultAnnotationsConfigurer } from './AnnotationsConfigurer';
 import { NoOpValidationManager } from '../../core';
+import { Provider } from '@zetapush/core';
+import { Configurer, SimpleProviderRegistry } from '../Configurer';
 
 /**
  * Default scan configurer implementation
  * The build return a ValidationManager
  */
-export class DefaultScanConfigurer<P> extends AbstractParent<P>
-  implements Configurer<ValidationManager>, ScanConfigurer<P> {
+export class DefaultScanConfigurer<P> extends AbstractParent<P> implements Configurer, ScanConfigurer<P> {
   private annotationsBuilder: any;
 
-  constructor(private parent: P, private model: Type<any>) {
+  constructor(parent: P, private model: Type<any>) {
     super(parent);
   }
 
@@ -23,11 +24,13 @@ export class DefaultScanConfigurer<P> extends AbstractParent<P>
   }
 
   // TODO: More flexible
-  async build(): Promise<ValidationManager> {
+  async getProviders(): Promise<Provider[]> {
+    const providerRegistry = new SimpleProviderRegistry();
     if (!this.annotationsBuilder) {
-      return new NoOpValidationManager();
+      providerRegistry.registerClass(ValidationManagerInjectable, NoOpValidationManager);
     } else {
-      return this.annotationsBuilder.build();
+      await providerRegistry.registerConfigurer(this.annotationsBuilder);
     }
+    return providerRegistry.getProviders();
   }
 }

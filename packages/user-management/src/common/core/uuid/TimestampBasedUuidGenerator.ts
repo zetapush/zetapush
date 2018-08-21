@@ -1,4 +1,3 @@
-import { Injectable } from 'injection-js';
 import { UuidGenerator, IllegalArgumentError, Uuid } from '../../api';
 
 /**
@@ -11,10 +10,8 @@ import { UuidGenerator, IllegalArgumentError, Uuid } from '../../api';
  *
  * The '0.' characters are removed.
  */
-@Injectable()
-export class TimestampBasedUuidGenerator extends UuidGenerator {
+export class TimestampBasedUuidGenerator implements UuidGenerator {
   constructor(private length: number = 20) {
-    super();
     if (length <= 0) {
       throw new IllegalArgumentError('Uuid size must contain at least one character', 'length');
     }

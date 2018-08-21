@@ -1,6 +1,9 @@
 export interface ValidationManager {
   validate(object: Object): void;
 }
+export abstract class ValidationManagerInjectable implements ValidationManager {
+  abstract validate(object: Object): void;
+}
 
 export interface ValidationMetadata {
   groups: Array<any>;

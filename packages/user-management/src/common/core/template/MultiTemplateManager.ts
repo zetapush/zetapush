@@ -1,4 +1,5 @@
 import { TemplateManager, Template, Location, Variables, ParsedTemplate } from '../../api';
+import { ConfigurationProperties, ZetaPushContext } from '../../configurer';
 
 export class MultiParsedTemplate implements ParsedTemplate {
   constructor(private results: { name: string; result: ParsedTemplate }[]) {}

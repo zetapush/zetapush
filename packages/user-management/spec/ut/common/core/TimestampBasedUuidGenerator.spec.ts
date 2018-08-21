@@ -2,30 +2,29 @@ import { TimestampBasedUuidGenerator, IllegalArgumentError } from '../../../../s
 import 'jasmine';
 
 describe(`TimestampBasedUuidGenerator`, () => {
-  it(`configured with
-      - length = 20
-     should
-      - have 20 characters
-      - contains only numbers`, async () => {
-    const generator = new TimestampBasedUuidGenerator(20);
-    const token = await generator.generate();
-    expect(token.value).toMatch(/^[a-zA-Z0-9]{20}$/);
-  });
-  it(`configured with
-      - length = 10
-     should
-      - have 10 characters
-      - contains only numbers and letters`, async () => {
-    const generator = new TimestampBasedUuidGenerator(10);
-    const token = await generator.generate();
-    expect(token.value).toMatch(/^[a-zA-Z0-9]{10}$/);
-  });
-  it(`configured with
-      - length = 0
-     should
-      - throw an error`, async () => {
-    expect(() => {
-      const generator = new TimestampBasedUuidGenerator(0);
-    }).toThrowError(IllegalArgumentError, 'Uuid size must contain at least one character');
+  describe(`generate()`, () => {
+    describe(`a 20 characters uuid`, () => {
+      it(`creates a 20 characters token that contains only numbers and letters`, async () => {
+        const generator = new TimestampBasedUuidGenerator(20);
+        const token = await generator.generate();
+        expect(token.value).toMatch(/^[a-zA-Z0-9]{20}$/);
+      });
+    });
+
+    describe(`a 10 characters token`, () => {
+      it(`creates a 10 characters token that contains only numbers and letters`, async () => {
+        const generator = new TimestampBasedUuidGenerator(10);
+        const token = await generator.generate();
+        expect(token.value).toMatch(/^[a-zA-Z0-9]{10}$/);
+      });
+    });
+
+    describe(`with 0 length`, () => {
+      it(`fails indicating that size is too short`, async () => {
+        expect(() => {
+          const generator = new TimestampBasedUuidGenerator(0);
+        }).toThrowError(IllegalArgumentError, 'Uuid size must contain at least one character');
+      });
+    });
   });
 });

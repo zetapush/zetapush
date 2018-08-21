@@ -91,6 +91,7 @@ export const addCategorizedLogger = (name: string, label: string, fmt?: string) 
 export const givenLogger = addCategorizedLogger('given', 'GIVEN', 'grey');
 export const userActionLogger = addCategorizedLogger('userAction', 'USER ACTION', 'bold');
 export const frontUserActionLogger = addCategorizedLogger('frontUserAction', 'FRONT USER ACTION', 'bold');
+export const configureWorkerLogger = addCategorizedLogger('configureWorkerLogger', 'CONFIGURE WORKER', 'grey');
 export const runInWorkerLogger = addCategorizedLogger('runInWorker', 'RUN IN WORKER', 'grey');
 export const cleanLogger = addCategorizedLogger('clean', 'CLEAN', 'grey');
 export const commandLogger = addCategorizedLogger('command', 'COMMAND', '');

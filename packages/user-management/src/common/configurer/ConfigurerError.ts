@@ -1,4 +1,6 @@
-export class ConfigurerError extends Error {
+import { BaseError } from '../api/exception/BaseError';
+
+export class ConfigurerError extends BaseError {
   constructor(message: string) {
     super(message);
   }

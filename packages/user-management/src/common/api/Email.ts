@@ -1,4 +1,4 @@
-import { Message, Recipient, Sender, Content } from './Message';
+import { Message, Content, MessageSender, SentMessage } from './Message';
 
 export interface EmailAddress {
   toString(): string;
@@ -25,4 +25,8 @@ export interface Email extends Message {
   bcc?: EmailRecipient[];
   subject?: EmailSubject;
   body: EmailContent;
+}
+
+export abstract class EmailSenderInjectable implements MessageSender {
+  abstract send(message: Message): Promise<SentMessage>;
 }

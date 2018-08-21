@@ -6,13 +6,36 @@
 export interface TemplateManager {
   loadAndParse(location: Location, variables: Variables): Promise<ParsedTemplate>;
 }
+export abstract class TemplateManagerInjectable {
+  abstract loadAndParse(location: Location, variables: Variables): Promise<ParsedTemplate>;
+}
 
 export interface ResourceResolver {
-  resolve(location: Location): Promise<Resource>;
+  resolve(location: Location): Promise<Resource | null>;
+}
+export abstract class ResourceResolverInjectable implements ResourceResolver {
+  abstract resolve(location: Location): Promise<Resource | null>;
 }
 
 export interface TemplateParser {
   parse(template: Template, variables: Variables): Promise<ParsedTemplate>;
+}
+export abstract class TemplateParserInjectable implements TemplateParser {
+  abstract parse(template: Template, variables: Variables): Promise<ParsedTemplate>;
+}
+
+export interface FixedLocationTemplateHelper {
+  parse(variables: Variables): Promise<ParsedTemplate | null>;
+}
+export abstract class FixedLocationTemplateHelperInjectable implements FixedLocationTemplateHelper {
+  abstract parse(variables: Variables): Promise<ParsedTemplate | null>;
+}
+
+export interface VariablesProvider {
+  getVariables(original?: Variables): Promise<Variables>;
+}
+export abstract class VariablesProviderInjectable implements VariablesProvider {
+  abstract getVariables(original?: Variables): Promise<Variables>;
 }
 
 /**
@@ -27,7 +50,7 @@ export interface Template {
 export interface ParsedTemplate {}
 
 export interface Variables {
-  [property: string]: any;
+  readonly [property: string]: any;
 }
 
 export interface Resource {

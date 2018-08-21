@@ -30,6 +30,7 @@ export enum WorkerRunnerEvents {
   CONNECTED = 'connected',
   PLATFORM_SERVICES_READY = 'platform-services-ready',
   CREATED_SERVICES = 'created-services',
+  WORKER_CREATED = 'worker-created',
   CONFIGURING_APP = 'configuring-app',
   CONFIGURED_APP = 'configured-app',
   STARTING = 'starting',
@@ -51,6 +52,11 @@ export class WorkerConnectionError extends Error {
 
 export class IllegalStateError extends Error {
   constructor(message: string) {
+    super(message);
+  }
+}
+export class InstantiationError extends Error {
+  constructor(message: string, public cause: Error) {
     super(message);
   }
 }
@@ -104,9 +110,12 @@ export class WorkerRunner extends EventEmitter {
     config: ResolvedConfig,
     declaration: WorkerDeclaration
   ): Promise<WorkerInstance> {
-    return Promise.resolve(instantiate(client, declaration, this.customProviders || [])).then((declaration) =>
-      client.subscribeTaskWorker(declaration, config.workerServiceId)
-    );
+    try {
+      const instance = instantiate(client, declaration, this.customProviders || []);
+      return await client.subscribeTaskWorker(instance, config.workerServiceId);
+    } catch (e) {
+      throw new InstantiationError('Worker instantiation failed', e);
+    }
   }
 
   /**
@@ -121,6 +130,7 @@ export class WorkerRunner extends EventEmitter {
    * @fires WorkerRunnerEvents#CONNECTING
    * @fires WorkerRunnerEvents#CONNECTED
    * @fires WorkerRunnerEvents#PLATFORM_SERVICES_READY
+   * @fires WorkerRunnerEvents#WORKER_CREATED
    * @fires WorkerRunnerEvents#CONFIGURING_APP
    * @fires WorkerRunnerEvents#CONFIGURED_APP
    * @fires WorkerRunnerEvents#STARTING
@@ -180,6 +190,12 @@ export class WorkerRunner extends EventEmitter {
         .then(() => this.start(client, config, declaration))
         .then((instance) => {
           this.currentInstance = instance;
+          this.emit(WorkerRunnerEvents.WORKER_CREATED, {
+            instance,
+            client,
+            config,
+            declaration
+          });
         })
         .then(() => this.checkApplicationBootstrap())
         .then(() => {
