@@ -17,7 +17,8 @@
     "build:commonjs": "tsc --outDir lib",
     "build:es": "tsc --module ES2015 --moduleResolution Node --outDir es",
     "build": "npm run build:commonjs && npm run build:es",
-    "prepublish": "npm run clean && npm run build"
+    "prepublish": "npm run clean && npm run build",
+    "test:ci+coverage": "rimraf coverage .nyc_output && nyc node_modules/.bin/ts-node src/index.ts"
   },
   "dependencies": {
     "@zetapush/common": "0.33.1",
@@ -40,9 +41,29 @@
     "rollup-plugin-uglify": "4.0.0",
     "rollup-watch": "4.3.1",
     "typescript": "3.0.1",
-    "uglify-es": "3.3.9"
+    "uglify-es": "3.3.9",
+    "nyc": "12.0.2",
+    "ts-node": "7.0.1"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "lcov",
+      "html",
+      "cobertura",
+      "text"
+    ],
+    "all": true
   }
 }

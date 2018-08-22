@@ -22,7 +22,9 @@
     "build:umd": "cross-env NODE_ENV=development rollup -c -i src/index.ts -o dist/zetapush-common.js",
     "build:umd:min": "cross-env NODE_ENV=production rollup -c -i src/index.ts -o dist/zetapush-common.min.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
-    "prepublish": "npm run clean && npm run build"
+    "prepublish": "npm run clean && npm run build",
+    "test:ci+coverage": "rimraf coverage .nyc_output && cross-env TS_NODE_PROJECT=tsconfig.test.json nyc node_modules/.bin/ts-node node_modules/.bin/jasmine",
+    "test:ci": "cross-env TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js"
   },
   "dependencies": {
     "@zetapush/core": "0.33.1",
@@ -79,7 +81,7 @@
       "lcov",
       "html",
       "cobertura",
-      "lcovonly"
+      "text"
     ],
     "all": true
   }

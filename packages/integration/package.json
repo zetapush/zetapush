@@ -2,7 +2,8 @@
   "name": "@zetapush/integration",
   "private": true,
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "test:ci": "jasmine"
   },
   "dependencies": {
     "find-free-port": "^1.2.0",

@@ -45,6 +45,24 @@
         ]
       ],
       "plugins": []
+    },
+    "test": {
+      "presets": [
+        [
+          "@babel/preset-env",
+          {
+            "modules": false,
+            "targets": {
+              "chrome": 69,
+              "edge": 17,
+              "firefox": 62
+            }
+          }
+        ]
+      ],
+      "plugins": [
+        "istanbul"
+      ]
     }
   }
 }
