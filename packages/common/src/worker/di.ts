@@ -1,4 +1,11 @@
-import { isDecoratedModule, getDecoratedModule, Module, Provider, ReflectiveInjector } from '@zetapush/core';
+import {
+  isDecoratedModule,
+  getDecoratedModule,
+  Module,
+  Provider,
+  ReflectiveInjector,
+  Environement
+} from '@zetapush/core';
 import { DEFAULTS } from '../defaults';
 import { trace, error } from '../utils/log';
 import {
@@ -20,18 +27,11 @@ const isFunction = (value: any) => typeof value === Function.name.toLowerCase();
 /**
  * Get providers by configurers
  */
-const getProvidersByConfigurers = (configurers: any[]) => {
+const getProvidersByConfigurers = (configurers: any[], environement?: Environement) => {
   return Promise.all(
     configurers
       .map((Configurer) => new Configurer())
-      .map(
-        (configurer) => (
-          configurer.configure({
-            // TODO: Inject environement
-          }),
-          configurer
-        )
-      )
+      .map((configurer) => (configurer.configure(environement), configurer))
       .map((configurer) => configurer.getProviders() as Promise<Provider[]>)
   ).then((configured) => configured.reduce((providers, next) => [...providers, ...next], []));
 };

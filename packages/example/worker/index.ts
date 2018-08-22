@@ -1,4 +1,4 @@
-import { Injectable, Context, Module, ReflectiveInjector } from '@zetapush/core';
+import { Injectable, Context, Module, Environment } from '@zetapush/core';
 
 import { Calendar } from './calendar';
 import { Storage } from './storage';
@@ -23,23 +23,6 @@ export class Api {
   }
   reduce(list: number[]) {
     return list.reduce((cumulator, value) => cumulator + value, 0);
-  }
-}
-
-interface ZetaPushContext {
-  [name: string]: string;
-}
-
-interface ConfigurationProperties {
-  [name: string]: any;
-}
-
-interface Environment {
-  name: string;
-  context: ZetaPushContext;
-  properties: ConfigurationProperties;
-  variables: {
-    [name: string]: string;
   }
 }
 
