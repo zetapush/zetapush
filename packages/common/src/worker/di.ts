@@ -285,7 +285,8 @@ export const instantiate = async (client: ServerClient, declaration: WorkerDecla
     const providers = normalized.providers || [];
     // Priorize providers
     const priorized = [
-      ...resolved, // Providers via scan of xposed  DI Graph
+      ...resolved, // Providers via scan of exposed DI Graph
+      ...imported, // Providers via imports module list
       ...configured, // Providers via configurer
       ...providers // Providers via module provider
     ];
