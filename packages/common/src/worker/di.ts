@@ -19,10 +19,13 @@ import { CloudServiceInstance } from './CloudServiceInstance';
 
 /**
  * Test if the value parameter in a function
- * @param {Object} value
- * @returns {Boolean}
  */
 const isFunction = (value: any) => typeof value === Function.name.toLowerCase();
+
+/**
+ * Test if the value parameter in a function
+ */
+const isObject = (value: any) => typeof value === Object.name.toLowerCase();
 
 /**
  * Get providers by configurers
@@ -35,6 +38,15 @@ const getProvidersByConfigurers = (configurers: any[], environement?: Environeme
       .map((configurer) => configurer.getProviders() as Promise<Provider[]>)
   ).then((configured) => configured.reduce((providers, next) => [...providers, ...next], []));
 };
+
+/**
+ * Data structure to contains scan ouput of exposed Cloud Service
+ */
+class ScanOutput {
+  custom: Array<CustomCloudService> = [];
+  platform: Array<Service> = [];
+  bootLayer: Array<Service> = [];
+}
 
 /**
  * Return a cleaned & normalized WorkerDecleration
@@ -59,16 +71,19 @@ export const clean = (exposed: WorkerDeclaration): NormalizedWorkerDeclaration =
 
 /**
  * Normalize worker declaration
- * @param {Object} declaration
- * @return {WorkerDeclaration}
+ * A worker declaration is the object return by worker project entry point
  */
 export const normalize = (declaration: WorkerDeclaration): Module => {
+  // Entry point must return an object
   if (typeof declaration === Object.name.toLowerCase()) {
+    // Entry point must be an EcmaScript Module
     if (declaration.__esModule === true) {
       if (isFunction(declaration.default)) {
         if (isDecoratedModule(declaration.default)) {
+          // [Advanced Mode]: Developer can export a Module class
           return getDecoratedModule(declaration.default);
         } else {
+          // [Compatibility Mode]: Developer can export a single Api class
           return {
             expose: {
               [DEFAULTS.DEFAULT_NAMESPACE]: declaration.default
@@ -78,30 +93,38 @@ export const normalize = (declaration: WorkerDeclaration): Module => {
             configurers: []
           };
         }
+      } else if (isObject(declaration.default)) {
+        // [Compatibility Mode]: Developer can export a namespaced dictionnary
+        return {
+          expose: declaration.default,
+          providers: [],
+          imports: [],
+          configurers: []
+        };
       } else {
         error(`Unsupported Worker declaration`);
-        throw new Error(`Unsupported Worker declaration`);
+        throw new Error(`Unsupported Worker declaration, only Api, Module and Namespace are supported`);
       }
     } else {
-      error(`Unsupported Worker declaration`);
+      error(`Unsupported Worker declaration, only EcmaScript module are supported`);
       throw new Error(`Unsupported Worker declaration`);
     }
   } else {
-    error(`Unsupported Worker declaration`);
+    error(`Unsupported Worker declaration, invalid worker content`);
     throw new Error(`Unsupported Worker declaration`);
   }
 };
 
-class ScanOutput {
-  public custom: Array<CustomCloudService> = [];
-  public platform: Array<Service> = [];
-  public bootLayer: Array<Service> = [];
-}
-
+/**
+ * Get injectation metadata via Reflection Api
+ */
 const getInjectionMetadata = (target: any) => {
   return Reflect.hasMetadata('design:paramtypes', target) ? Reflect.getMetadata('design:paramtypes', target) : [];
 };
 
+/**
+ * Recursivly scan CloudService DI Graph
+ */
 export const scan = (CustomCloudService: CustomCloudService, output = new ScanOutput(), layer = 0) => {
   if (isFunction(CustomCloudService)) {
     const metadata = getInjectionMetadata(CustomCloudService);
@@ -144,8 +167,6 @@ export const scan = (CustomCloudService: CustomCloudService, output = new ScanOu
 
 /**
  * Resolve injected services
- * @param {ExposedCloudService} declaration
- * @return {ScanOutput}
  */
 export const analyze = (exposed: NormalizedWorkerDeclaration) => {
   const output = new ScanOutput();
