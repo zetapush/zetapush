@@ -34,9 +34,9 @@ const run = (command, config, declaration) => {
     trace('Starting worker...');
     spinner.start();
   });
-  runner.on(WorkerRunnerEvents.STARTED, ({ instance }) => {
+  runner.on(WorkerRunnerEvents.STARTED, () => {
     spinner.stop();
-    info('Worker is up!', instance);
+    info('Worker is up!');
   });
   runner.on(WorkerRunnerEvents.RELOADING, () => {
     spinner.text = `Reloading worker... \n`;
