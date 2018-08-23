@@ -4,7 +4,8 @@ import {
   Module,
   Provider,
   ReflectiveInjector,
-  Environement
+  Environement,
+  Class
 } from '@zetapush/core';
 import { DEFAULTS } from '../defaults';
 import { trace, error } from '../utils/log';
@@ -37,6 +38,60 @@ const getProvidersByConfigurers = (configurers: any[], environement?: Environeme
       .map((configurer) => (configurer.configure(environement), configurer))
       .map((configurer) => configurer.getProviders() as Promise<Provider[]>)
   ).then((configured) => configured.reduce((providers, next) => [...providers, ...next], []));
+};
+
+/**
+ * Recursivly get providers from imported modules
+ */
+const getProvidersByImports = async (imports: Class[], imported: Provider[] = []): Promise<Provider[]> => {
+  return (
+    Promise.all(
+      imports
+        // Ignore non decorated module
+        .filter((module) => isDecoratedModule(module))
+        // Get decorated module information
+        .map((decorated) => getDecoratedModule(decorated))
+        // Merge imported providers
+        .map(async (m) => [
+          // Recursivly get imported providers
+          ...(await getProvidersByImports(m.imports || [], imported)),
+          // Add configured providers from configures
+          ...(await getProvidersByConfigurers(m.configurers || [])),
+          // Add static providers
+          ...(m.providers || [])
+        ])
+    )
+      // Flatten providers list
+      .then((configured) => configured.reduce((providers, next) => [...providers, ...next], imported))
+  );
+};
+
+/**
+ * Get injectation metadata via Reflection Api
+ */
+const getInjectionMetadata = (target: any) => {
+  return Reflect.hasMetadata('design:paramtypes', target) ? Reflect.getMetadata('design:paramtypes', target) : [];
+};
+
+/**
+ * Create platform service instance
+ */
+const createAsyncService = (client: ServerClient, Type: Service) => {
+  const instance = client.createAsyncService({
+    Type
+  });
+  const $publish = instance.$publish;
+  // Override $publish method with scopable `function`
+  instance.$publish = function $$publish(name: string, parameters: any) {
+    // Inject contextId in parameters
+    return $publish(
+      name,
+      Object.assign(parameters, {
+        contextId: this.contextId
+      })
+    );
+  };
+  return instance;
 };
 
 /**
@@ -113,13 +168,6 @@ export const normalize = (declaration: WorkerDeclaration): Module => {
     error(`Unsupported Worker declaration, invalid worker content`);
     throw new Error(`Unsupported Worker declaration`);
   }
-};
-
-/**
- * Get injectation metadata via Reflection Api
- */
-const getInjectionMetadata = (target: any) => {
-  return Reflect.hasMetadata('design:paramtypes', target) ? Reflect.getMetadata('design:paramtypes', target) : [];
 };
 
 /**
@@ -202,27 +250,6 @@ export const analyze = (exposed: NormalizedWorkerDeclaration) => {
 };
 
 /**
- * Create platform service instance
- */
-const createAsyncService = (client: ServerClient, Type: Service) => {
-  const instance = client.createAsyncService({
-    Type
-  });
-  const $publish = instance.$publish;
-  // Override $publish method with scopable `function`
-  instance.$publish = function $$publish(name: string, parameters: any) {
-    // Inject contextId in parameters
-    return $publish(
-      name,
-      Object.assign(parameters, {
-        contextId: this.contextId
-      })
-    );
-  };
-  return instance;
-};
-
-/**
  * Resolve providers with dynamicly injected values
  */
 export const resolve = (client: ServerClient, output: ScanOutput): Provider[] => [
@@ -244,6 +271,8 @@ export const instantiate = async (client: ServerClient, declaration: WorkerDecla
   try {
     // Normalize worker declaration
     const normalized = normalize(declaration);
+    // Get providers from imports module list
+    const imported = await getProvidersByImports(normalized.imports || []);
     // Get exposed CloudService
     const exposed = clean(normalized.expose);
     // Analyze exposed CloudService to get an order providers list

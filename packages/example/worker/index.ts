@@ -1,6 +1,6 @@
 import { Injectable, Context, Module, Environment } from '@zetapush/core';
 
-import { Calendar } from './calendar';
+import CalendarModule, { Calendar } from './calendar';
 import { Storage } from './storage';
 import { LoggerConfig } from './logger';
 
@@ -45,6 +45,7 @@ export class PastCalendar {
 
 
 @Module({
+  imports: [ CalendarModule ],
   providers: [  ],
   configurers: [ ApiConfigurer ],
   expose: Api
