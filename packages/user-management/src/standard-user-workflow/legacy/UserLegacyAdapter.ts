@@ -1,11 +1,18 @@
 import { UserRepository } from '../../common/api/User';
 import { IllegalStateError, IllegalArgumentValueError, BootstrapError } from '../../common/api';
 import { Simple, Gda, GdaConfigurer, GdaDataType, Idempotence } from '@zetapush/platform-legacy';
-import { Credentials, UserProfile, AccountStatus, LoginPasswordCredentials, AccountCreationError } from '../api';
+import { UserProfile, AccountStatus, LoginPasswordCredentials } from '../api';
 import { Bootstrappable, Injectable } from '@zetapush/core';
 import { BaseError } from '../../common/api/exception/BaseError';
+import { StandardAccountStatus } from '../core/account';
 
 export class LegacySimpleError extends BaseError {
+  constructor(message: string, public cause?: Error) {
+    super(message);
+  }
+}
+
+export class LegacyUpdateAccountStatus extends BaseError {
   constructor(message: string, public cause?: Error) {
     super(message);
   }
@@ -75,14 +82,29 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
     // TODO: configure mandatory fields (not really necessary thanks to validator) ?
     // TODO: configure public fields or use custom search ?
     try {
-      const result = await this.simple.createUser({
-        login: credentials.login,
-        password: credentials.password,
-        userProfile,
-        accountStatus,
-        accountId
+      // const result = await this.simple.createUser({
+      //   login: credentials.login,
+      //   password: credentials.password,
+      //   userProfile,
+      //   accountStatus,
+      //   accountId
+      // });
+
+      const result = await this.simple.createAccount({
+        fields: {
+          login: credentials.login,
+          password: credentials.password,
+          userProfile,
+          accountStatus,
+          accountId
+        },
+        status: { active: false }
       });
-      await this.saveAssociations(accountId, result.userKey, result.login);
+
+      if (result.userKey && result.fields) {
+        await this.saveAssociations(accountId, result.userKey, result.fields.login);
+      }
+
       return accountId;
     } catch (e) {
       // TODO: logs
@@ -109,7 +131,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
           )
         );
       }
-      throw new LegacySimpleError(`Account creation for '${credentials.login} has failed`, e);
+      throw new LegacySimpleError(`Account creation for '${credentials.login}' has failed`, e);
     }
   }
 
@@ -134,10 +156,65 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
     return userInfo.userProfile;
   }
 
-  async updateStatus(accountId: string, newStatus: AccountStatus): Promise<void> {
-    throw 'Not implemented';
+  /**
+   * Get the login of a user from his ID
+   * @param accountId unique ID of a user
+   */
+  async getLoginFromAccountId(accountId: string): Promise<string> {
+    let columns;
+    try {
+      const { result } = await this.gda.get({
+        table: TABLE_SIMPLE_ASSOCIATIONS,
+        key: accountId
+      });
+      columns = result;
+    } catch (e) {
+      throw new AccountIdAssociationLoadError(`Failed to retrieve userKey/login from accountId`, accountId, e);
+    }
+    if (!columns) {
+      throw new AccountIdAssociationLoadError(
+        `Empty response while retrieving userKey/login from accountId`,
+        accountId
+      );
+    }
+
+    return columns[COLUMN_DATA].login;
   }
 
+  /**
+   * Update the status of an user (active of inactive)
+   * @param accountId Unique ID of the user account
+   * @param newStatus The new status of the user account (active or inactive)
+   */
+  async updateStatus(accountId: string, newStatus: AccountStatus): Promise<void> {
+    // Get the user account from his ID
+    try {
+      const login = await this.getLoginFromAccountId(accountId);
+
+      let userAccountActivated = false;
+      if (newStatus === StandardAccountStatus.Active) {
+        userAccountActivated = true;
+      }
+
+      const result = await this.simple.setStatus({
+        status: {
+          active: userAccountActivated
+        },
+        key: login
+      });
+
+      console.log('=========+> setStatusResult <=======', result);
+    } catch (e) {
+      throw new LegacyUpdateAccountStatus(`Failed to update the status of the user (accountId: ${accountId}.`, e);
+    }
+  }
+
+  /**
+   * Save the association between an accountId and his login and his userKey
+   * @param accountId unique ID of the user
+   * @param userKey Technical ID of the user (inherent of the ZetaPush platform)
+   * @param login Login of the user account
+   */
   private async saveAssociations(accountId: string, userKey: string, login: string) {
     await this.gda.put({
       table: TABLE_SIMPLE_ASSOCIATIONS,

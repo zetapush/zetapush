@@ -36,7 +36,7 @@ export interface CheckPasswordResult {
   key?: string;
 }
 export interface ExistenceCheck {
-  /**User key within the realm*/
+  /**User key within the realm ('login' field, by default)*/
   key: string;
   /**Whether to fail is the user does not exist. When true, fails silently.*/
   softFail?: boolean;
@@ -58,6 +58,34 @@ export interface ResetInfo {
 export interface ResetRequest {
   /**account key in the realm. (configured 'unique key' used for authentication)*/
   key?: string;
+}
+export interface SimpleAccountCreation {
+  /**Status after creation. If status.active is false, the account cannot immediately be used to log in.*/
+  status?: SimpleAccountStatus;
+  /**Arbitrary map of fields. MUST contain the login field ('login') and the 'password' field*/
+  fields?: StringAnyMap;
+  /**Specify the behavior when the user already exists. The default value is IGNORE_IDENTICAL*/
+  idempotence?: Idempotence;
+}
+export interface SimpleAccountInfo {
+  /**Status. If status.active is false, the account cannot be used to log in.*/
+  status?: SimpleAccountStatus;
+  /**Arbitrary map of fields. MUST contain the login field ('login') and the 'password' field*/
+  fields?: StringAnyMap;
+  /**Server generated user key (global unique key for a user, a user can be logged in via several accounts)*/
+  userKey?: string;
+}
+export interface SimpleAccountStatus {
+  /**Optional developer-defined status object which contents should depend on the 'active' field.*/
+  data?: any;
+  /**Whether this account should be usable for actual login by end users*/
+  active?: boolean;
+}
+export interface SimpleAccountStatusChangeRequest {
+  /**New status. If status.active is false, the account cannot be used to log in.*/
+  status: SimpleAccountStatus;
+  /**User key within the realm ('login' field, by default)*/
+  key: string;
 }
 export interface UserLoginchange {
   /**New account key within this realm. Must not be already in use.*/

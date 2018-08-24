@@ -55,7 +55,6 @@ describe(`AccountCreationManager`, () => {
                   lastname: 'DERAY'
                 }
               });
-              console.log('account', account);
 
               // THEN
               expect(account).toBeDefined();
