@@ -180,6 +180,27 @@
       }
     },
     {
+      "label": "http-server [prepublish]",
+      "type": "npm",
+      "script": "prepublish",
+      "path": "packages/http-server/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "options": {
+
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
       "label": "user-management [prepublish]",
       "type": "npm",
       "script": "prepublish",

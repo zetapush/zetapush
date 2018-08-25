@@ -4,8 +4,10 @@ import {
   AccountConfirmationManager,
   AuthenticationManager,
   AccountCreationDetails,
-  ConfirmationRedirection,
-  PendingAccountConfirmation
+  PendingAccountConfirmation,
+  Redirection,
+  RedirectionProvider,
+  ConfirmedAccount
 } from '../api';
 import { Token } from '../../common/api';
 import { NoAccountCreatedError } from './exceptions/NoAccountCreatedError';
@@ -13,10 +15,12 @@ import { NoAccountCreatedError } from './exceptions/NoAccountCreatedError';
 export class StandardUserWorkflow {
   constructor(
     private accountCreationManager: AccountCreationManager,
-    private accountConfirmationManager: AccountConfirmationManager // private authenticationManager: AuthenticationManager
+    private accountConfirmationManager: AccountConfirmationManager,
+    private success: RedirectionProvider<ConfirmedAccount>,
+    private failure: RedirectionProvider<Error>
   ) {}
 
-  async signup(accountDetails: AccountCreationDetails, confirmationRedirection?: ConfirmationRedirection) {
+  async signup(accountDetails: AccountCreationDetails, confirmationRedirection?: Redirection) {
     const account = await this.accountCreationManager.createAccount(accountDetails);
     if (!account) {
       throw new NoAccountCreatedError(
@@ -28,9 +32,15 @@ export class StandardUserWorkflow {
   }
 
   async confirm(confirmation: PendingAccountConfirmation) {
-    await this.accountConfirmationManager.confirm(confirmation);
-    // TODO: redirect
-    // TODO: send welcome message
+    try {
+      const confirmedAccount = await this.accountConfirmationManager.confirm(confirmation);
+      // TODO: send welcome message (asynchronously)
+      return await this.success.getRedirection(confirmedAccount);
+    } catch (e) {
+      // TODO: log
+      console.error(`Failed to confirm account ${confirmation.createdAccount.accountId}. Cause: ${e.toString()}`, e);
+      return await this.failure.getRedirection(e);
+    }
   }
 
   async login() {

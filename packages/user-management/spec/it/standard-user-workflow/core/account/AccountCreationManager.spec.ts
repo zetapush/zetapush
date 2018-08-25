@@ -7,8 +7,11 @@ import 'jasmine';
 import {
   AccountCreationManagerInjectable,
   AccountCreationManager,
-  LegacyAdapterUserRepository
+  LegacyAdapterUserRepository,
+  USER_LEGACY_ADAPTER_TABLE_SIMPLE_ASSOCIATIONS,
+  USER_LEGACY_ADAPTER_COLUMN_DATA
 } from '../../../../../src';
+import { Simple, Gda } from '@zetapush/platform-legacy';
 
 describe(`AccountCreationManager`, () => {
   const registrationConfigurer = jasmine.createSpyObj('registrationConfigurer', ['account', 'welcome', 'confirmation']);
@@ -34,7 +37,7 @@ describe(`AccountCreationManager`, () => {
               .storage(LegacyAdapterUserRepository);
             return await (<AccountCreationManagerConfigurerImpl>configurer).getProviders();
           })
-          /**/ .dependencies(AccountCreationManagerInjectable)
+          /**/ .dependencies(AccountCreationManagerInjectable, Simple, Gda)
           /**/ .and()
           .apply(this);
       });
@@ -43,7 +46,7 @@ describe(`AccountCreationManager`, () => {
         it(
           `stores the account and returns it with an identifier and WaitingConfirmation status`,
           async () => {
-            await runInWorker(this, async (_, creationManager: AccountCreationManager) => {
+            await runInWorker(this, async (_, creationManager: AccountCreationManager, simple: Simple, gda: Gda) => {
               // WHEN
               const account = await creationManager.createAccount({
                 credentials: {
@@ -66,6 +69,25 @@ describe(`AccountCreationManager`, () => {
                 firstname: 'Odile',
                 lastname: 'DERAY'
               });
+              // check in database
+              const user = await simple.checkUser({ key: 'odile.deray' });
+              expect(user).toBeDefined();
+              expect(user.accountId).toBeDefined();
+              expect(user.accountId).toBe(account.accountId);
+              expect(user.accountStatus).toBe(StandardAccountStatus.WaitingConfirmation);
+              expect(user.userProfile).toEqual({
+                firstname: 'Odile',
+                lastname: 'DERAY'
+              });
+              const { result } = await gda.get({
+                table: USER_LEGACY_ADAPTER_TABLE_SIMPLE_ASSOCIATIONS,
+                key: account.accountId
+              });
+              expect(result).toBeDefined();
+              const column = result[USER_LEGACY_ADAPTER_COLUMN_DATA];
+              expect(column).toBeDefined();
+              expect(column.userKey).toBeDefined();
+              expect(column.login).toBe('odile.deray');
             });
           },
           5 * 60 * 1000

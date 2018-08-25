@@ -31,11 +31,11 @@ export abstract class FixedLocationTemplateHelperInjectable implements FixedLoca
   abstract parse(variables: Variables): Promise<ParsedTemplate | null>;
 }
 
-export interface VariablesProvider {
-  getVariables(original?: Variables): Promise<Variables>;
+export interface VariablesProvider<T extends Variables> {
+  getVariables(original?: Variables): Promise<T>;
 }
-export abstract class VariablesProviderInjectable implements VariablesProvider {
-  abstract getVariables(original?: Variables): Promise<Variables>;
+export abstract class VariablesProviderInjectable<T extends Variables> implements VariablesProvider<T> {
+  abstract getVariables(original?: Variables): Promise<T>;
 }
 
 /**

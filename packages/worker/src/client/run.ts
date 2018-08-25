@@ -296,7 +296,10 @@ export class WorkerRunner extends EventEmitter {
       });
   }
 
-  destroy() {
+  async destroy() {
+    if (this.currentInstance) {
+      await this.currentInstance.clean();
+    }
     this.removeAllListeners();
   }
 

@@ -6,44 +6,34 @@ import {
   MailjetPropertyKey
 } from './properties';
 import { Token } from '../../common/api';
-import { Account } from '../api';
+import { Account, AccountConfirmationTemplateVariables } from '../api';
+import { AccountConfirmationContext } from '../api/Confirmation';
 
-interface DefautAccountConfirmationVariables {
-  account: Account;
-  token: Token;
-  properties: ConfigurationProperties;
-  zetapushContext: ZetaPushContext;
-}
-
-export const DEFAULT_CONFIRMATION_URL = ({
+export const DEFAULT_CONFIRMATION_URL = async ({
   properties,
   zetapushContext,
   account,
   token
-}: DefautAccountConfirmationVariables) =>
+}: AccountConfirmationContext) =>
   `${properties.get(RegistrationConfirmationPropertyKeys.BaseUrl, zetapushContext.getFrontUrl())}/${
     account.accountId
-  }/${token.value}`;
+  }/confirm/${token.value}`;
 
 export const DEFAULT_CONFIRMATION_HTML_TEMPLATE = ({
-  properties,
-  zetapushContext,
   account,
-  token
-}: DefautAccountConfirmationVariables) =>
+  confirmationUrl
+}: AccountConfirmationTemplateVariables) =>
   `Hello ${account.profile.login}, 
 
-<a href="${DEFAULT_CONFIRMATION_URL({ account, token, properties, zetapushContext })}">Please confirm your account</a>`;
+<a href="${confirmationUrl}">Please confirm your account</a>`;
 
 export const DEFAULT_CONFIRMATION_TEXT_TEMPLATE = ({
-  properties,
-  zetapushContext,
   account,
-  token
-}: DefautAccountConfirmationVariables) =>
+  confirmationUrl
+}: AccountConfirmationTemplateVariables) =>
   `Hello ${account.profile.login}, 
 
-Please confirm your account: ${DEFAULT_CONFIRMATION_URL({ account, token, properties, zetapushContext })}`;
+Please confirm your account: ${confirmationUrl}`;
 
 export const DEFAULT_CONFIRMATION_SUBJECT = (properties: ConfigurationProperties) =>
   properties.get(RegistrationConfirmationPropertyKeys.EmailSubject, `Confirm your inscription`);

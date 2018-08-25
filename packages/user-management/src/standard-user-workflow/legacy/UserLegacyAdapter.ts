@@ -23,8 +23,8 @@ export class AccountIdAssociationLoadError extends LegacySimpleError {
   }
 }
 
-const TABLE_SIMPLE_ASSOCIATIONS = 'LegacySimpleAssociations';
-const COLUMN_DATA = 'data';
+export const USER_LEGACY_ADAPTER_TABLE_SIMPLE_ASSOCIATIONS = 'LegacySimpleAssociations';
+export const USER_LEGACY_ADAPTER_COLUMN_DATA = 'data';
 
 export class LegacyAdapterUserRepositoryBootstrapError extends BootstrapError {}
 
@@ -35,10 +35,10 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
   async onApplicationBootstrap() {
     try {
       await this.gdaConfigurer.createTable({
-        name: TABLE_SIMPLE_ASSOCIATIONS,
+        name: USER_LEGACY_ADAPTER_TABLE_SIMPLE_ASSOCIATIONS,
         columns: [
           {
-            name: COLUMN_DATA,
+            name: USER_LEGACY_ADAPTER_COLUMN_DATA,
             type: GdaDataType.OBJECT,
             map: false
           }
@@ -82,7 +82,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
         accountStatus,
         accountId
       });
-      await this.saveAssociations(accountId, result.userKey, result.login);
+      await this.saveAssociations(accountId, result.zetapushKey, result.login);
       return accountId;
     } catch (e) {
       // TODO: logs
@@ -117,7 +117,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
     let columns;
     try {
       const { result } = await this.gda.get({
-        table: TABLE_SIMPLE_ASSOCIATIONS,
+        table: USER_LEGACY_ADAPTER_TABLE_SIMPLE_ASSOCIATIONS,
         key: accountId
       });
       columns = result;
@@ -130,7 +130,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
         accountId
       );
     }
-    const userInfo = await this.simple.checkUser({ key: columns[COLUMN_DATA].login });
+    const userInfo = await this.simple.checkUser({ key: columns[USER_LEGACY_ADAPTER_COLUMN_DATA].login });
     return userInfo.userProfile;
   }
 
@@ -140,8 +140,8 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
 
   private async saveAssociations(accountId: string, userKey: string, login: string) {
     await this.gda.put({
-      table: TABLE_SIMPLE_ASSOCIATIONS,
-      column: COLUMN_DATA,
+      table: USER_LEGACY_ADAPTER_TABLE_SIMPLE_ASSOCIATIONS,
+      column: USER_LEGACY_ADAPTER_COLUMN_DATA,
       key: accountId,
       data: {
         userKey,

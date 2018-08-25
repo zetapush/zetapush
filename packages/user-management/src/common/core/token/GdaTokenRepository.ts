@@ -1,4 +1,4 @@
-import { Token, TokenRepository, StoredToken, TokenState, AssociatedValueToToken, BootstrapError } from '../../api';
+import { Token, TokenRepository, StoredToken, AssociatedValueToToken, BootstrapError } from '../../api';
 import {
   GetTokenFromStorageError,
   DeleteTokenFromStorageError,
@@ -7,15 +7,30 @@ import {
 } from '../../api/exception/TokenError';
 import { Gda, GdaConfigurer, GdaDataType, Idempotence } from '@zetapush/platform-legacy';
 import { Injectable } from '@zetapush/core';
+import { ExpirableToken } from './ExpirableTokenGenerator';
+import { TokenWithState } from './TokenManagerImpl';
 
 export class TokenStorageInitError extends BootstrapError {}
+
+@Injectable()
+export class TokenFactory {
+  fromRaw(token: any): Token {
+    if (token.expires) {
+      return new ExpirableToken(this.fromRaw(token.original), token.expires);
+    } else if (token.state) {
+      return new TokenWithState(this.fromRaw(token.original), token.state);
+    } else {
+      return token;
+    }
+  }
+}
 
 @Injectable()
 export class GdaTokenRepository implements TokenRepository {
   private STORAGE_TOKEN_NAME_TABLE = 'storagetokennametable';
   private STORAGE_TOKEN_NAME_COLUMN = 'storagetokennamecolumn';
 
-  constructor(private gdaStorage: Gda, private gdaConfigurer: GdaConfigurer) {}
+  constructor(private gdaStorage: Gda, private gdaConfigurer: GdaConfigurer, private factory: TokenFactory) {}
 
   async onApplicationBootstrap() {
     try {
@@ -37,7 +52,6 @@ export class GdaTokenRepository implements TokenRepository {
   async store(token: Token, associatedValue?: AssociatedValueToToken): Promise<Token> {
     const objToSave: StoredToken = {
       token,
-      state: TokenState.UNUSED,
       associatedValue
     };
 
@@ -80,6 +94,10 @@ export class GdaTokenRepository implements TokenRepository {
     if (!outputStorage || !outputStorage.result) {
       throw new TokenNotFoundError(`No matching token found`, token);
     }
-    return outputStorage.result[this.STORAGE_TOKEN_NAME_COLUMN];
+    const raw = outputStorage.result[this.STORAGE_TOKEN_NAME_COLUMN];
+    return {
+      token: this.factory.fromRaw(raw.token),
+      associatedValue: raw.associatedValue
+    };
   }
 }

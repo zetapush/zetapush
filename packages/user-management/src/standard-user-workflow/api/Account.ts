@@ -1,6 +1,7 @@
-import { Token, Message, SentMessage, EmailAddress } from '../../common/api';
+import { Token, Message, SentMessage, EmailAddress, Variables } from '../../common/api';
 import { BaseError } from '../../common/api/exception/BaseError';
 import { Credentials } from './Credentials';
+import { ConfigurationProperties, ZetaPushContext } from '../../common/configurer';
 
 /**
  * The account creation manager is in charge to create a user account based
@@ -120,6 +121,14 @@ export interface AccountConfirmationManager {
 export abstract class AccountConfirmationManagerInjectable implements AccountConfirmationManager {
   abstract askConfirmation(accountToConfirm: Account): Promise<PendingAccountConfirmation>;
   abstract confirm(confirmation: PendingAccountConfirmation): Promise<ConfirmedAccount>;
+}
+
+export interface AccountConfirmationTemplateVariables extends Variables {
+  readonly account: Account;
+  readonly token: Token;
+  readonly properties: ConfigurationProperties;
+  readonly zetapushContext: ZetaPushContext;
+  readonly confirmationUrl: string;
 }
 
 /**

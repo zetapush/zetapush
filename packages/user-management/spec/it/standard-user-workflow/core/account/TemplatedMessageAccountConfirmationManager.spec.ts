@@ -28,13 +28,16 @@ describe(`TemplatedMessageAccountConfirmationManager`, () => {
   const tokenStorage: TokenRepository = mock(GdaTokenRepository);
   const properties = mock<ConfigurationProperties>(<any>{});
   const zetapushContext = mock<ZetaPushContext>(<any>{});
-
-  const htmlTemplate = ({ account, token }: { account: Account; token: Token }) =>
+  const confirmationUrl = async ({ account, token }: { account: Account; token: Token }) =>
+    `https://zetapush.com/${account.accountId}/${token.value}`;
+  const htmlTemplate = ({ account, confirmationUrl }: { account: Account; confirmationUrl: string }) =>
     `Hello ${account.profile.username}, 
-    <a href="https://zetapush.com/${account.accountId}/${token.value}">Please confirm your account</a>`;
-  const textTemplate = ({ account, token }: { account: Account; token: Token }) =>
+    <a href="${confirmationUrl}">Please confirm your account</a>`;
+  const textTemplate = ({ account, confirmationUrl }: { account: Account; confirmationUrl: string }) =>
     `Hello ${account.profile.username}, 
-    Please confirm your account: https://zetapush.com/${account.accountId}/${token.value}`;
+    Please confirm your account:${confirmationUrl}`;
+  const successUrl = 'http://my-front-app.zetapush-apps.com#home';
+  const failureUrl = 'http://my-front-app.zetapush-apps.com#confirmation-failed';
 
   describe(`askConfirmation()`, () => {
     describe(`that sends templated email with confirmation link through mailjet`, () => {
@@ -53,6 +56,7 @@ describe(`TemplatedMessageAccountConfirmationManager`, () => {
             // create configurer
             const configurer = new RegistrationConfirmationConfigurerImpl(parent, properties, zetapushContext);
             configurer
+              .url(confirmationUrl)
               .token()
               /**/ .generator(instance(tokenGenerator))
               /**/ .validity(5000)
@@ -71,10 +75,12 @@ describe(`TemplatedMessageAccountConfirmationManager`, () => {
               /*  */ .template(htmlTemplate)
               /*  */ .and()
               /**/ .textTemplate()
-              /*  */ .template(textTemplate);
-            // /*  */ .and()
-            // /**/ .and()
-            // .redirection();
+              /*  */ .template(textTemplate)
+              /*  */ .and()
+              /**/ .and()
+              .redirection()
+              /**/ .successUrl(successUrl)
+              /**/ .failureUrl(failureUrl);
             return await configurer.getProviders();
           })
           /**/ .dependencies(AccountConfirmationManagerInjectable)

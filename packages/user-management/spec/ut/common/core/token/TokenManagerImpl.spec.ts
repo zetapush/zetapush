@@ -1,13 +1,18 @@
 import 'jasmine';
 import { anything, mock, when, instance } from 'ts-mockito';
-import { TokenState, TokenGenerator, ExpirableToken, TokenRepository } from '../../../../../src/common/api';
-import { TokenManagerImpl } from '../../../../../src/common/core/token/TokenManagerImpl';
+import { TokenGenerator, TokenRepository } from '../../../../../src/common/api';
+import { TokenManagerImpl, TokenState, TokenWithState } from '../../../../../src/common/core/token/TokenManagerImpl';
 import {
   AlreadyUsedTokenError,
   ExpiredTokenError,
   GenerateTokenError
 } from '../../../../../src/common/api/exception/TokenError';
-import { TimestampBasedUuidGenerator, Base36RandomTokenGenerator, GdaTokenRepository } from '../../../../../src';
+import {
+  TimestampBasedUuidGenerator,
+  Base36RandomTokenGenerator,
+  GdaTokenRepository,
+  ExpirableToken
+} from '../../../../../src';
 
 describe(`TokenManagerImpl`, () => {
   const tokenGenerator: TokenGenerator = mock(Base36RandomTokenGenerator);
@@ -17,7 +22,9 @@ describe(`TokenManagerImpl`, () => {
     describe(`a valid token`, () => {
       it(`accpets and return the token`, async () => {
         // GIVEN
-        when(tokenStorage.getFromToken(anything())).thenResolve({ token: { value: '42' }, state: TokenState.UNUSED });
+        when(tokenStorage.getFromToken(anything())).thenResolve({
+          token: new TokenWithState({ value: '42' }, TokenState.UNUSED)
+        });
         const tokenManager = new TokenManagerImpl(tokenGenerator, instance(tokenStorage));
 
         // WHEN
@@ -25,7 +32,7 @@ describe(`TokenManagerImpl`, () => {
 
         // THEN
         expect(returnToken.token.value).toEqual('42');
-        expect(returnToken.state).toEqual(TokenState.ALREADY_USED);
+        expect((<TokenWithState>returnToken.token).state).toEqual(TokenState.ALREADY_USED);
       });
     });
 
@@ -33,8 +40,7 @@ describe(`TokenManagerImpl`, () => {
       it(`fails indicating that the token is already used`, async () => {
         // GIVEN
         when(tokenStorage.getFromToken(anything())).thenResolve({
-          token: { value: '42' },
-          state: TokenState.ALREADY_USED
+          token: new TokenWithState({ value: '42' }, TokenState.ALREADY_USED)
         });
         const tokenManager = new TokenManagerImpl(tokenGenerator, instance(tokenStorage));
 
@@ -54,8 +60,7 @@ describe(`TokenManagerImpl`, () => {
       it(`fails indicating that the token is expired`, async () => {
         // GIVEN
         when(tokenStorage.getFromToken(anything())).thenResolve({
-          token: new ExpirableToken({ value: '42' }, 1533886823413),
-          state: TokenState.UNUSED
+          token: new TokenWithState(new ExpirableToken({ value: '42' }, 1533886823413), TokenState.UNUSED)
         });
         const tokenManager = new TokenManagerImpl(tokenGenerator, instance(tokenStorage));
 

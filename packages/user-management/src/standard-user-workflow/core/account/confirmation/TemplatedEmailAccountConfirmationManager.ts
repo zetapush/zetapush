@@ -3,18 +3,42 @@ import {
   PendingAccountConfirmation,
   Account,
   ConfirmedAccount,
-  EmailAddressProvider
+  EmailAddressProvider,
+  AccountConfirmationTemplateVariables
 } from '../../../../standard-user-workflow/api';
 import { MessageSender, Email, VariablesProvider } from '../../../../common/api';
 import { FixedLocationTemplateManagerHelper } from '../../../../common/core/template/FixedLocationTemplateManagerHelper';
 import { AccountConfirmationError, SendTokenError } from '../../exceptions/AccountConfirmationError';
+import { ConfirmationUrlProvider, AccountConfirmationContext } from '../../../api/Confirmation';
+import { ZetaPushContext } from '../../../../common/configurer';
+
+class EmailAccountConfirmationTemplateVariables implements AccountConfirmationTemplateVariables {
+  constructor(private delegate: AccountConfirmationContext, public confirmationUrl: string) {}
+
+  get account() {
+    return this.delegate.account;
+  }
+
+  get token() {
+    return this.delegate.token;
+  }
+
+  get properties() {
+    return this.delegate.properties;
+  }
+
+  get zetapushContext() {
+    return this.delegate.zetapushContext;
+  }
+}
 
 export class TemplatedEmailAccountConfirmationManager implements AccountConfirmationManager {
   constructor(
     private delegate: AccountConfirmationManager,
     private emailAddressProvider: EmailAddressProvider,
     private sender: MessageSender,
-    private variablesProvider: VariablesProvider,
+    private urlProvider: ConfirmationUrlProvider,
+    private variablesProvider: VariablesProvider<AccountConfirmationContext>,
     private htmlTemplateHelper: FixedLocationTemplateManagerHelper,
     private textTemplateHelper: FixedLocationTemplateManagerHelper
   ) {}
@@ -27,8 +51,10 @@ export class TemplatedEmailAccountConfirmationManager implements AccountConfirma
         account: confirmation.createdAccount,
         token: confirmation.token
       });
-      let html = await this.htmlTemplateHelper.parse(variables);
-      let text = await this.textTemplateHelper.parse(variables);
+      const confirmationUrl = await this.urlProvider.getUrl(variables);
+      const extendedVariables = new EmailAccountConfirmationTemplateVariables(variables, confirmationUrl);
+      let html = await this.htmlTemplateHelper.parse(extendedVariables);
+      let text = await this.textTemplateHelper.parse(extendedVariables);
 
       await this.sender.send(<Email>{
         to: [email],

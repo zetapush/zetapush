@@ -1,7 +1,10 @@
 import 'jasmine';
-import { Base36RandomTokenGenerator, GdaTokenRepository } from '../../../../../src/common/core/token/index';
+import {
+  Base36RandomTokenGenerator,
+  GdaTokenRepository,
+  TokenFactory
+} from '../../../../../src/common/core/token/index';
 import { GetTokenFromStorageError, TokenNotFoundError } from '../../../../../src/common/api/exception/TokenError';
-import { TokenState } from '../../../../../src/common/api';
 import { given, autoclean, runInWorker } from '@zetapush/testing';
 import { Gda, GdaConfigurer } from '@zetapush/platform-legacy';
 import { anything } from 'ts-mockito';
@@ -14,7 +17,7 @@ describe(`GdaTokenRepository`, () => {
       /**/ .newApp()
       /**/ .and()
       .worker()
-      /**/ .dependencies(Gda, GdaConfigurer)
+      /**/ .dependencies(Gda, GdaConfigurer, TokenFactory)
       /**/ .and()
       .apply(this);
   });
@@ -28,9 +31,9 @@ describe(`GdaTokenRepository`, () => {
       it(
         `stores the token in database and returns it`,
         async () => {
-          await runInWorker(this, async (_, gda: Gda, gdaConfigurer: GdaConfigurer) => {
+          await runInWorker(this, async (_, gda: Gda, gdaConfigurer: GdaConfigurer, tokenFactory: TokenFactory) => {
             const token = { value: '123456789' };
-            const storageManager = new GdaTokenRepository(gda, gdaConfigurer);
+            const storageManager = new GdaTokenRepository(gda, gdaConfigurer, tokenFactory);
             storageManager.onApplicationBootstrap();
 
             const mockAssociatedValue = '123456';
@@ -42,7 +45,6 @@ describe(`GdaTokenRepository`, () => {
             const storedToken = await storageManager.getFromToken(token);
 
             expect(storedToken.associatedValue).toEqual(mockAssociatedValue);
-            expect(storedToken.state).toEqual(TokenState.UNUSED);
             expect(storedToken.token.value).toEqual(token.value);
           });
         },
@@ -55,10 +57,10 @@ describe(`GdaTokenRepository`, () => {
         it(
           `fails indicating that the token doesn't match`,
           async () => {
-            await runInWorker(this, async (_, gda: Gda, gdaConfigurer: GdaConfigurer) => {
+            await runInWorker(this, async (_, gda: Gda, gdaConfigurer: GdaConfigurer, tokenFactory: TokenFactory) => {
               const token = { value: '123456789' };
               const newToken = { value: '987654321' };
-              const storageManager = new GdaTokenRepository(gda, gdaConfigurer);
+              const storageManager = new GdaTokenRepository(gda, gdaConfigurer, tokenFactory);
               storageManager.onApplicationBootstrap();
 
               const mockAssociatedValue = '123456';

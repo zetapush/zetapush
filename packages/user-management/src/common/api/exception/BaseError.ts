@@ -22,7 +22,7 @@ export abstract class BaseError extends Error {
   }
 
   private getTypedCauseMessage(error: Error) {
-    return `${this.getType(error)}${error.message}`;
+    return `${this.getType(error)}${error.message || error}`;
   }
 }
 

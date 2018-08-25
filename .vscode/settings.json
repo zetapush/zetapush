@@ -12,6 +12,9 @@
     "worker [prepublish]": [
       "packages/worker/src/**"
     ],
+    "http-server [prepublish]": [
+      "packages/http-server/src/**"
+    ],
     "user-management [prepublish]": [
       "packages/user-management/src/**"
     ],

@@ -63,9 +63,9 @@ export const frontUserAction = async (
 
 export const runInWorker = (testOrContext: Context, workerDeclaration: (...instances: any[]) => void) => {
   return new Promise(async (resolve, reject) => {
-    const { zetarc, dependencies, providers, logLevel, configurationFunction } = new ContextWrapper(
-      testOrContext
-    ).getContext();
+    // TODO: everything should be in given (except runner.run())
+    const context = new ContextWrapper(testOrContext).getContext();
+    const { zetarc, dependencies, providers, logLevel, configurationFunction } = context;
 
     // let configurationFactoryProvider: FactoryProvider;
     // // Provider is required to provide a TestConfigurationWrapper instance that can't be
@@ -156,6 +156,8 @@ export const runInWorker = (testOrContext: Context, workerDeclaration: (...insta
         runner.destroy();
         reject(failure);
       });
+
+      context.workerRunner = runner;
 
       runner.run(TestWorker);
     } catch (e) {

@@ -8,7 +8,7 @@ interface FunctionWrapper<T, R> {
 
 export class InstanceHelper<T, R> {
   private instance?: T;
-  private func?: () => Promise<R>;
+  private func?: (...args: any[]) => Promise<R>;
   private clazz?: Type<T>;
 
   constructor(

@@ -46,10 +46,11 @@ export const scoped = <T>(scope: Scope, provide: Class<T>): InjectionToken<T> =>
   return token;
 };
 
-export const scopedDependency = <T>(name: string, dep: Class<T>): InjectionToken<T> => {
+export const scopedDependency = <T>(scope: string | Scope, dep: Class<T>): InjectionToken<T> => {
   if (!dep) {
     throw new IllegalArgumentValueError(`You can't ask for a scoped dependency without its type`, 'dep', dep);
   }
+  const name = (<Scope>scope).getKey ? (<Scope>scope).getKey() : scope;
   const key = `${name}<${extractName(dep)}>`;
   const token = scopedTokens.get(key);
   if (!token) {
@@ -76,6 +77,8 @@ export interface ProviderRegistry {
   ): void;
 
   registerInstance<T>(provide: Class<T> | InjectionToken<T>, instance: T): void;
+
+  registerValue(token: string, value: string): void;
 
   registerClass<T, C extends T>(provide: Class<T> | InjectionToken<T>, clazz?: Class<C>): void;
 
@@ -150,6 +153,16 @@ export class SimpleProviderRegistry implements ProviderRegistry {
     this.providers.push({
       provide,
       useValue: instance
+    });
+  }
+
+  registerValue(token: string, value?: string): void {
+    if (!value) {
+      return;
+    }
+    this.providers.push({
+      provide: new InjectionToken<string>(token),
+      useValue: value
     });
   }
 

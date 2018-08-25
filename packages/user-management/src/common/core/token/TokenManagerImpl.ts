@@ -1,13 +1,4 @@
-import {
-  TokenGenerator,
-  TokenRepository,
-  Token,
-  TokenManager,
-  ExpirableToken,
-  TokenState,
-  StoredToken,
-  AssociatedValueToToken
-} from '../../api';
+import { TokenGenerator, TokenRepository, Token, TokenManager, StoredToken, AssociatedValueToToken } from '../../api';
 import {
   GenerateTokenError,
   AlreadyUsedTokenError,
@@ -15,6 +6,24 @@ import {
   StoreTokenIntoStorageError,
   InvalidTokenError
 } from '../../api/exception/TokenError';
+import { ExpirableToken } from './ExpirableTokenGenerator';
+
+export enum TokenState {
+  UNUSED = 'UNUSED',
+  ALREADY_USED = 'ALREADY_USED'
+}
+
+export class TokenWithState implements Token {
+  /**
+   * @param original The original token that has been generated
+   * @param state The state to associate with the token
+   */
+  constructor(public original: Token, public state: TokenState) {}
+
+  get value() {
+    return this.original.value;
+  }
+}
 
 /**
  * Generate or validate tokens
@@ -33,15 +42,16 @@ export class TokenManagerImpl implements TokenManager {
   ): Promise<StoredToken> {
     // Get the token from the database
     const tokenFromStorage = await this.tokenStorage.getFromToken(token);
+    const storedToken = tokenFromStorage.token as TokenWithState;
 
     // Check the validation
-    if (tokenFromStorage.state === TokenState.ALREADY_USED) {
+    if (storedToken.state === TokenState.ALREADY_USED) {
       throw new AlreadyUsedTokenError(`This token was already used`, token);
     }
 
     // Check that token is not expired
-    if (tokenFromStorage.token instanceof ExpirableToken) {
-      if (tokenFromStorage.token.expires < new Date().getTime()) {
+    if (storedToken.original instanceof ExpirableToken) {
+      if (storedToken.original.expires < new Date().getTime()) {
         throw new ExpiredTokenError(`This token is expired`, token);
       }
     }
@@ -55,8 +65,8 @@ export class TokenManagerImpl implements TokenManager {
 
     // At this point, the token is valid
     try {
-      tokenFromStorage.state = TokenState.ALREADY_USED;
-      await this.tokenStorage.store(tokenFromStorage.token);
+      storedToken.state = TokenState.ALREADY_USED;
+      await this.tokenStorage.store(storedToken, tokenFromStorage.associatedValue);
     } catch (e) {
       throw new StoreTokenIntoStorageError('Failed to store token', tokenFromStorage.token, e);
     }
@@ -75,8 +85,7 @@ export class TokenManagerImpl implements TokenManager {
 
   async save(token: Token, associatedValue?: AssociatedValueToToken): Promise<Token> {
     try {
-      await this.tokenStorage.store(token, associatedValue);
-      return token;
+      return await this.tokenStorage.store(token, associatedValue);
     } catch (e) {
       throw new StoreTokenIntoStorageError(
         `Failed to store the token in the storage with the associated value`,

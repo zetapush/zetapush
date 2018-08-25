@@ -51,8 +51,8 @@ export abstract class TemplateConfigurerImpl<P, S extends TemplateConfigurer<P, 
     providerRegistry.registerFactory(
       scoped(this.scope, TemplateManagerInjectable),
       [
-        scopedDependency(this.scope.getKey(), ResourceResolverInjectable),
-        scopedDependency(this.scope.getKey(), TemplateParserInjectable)
+        scopedDependency(this.scope, ResourceResolverInjectable),
+        scopedDependency(this.scope, TemplateParserInjectable)
       ],
       (resourceResolver: ResourceResolver, templateParser: TemplateParser) =>
         new DelegateTemplateManager(resourceResolver, templateParser)

@@ -4,6 +4,7 @@ import { AccountStatus, AccountStatusProvider } from '../../standard-user-workfl
 import { UuidGenerator, Uuid, Variables, Location, Token, TokenGenerator, TokenRepository } from '../api';
 import { AxiosInstance } from 'axios';
 import { UserRepository } from '../api/User';
+import { ConfirmationUrlProvider, AccountConfirmationContext } from '../../standard-user-workflow/api/Confirmation';
 
 export interface And<P> {
   and(): P;
@@ -157,6 +158,10 @@ export interface RegistrationWelcomeConfigurer extends And<RegistrationConfigure
 }
 
 export interface RegistrationConfirmationConfigurer extends And<RegistrationConfigurer> {
+  url(urlProvider: ConfirmationUrlProvider): RegistrationConfirmationConfigurer;
+  url(func: (context: AccountConfirmationContext) => Promise<string>): RegistrationConfirmationConfigurer;
+  url(confirmationUrl: string): RegistrationConfirmationConfigurer;
+
   email(): EmailConfigurer<RegistrationConfirmationConfigurer>;
 
   sms(): SmsConfigurer<RegistrationConfirmationConfigurer>;

@@ -1,6 +1,7 @@
 import { Config } from '@zetapush/common';
 import { Runner } from './commands';
 import { Provider, InjectionToken } from '@zetapush/core';
+import { WorkerRunner } from '@zetapush/worker/lib';
 
 export type ConfigurationFunction = (...dependencies: any[]) => Promise<Provider[] | null>;
 export type Dependencies = Array<Function | InjectionToken<any>> | (() => Array<Function | InjectionToken<any>>);
@@ -8,6 +9,7 @@ export interface TestContext {
   zetarc: Config;
   projectDir?: string;
   runner?: Runner;
+  workerRunner?: WorkerRunner;
   dependencies?: Dependencies;
   providers?: Provider[];
   logLevel: {

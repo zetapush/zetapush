@@ -7,13 +7,24 @@ import {
 import { StandardUserWorkflow } from '../core/StandardUserWorkflow';
 import { RegistrationConfigurerImpl } from './account/RegistrationConfigurerImpl';
 import { Provider } from '@zetapush/core';
-import { ConfigurationProperties, ZetaPushContext, Configurer, SimpleProviderRegistry } from '../../common/configurer';
+import {
+  ConfigurationProperties,
+  ZetaPushContext,
+  Configurer,
+  SimpleProviderRegistry,
+  scopedDependency
+} from '../../common/configurer';
 import {
   AccountConfirmationManagerInjectable,
   AccountCreationManagerInjectable,
   AccountConfirmationManager,
-  AccountCreationManager
+  AccountCreationManager,
+  RedirectionProviderInjectable,
+  RedirectionProvider,
+  ConfirmedAccount
 } from '../api';
+import { ConfirmationUrlHttpHandler } from '../core/account/confirmation/ConfirmationUrlHttpHandler';
+import { HttpServerInjectable, HttpServer, ExpressServerConfigurer } from '@zetapush/http-server';
 
 export class StandardUserWorkflowConfigurerImpl implements StandardUserWorkflowConfigurer, Configurer {
   private registrationConfigurer?: RegistrationConfigurerImpl;
@@ -38,9 +49,27 @@ export class StandardUserWorkflowConfigurerImpl implements StandardUserWorkflowC
     await providerRegistry.registerConfigurer(this.registrationConfigurer);
     providerRegistry.registerFactory(
       StandardUserWorkflow,
-      [AccountCreationManagerInjectable, AccountConfirmationManagerInjectable],
-      (creationManager: AccountCreationManager, confirmationManager: AccountConfirmationManager) =>
-        new StandardUserWorkflow(creationManager, confirmationManager)
+      [
+        AccountCreationManagerInjectable,
+        AccountConfirmationManagerInjectable,
+        scopedDependency('confirmation.success', RedirectionProviderInjectable),
+        scopedDependency('confirmation.failure', RedirectionProviderInjectable)
+      ],
+      (
+        creationManager: AccountCreationManager,
+        confirmationManager: AccountConfirmationManager,
+        success: RedirectionProvider<ConfirmedAccount>,
+        failure: RedirectionProvider<Error>
+      ) => new StandardUserWorkflow(creationManager, confirmationManager, success, failure)
+    );
+    // TODO: should only provide Http handler if confirmation url configured and points to zetapush ?
+    // TODO: this should be imported through modules
+    await providerRegistry.registerConfigurer(new ExpressServerConfigurer());
+    providerRegistry.registerFactory(
+      ConfirmationUrlHttpHandler,
+      [StandardUserWorkflow, HttpServerInjectable],
+      (standardUserWorkflow: StandardUserWorkflow, httpServer: HttpServer) =>
+        new ConfirmationUrlHttpHandler(standardUserWorkflow, httpServer)
     );
     return providerRegistry.getProviders();
   }

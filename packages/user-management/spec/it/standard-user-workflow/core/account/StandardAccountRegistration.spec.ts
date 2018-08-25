@@ -19,25 +19,36 @@ import {
 import { StandardUserWorkflowConfigurer } from '../../../../../src/common/configurer/grammar';
 import { StandardUserWorkflowConfigurerImpl } from '../../../../../src/standard-user-workflow/configurer/StandardUserWorkflowConfigurer';
 import { StandardUserWorkflow } from '../../../../../src/standard-user-workflow/core/StandardUserWorkflow';
+import { ConfirmationUrlHttpHandler } from '../../../../../src/standard-user-workflow/core/account/confirmation/ConfirmationUrlHttpHandler';
+import { Simple } from '@zetapush/platform-legacy/lib';
+import { getLocal } from 'mockttp';
 
 describe(`StandardAccountRegistration`, () => {
   const axiosInstance = axios.create({});
-  const parent = mock<StandardUserWorkflowConfigurer>(<any>{});
   const mockAxios = new MockAdapter(axiosInstance);
   const tokenGenerator: TokenGenerator = mock(Base36RandomTokenGenerator);
   const uuidGenerator: UuidGenerator = mock(TimestampBasedUuidGenerator);
   const properties = mock<ConfigurationProperties>(<any>{});
   const zetapushContext = mock<ZetaPushContext>(<any>{});
-  const htmlTemplate = ({ account, token }: { account: Account; token: Token }) =>
+  const confirmationUrl = async ({ account, token }: { account: Account; token: Token }) =>
+    `https://zetapush.com/${account.accountId}/${token.value}`;
+  const htmlTemplate = ({ account, confirmationUrl }: { account: Account; confirmationUrl: string }) =>
     `Hello ${account.profile.username}, 
-    <a href="https://zetapush.com/${account.accountId}/${token.value}">Please confirm your account</a>`;
-  const textTemplate = ({ account, token }: { account: Account; token: Token }) =>
+    <a href="${confirmationUrl}">Please confirm your account</a>`;
+  const textTemplate = ({ account, confirmationUrl }: { account: Account; confirmationUrl: string }) =>
     `Hello ${account.profile.username}, 
-    Please confirm your account: https://zetapush.com/${account.accountId}/${token.value}`;
+    Please confirm your account:${confirmationUrl}`;
 
   describe(`signup()`, () => {
     describe(`on valid account`, () => {
       beforeEach(async () => {
+        // mock server is used to simulate a front application
+        this.mockServer = getLocal();
+        await this.mockServer.start();
+        await this.mockServer.get('/home').thenReply(200, 'Home !');
+        await this.mockServer.get('/confirmation-failed').thenReply(200, 'Error !');
+        this.successUrl = this.mockServer.urlFor('/home');
+        this.failureUrl = this.mockServer.urlFor('/confirmation-failed');
         await given()
           .credentials()
           /**/ .fromEnv()
@@ -68,6 +79,7 @@ describe(`StandardAccountRegistration`, () => {
               // /*      */.and()
               // /*    */.and()
               /**/ .confirmation()
+              /*  */ .url(confirmationUrl)
               /*  */ .token()
               /*    */ .generator(instance(tokenGenerator))
               /*    */ .validity(5000)
@@ -86,13 +98,15 @@ describe(`StandardAccountRegistration`, () => {
               /*      */ .template(htmlTemplate)
               /*      */ .and()
               /*    */ .textTemplate()
-              /*      */ .template(textTemplate);
-            // /*  */ .and()
-            // /**/ .and()
-            // .redirection();
+              /*      */ .template(textTemplate)
+              /*      */ .and()
+              /*    */ .and()
+              /*  */ .redirection()
+              /*    */ .successUrl(this.successUrl)
+              /*    */ .failureUrl(this.failureUrl);
             return await configurer.getProviders();
           })
-          /**/ .dependencies(StandardUserWorkflow)
+          /**/ .dependencies(StandardUserWorkflow, Simple, ConfirmationUrlHttpHandler)
           /**/ .and()
           .apply(this);
       });
@@ -100,7 +114,7 @@ describe(`StandardAccountRegistration`, () => {
       it(
         `creates the account and send an email with confirmation link to the email address of the user`,
         async () => {
-          await runInWorker(this, async (_, workflow: StandardUserWorkflow) => {
+          await runInWorker(this, async (_, workflow: StandardUserWorkflow, simple: Simple) => {
             // WHEN
             const result = await workflow.signup({
               credentials: {
@@ -115,10 +129,20 @@ describe(`StandardAccountRegistration`, () => {
               }
             });
 
-            // TODO: check confirmation
-            // TODO: check response
-
             // THEN
+            // check in database if user is well registered and confirmed
+            const user = await simple.checkUser({ key: 'odile.deray' });
+            expect(user).toBeDefined();
+            expect(user.accountId).toBeDefined();
+            expect(user.accountId).toBe('42');
+            expect(user.accountStatus).toBe(StandardAccountStatus.WaitingConfirmation);
+            expect(user.userProfile).toEqual({
+              firstname: 'Odile',
+              lastname: 'DERAY',
+              email: 'odile.deray@zetapush.com',
+              username: 'odile.deray'
+            });
+            // check that the email has been sent
             verify(
               axiosInstance.post(
                 'mailjet-url',
@@ -151,7 +175,49 @@ describe(`StandardAccountRegistration`, () => {
         5 * 60 * 1000
       );
 
+      it(
+        `confirms the account when link is clicked and redirect to a particular page`,
+        async () => {
+          await runInWorker(this, async (_, workflow: StandardUserWorkflow, simple: Simple) => {
+            // WHEN
+            const result = await workflow.signup({
+              credentials: {
+                login: 'odile.deray',
+                password: 'password'
+              },
+              profile: {
+                firstname: 'Odile',
+                lastname: 'DERAY',
+                email: 'odile.deray@zetapush.com',
+                username: 'odile.deray'
+              }
+            });
+            // make HTTP request to confirm the account
+            const response = await axios.get('http://localhost:2999/users/42/confirm/123456');
+
+            // THEN
+            // check redirection
+            expect(response.status).toBe(200);
+            expect(response.data).toBe('Home !');
+            // check in database if user is well registered and confirmed
+            const user = await simple.checkUser({ key: 'odile.deray' });
+            expect(user).toBeDefined();
+            expect(user.accountId).toBeDefined();
+            expect(user.accountId).toBe('42');
+            expect(user.accountStatus).toBe(StandardAccountStatus.Active);
+            expect(user.userProfile).toEqual({
+              firstname: 'Odile',
+              lastname: 'DERAY',
+              email: 'odile.deray@zetapush.com',
+              username: 'odile.deray'
+            });
+          });
+        },
+        5 * 60 * 1000
+      );
+
       afterEach(async () => {
+        await this.mockServer.stop();
         await autoclean(this);
       });
     });

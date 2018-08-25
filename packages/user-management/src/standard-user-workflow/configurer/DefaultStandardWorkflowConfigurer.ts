@@ -25,7 +25,8 @@ import {
   DEFAULT_CONFIRMATION_SUBJECT,
   DEFAULT_CONFIRMATION_HTML_TEMPLATE,
   DEFAULT_CONFIRMATION_TEXT_TEMPLATE,
-  DEFAULT_CONFIRMATION_TOKEN_VALIDITY
+  DEFAULT_CONFIRMATION_TOKEN_VALIDITY,
+  DEFAULT_CONFIRMATION_URL
 } from './defaults';
 import { LegacyAdapterUserRepository } from '../legacy';
 
@@ -105,6 +106,7 @@ export class DefaultUserWorkflowConfigurer implements Configurer {
           .generator(Base36RandomTokenGenerator)
           .validity(DEFAULT_CONFIRMATION_TOKEN_VALIDITY)
           .and()
+        .url(DEFAULT_CONFIRMATION_URL)
         .email()
           .mailjet()
             .url(DEFAULT_MAILJET_URL(this.properties))

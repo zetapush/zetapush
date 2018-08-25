@@ -5,6 +5,13 @@ import { ResolvedConfig } from '@zetapush/common';
 
 export const autoclean = async (testOrContext: Context) => {
   const context = new ContextWrapper(testOrContext).getContext();
+  if (context && context.workerRunner) {
+    try {
+      await context.workerRunner.destroy();
+    } catch (e) {
+      cleanLogger.warn('Failed to autoclean (destroy worker). Skipping the error.', e);
+    }
+  }
   if (context && context.projectDir) {
     try {
       return await nukeProject(context.projectDir);
