@@ -1,7 +1,7 @@
 import {
   StandardUserWorkflowConfigurer,
   RegistrationConfigurer,
-  LoginConfigurer,
+  AuthenticationConfigurer,
   LostPasswordConfigurer
 } from '../../common/configurer/grammar';
 import { StandardUserWorkflow } from '../core/StandardUserWorkflow';
@@ -12,11 +12,15 @@ import {
   AccountConfirmationManagerInjectable,
   AccountCreationManagerInjectable,
   AccountConfirmationManager,
-  AccountCreationManager
+  AccountCreationManager,
+  AuthenticationManagerInjectable,
+  AuthenticationManager
 } from '../api';
+import { AuthenticationConfigurerImpl } from '../configurer/account';
 
 export class StandardUserWorkflowConfigurerImpl implements StandardUserWorkflowConfigurer, Configurer {
   private registrationConfigurer?: RegistrationConfigurerImpl;
+  private authenticationConfigurer?: AuthenticationConfigurerImpl;
 
   constructor(private properties: ConfigurationProperties, private zetapushContext: ZetaPushContext) {}
 
@@ -25,8 +29,9 @@ export class StandardUserWorkflowConfigurerImpl implements StandardUserWorkflowC
     return this.registrationConfigurer;
   }
 
-  login(): LoginConfigurer {
-    throw new Error('Not implemented');
+  login(): AuthenticationConfigurer {
+    this.authenticationConfigurer = new AuthenticationConfigurerImpl(this, this.properties, this.zetapushContext);
+    return this.authenticationConfigurer;
   }
 
   lostPassword(): LostPasswordConfigurer {
@@ -35,12 +40,15 @@ export class StandardUserWorkflowConfigurerImpl implements StandardUserWorkflowC
 
   async getProviders(): Promise<Provider[]> {
     const providerRegistry = new SimpleProviderRegistry();
-    await providerRegistry.registerConfigurer(this.registrationConfigurer);
+    await providerRegistry.registerConfigurer(this.registrationConfigurer, this.authenticationConfigurer);
     providerRegistry.registerFactory(
       StandardUserWorkflow,
-      [AccountCreationManagerInjectable, AccountConfirmationManagerInjectable],
-      (creationManager: AccountCreationManager, confirmationManager: AccountConfirmationManager) =>
-        new StandardUserWorkflow(creationManager, confirmationManager)
+      [AccountCreationManagerInjectable, AccountConfirmationManagerInjectable, AuthenticationManagerInjectable],
+      (
+        creationManager: AccountCreationManager,
+        confirmationManager: AccountConfirmationManager,
+        authenticationManager: AuthenticationManager
+      ) => new StandardUserWorkflow(creationManager, confirmationManager, authenticationManager)
     );
     return providerRegistry.getProviders();
   }

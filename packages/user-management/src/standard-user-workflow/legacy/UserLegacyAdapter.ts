@@ -202,8 +202,6 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
         },
         key: login
       });
-
-      console.log('=========+> setStatusResult <=======', result);
     } catch (e) {
       throw new LegacyUpdateAccountStatus(`Failed to update the status of the user (accountId: ${accountId}.`, e);
     }

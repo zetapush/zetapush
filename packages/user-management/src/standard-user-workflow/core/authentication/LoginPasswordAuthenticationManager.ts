@@ -6,26 +6,28 @@ import { Simple } from '@zetapush/platform-legacy';
 import { FailedGetUserProfileError } from '../exceptions/AccountAuthenticationError';
 
 export class LoginPasswordAuthenticationManager implements AuthenticationManager {
-  constructor(private client: Client, private authService: Simple) {}
+  constructor(private authService: Simple) {}
 
   async login(credentials: LoginPasswordCredentials): Promise<Account> {
-    await this.client.connect();
+    // try {
+    //   await client.connect(credentials);
+    // } catch(e) {
+    //   // TODO: Handle the bad credentials error
+    // }
 
-    return new Promise<Account>(async (resolve, reject) => {
-      const userId = this.client.getUserId();
-      let userAccount;
-      try {
-        userAccount = await this.authService.checkUser({
-          key: userId
-        });
-      } catch (err) {
-        reject(new FailedGetUserProfileError(`The service failed to get the user profile`, userId));
-      }
-      resolve(userAccount as Account);
-    });
+    // let user;
+    // try {
+    //   user = await this.authService.checkUser({ key: credentials.login });
+    // } catch (err) {
+    //   throw new FailedGetUserProfileError(`The service failed to get the user profile`);
+    // }
+
+    // return user as Account;
+
+    throw 'Method not implemented';
   }
 
   logout(): void {
-    this.client.disconnect();
+    // client.disconnect();
   }
 }
