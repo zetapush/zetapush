@@ -1,180 +1,80 @@
 import {
-  ReflectiveInjector,
+  isDecoratedModule,
+  getDecoratedModule,
+  Module,
   Provider,
-  getConfigurationMetadata,
-  hasConfigurationMetadata,
-  hasConfigurationProviderMetadata,
-  getConfigurationProviderMetadata
+  ReflectiveInjector,
+  Environment,
+  Class
 } from '@zetapush/core';
-
-// import { constructDependencies, ReflectiveDependency } from 'injection-js/reflective_provider';
-// const { constructDependencies, ReflectiveDependency } = require('esm')(module)('injection-js/reflective_provider');
-// require = require('esm')(module)
-// const { constructDependencies } = require('esm')(module)('injection-js/reflective_provider');
-// type InjectionJsReflectiveDependency = ReflectiveDependency;
-
 import { DEFAULTS } from '../defaults';
-import { log, error } from '../utils/log';
-
+import { trace, error } from '../utils/log';
+import {
+  CustomCloudService,
+  NormalizedWorkerDeclaration,
+  WorkerDeclaration,
+  Service,
+  ServerClient
+} from '../common-types';
 import { CloudServiceInstance } from './CloudServiceInstance';
 
-import { CustomCloudService, WorkerDeclaration, Service, ServerClient } from '../common-types';
-
-type InjectionJsReflectiveDependency = any;
-
-class ScanOutput {
-  public configuration: Array<any> = [];
-  public custom: Array<CustomCloudService> = [];
-  public platform: Array<Service> = [];
-  public bootLayer: Array<Service> = [];
-  public reflectiveDependencies: Array<InjectionJsReflectiveDependency> = [];
-}
-
-const getInjectionMetadata = (target: any) => {
-  const params = Reflect.hasMetadata('design:paramtypes', target)
-    ? Reflect.getMetadata('design:paramtypes', target)
-    : target.parameters;
-  if (!params) {
-    return params;
-  }
-  // FIXME: handle @Inject
-  // const deps = constructDependencies(target, params);
-  return params.map((v: any, i: number) => ({ injected: v, reflectiveDependency: /*deps[i]*/ null }));
-};
-
-const isToken = (reflectiveDependency: any) => Boolean(reflectiveDependency) && reflectiveDependency.key.token;
-
-export const scan = (CustomCloudService: CustomCloudService, output = new ScanOutput(), layer = 0) => {
-  if (isFunction(CustomCloudService)) {
-    const metadata = getInjectionMetadata(CustomCloudService);
-    if (Array.isArray(metadata)) {
-      const toScan: Array<{ provider: CustomCloudService; output: ScanOutput }> = [];
-      const addToScan: CustomCloudService[] = [];
-      metadata.forEach(({ injected, reflectiveDependency }) => {
-        // metadata.forEach((injected) => {
-        const provider = injected;
-        if (isFunction(provider)) {
-          if (isToken(reflectiveDependency)) {
-            // If the dependency is decorated with @Inject, the dependency MUST be
-            // created using an explicit Provider
-            output.reflectiveDependencies.push(reflectiveDependency);
-          } else if (Array.isArray(getInjectionMetadata(provider))) {
-            // CustomCloudService with DI
-            toScan.push({ provider, output });
-            output.custom.push(provider);
-            addToScan.push(provider);
-          } else if (provider.DEFAULT_DEPLOYMENT_ID) {
-            // Platform CloudService
-            output.platform.push(provider);
-          } else {
-            // CustomCloudService without DI
-            output.custom.push(provider);
-            addToScan.push(provider);
-          }
-        }
-      });
-      if (output.bootLayer[layer] === undefined) {
-        output.bootLayer.push(addToScan);
-      } else {
-        output.bootLayer[layer] = output.bootLayer[layer].concat(addToScan);
-      }
-      for (let sc of toScan) {
-        scan(sc.provider, sc.output, layer + 1);
-      }
-    }
-    if (CustomCloudService.DEFAULT_DEPLOYMENT_ID) {
-      output.platform.push(CustomCloudService);
-    } else {
-      // Add CustomCloudService
-      output.custom.push(CustomCloudService);
-    }
-  }
-  return output;
-};
-
-export const scanProvider = (provider: Provider, output = new ScanOutput()) => {
-  if ((<any>provider).deps) {
-    (<any>provider).deps.map((dep: Service) => scan(dep, output));
-  }
-};
-
-export const filterProviders = (providers: Provider[], customProviders: Provider[]) => {
-  const filtered: Provider[] = [];
-  for (let provider of providers) {
-    let provide = (<any>provider).provide;
-    if (!customProviders.some((p: any) => p.provide === provide)) {
-      filtered.push(provider);
-    }
-  }
-  return filtered.concat(customProviders);
-};
-
 /**
- * Resolve injected services
- * @param {WorkerDeclaration} declaration
- * @return {ScanOutput}
+ * Test if the value parameter in a function
  */
-export const analyze = (declaration: WorkerDeclaration, customProviders: Provider[]) => {
-  const cleaned = clean(declaration);
-  const output = new ScanOutput();
-  const baseApi: CustomCloudService[] = [];
-  Object.values(cleaned).map((CustomCloudService: CustomCloudService) => {
-    scan(CustomCloudService, output);
-    baseApi.push(CustomCloudService);
-  });
-  customProviders.map((provider: Provider) => scanProvider(provider, output));
-  output.bootLayer.reverse();
-  output.bootLayer.push(baseApi);
-  // Removing duplicate of bootlayer
-  let matchs = -1;
-  while (matchs !== 0) {
-    let seens = [];
-    matchs = 0;
-    for (let layer in output.bootLayer) {
-      for (let api in output.bootLayer[layer]) {
-        for (let seen of seens) {
-          if (seen == output.bootLayer[layer][api]) {
-            output.bootLayer[layer].splice(api, 1);
-            matchs += 1;
-          }
-        }
-        seens.push(output.bootLayer[layer][api]);
-      }
-    }
-  }
-  // Unicity
-  output.custom = Array.from(new Set(output.custom));
-  output.platform = Array.from(new Set(output.platform));
-  output.reflectiveDependencies = Array.from(new Set(output.reflectiveDependencies));
+const isFunction = (value: any) => typeof value === Function.name.toLowerCase();
 
-  // WIP Support configuration
-  const configured: any[] = [];
-  const env = 'prod';
-  output.custom.forEach((CustomCloudService) => {
-    if (hasConfigurationProviderMetadata(CustomCloudService) && hasConfigurationMetadata(CustomCloudService, env)) {
-      const provider = getConfigurationProviderMetadata(CustomCloudService);
-      const useClass = getConfigurationMetadata(CustomCloudService, env);
-      configured.push({
-        ...provider,
-        useClass
-      });
-    }
-  });
-  output.configuration = configured;
-  output.custom = output.custom.filter((CustomCloudService) => {
-    return !configured.find((provider) => {
-      return provider.provide === CustomCloudService || provider.useClass === CustomCloudService;
-    });
-  });
+/**
+ * Test if the value parameter in a function
+ */
+const isObject = (value: any) => typeof value === Object.name.toLowerCase();
 
-  // Normalized output
-  return output;
+/**
+ * Get providers by configurers
+ */
+const getProvidersByConfigurers = (configurers: any[], environement?: Environment) => {
+  return Promise.all(
+    configurers
+      .map((Configurer) => new Configurer())
+      .map((configurer) => (configurer.configure(environement), configurer))
+      .map((configurer) => configurer.getProviders() as Promise<Provider[]>)
+  ).then((configured) => configured.reduce((providers, next) => [...providers, ...next], []));
 };
 
 /**
- * Creare platform service instance
- * @param {Object} client
- * @param {Object} Type
+ * Recursivly get providers from imported modules
+ */
+const getProvidersByImports = async (imports: Class[], imported: Provider[] = []): Promise<Provider[]> => {
+  return (
+    Promise.all(
+      imports
+        // Ignore non decorated module
+        .filter((module) => isDecoratedModule(module))
+        // Get decorated module information
+        .map((decorated) => getDecoratedModule(decorated))
+        // Merge imported providers
+        .map(async (m) => [
+          // Recursivly get imported providers
+          ...(await getProvidersByImports(m.imports || [], imported)),
+          // Add configured providers from configures
+          ...(await getProvidersByConfigurers(m.configurers || [])),
+          // Add static providers
+          ...(m.providers || [])
+        ])
+    )
+      // Flatten providers list
+      .then((configured) => configured.reduce((providers, next) => [...providers, ...next], imported))
+  );
+};
+
+/**
+ * Get injectation metadata via Reflection Api
+ */
+const getInjectionMetadata = (target: any) => {
+  return Reflect.hasMetadata('design:paramtypes', target) ? Reflect.getMetadata('design:paramtypes', target) : [];
+};
+
+/**
+ * Create platform service instance
  */
 const createAsyncService = (client: ServerClient, Type: Service) => {
   const instance = client.createAsyncService({
@@ -195,43 +95,24 @@ const createAsyncService = (client: ServerClient, Type: Service) => {
 };
 
 /**
- * Resolve providers with dynamicly injected values
- * @param {ServerClient} client
- * @param {ScanOutput} output
+ * Data structure to contains scan ouput of exposed Cloud Service
  */
-export const resolve = (client: ServerClient, output: ScanOutput) => [
-  ...output.configuration,
-  ...output.platform.map((PlatformService: Service) => ({
-    provide: PlatformService,
-    useValue: createAsyncService(client, PlatformService)
-  })),
-  ...output.reflectiveDependencies.map((reflective: InjectionJsReflectiveDependency) => ({
-    provide: reflective.key.token,
-    useFactory: () => {
-      // FIXME: handle @Inject
-      throw new Error('@Inject and InjectionToken are not working for now');
-    },
-    deps: []
-  })),
-  ...output.custom.map((CustomCloudService: CustomCloudService) => ({
-    provide: CustomCloudService,
-    useClass: CustomCloudService
-  }))
-];
+class ScanOutput {
+  custom: Array<CustomCloudService> = [];
+  platform: Array<Service> = [];
+  bootLayer: Array<Service> = [];
+}
 
 /**
- * Test if the value parameter in a function
- * @param {Object} value
- * @returns {Boolean}
+ * Return a cleaned & normalized WorkerDecleration
  */
-const isFunction = (value: any) => typeof value === Function.name.toLowerCase();
-
-/**
- * Return a cleaned WorkerDecleration
- * @param {WorkerDeclaration} declaration
- */
-export const clean = (declaration: WorkerDeclaration) =>
-  Object.entries(normalize(declaration))
+export const clean = (exposed: WorkerDeclaration): NormalizedWorkerDeclaration => {
+  exposed = isFunction(exposed)
+    ? {
+        [DEFAULTS.DEFAULT_NAMESPACE]: exposed
+      }
+    : exposed;
+  const cleaned = Object.entries(exposed)
     .filter(([namespace, CustomCloudService]: any[]) => isFunction(CustomCloudService))
     .reduce(
       (cleaned: any, [namespace, CustomCloudService]: any[]) => ({
@@ -240,73 +121,200 @@ export const clean = (declaration: WorkerDeclaration) =>
       }),
       {}
     );
+  return cleaned;
+};
 
 /**
  * Normalize worker declaration
- * @param {Object} declaration
- * @return {WorkerDeclaration}
+ * A worker declaration is the object return by worker project entry point
  */
-export const normalize = (declaration: WorkerDeclaration) => {
-  if (isFunction(declaration)) {
-    return {
-      [DEFAULTS.DEFAULT_NAMESPACE]: declaration
-    };
-  } else if (typeof declaration === Object.name.toLowerCase()) {
+export const normalize = (declaration: WorkerDeclaration): Module => {
+  // Entry point must return an object
+  if (typeof declaration === Object.name.toLowerCase()) {
+    // Entry point must be an EcmaScript Module
     if (declaration.__esModule === true) {
-      // warn(`ES Modules are not yet fully supported`);
-      // Support ES Module
       if (isFunction(declaration.default)) {
+        if (isDecoratedModule(declaration.default)) {
+          // [Advanced Mode]: Developer can export a Module class
+          return getDecoratedModule(declaration.default);
+        } else {
+          // [Compatibility Mode]: Developer can export a single Api class
+          return {
+            expose: {
+              [DEFAULTS.DEFAULT_NAMESPACE]: declaration.default
+            },
+            providers: [],
+            imports: [],
+            configurers: []
+          };
+        }
+      } else if (isObject(declaration.default)) {
+        // [Compatibility Mode]: Developer can export a namespaced dictionnary
         return {
-          [DEFAULTS.DEFAULT_NAMESPACE]: declaration.default
+          expose: declaration.default,
+          providers: [],
+          imports: [],
+          configurers: []
         };
-      } else if (typeof declaration.default === Object.name.toLowerCase()) {
-        return declaration.default;
+      } else {
+        error(`Unsupported Worker declaration`);
+        throw new Error(`Unsupported Worker declaration, only Api, Module and Namespace are supported`);
       }
     } else {
-      return declaration;
+      error(`Unsupported Worker declaration, only EcmaScript module are supported`);
+      throw new Error(`Unsupported Worker declaration`);
     }
   } else {
-    error(`Unsupported Worker declaration`);
+    error(`Unsupported Worker declaration, invalid worker content`);
     throw new Error(`Unsupported Worker declaration`);
   }
 };
 
-export const DEFAULT_INJECTOR_INSTANCE = 'DEFAULT_INJECTOR_INSTANCE';
+/**
+ * Recursivly scan CloudService DI Graph
+ */
+export const scan = (CustomCloudService: CustomCloudService, output = new ScanOutput(), layer = 0) => {
+  if (isFunction(CustomCloudService)) {
+    const metadata = getInjectionMetadata(CustomCloudService);
+    if (Array.isArray(metadata)) {
+      const toScan: Array<{ provider: CustomCloudService; output: ScanOutput }> = [];
+      const addToScan: CustomCloudService[] = [];
+      metadata.forEach((provider) => {
+        if (isFunction(provider)) {
+          if (getInjectionMetadata(provider).length) {
+            // CustomCloudService with DI
+            toScan.push({ provider, output });
+            output.custom.push(provider);
+            addToScan.push(provider);
+          } else if (provider.DEFAULT_DEPLOYMENT_ID) {
+            // Platform CloudService
+            output.platform.push(provider);
+          } else {
+            // CustomCloudService without DI
+            output.custom.push(provider);
+            addToScan.push(provider);
+          }
+        }
+      });
+      if (output.bootLayer[layer] === undefined) {
+        output.bootLayer.push(addToScan);
+      } else {
+        output.bootLayer[layer] = output.bootLayer[layer].concat(addToScan);
+      }
+      toScan.forEach((sc) => scan(sc.provider, sc.output, layer + 1));
+    }
+    if (CustomCloudService.DEFAULT_DEPLOYMENT_ID) {
+      output.platform.push(CustomCloudService);
+    } else {
+      // Add CustomCloudService
+      output.custom.push(CustomCloudService);
+    }
+  }
+  return output;
+};
+
+/**
+ * Resolve injected services
+ */
+export const analyze = (exposed: NormalizedWorkerDeclaration) => {
+  const output = new ScanOutput();
+  const services: CustomCloudService[] = [];
+  Object.values(exposed).map((CustomCloudService: CustomCloudService) => {
+    scan(CustomCloudService, output);
+    services.push(CustomCloudService);
+  });
+  output.bootLayer.reverse();
+  output.bootLayer.push(services);
+  // Removing duplicate of bootlayer
+  let matchs = -1;
+  while (matchs !== 0) {
+    let seens = [];
+    matchs = 0;
+    for (let layer in output.bootLayer) {
+      for (let api in output.bootLayer[layer]) {
+        for (let seen of seens) {
+          if (seen == output.bootLayer[layer][api]) {
+            output.bootLayer[layer].splice(api, 1);
+            matchs += 1;
+          }
+        }
+        seens.push(output.bootLayer[layer][api]);
+      }
+    }
+  }
+  // Unicity
+  output.custom = Array.from(new Set(output.custom));
+  output.platform = Array.from(new Set(output.platform));
+  // Normalized output
+  return output;
+};
+
+/**
+ * Resolve providers with dynamicly injected values
+ */
+export const resolve = (client: ServerClient, output: ScanOutput): Provider[] => [
+  ...output.platform.map((PlatformService: Service) => ({
+    provide: PlatformService,
+    useValue: createAsyncService(client, PlatformService)
+  })),
+  ...output.custom.map((CustomCloudService: CustomCloudService) => ({
+    provide: CustomCloudService,
+    useClass: CustomCloudService
+  }))
+];
 
 /**
  * Resolve and inject dependencies
- * @param {ServerClient} client
- * @param {WorkerDeclaration} declaration
  */
-export const instantiate = (client: ServerClient, declaration: WorkerDeclaration, customProviders: Provider[]) => {
+export const instantiate = async (client: ServerClient, declaration: WorkerDeclaration) => {
   let singleton;
   try {
-    const cleaned = clean(declaration);
-    const output = analyze(cleaned, customProviders);
-    const providers = resolve(client, output);
-    const priorizedProviders = filterProviders(providers, customProviders);
-    const injector = ReflectiveInjector.resolveAndCreate(priorizedProviders);
+    // Normalize worker declaration
+    const normalized = normalize(declaration);
+    // Get providers from imports module list
+    const imported = await getProvidersByImports(normalized.imports || []);
+    // Get exposed CloudService
+    const exposed = clean(normalized.expose);
+    // Analyze exposed CloudService to get an order providers list
+    const analyzed = analyze(exposed);
+    // Get a resolved list of providers used in exposed DI graph
+    const resolved = resolve(client, analyzed);
+    // Configured providers
+    const configured = await getProvidersByConfigurers(normalized.configurers || []);
+    // Explicit providers
+    const providers = normalized.providers || [];
+    // Priorize providers
+    const priorized = [
+      ...resolved, // Providers via scan of exposed DI Graph
+      ...imported, // Providers via imports module list
+      ...configured, // Providers via configurer
+      ...providers // Providers via module provider
+    ];
+    // Create a root injector
+    const injector = ReflectiveInjector.resolveAndCreate(priorized);
     // Flag all instance as CloudServiceInstance
     providers.forEach((provider) => {
-      const instance = injector.get(provider.provide);
+      const token = isFunction(provider) ? provider : (provider as any).provide;
+      const instance = injector.get(token);
       CloudServiceInstance.flag(instance);
     });
     // Convert bootlayer declaration to instance
-    output.bootLayer.forEach((layer) => {
+    analyzed.bootLayer.forEach((layer) => {
       layer.forEach((CloudService: CustomCloudService, key: any) => {
         const instance = injector.get(CloudService);
         layer[key] = instance;
       });
     });
-    singleton = Object.entries(cleaned).reduce((instance: any, [namespace, CustomCloudService]: any[]) => {
+    // Create a singleton mapped to exposed namespace
+    singleton = Object.entries(exposed).reduce((instance: any, [namespace, CustomCloudService]: any[]) => {
       instance[namespace] = injector.get(CustomCloudService);
       return instance;
-    }, {});
-    singleton[DEFAULT_INJECTOR_INSTANCE] = injector;
-    singleton.bootLayers = output.bootLayer;
+    }, Object.create(null));
+    // Add bootlayers reference in singleton instance
+    singleton.bootLayers = analyzed.bootLayer;
   } catch (ex) {
     error('instantiate', ex);
   }
-  log('instantiate', singleton);
+  trace('instantiate', singleton);
   return singleton;
 };

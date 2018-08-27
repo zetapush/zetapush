@@ -1,23 +1,14 @@
-import { Injectable, Context, Configure } from '@zetapush/core';
+import { Injectable, Context, Module, Environment } from '@zetapush/core';
 
-import { Calendar } from './calendar';
+import CalendarModule, { Calendar } from './calendar';
 import { Storage } from './storage';
 import { LoggerConfig } from './logger';
-import { ConfigurableApi, ConfigurableApiOptions } from './configurable-api';
-
-@Configure(ConfigurableApi, 'prod')
-class MyConfigurableApiOptions extends ConfigurableApiOptions {
-  enabled = true;
-  typeof = 'MyConfigurableApiOptions2';
-  createdAt = 0;
-}
 
 @Injectable()
-export default class Api {
+export class Api {
   constructor(
     private storage: Storage,
     private calendar: Calendar,
-    private configurable: ConfigurableApi,
     config: LoggerConfig
   ) {}
   add(item: any) {
@@ -33,8 +24,30 @@ export default class Api {
   reduce(list: number[]) {
     return list.reduce((cumulator, value) => cumulator + value, 0);
   }
-  isEnabled() {
-    console.log(this.configurable.getTTL());
-    return this.configurable.isEnabled();
+}
+
+class ApiConfigurer {
+  configure(env: Environment) {
+    // Le code du dev
+  }
+  async getProviders() {
+    return [{
+      provide: Calendar, useClass: PastCalendar
+    }];
   }
 }
+
+export class PastCalendar {
+  getNow() {
+    return (new Date(0)).toLocaleDateString();
+  }
+}
+
+
+@Module({
+  imports: [ CalendarModule ],
+  providers: [  ],
+  configurers: [ /*ApiConfigurer*/ ],
+  expose: Api
+})
+export default class ApiModule {}

@@ -82,9 +82,7 @@ export const runInWorker = (
       deps: services
     };
 
-    const runner = new WorkerRunner(false, false, <ResolvedConfig>zetarc, transports, new TestWorkerInstanceFactory(), [
-      factoryProvider
-    ]);
+    const runner = new WorkerRunner(false, false, <ResolvedConfig>zetarc, transports, new TestWorkerInstanceFactory());
 
     // listen to events in order to log information to help developer
     runner.on(WorkerRunnerEvents.BOOTSTRAPING, () => {

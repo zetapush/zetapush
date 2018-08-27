@@ -86,8 +86,7 @@ export class WorkerRunner extends EventEmitter {
     private skipBootstrap: boolean,
     private config: ResolvedConfig,
     private transports: any[],
-    private workerInstanceFactory?: WorkerInstanceFactory,
-    private customProviders?: Provider[]
+    private workerInstanceFactory?: WorkerInstanceFactory
   ) {
     super();
   }
@@ -103,8 +102,8 @@ export class WorkerRunner extends EventEmitter {
     config: ResolvedConfig,
     declaration: WorkerDeclaration
   ): Promise<WorkerInstance> {
-    return Promise.resolve(instantiate(client, declaration, this.customProviders || [])).then((declaration) =>
-      client.subscribeTaskWorker(declaration, config.workerServiceId)
+    return instantiate(client, declaration).then((worker) =>
+      client.subscribeTaskWorker(worker, config.workerServiceId)
     );
   }
 
@@ -232,48 +231,47 @@ export class WorkerRunner extends EventEmitter {
         'No client or no current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
       );
     }
-    let previous = getDeploymentIdList(this.currentDeclaration, this.customProviders || [], [Queue]);
+    let previous = getDeploymentIdList(this.currentDeclaration, [Queue]);
     this.emit(WorkerRunnerEvents.RELOADING, {
       client: this.client,
       config: this.config,
       declaration: reloaded
     });
-    let next = getDeploymentIdList(reloaded, this.customProviders || [], [Queue]);
+    let next = getDeploymentIdList(reloaded, [Queue]);
     const deploymentListHasChange = !equals(previous, next);
     const tasks = [];
     if (deploymentListHasChange) {
       tasks.push(this.createServices(this.client, this.config, reloaded));
     }
-    return Promise.all(tasks)
-      .then(() => {
-        if (!this.currentInstance) {
-          throw new IllegalStateError(
-            'No current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
-          );
-        }
-        // FIX
-        // Clean customProviders to avoid providers persitance
-        this.customProviders = [];
+    return (
+      Promise.all(tasks)
         // Create a new worker instance
-        const worker = instantiate(this.client, reloaded, this.customProviders || []);
-        this.currentInstance.setWorker(worker);
-        // Update previous deployment id list
-        this.currentDeclaration = reloaded;
-        this.emit(WorkerRunnerEvents.RELOADED, {
-          instance: this.currentInstance,
-          client: this.client,
-          config: this.config
-        });
-      })
-      .catch((failure) => {
-        // TODO: reaise error instead ?
-        this.emit(WorkerRunnerEvents.RELOAD_FAILED, {
-          failure,
-          client: this.client,
-          config: this.config,
-          declaration: reloaded
-        });
-      });
+        .then(() => instantiate(this.client, reloaded))
+        .then((worker) => {
+          if (!this.currentInstance) {
+            throw new IllegalStateError(
+              'No current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
+            );
+          }
+          this.currentInstance.setWorker(worker);
+          // Update previous deployment id list
+          this.currentDeclaration = reloaded;
+          this.emit(WorkerRunnerEvents.RELOADED, {
+            instance: this.currentInstance,
+            client: this.client,
+            config: this.config
+          });
+        })
+        .catch((failure) => {
+          // TODO: reaise error instead ?
+          this.emit(WorkerRunnerEvents.RELOAD_FAILED, {
+            failure,
+            client: this.client,
+            config: this.config,
+            declaration: reloaded
+          });
+        })
+    );
   }
 
   destroy() {
@@ -358,7 +356,7 @@ export class WorkerRunner extends EventEmitter {
       Type: Queue
     });
 
-    const { items } = getRuntimeProvision(config, declaration, this.customProviders || [], [Queue]);
+    const { items } = getRuntimeProvision(config, declaration, [Queue]);
     const services = items.map(({ item }) => item);
 
     this.emit(WorkerRunnerEvents.CREATED_SERVICES, {

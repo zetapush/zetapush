@@ -58,6 +58,27 @@
       }
     },
     {
+      "label": "core [prepublish]",
+      "type": "npm",
+      "script": "prepublish",
+      "path": "packages/core/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "options": {
+
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
       "label": "common [prepublish]",
       "type": "npm",
       "script": "prepublish",

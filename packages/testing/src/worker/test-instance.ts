@@ -1,4 +1,4 @@
-import { timeoutify, DEFAULT_INJECTOR_INSTANCE } from '@zetapush/common';
+import { timeoutify } from '@zetapush/common';
 import { Injectable } from '@zetapush/core';
 import { inject, TaskDispatcherWorkerInstance, WorkerClientOptions, WorkerInstanceFactory } from '@zetapush/worker';
 
@@ -17,10 +17,7 @@ export class TestDeclaration {
   constructor(private wrapper: Wrapper) {}
 
   async test() {
-    await this.wrapper.workerDeclaration(
-      ...this.wrapper.deps,
-      this.wrapper.instanceWrapper.instance.worker[DEFAULT_INJECTOR_INSTANCE]
-    );
+    await this.wrapper.workerDeclaration(...this.wrapper.deps);
   }
 }
 

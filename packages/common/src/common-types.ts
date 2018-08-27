@@ -7,6 +7,9 @@ export interface Config {
   developerPassword?: string;
   platformUrl?: string;
 }
+export interface NormalizedWorkerDeclaration {
+  [namespace: string]: Function;
+}
 export interface ResolvedConfig extends Config {
   appName: string;
   developerLogin: string;
