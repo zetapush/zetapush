@@ -17,7 +17,8 @@
   },
   "optionalDependencies": {
     "bufferutil": "^3.0.4",
-    "utf-8-validate": "^4.0.1"
+    "utf-8-validate": "^4.0.1",
+    "https-proxy-agent": "2.2.1"
   },
   "publishConfig": {
     "access": "public"

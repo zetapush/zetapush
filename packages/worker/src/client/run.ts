@@ -1,5 +1,5 @@
 import { WorkerClient, Worker, WorkerInstanceFactory } from './worker';
-import { Provider } from '@zetapush/core';
+import { Provider, Module } from '@zetapush/core';
 import { Weak, Queue } from '@zetapush/platform-legacy';
 import {
   instantiate,
@@ -14,7 +14,8 @@ import {
   createProvisioningArchive,
   generateProvisioningContent,
   debugObject,
-  trace
+  trace,
+  WorkerDeclarationNormalizer
 } from '@zetapush/common';
 import { EventEmitter } from 'events';
 import { WorkerInstance } from '../utils/worker-instance';
@@ -30,6 +31,7 @@ export enum WorkerRunnerEvents {
   CONNECTED = 'connected',
   PLATFORM_SERVICES_READY = 'platform-services-ready',
   CREATED_SERVICES = 'created-services',
+  WORKER_CREATED = 'worker-created',
   CONFIGURING_APP = 'configuring-app',
   CONFIGURED_APP = 'configured-app',
   STARTING = 'starting',
@@ -51,6 +53,11 @@ export class WorkerConnectionError extends Error {
 
 export class IllegalStateError extends Error {
   constructor(message: string) {
+    super(message);
+  }
+}
+export class InstantiationError extends Error {
+  constructor(message: string, public cause: Error) {
     super(message);
   }
 }
@@ -86,7 +93,9 @@ export class WorkerRunner extends EventEmitter {
     private skipBootstrap: boolean,
     private config: ResolvedConfig,
     private transports: any[],
-    private workerInstanceFactory?: WorkerInstanceFactory
+    private workerInstanceFactory?: WorkerInstanceFactory,
+    private logLevel?: string,
+    private customNormalizer?: WorkerDeclarationNormalizer
   ) {
     super();
   }
@@ -102,7 +111,7 @@ export class WorkerRunner extends EventEmitter {
     config: ResolvedConfig,
     declaration: WorkerDeclaration
   ): Promise<WorkerInstance> {
-    return instantiate(client, declaration).then((worker) =>
+    return instantiate(client, declaration, this.customNormalizer).then((worker) =>
       client.subscribeTaskWorker(worker, config.workerServiceId)
     );
   }
@@ -119,6 +128,7 @@ export class WorkerRunner extends EventEmitter {
    * @fires WorkerRunnerEvents#CONNECTING
    * @fires WorkerRunnerEvents#CONNECTED
    * @fires WorkerRunnerEvents#PLATFORM_SERVICES_READY
+   * @fires WorkerRunnerEvents#WORKER_CREATED
    * @fires WorkerRunnerEvents#CONFIGURING_APP
    * @fires WorkerRunnerEvents#CONFIGURED_APP
    * @fires WorkerRunnerEvents#STARTING
@@ -141,6 +151,9 @@ export class WorkerRunner extends EventEmitter {
         },
         this.workerInstanceFactory
       );
+      if (this.logLevel) {
+        client.setLogLevel(this.logLevel);
+      }
       this.client = client;
       this.currentDeclaration = declaration;
 
@@ -175,6 +188,12 @@ export class WorkerRunner extends EventEmitter {
         .then(() => this.start(client, config, declaration))
         .then((instance) => {
           this.currentInstance = instance;
+          this.emit(WorkerRunnerEvents.WORKER_CREATED, {
+            instance,
+            client,
+            config,
+            declaration
+          });
         })
         .then(() => this.checkApplicationBootstrap())
         .then(() => {
@@ -274,7 +293,10 @@ export class WorkerRunner extends EventEmitter {
     );
   }
 
-  destroy() {
+  async destroy() {
+    if (this.currentInstance) {
+      await this.currentInstance.clean();
+    }
     this.removeAllListeners();
   }
 
@@ -289,6 +311,7 @@ export class WorkerRunner extends EventEmitter {
       const client = this.client;
       const config = this.config;
       const declaration = this.currentDeclaration;
+
       if (!this.skipBootstrap) {
         this.emit(WorkerRunnerEvents.CONFIGURING_APP, {
           instance,

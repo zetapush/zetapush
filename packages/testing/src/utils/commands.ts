@@ -1,13 +1,9 @@
 const execa = require('execa');
 import { ExecaChildProcess } from 'execa';
-// import * as util from 'util';
 import * as fs from 'fs';
 import { PathLike, readFileSync, writeFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import * as process from 'process';
-// const readFile = util.promisify(fs.readFile);
-// const writeFile = util.promisify(fs.writeFile);
-// const exists = util.promisify(fs.exists);
 const rimraf = require('rimraf');
 import { fetch, ResolvedConfig } from '@zetapush/common';
 const kill = require('tree-kill');

@@ -31,6 +31,8 @@
       "runtimeArgs": [
         "-r",
         "ts-node/register",
+        "-r",
+        "source-map-support/register",
         "--inspect-brk=9231",
       ],
       "args": [
@@ -43,6 +45,31 @@
         "ZETAPUSH_PLATFORM_URL": "http://hq.zpush.io:9080/zbo/pub/business/",
         "ZETAPUSH_LOCAL_DEV": "true",
         "ZETAPUSH_LOG_LEVEL": "silly",
+        "COMETD_LOG_LEVEL": "info",
+        "TS_NODE_PROJECT": "tsconfig.test.json"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "user-management [tests][coverage]",
+      // When using nvm, you can use nvm instance instead of default node version
+      "runtimeExecutable": "~/.nvm/versions/node/v10.8.0/bin/node",
+      "cwd": "${workspaceFolder}/packages/user-management",
+      "runtimeArgs": [
+      ],
+      "args": [
+        "node_modules/.bin/nyc",
+        "node_modules/.bin/ts-node",
+        "node_modules/.bin/jasmine"
+      ],
+      "console": "integratedTerminal",
+      "envFile": "${env:HOME}/.celtia-env",
+      "env": {
+        "ZETAPUSH_PLATFORM_URL": "http://hq.zpush.io:9080/zbo/pub/business/",
+        "ZETAPUSH_LOCAL_DEV": "true",
+        "ZETAPUSH_LOG_LEVEL": "silly",
+        "COMETD_LOG_LEVEL": "info",
         "TS_NODE_PROJECT": "tsconfig.test.json"
       }
     },
@@ -66,6 +93,7 @@
         "ZETAPUSH_PLATFORM_URL": "http://hq.zpush.io:9080/zbo/pub/business/",
         "ZETAPUSH_LOCAL_DEV": "true",
         "ZETAPUSH_LOG_LEVEL": "silly",
+        "COMETD_LOG_LEVEL": "info",
         "ZETAPUSH_COMMANDS_LOG_LEVEL": "-vvvv"
       }
     } 

@@ -34,14 +34,11 @@ exports.LONG_POLLING_TRANSPORT = LONG_POLLING_TRANSPORT;
 /**
  * CometD Transports Layers map
  */
-var ALL = [
-  WEBSOCKET_TRANSPORT,
-  LONG_POLLING_TRANSPORT
-];
+var ALL = [WEBSOCKET_TRANSPORT, LONG_POLLING_TRANSPORT];
 exports.ALL = ALL;
 
 /**
- * Get overloaded config from environement
+ * Get overloaded config from environment
  */
 var getOverloadedConfigFromEnvironment = function getOverloadedConfigFromEnvironment() {
   var env = typeof document === 'undefined' ? {} : document.documentElement.dataset;
@@ -50,6 +47,6 @@ var getOverloadedConfigFromEnvironment = function getOverloadedConfigFromEnviron
   return {
     platformUrl: platformUrl,
     appName: appName
-  }
-}
+  };
+};
 exports.getOverloadedConfigFromEnvironment = getOverloadedConfigFromEnvironment;

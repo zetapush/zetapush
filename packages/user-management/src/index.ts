@@ -4,3 +4,4 @@ export * from './common/core';
 export * from './standard-user-workflow/api';
 export * from './standard-user-workflow/configurer';
 export * from './standard-user-workflow/core';
+export * from './standard-user-workflow/legacy';

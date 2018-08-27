@@ -91,6 +91,7 @@ export const addCategorizedLogger = (name: string, label: string, fmt?: string) 
 export const givenLogger = addCategorizedLogger('given', 'GIVEN', 'grey');
 export const userActionLogger = addCategorizedLogger('userAction', 'USER ACTION', 'bold');
 export const frontUserActionLogger = addCategorizedLogger('frontUserAction', 'FRONT USER ACTION', 'bold');
+export const configureWorkerLogger = addCategorizedLogger('configureWorkerLogger', 'CONFIGURE WORKER', 'grey');
 export const runInWorkerLogger = addCategorizedLogger('runInWorker', 'RUN IN WORKER', 'grey');
 export const cleanLogger = addCategorizedLogger('clean', 'CLEAN', 'grey');
 export const commandLogger = addCategorizedLogger('command', 'COMMAND', '');
@@ -118,4 +119,43 @@ export class SubProcessLoggerStream extends Writable {
   }
 }
 
-setVerbosity(((process.env.ZETAPUSH_COMMANDS_LOG_LEVEL || '-vvv').match(/v/g) || []).length);
+export const getLogLevelsFromEnv = () => {
+  return {
+    winston: toWinstonLevel(process.env.ZETAPUSH_LOG_LEVEL || 'info'),
+    cometd: toCometdLevel(process.env.COMETD_LOG_LEVEL || 'info'),
+    cli: toCliVerbosity(process.env.ZETAPUSH_COMMANDS_LOG_LEVEL || '-vvv')
+  };
+};
+
+export const toWinstonLevel = (level: string): 'silly' | 'verbose' | 'debug' | 'info' | 'warn' | 'error' => {
+  switch (level) {
+    case 'silly':
+    case 'verbose':
+    case 'debug':
+    case 'info':
+    case 'warn':
+    case 'error':
+      return level;
+    default:
+      return 'info';
+  }
+};
+
+export const toCliVerbosity = (level: string): number => {
+  return (level.match(/v/g) || []).length;
+};
+
+export const toCometdLevel = (level: string): 'info' | 'debug' | 'warn' => {
+  switch (level) {
+    case 'silly':
+      return 'debug';
+    case 'verbose':
+    case 'debug':
+    case 'info':
+      return 'info';
+    default:
+      return 'warn';
+  }
+};
+
+setVerbosity(getLogLevelsFromEnv().cli);

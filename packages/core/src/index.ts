@@ -1,4 +1,5 @@
-export * from './Bootstrapable';
+export * from './Bootstrappable';
+export * from './Cleanable';
 export * from './Context';
 export * from './Environment';
 export * from './Injection';

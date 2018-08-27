@@ -12,17 +12,23 @@ exports.WebSocket = require('ws/lib/websocket');
 // Handle System proxy settings if any
 var proxy = process.env.https_proxy || process.env.HTTPS_PROXY || process.env.http_proxy || process.env.HTTP_PROXY;
 if (proxy) {
-  var url = require('url');
-  var HttpsProxyAgent = require('https-proxy-agent');
-  var options = url.parse(proxy);
-  var agent = new HttpsProxyAgent(options);
+  try {
+    var url = require('url');
+    var HttpsProxyAgent = require('https-proxy-agent');
+    var options = url.parse(proxy);
+    var agent = new HttpsProxyAgent(options);
 
-  class ProxifiedWebSocket extends exports.WebSocket {
-    constructor(address, protocols, options) {
-      super(address, protocols, { agent });
+    class ProxifiedWebSocket extends exports.WebSocket {
+      constructor(address, protocols, options) {
+        super(address, protocols, { agent });
+      }
     }
+    exports.ProxifiedWebSocket = ProxifiedWebSocket;
+  } catch (e) {
+    console.warn(
+      `You system is configured to use a proxy but the module https-proxy-agent is not provided. The websocket traffic won't go through the proxy`
+    );
   }
-  exports.ProxifiedWebSocket = ProxifiedWebSocket;
 }
 
 /**
