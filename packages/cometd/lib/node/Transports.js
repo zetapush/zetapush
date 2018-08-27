@@ -52,9 +52,9 @@ var ALL = [WEBSOCKET_TRANSPORT, LONG_POLLING_TRANSPORT];
 exports.ALL = ALL;
 
 /**
- * Get overloaded config from environement
+ * Get overloaded config from environment
  */
-var getOverloadedConfigFromEnvironement = function getOverloadedConfigFromEnvironement() {
+var getOverloadedConfigFromEnvironment = function getOverloadedConfigFromEnvironment() {
   var env = process.env;
   var platformUrl = env.ZP_ZBO_URL;
   var appName = env.ZP_SANDBOX_ID;
@@ -63,4 +63,4 @@ var getOverloadedConfigFromEnvironement = function getOverloadedConfigFromEnviro
     appName: appName
   };
 };
-exports.getOverloadedConfigFromEnvironement = getOverloadedConfigFromEnvironement;
+exports.getOverloadedConfigFromEnvironment = getOverloadedConfigFromEnvironment;

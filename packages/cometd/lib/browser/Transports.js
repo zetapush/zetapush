@@ -43,7 +43,7 @@ exports.ALL = ALL;
 /**
  * Get overloaded config from environement
  */
-var getOverloadedConfigFromEnvironement = function getOverloadedConfigFromEnvironement() {
+var getOverloadedConfigFromEnvironment = function getOverloadedConfigFromEnvironment() {
   var env = typeof document === 'undefined' ? {} : document.documentElement.dataset;
   var platformUrl = env.zpPlatformUrl;
   var appName = env.zpSandboxid;
@@ -52,4 +52,4 @@ var getOverloadedConfigFromEnvironement = function getOverloadedConfigFromEnviro
     appName: appName
   }
 }
-exports.getOverloadedConfigFromEnvironement = getOverloadedConfigFromEnvironement;
+exports.getOverloadedConfigFromEnvironment = getOverloadedConfigFromEnvironment;

@@ -286,7 +286,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Features
 
-* **transport-bootsratp:** implement getOverloadedConfigFromEnvironement for browser and node ([e589c65](https://github.com/zetapush/zetapush/commit/e589c65))
+* **transport-bootsratp:** implement getOverloadedConfigFromEnvironment for browser and node ([e589c65](https://github.com/zetapush/zetapush/commit/e589c65))
 
 
 

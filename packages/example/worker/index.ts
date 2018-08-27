@@ -47,7 +47,7 @@ export class PastCalendar {
 @Module({
   imports: [ CalendarModule ],
   providers: [  ],
-  configurers: [ ApiConfigurer ],
+  configurers: [ /*ApiConfigurer*/ ],
   expose: Api
 })
 export default class ApiModule {}

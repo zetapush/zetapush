@@ -4,7 +4,7 @@ import {
   Module,
   Provider,
   ReflectiveInjector,
-  Environement,
+  Environment,
   Class
 } from '@zetapush/core';
 import { DEFAULTS } from '../defaults';
@@ -31,7 +31,7 @@ const isObject = (value: any) => typeof value === Object.name.toLowerCase();
 /**
  * Get providers by configurers
  */
-const getProvidersByConfigurers = (configurers: any[], environement?: Environement) => {
+const getProvidersByConfigurers = (configurers: any[], environement?: Environment) => {
   return Promise.all(
     configurers
       .map((Configurer) => new Configurer())

@@ -59,7 +59,7 @@ export class ClientHelper {
         platformUrl,
         appName
       },
-      transports.getOverloadedConfigFromEnvironement()
+      transports.getOverloadedConfigFromEnvironment()
     );
     // Validate mandatory parameters
     const mandatory = ['appName', 'platformUrl'].filter((property) => !options[property]);
