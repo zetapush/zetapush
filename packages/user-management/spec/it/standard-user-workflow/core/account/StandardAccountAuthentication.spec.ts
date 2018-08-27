@@ -43,7 +43,7 @@ describe(`StandardAccountAuthentication`, () => {
       });
 
       describe(`On valid authentication`, () => {
-        it(
+        xit(
           `Connection success and that returns the connected user`,
           async () => {
             await runInWorker(

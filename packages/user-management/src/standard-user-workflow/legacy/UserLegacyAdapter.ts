@@ -1,7 +1,7 @@
 import { UserRepository } from '../../common/api/User';
 import { IllegalStateError, IllegalArgumentValueError, BootstrapError } from '../../common/api';
 import { Simple, Gda, GdaConfigurer, GdaDataType, Idempotence } from '@zetapush/platform-legacy';
-import { UserProfile, AccountStatus, LoginPasswordCredentials } from '../api';
+import { UserProfile, AccountStatus, LoginPasswordCredentials, Account } from '../api';
 import { Bootstrappable, Injectable } from '@zetapush/core';
 import { BaseError } from '../../common/api/exception/BaseError';
 import { StandardAccountStatus } from '../core/account';
@@ -76,20 +76,12 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
     userProfile: UserProfile,
     accountStatus: AccountStatus,
     accountId: string
-  ): Promise<string> {
+  ): Promise<Account> {
     // FIXME: once user is created, he can already login. Need platform evolution
     // TODO: configure local authentication service, use default values or retrieve configuration to use it ?
     // TODO: configure mandatory fields (not really necessary thanks to validator) ?
     // TODO: configure public fields or use custom search ?
     try {
-      // const result = await this.simple.createUser({
-      //   login: credentials.login,
-      //   password: credentials.password,
-      //   userProfile,
-      //   accountStatus,
-      //   accountId
-      // });
-
       const result = await this.simple.createAccount({
         fields: {
           login: credentials.login,
@@ -101,11 +93,19 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
         status: { active: false }
       });
 
+      console.log('==> result', result);
+
       if (result.userKey && result.fields) {
         await this.saveAssociations(accountId, result.userKey, result.fields.login);
-      }
 
-      return accountId;
+        return {
+          accountId,
+          accountStatus,
+          profile: userProfile
+        };
+      } else {
+        throw new LegacySimpleError(`Account creation for '${credentials.login}' has failed`);
+      }
     } catch (e) {
       // TODO: logs
       console.error(e);

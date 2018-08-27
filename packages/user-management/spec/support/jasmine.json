@@ -1,7 +1,7 @@
 {
   "spec_dir": "spec",
   "spec_files": [
-    "**/AccountCreationManager.[sS]pec.ts"
+    "**/*.[sS]pec.ts"
   ],
   "helpers": [
     "helpers/**/*.js", 

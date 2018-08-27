@@ -34,7 +34,7 @@ describe(`LegacyAdapterUserRepository`, () => {
       });
 
       // WHEN
-      const accountId = await this.userRepository.addUser(
+      const account = await this.userRepository.addUser(
         {
           login: 'odile.deray',
           password: '123456'
@@ -46,10 +46,11 @@ describe(`LegacyAdapterUserRepository`, () => {
         StandardAccountStatus.WaitingConfirmation,
         '42'
       );
+
       // THEN
-      expect(accountId).toBeDefined();
-      expect(accountId).not.toBeNull();
-      expect(accountId).toBe('42');
+      expect(account).toBeDefined();
+      expect(account).not.toBeNull();
+      expect(account.accountId).toBe('42');
     });
 
     it(`using login of someone else should throw LoginAlreadyUsedError`, async () => {
