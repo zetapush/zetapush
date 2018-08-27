@@ -41,7 +41,7 @@ describe(`MailjetHttpEmailSender`, () => {
           .apply(this);
       });
 
-      fit(`sends the email through mailjet`, async () => {
+      it(`sends the email through mailjet`, async () => {
         await runInWorker(this, async (sender: MessageSender) => {
           // WHEN
           const result = await sender.send({

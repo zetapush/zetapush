@@ -278,7 +278,7 @@ export const analyze = (exposed: NormalizedWorkerDeclaration) => {
     services.push(CustomCloudService);
   });
   output.bootLayer.reverse();
-  // output.bootLayer.push(baseApi);
+  output.bootLayer.push(services);
   // Removing duplicate of bootlayer
   let matchs = -1;
   while (matchs !== 0) {
@@ -342,12 +342,12 @@ export const instantiate = async (
     // Explicit providers
     const providers = resolveProviders(client, normalized.providers || []);
     // Priorize providers
-    const priorized = [
+    const priorized = filterProviders([
       ...resolved, // Providers via scan of exposed DI Graph
       ...imported, // Providers via imports module list
       ...configured, // Providers via configurer
       ...providers // Providers via module provider
-    ];
+    ]);
 
     // Create a root injector
     const injector = ReflectiveInjector.resolveAndCreate(priorized);

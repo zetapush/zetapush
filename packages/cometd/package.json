@@ -13,12 +13,12 @@
   "scripts": {},
   "dependencies": {
     "node-fetch": "^2.1.0",
-    "ws": "^5.1.0"
+    "ws": "^5.1.0",
+    "https-proxy-agent": "2.2.1"
   },
   "optionalDependencies": {
     "bufferutil": "^3.0.4",
-    "utf-8-validate": "^4.0.1",
-    "https-proxy-agent": "2.2.1"
+    "utf-8-validate": "^4.0.1"
   },
   "publishConfig": {
     "access": "public"
