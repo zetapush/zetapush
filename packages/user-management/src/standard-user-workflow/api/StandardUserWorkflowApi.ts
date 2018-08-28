@@ -81,7 +81,7 @@ export interface StandardUserWorkflow {
    *
    * const userManagement = new DefaultStandardUserWorkflow();
    *
-   * userManagement.signup(accountCreatienDetails: { username: 'username', email: 'username@mail.fr', password: 'password', passwordConfirmation: 'password'}).then((createdAccount) => {
+   * userManagement.signup(accountCreationDetails: { username: 'username', email: 'username@mail.fr', password: 'password', passwordConfirmation: 'password'}).then((createdAccount) => {
    *  console.log('createdAccout', createdAccount);
    * });
    *

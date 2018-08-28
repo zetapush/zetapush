@@ -13,6 +13,7 @@ import {
   SimpleAccountCreation,
   SimpleAccountInfo,
   SimpleAccountStatusChangeRequest,
+  SimpleAccountUpdate,
   UserLoginchange
 } from './SimpleTypes';
 
@@ -89,7 +90,7 @@ export class Simple extends Service {
    * Creates an account
    *
    * Creates a new account in this 'simple' authentication realm.
-   * Returns a map of account fields, including a field named <i>zetapushKey</i> containing the global user key of the user (value of the <b>__userKey</b> pseudo-constant when this new account will be used)
+   * Returns the account fields, including a field named <i>zetapushKey</i> containing the global user key of the user (value of the <b>__userKey</b> pseudo-constant when this new account will be used)
    * @access public
    * */
   createAccount(body: SimpleAccountCreation): Promise<SimpleAccountInfo> {
@@ -146,6 +147,17 @@ export class Simple extends Service {
    * */
   setStatus(body: SimpleAccountStatusChangeRequest): Promise<SimpleAccountInfo> {
     return this.$publish('setStatus', body);
+  }
+  /**
+   * Updates an account
+   *
+   * Updates an existing account in this 'simple' authentication realm.
+   * The configured login field MUST be given, as a user (identified by his zetapush userKey) might possess several accounts.
+   * Returns the account fields
+   * @access public
+   * */
+  updateAccount(body: SimpleAccountUpdate): Promise<SimpleAccountInfo> {
+    return this.$publish('updateAccount', body);
   }
   /**
    * Updates an account key

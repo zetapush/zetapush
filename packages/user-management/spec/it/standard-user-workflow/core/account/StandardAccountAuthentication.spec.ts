@@ -1,6 +1,6 @@
-import { given, runInWorker, autoclean } from '@zetapush/testing';
+import 'jasmine';
+import { given, runInWorker, autoclean, frontUserAction } from '@zetapush/testing';
 import { AuthenticationConfigurerImpl } from '../../../../../src/standard-user-workflow/configurer/account/AuthenticationConfigurerImpl';
-import { AuthenticationManagerInjectable } from '../../../../../src/standard-user-workflow/api/Authentication';
 import { mock } from 'ts-mockito';
 import { LegacyAdapterUserRepository } from '../../../../../src/standard-user-workflow/legacy';
 import {
@@ -12,16 +12,13 @@ import {
 import { StandardUserWorkflow } from '../../../../../src/standard-user-workflow/core/StandardUserWorkflow';
 import { UserRepositoryInjectable } from '../../../../../src/common/api/User';
 import { AccountCreationManagerInjectable } from '../../../../../src/';
+import { SmartClient } from '@zetapush/client';
+import transports from '@zetapush/cometd/lib/node/Transports';
+import { AccountCreationManagerConfigurerImpl } from '../../../../../src/standard-user-workflow/configurer/account';
+import { TimestampBasedUuidGenerator } from '../../../../../src/common/core';
 
 describe(`StandardAccountAuthentication`, () => {
-  const authConfigurer = jasmine.createSpyObj('StandardUserWorkflowConfigurer', [
-    'registration',
-    'login',
-    'lostPassword'
-  ]);
-  const properties = mock<ConfigurationProperties>(<any>{});
-  const zetapushContext = mock<ZetaPushContext>(<any>{});
-
+  const registrationConfigurer = jasmine.createSpyObj('registrationConfigurer', ['account', 'welcome', 'confirmation']);
   describe(`connect()`, () => {
     describe(`that use the LoginPasswordAuthenticationManager`, () => {
       beforeEach(async () => {
@@ -32,28 +29,30 @@ describe(`StandardAccountAuthentication`, () => {
           .and()
           .worker()
           .configuration(async () => {
-            // Configure the Cloud Service we want to test
-            const configurer = new AuthenticationConfigurerImpl(authConfigurer, properties, zetapushContext);
-            configurer.loginPassword();
-            return await (<AuthenticationConfigurerImpl>configurer).getProviders();
+            // create configurer + inject services
+            const configurer = new AccountCreationManagerConfigurerImpl(registrationConfigurer);
+            configurer
+              .uuid()
+              /**/ .generator(TimestampBasedUuidGenerator)
+              /**/ .and()
+              .initialStatus()
+              /**/ .value(StandardAccountStatus.WaitingConfirmation)
+              /**/ .and()
+              .storage(LegacyAdapterUserRepository);
+            return await (<AccountCreationManagerConfigurerImpl>configurer).getProviders();
           })
-          .dependencies(StandardUserWorkflow, AccountCreationManagerInjectable, UserRepositoryInjectable)
+          .dependencies(AccountCreationManagerInjectable, LegacyAdapterUserRepository)
           .and()
           .apply(this);
       });
 
       describe(`On valid authentication`, () => {
-        xit(
+        it(
           `Connection success and that returns the connected user`,
           async () => {
             await runInWorker(
               this,
-              async (
-                _,
-                standardUserWorkflow: StandardUserWorkflow,
-                creationManager: AccountCreationManager,
-                userRepo: LegacyAdapterUserRepository
-              ) => {
+              async (_, creationManager: AccountCreationManager, userRepo: LegacyAdapterUserRepository) => {
                 // GIVEN
                 const account = await creationManager.createAccount({
                   credentials: {
@@ -68,17 +67,80 @@ describe(`StandardAccountAuthentication`, () => {
 
                 // Set the account status
                 await userRepo.updateStatus(account.accountId, StandardAccountStatus.Active);
-
-                // WHEN
-                const connectedAccount = await standardUserWorkflow.login({
-                  login: 'odile.deray',
-                  password: 'password'
-                });
-
-                // THEN
-                expect(connectedAccount).toEqual(account);
               }
             );
+
+            const credentials = { login: 'odile.deray', password: 'password' };
+
+            try {
+              await frontUserAction('Client connection', this, async (api, client) => {}, credentials);
+            } catch (e) {}
+          },
+          5 * 60 * 1000
+        );
+
+        it(
+          `Connection failed with bad credentials and returns the proper error`,
+          async () => {
+            await runInWorker(
+              this,
+              async (_, creationManager: AccountCreationManager, userRepo: LegacyAdapterUserRepository) => {
+                // GIVEN
+                const account = await creationManager.createAccount({
+                  credentials: {
+                    login: 'odile.deray',
+                    password: 'password'
+                  },
+                  profile: {
+                    firstname: 'Odile',
+                    lastname: 'DERAY'
+                  }
+                });
+
+                // Set the account status
+                await userRepo.updateStatus(account.accountId, StandardAccountStatus.Active);
+              }
+            );
+
+            const credentials = { login: 'odile.deray', password: 'wrong_password' };
+
+            try {
+              await frontUserAction('Client connection', this, async (api, client) => {}, credentials);
+            } catch (e) {
+              expect(e).toEqual('403::Handshake denied');
+            }
+          },
+          5 * 60 * 1000
+        );
+
+        it(
+          `Connection failed because the account is not activated and returns the proper error`,
+          async () => {
+            await runInWorker(
+              this,
+              async (_, creationManager: AccountCreationManager, userRepo: LegacyAdapterUserRepository) => {
+                // GIVEN
+                const account = await creationManager.createAccount({
+                  credentials: {
+                    login: 'odile.deray',
+                    password: 'password'
+                  },
+                  profile: {
+                    firstname: 'Odile',
+                    lastname: 'DERAY'
+                  }
+                });
+              }
+            );
+
+            const credentials = { login: 'odile.deray', password: 'password' };
+
+            try {
+              await frontUserAction('Client connection', this, async (api, client) => {}, credentials);
+            } catch (e) {
+              // TODO: Handle the proper error
+              expect(e).toEqual('403::Handshake denied');
+            }
           },
           5 * 60 * 1000
         );

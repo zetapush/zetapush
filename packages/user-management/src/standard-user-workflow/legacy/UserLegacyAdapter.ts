@@ -93,8 +93,6 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
         status: { active: false }
       });
 
-      console.log('==> result', result);
-
       if (result.userKey && result.fields) {
         await this.saveAssociations(accountId, result.userKey, result.fields.login);
 
@@ -202,6 +200,26 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
         },
         key: login
       });
+
+      if (result.fields) {
+        await this.simple.updateAccount({
+          key: result.fields.login,
+          fields: {
+            accountStatus: newStatus
+          }
+        });
+      }
+
+      console.log(
+        '====> USER',
+        JSON.stringify(
+          await this.simple.checkAccount({
+            key: 'odile.deray'
+          }),
+          null,
+          4
+        )
+      );
     } catch (e) {
       throw new LegacyUpdateAccountStatus(`Failed to update the status of the user (accountId: ${accountId}.`, e);
     }

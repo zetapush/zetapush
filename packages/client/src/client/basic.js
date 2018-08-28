@@ -118,10 +118,46 @@ export class Client {
           // Reject connection
           reject(error);
         };
+        const onConnectionBroken = (error) => {
+          // Remove connection status listener
+          handlers.forEach((handler) => {
+            this.removeConnectionStatusListener(handler);
+          });
+          // Reject connection
+          reject(error);
+        };
+        const onConnectionClosed = (error) => {
+          // Remove connection status listener
+          handlers.forEach((handler) => {
+            this.removeConnectionStatusListener(handler);
+          });
+          // Reject connection
+          reject(error);
+        };
+        const onNegotiationFailed = (error) => {
+          // Remove connection status listener
+          handlers.forEach((handler) => {
+            this.removeConnectionStatusListener(handler);
+          });
+          // Reject connection
+          reject(error);
+        };
+        const onConnectionWillClose = (error) => {
+          // Remove connection status listener
+          handlers.forEach((handler) => {
+            this.removeConnectionStatusListener(handler);
+          });
+          // Reject connection
+          reject(error);
+        };
         // Handle connection success and fail
         handlers.push(this.onConnectionEstablished(onConnectionEstablished));
         handlers.push(this.onConnectionToServerFail(onConnectionToServerFail));
         handlers.push(this.onFailedHandshake(onFailedHandshake));
+        handlers.push(this.onConnectionBroken(onConnectionBroken));
+        handlers.push(this.onConnectionClosed(onConnectionClosed));
+        handlers.push(this.onNegotiationFailed(onNegotiationFailed));
+        handlers.push(this.onConnectionWillClose(onConnectionWillClose));
         // Connect client to ZetaPush backend
         this.helper.connect();
       });
