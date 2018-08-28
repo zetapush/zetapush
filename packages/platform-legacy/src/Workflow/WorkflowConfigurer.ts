@@ -19,7 +19,7 @@ export class WorkflowConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Workflow.DEFAULT_DEPLOYMENT_ID,
-      '/workflow/createTemplate'
+      'workflow/createTemplate'
     );
   }
   /**
@@ -31,7 +31,7 @@ export class WorkflowConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Workflow.DEFAULT_DEPLOYMENT_ID,
-      '/workflow/purgeTemplates'
+      'workflow/purgeTemplates'
     );
   }
 }

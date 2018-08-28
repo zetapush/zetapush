@@ -19,7 +19,7 @@ export class SimpleConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Simple.DEFAULT_DEPLOYMENT_ID,
-      '/memauth/createUser'
+      'memauth/createUser'
     );
   }
   /**
@@ -31,7 +31,7 @@ export class SimpleConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Simple.DEFAULT_DEPLOYMENT_ID,
-      '/memauth/deleteUser'
+      'memauth/deleteUser'
     );
   }
   /**
@@ -43,7 +43,7 @@ export class SimpleConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Simple.DEFAULT_DEPLOYMENT_ID,
-      '/memauth/listUsers'
+      'memauth/listUsers'
     );
   }
 }
