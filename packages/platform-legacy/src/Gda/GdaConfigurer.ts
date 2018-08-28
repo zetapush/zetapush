@@ -23,7 +23,7 @@ export class GdaConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Gda.DEFAULT_DEPLOYMENT_ID,
-      '/gda/addColumns'
+      'gda/addColumns'
     );
   }
   /**
@@ -37,7 +37,7 @@ export class GdaConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Gda.DEFAULT_DEPLOYMENT_ID,
-      '/gda/createTable'
+      'gda/createTable'
     );
   }
   /**
@@ -50,7 +50,7 @@ export class GdaConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Gda.DEFAULT_DEPLOYMENT_ID,
-      '/gda/listTables'
+      'gda/listTables'
     );
   }
   /**
@@ -64,7 +64,7 @@ export class GdaConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Gda.DEFAULT_DEPLOYMENT_ID,
-      '/gda/removeColumns'
+      'gda/removeColumns'
     );
   }
   /**
@@ -76,7 +76,7 @@ export class GdaConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Gda.DEFAULT_DEPLOYMENT_ID,
-      '/gda/removeTable'
+      'gda/removeTable'
     );
   }
 }

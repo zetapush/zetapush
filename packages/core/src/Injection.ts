@@ -1,13 +1,19 @@
 import 'reflect-metadata';
 
 export {
-  FactoryProvider,
   Inject,
   Injectable,
   Injector,
+  ClassProvider,
+  TypeProvider,
+  ValueProvider,
+  ExistingProvider,
+  FactoryProvider,
   Provider,
   ReflectiveInjector,
   Type,
   TypeDecorator,
-  makeDecorator
+  makeDecorator,
+  InjectionToken,
+  Optional
 } from 'injection-js';

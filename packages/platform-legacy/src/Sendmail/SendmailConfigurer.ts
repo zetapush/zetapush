@@ -13,7 +13,7 @@ export class SendmailConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Sendmail.DEFAULT_DEPLOYMENT_ID,
-      '/mail/test'
+      'mail/test'
     );
   }
 }

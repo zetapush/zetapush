@@ -6,6 +6,10 @@ export type StringAnyMap = {
 export type StringStringMap = {
   [property: string]: string;
 };
+/** Maps strings to string arrays */
+export type StringListStringMap = {
+  [property: string]: string[];
+};
 /** Maps strings to StringAnyMap */
 export type StringObjectMap = {
   [property: string]: StringAnyMap;

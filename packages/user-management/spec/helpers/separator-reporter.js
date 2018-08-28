@@ -25,13 +25,13 @@ SeparatorReporter = function() {
   self.specDone = function(spec) {
     log('');
     // console.log = oldConsole;
-    log('-'.repeat(46));
+    log('-'.repeat(47));
     log('');
   };
   self.suiteDone = function(suite) {
     log('');
     log('');
-    log('='.repeat(46));
+    log('='.repeat(47));
     log('');
   };
   self.jasmineDone = function() {};

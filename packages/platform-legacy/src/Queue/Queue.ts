@@ -1,7 +1,9 @@
 import { Service } from '../Core/index';
 import {
   TaskCompletion,
+  TaskConsumerConfiguration,
   TaskConsumerRegistration,
+  TaskProgress,
   TaskRequest,
   WorkerAdminBulkRequest,
   WorkerAdminBulkResponse,
@@ -32,9 +34,9 @@ export class Queue extends Service {
   /**
    * Producer / consumer real-time API
    *
-   * Task producers submits their tasks.
-   * The server dispatches the tasks.
-   * Consumers process them and report completion back to the server.
+   * Task producers submits their tasks (by calling 'call' or 'submit').
+   * The server dispatches the tasks, on a notification channel, which is often 'dispatch'.
+   * Consumers process them and report completion back to the server on the 'done' channel.
    * Tasks are global to the service (i.e. NOT per user).
    * @access public
    * */
@@ -55,12 +57,23 @@ export class Queue extends Service {
    * Notifies completion of a task
    *
    * Consumer API.
-   * The tasker notifies completion of the given task to the server.
-   * The tasker can optionally include a result or an error code.
+   * The worker notifies completion of the given task to the server.
+   * The worker can optionally include a result or an error code.
    * @access public
    * */
   done(body: TaskCompletion) {
     return this.$publish('done', body);
+  }
+  /**
+   * Reports progress for a task
+   *
+   * Consumer API.
+   * A worker might call this API any number of times for a given taskId, between the start of the task and the call to 'done'.
+   * Calling 'progress' is entirely optional and is just informative.
+   * @access public
+   * */
+  progress(body: TaskProgress) {
+    return this.$publish('progress', body);
   }
   /**
    * Registers a consumer
@@ -71,7 +84,7 @@ export class Queue extends Service {
    * IMPORTANT : after a disconnect and a new handshake, consumers must register again.
    * @access public
    * */
-  register(body: TaskConsumerRegistration) {
+  register(body: TaskConsumerRegistration): Promise<TaskConsumerConfiguration> {
     return this.$publish('register', body);
   }
   /**

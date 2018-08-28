@@ -12,6 +12,7 @@ Implémentation du protocol CometD. Initialement le code était dans un [reposit
 Le code de @zetapush/cometd est un fork du projet CometD, la lib officiel ne supportant pas correctement le pattern CommonJS et n'étant pas complètement compatible avec NodeJS.
 
 Dépendences:
+
 - N/A
 
 ## @zetapush/core
@@ -21,6 +22,7 @@ Dépendences:
 Fournit l'ensemble des classes et interfaces relatives à l'injection de dépendances.
 
 Dépendences:
+
 - N/A
 
 ## @zetapush/platform-legacy
@@ -30,8 +32,8 @@ Dépendences:
 Contient l'ensemble des classes de mapping des services platform-legacy ZetaPush. Le code contenu dans ce package à vocation à être auto généré.
 
 Dépendences:
-- N/A
 
+- N/A
 
 ## @zetapush/common
 
@@ -40,6 +42,7 @@ Dépendences:
 Contient l'ensemble des fonctionnalités communes aux paquets internes.
 
 Dépendences:
+
 - [@zetapush/core](https://github.com/zetapush/zetapush/tree/master/packages/core)
 
 ## @zetapush/user-management
@@ -49,15 +52,17 @@ Dépendences:
 Contient l'ensemble de l'API de gestion des utilisateurs.
 
 Dépendences:
+
 - [@zetapush/common](https://github.com/zetapush/zetapush/tree/master/packages/common)
 
 ## @zetapush/client
 
 [![install size](https://packagephobia.now.sh/badge?p=@zetapush/client)](https://packagephobia.now.sh/result?p=@zetapush/client)
 
-Surcouche au protocole CometD. Ce package contient les différents client de connection au backend. Il implémente la gestion des pseudos requète/response sur le pattern publish/subscribe 
+Surcouche au protocole CometD. Ce package contient les différents client de connection au backend. Il implémente la gestion des pseudos requète/response sur le pattern publish/subscribe
 
 Dépendences:
+
 - [@zetapush/cometd](https://github.com/zetapush/zetapush/tree/master/packages/cometd)
 - [@zetapush/platform-legacy](https://github.com/zetapush/zetapush/tree/master/packages/platform-legacy)
 
@@ -68,6 +73,7 @@ Dépendences:
 C'est le SDK utilisé en interne au sein d'un **worker** NodeJS connecté à la plateforme ZetaPush. Il assure la communication en ZetaPush et le code écrit par le developpeur.
 
 Dépendences:
+
 - [@zetapush/common](https://github.com/zetapush/zetapush/tree/master/packages/common)
 - [@zetapush/core](https://github.com/zetapush/zetapush/tree/master/packages/core)
 - [@zetapush/client](https://github.com/zetapush/zetapush/tree/master/packages/client)
@@ -80,6 +86,7 @@ Dépendences:
 Contient l'ensemble de l'API de gestion des erreurs.
 
 Dépendences:
+
 - [@zetapush/common](https://github.com/zetapush/zetapush/tree/master/packages/common)
 
 ## @zetapush/cli
@@ -89,6 +96,7 @@ Dépendences:
 Outil en ligne de commande permettant de publier son code JavaScript (ses cloud functions) sur la plteforme ZetaPush. Il permet aussi de demarrer en local (sur son poste de dev) un **worker**.
 
 Dépendences:
+
 - [@zetapush/cometd](https://github.com/zetapush/zetapush/tree/master/packages/cometd)
 - [@zetapush/common](https://github.com/zetapush/zetapush/tree/master/packages/common)
 - [@zetapush/platform-legacy](https://github.com/zetapush/zetapush/tree/master/packages/platform-legacy)
@@ -102,4 +110,5 @@ Dépendences:
 Ce package permet la creation de nouveau projet zetapush
 
 Dépendences:
+
 - [@zetapush/cli](https://github.com/zetapush/zetapush/tree/master/packages/cli)

@@ -12,24 +12,21 @@ const config = {
   plugins: [
     resolve({
       jsnext: true,
-      main: true,
+      main: true
     }),
     commonjs({
-      include: [
-        'node_modules/**',
-        '../common/**',
-      ],
+      include: ['node_modules/**', '../common/**']
     }),
     ts({
-      typescript,
+      typescript
     }),
     json(),
-    sizeSnapshot(),
+    sizeSnapshot()
   ],
   output: {
     format: 'cjs',
-    sourcemap: true,
-  },
+    sourcemap: true
+  }
 };
 
 if (env === 'production') {
@@ -40,11 +37,11 @@ if (env === 'production') {
           pure_getters: true,
           unsafe: true,
           unsafe_comps: true,
-          warnings: false,
-        },
+          warnings: false
+        }
       },
-      minifier,
-    ),
+      minifier
+    )
   );
 }
 

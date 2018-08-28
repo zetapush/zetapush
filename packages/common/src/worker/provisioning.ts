@@ -1,7 +1,7 @@
 import { Provider } from '@zetapush/core';
 
 import { log, error } from '../utils/log';
-import { analyze } from './di';
+import { analyze, DependencyInjectionAnalysis } from './di';
 import { Service, Config, WorkerDeclaration, ResolvedConfig } from '../common-types';
 import { PathLike, writeFile } from 'fs';
 import { isNode } from '../utils/environment';
@@ -10,25 +10,25 @@ const JSZip = require('jszip');
 
 /**
  * Get deployment service list from injected service to provisioning items
- * @param {WorkerDeclaration} declaration
+ * @param {DependencyInjectionAnalysis} analysis
  * @param {Service[]} ignoredServices the list of services to ignore
  * @return {Function[]}
  */
-export const getDeploymentServiceList = (declaration: WorkerDeclaration, ignoredServices: Array<Service>) => {
+export const getDeploymentServiceList = (analysis: DependencyInjectionAnalysis, ignoredServices: Array<Service>) => {
   // Ignore specific platform services
   const ignored = ignoredServices.map((Service) => Service.DEPLOYMENT_TYPE);
-  const { platform } = analyze(declaration);
+  const platform = analysis.platformServices;
   return Array.from(new Set(platform.filter((Service: Service) => ignored.indexOf(Service.DEPLOYMENT_TYPE) === -1)));
 };
 
 /**
  * Get deployment id list from injected service to provisioning items
- * @param {WorkerDeclaration} declaration
+ * @param {DependencyInjectionAnalysis} analysis
  * @param {Service[]} ignoredServices the list of services to ignore
  * @return {string[]}
  */
-export const getDeploymentIdList = (declaration: WorkerDeclaration, ignoredServices: Array<Service>) =>
-  getDeploymentServiceList(declaration, ignoredServices).map((Service: Service) => Service.DEPLOYMENT_TYPE);
+export const getDeploymentIdList = (analysis: DependencyInjectionAnalysis, ignoredServices: Array<Service>) =>
+  getDeploymentServiceList(analysis, ignoredServices).map((Service: Service) => Service.DEPLOYMENT_TYPE);
 
 /**
  * Get bootstrap provisioning items
@@ -57,19 +57,19 @@ export const getBootstrapProvision = (config: ResolvedConfig, services: Array<Se
 /**
  * Get provisioning from injected service to provisioning items
  * @param {ZetaPushConfig} config
- * @param {WorkerDeclaration} declaration
+ * @param {DependencyInjectionAnalysis} analysis
  * @param {Service[]} ignoredServices the list of services to ignore
  */
 export const getRuntimeProvision = (
   config: ResolvedConfig,
-  declaration: WorkerDeclaration,
+  analysis: DependencyInjectionAnalysis,
   ignoredServices: Array<Service>
 ): {
   businessId: string;
   items: Array<{ name: string; item: Object }>;
   calls: any[];
 } => {
-  const services = getDeploymentServiceList(declaration, ignoredServices);
+  const services = getDeploymentServiceList(analysis, ignoredServices);
   log(`Provisioning`, ...services);
   return {
     businessId: config.appName,

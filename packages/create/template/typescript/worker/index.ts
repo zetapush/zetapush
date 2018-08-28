@@ -1,7 +1,7 @@
-import { Injectable, Bootstrapable } from '@zetapush/core';
+import { Injectable, Bootstrappable } from '@zetapush/core';
 
 @Injectable()
-export default class Api implements Bootstrapable {
+export default class Api implements Bootstrappable {
   async onApplicationBootstrap() {
     // Put your bootstrap logic here
   }

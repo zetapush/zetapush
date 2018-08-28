@@ -1,13 +1,23 @@
 const process = require('process');
 const ora = require('ora');
 
-const { log, error, warn, info, trace } = require('@zetapush/common');
+const { log, error, warn, info, trace, getVerbosity } = require('@zetapush/common');
 const { displayHelp } = require('@zetapush/troubleshooting');
 const { WorkerRunner, WorkerRunnerEvents } = require('@zetapush/worker');
 
 const WorkerLoader = require('../loader/worker');
 const { createServer } = require('../utils/http-server');
 const transports = require('@zetapush/cometd/lib/node/Transports');
+
+const cliVerbosityToCometdLogLevel = (verbosity) => {
+  if (verbosity < 3) {
+    return 'debug';
+  }
+  if (verbosity < 2) {
+    return 'info';
+  }
+  return 'warn';
+};
 
 /**
  * Run Worker instance
@@ -16,7 +26,14 @@ const transports = require('@zetapush/cometd/lib/node/Transports');
  * @param {WorkerDeclaration} declaration
  */
 const run = (command, config, declaration) => {
-  const runner = new WorkerRunner(command.skipProvisionning, command.skipBootstrap, config, transports);
+  const runner = new WorkerRunner(
+    command.skipProvisionning,
+    command.skipBootstrap,
+    config,
+    transports,
+    undefined,
+    cliVerbosityToCometdLogLevel(getVerbosity())
+  );
   const spinner = ora('Starting worker... \n');
 
   runner.on(WorkerRunnerEvents.BOOTSTRAPING, ({ client }) => {

@@ -1,16 +1,35 @@
 {
   "triggerTaskOnSave.tasks": {
     "testing [prepublish]": [
-      "packages/testing/**"
+      "packages/testing/src/**"
     ],
     "common [prepublish]": [
-      "packages/common/**"
+      "packages/common/src/**"
+    ],
+    "core [prepublish]": [
+      "packages/core/src/**"
     ],
     "worker [prepublish]": [
-      "packages/worker/**"
+      "packages/worker/src/**"
+    ],
+    "http-server [prepublish]": [
+      "packages/http-server/src/**"
     ],
     "user-management [prepublish]": [
-      "packages/user-management/**"
+      "packages/user-management/src/**"
+    ],
+    "lerna [clean+bootstrap]": [
+      "packages/**/package.json"
     ]
   },
+  "coverage-gutters.showGutterCoverage": false,
+  "coverage-gutters.showLineCoverage": true,
+  "coverage-gutters.showRulerCoverage": true,
+  "coverage-gutters.xmlname": "cobertura-coverage.xml",
+  "lcov.path": [
+    "packages/user-management/coverage/lcov.info",
+  ],
+  // "jasmineExplorer.logpanel": true,
+  // "jasmineExplorer.nodePath": "~/.nvm/versions/node/v10.8.0/bin/node",
+
 }

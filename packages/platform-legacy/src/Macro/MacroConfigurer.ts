@@ -30,23 +30,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/macro/create'
-    );
-  }
-  /**
-   * Runs a macro
-   *
-   * Runs the configured macro for the given route /macro/exec/{route}.
-   * The HTTP POST body is expected to be a JSON object
-   * The route (after '/exec/') may contain slashes
-   * A route is configured along with a macro when it is created
-   * The macro is run with the parameters you annotate with @RequestBody, @QueryParam, @RequestParam, @PathParam, @PathVariable, @HeaderParam, @RequestHeader, @Path.
-   * */
-  exec(body: StringAnyMap): Promise<ConfigurableHttpOutput> {
-    return this.$configure(
-      body,
-      /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/macro/exec/**'
+      'macro/create'
     );
   }
   /**
@@ -58,7 +42,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/macro/list'
+      'macro/list'
     );
   }
   /**
@@ -70,7 +54,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/macro/mcreate'
+      'macro/mcreate'
     );
   }
   /**
@@ -83,7 +67,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/macro/run'
+      'macro/run'
     );
   }
   /**
@@ -96,7 +80,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/macro/validate'
+      'macro/validate'
     );
   }
   /**
@@ -113,7 +97,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       body,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/debug/configure'
+      'debug/configure'
     );
   }
   /**
@@ -125,7 +109,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/debug/disable'
+      'debug/disable'
     );
   }
   /**
@@ -139,7 +123,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/debug/enable'
+      'debug/enable'
     );
   }
   /**
@@ -154,7 +138,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/debug/livedebugToken'
+      'debug/livedebugToken'
     );
   }
   /**
@@ -166,7 +150,7 @@ export class MacroConfigurer extends Configurer {
     return this.$configure(
       null,
       /* TODO value from instance-local variable  */ Macro.DEFAULT_DEPLOYMENT_ID,
-      '/debug/status'
+      'debug/status'
     );
   }
 }

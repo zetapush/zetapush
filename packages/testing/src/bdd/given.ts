@@ -1,11 +1,10 @@
 import { existsSync } from 'fs';
 
-import { createApplication } from '@zetapush/common';
 import { Config } from '@zetapush/common';
 
 import copydir from 'copy-dir';
 
-import { givenLogger, envLogger } from '../utils/logger';
+import { givenLogger, envLogger, getLogLevelsFromEnv } from '../utils/logger';
 import {
   readZetarc,
   rm,
@@ -18,7 +17,11 @@ import {
   Runner,
   getCurrentEnv
 } from '../utils/commands';
-import { TestContext, Test } from '../utils/types';
+import { TestContext, Dependencies } from '../utils/types';
+import { createApplication, DEFAULTS } from '@zetapush/common';
+import { Provider, InjectionToken, Module } from '@zetapush/core';
+import { WorkerRunner } from '@zetapush/worker/lib';
+import { Wrapper } from '../worker/test-instance';
 
 export const given = () => new Given();
 
@@ -82,17 +85,17 @@ class Given {
       if (this.givenApp) {
         projectDir = await this.givenApp.execute();
       }
-      if (this.givenWorker && !projectDir) {
-        givenLogger.warn(
-          "Can't start worker or read zetarc if there is no project directory provided. You may need to configure either newApp(), testingApp() or templatedApp()"
-        );
-      }
-      let runner;
-      if (this.givenWorker && projectDir) {
-        runner = await this.givenWorker.execute(projectDir);
+      let runnerAndDeps;
+      if (this.givenWorker) {
+        runnerAndDeps = await this.givenWorker.execute(projectDir);
       }
       const zetarc = projectDir ? await readZetarc(projectDir) : this.sharedCredentials;
-      const context = { zetarc, projectDir, runner };
+      const context = {
+        zetarc,
+        projectDir,
+        ...runnerAndDeps,
+        logLevel: getLogLevelsFromEnv()
+      };
       if (objToFill) {
         Object.assign(objToFill, {
           context
@@ -185,13 +188,13 @@ class GivenCredentials extends Parent<Given> {
   constructor(parent: Given) {
     super(parent);
     // default behavior uses the env variables
-    this.url = process.env.ZETAPUSH_PLATFORM_URL;
+    this.url = process.env.ZETAPUSH_PLATFORM_URL || DEFAULTS.PLATFORM_URL;
   }
 
   fromEnv() {
     this.developerLogin = process.env.ZETAPUSH_DEVELOPER_LOGIN;
     this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
-    this.url = process.env.ZETAPUSH_PLATFORM_URL;
+    this.url = process.env.ZETAPUSH_PLATFORM_URL || DEFAULTS.PLATFORM_URL;
     this.appName = process.env.ZETAPUSH_PLATFORM_APP_NAME;
     return this;
   }
@@ -402,39 +405,131 @@ class GivenWorker extends Parent<Given> {
   private workerUp = false;
   private timeout?: number;
   private isQuiet = false;
+  private moduleDeclaration?: () => Promise<Module>;
+  private deps?: Dependencies;
+  // private provs?: Provider[];
+  // private configurationFunc?: ConfigurationFunction;
 
   constructor(parent: Given) {
     super(parent);
   }
 
+  /**
+   * Create a runner instance before executing the test
+   */
   runner() {
     this.createRunner = true;
     return this;
   }
 
+  /**
+   * Wait for the worker to be up before executing the test
+   */
   up(timeout: number) {
     this.workerUp = true;
     this.timeout = timeout;
     return this;
   }
 
+  /**
+   * The worker runs in quiet mode (less output in console/logs)
+   */
   quiet() {
     this.isQuiet = true;
     return this;
   }
 
-  async execute(currentDir: string) {
+  /**
+   * Indicates the dependencies that are used in the test. The dependencies are injected in
+   * the function run by `runInWorker`. This is useful to retrieve an instance constructed
+   * by dependency injection.
+   *
+   * @param deps the dependencies that must be injected in the test (@see runInWorker function)
+   */
+  dependencies(...deps: Array<Function | InjectionToken<any>>): GivenWorker {
+    this.deps = deps;
+    return this;
+  }
+
+  /**
+   * This function is like `dependencies` except that instead of using an array, it uses
+   * a function that will be called later. This is mandatory when using `scopedDependency`
+   * function.
+   *
+   * @param func a function that will provide the dependencies that must be injected in the test (@see runInWorker function)
+   */
+  dependenciesWithScope(func: () => Array<Function | InjectionToken<any>>): GivenWorker {
+    this.deps = func;
+    return this;
+  }
+
+  // /**
+  //  * When you are using Cloud Services, you may want to override a particular implementation
+  //  * with your own. You can do so by registering a provider.
+  //  *
+  //  * @param providers list of providers to override default providers
+  //  */
+  // providers(...providers: Provider[]) {
+  //   this.provs = providers;
+  //   return this;
+  // }
+
+  // /**
+  //  * This function is used to configure the Cloud Service you want to test.
+  //  *
+  //  * @param func the function used to configure the worker (it MUST return an array of providers)
+  //  */
+  // configuration(func: ConfigurationFunction) {
+  //   this.configurationFunc = func;
+  //   return this;
+  // }
+
+  /**
+   * Set the worker code that provides a module to be tested.
+   * The module can provide several information (like a standard module):
+   * - A list of configurers to instantiate
+   * - A list of custom providers to override default providers
+   * - A list of exposed services (that are explicitly instantiated)
+   * - A list of modules to import
+   *
+   * @param moduleDeclaration A function that provide a module
+   */
+  testModule(moduleDeclaration: () => Promise<Module>) {
+    this.moduleDeclaration = moduleDeclaration;
+    return this;
+  }
+
+  async execute(currentDir?: string) {
     try {
-      if (this.createRunner) {
-        return new Runner(currentDir);
+      const deps = {
+        moduleDeclaration: this.moduleDeclaration,
+        dependencies: this.deps
+      };
+      if ((this.createRunner || this.workerUp) && !currentDir) {
+        givenLogger.warn(
+          "Can't start worker or read zetarc if there is no project directory provided. You may need to configure either project().newProject() or project().template()"
+        );
       }
-      if (this.workerUp) {
+      if (this.createRunner && currentDir) {
+        return {
+          runner: new Runner(currentDir),
+          ...deps
+        };
+      }
+      if (this.workerUp && currentDir) {
         givenLogger.info(`>>> Given worker: run and wait for worker up ${currentDir}`);
         const runner = new Runner(currentDir, this.timeout);
         runner.run(this.isQuiet);
         await runner.waitForWorkerUp();
-        return runner;
+        return {
+          runner,
+          ...deps
+        };
       }
+      return {
+        runner: undefined,
+        ...deps
+      };
     } catch (e) {
       givenLogger.error(`>>> Given worker: FAILED ${currentDir}`, e);
       throw e;

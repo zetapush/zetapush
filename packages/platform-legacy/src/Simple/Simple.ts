@@ -10,6 +10,9 @@ import {
   ImpersonatedTraceableRequest,
   ResetInfo,
   ResetRequest,
+  SimpleAccountCreation,
+  SimpleAccountInfo,
+  SimpleAccountStatusChangeRequest,
   UserLoginchange
 } from './SimpleTypes';
 
@@ -55,6 +58,16 @@ export class Simple extends Service {
     return this.$publish('changePassword', body);
   }
   /**
+   * Checks some account's existence
+   *
+   * Checks whether the given account already exists in this 'simple' authentication realm.
+   * This verb returns all the information about the user, including non public fields.
+   * @access public
+   * */
+  checkAccount(body: ExistenceCheck): Promise<SimpleAccountInfo> {
+    return this.$publish('checkAccount', body);
+  }
+  /**
    * Checks the password for the given account
    *
    * @access public
@@ -71,6 +84,16 @@ export class Simple extends Service {
    * */
   checkUser(body: ExistenceCheck): Promise<StringAnyMap> {
     return this.$publish('checkUser', body);
+  }
+  /**
+   * Creates an account
+   *
+   * Creates a new account in this 'simple' authentication realm.
+   * Returns a map of account fields, including a field named <i>zetapushKey</i> containing the global user key of the user (value of the <b>__userKey</b> pseudo-constant when this new account will be used)
+   * @access public
+   * */
+  createAccount(body: SimpleAccountCreation): Promise<SimpleAccountInfo> {
+    return this.$publish('createAccount', body);
   }
   /**
    * Creates an account
@@ -113,6 +136,16 @@ export class Simple extends Service {
    * */
   requestReset(body: ResetRequest): Promise<ResetInfo> {
     return this.$publish('requestReset', body);
+  }
+  /**
+   * Change some account's status
+   *
+   * Changes status if the given account already exists in this 'simple' authentication realm.
+   * This verb returns all the information about the user, including non public fields.
+   * @access public
+   * */
+  setStatus(body: SimpleAccountStatusChangeRequest): Promise<SimpleAccountInfo> {
+    return this.$publish('setStatus', body);
   }
   /**
    * Updates an account key

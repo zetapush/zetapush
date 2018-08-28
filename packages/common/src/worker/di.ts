@@ -5,7 +5,10 @@ import {
   Provider,
   ReflectiveInjector,
   Environment,
-  Class
+  Class,
+  FactoryProvider,
+  ClassProvider,
+  ValueProvider
 } from '@zetapush/core';
 import { DEFAULTS } from '../defaults';
 import { trace, error } from '../utils/log';
@@ -14,7 +17,8 @@ import {
   NormalizedWorkerDeclaration,
   WorkerDeclaration,
   Service,
-  ServerClient
+  ServerClient,
+  WorkerDeclarationNormalizer
 } from '../common-types';
 import { CloudServiceInstance } from './CloudServiceInstance';
 
@@ -31,11 +35,11 @@ const isObject = (value: any) => typeof value === Object.name.toLowerCase();
 /**
  * Get providers by configurers
  */
-const getProvidersByConfigurers = (configurers: any[], environement?: Environment) => {
+const getProvidersByConfigurers = (configurers: any[], environment?: Environment) => {
   return Promise.all(
     configurers
       .map((Configurer) => new Configurer())
-      .map((configurer) => (configurer.configure(environement), configurer))
+      .map((configurer) => (configurer.configure(environment), configurer))
       .map((configurer) => configurer.getProviders() as Promise<Provider[]>)
   ).then((configured) => configured.reduce((providers, next) => [...providers, ...next], []));
 };
@@ -128,7 +132,7 @@ export const clean = (exposed: WorkerDeclaration): NormalizedWorkerDeclaration =
  * Normalize worker declaration
  * A worker declaration is the object return by worker project entry point
  */
-export const normalize = (declaration: WorkerDeclaration): Module => {
+export const normalize = async (declaration: WorkerDeclaration): Promise<Module> => {
   // Entry point must return an object
   if (typeof declaration === Object.name.toLowerCase()) {
     // Entry point must be an EcmaScript Module
@@ -196,27 +200,80 @@ export const scan = (CustomCloudService: CustomCloudService, output = new ScanOu
           }
         }
       });
-      if (output.bootLayer[layer] === undefined) {
-        output.bootLayer.push(addToScan);
-      } else {
-        output.bootLayer[layer] = output.bootLayer[layer].concat(addToScan);
-      }
+      registerInBootLayers(addToScan, output, layer);
       toScan.forEach((sc) => scan(sc.provider, sc.output, layer + 1));
     }
-    if (CustomCloudService.DEFAULT_DEPLOYMENT_ID) {
-      output.platform.push(CustomCloudService);
-    } else {
-      // Add CustomCloudService
-      output.custom.push(CustomCloudService);
-    }
+    registerCloudService(CustomCloudService, output);
+    registerInBootLayers([CustomCloudService], output, layer);
   }
   return output;
+};
+
+const registerCloudService = (type: CustomCloudService, output: ScanOutput) => {
+  if (type.DEFAULT_DEPLOYMENT_ID) {
+    output.platform.push(type);
+  } else {
+    // Add CustomCloudService
+    output.custom.push(type);
+  }
+};
+
+const registerInBootLayers = (types: CustomCloudService[], output: ScanOutput, layer: number) => {
+  if (output.bootLayer[layer] === undefined) {
+    output.bootLayer.push(types);
+  } else {
+    output.bootLayer[layer] = output.bootLayer[layer].concat(types);
+  }
+};
+
+export const scanProvider = (provider: Provider, output = new ScanOutput()) => {
+  const deps = (<FactoryProvider>provider).deps;
+  const useClass = (<ClassProvider>provider).useClass;
+  const useValue = (<ValueProvider>provider).useValue;
+  if (deps) {
+    deps.map((dep: Service) => {
+      scan(dep, output);
+    });
+  } else if (useClass) {
+    scan(useClass, output);
+  } else if (useValue) {
+    const type = (<ValueProvider>provider).provide;
+    registerCloudService(type, output);
+    registerInBootLayers([type], output, 0);
+  }
+};
+
+export const scanProviders = (providers: Provider[], output = new ScanOutput()) => {
+  // providers can have dependencies => need to be scanned
+  providers.map((provider: Provider) => scanProvider(provider, output));
+  return output;
+};
+
+export const resolveProviders = (client: ServerClient, providers: Provider[]) => {
+  const analyzedProviders = scanProviders(providers || []);
+  const resolved = resolve(client, analyzedProviders);
+  return {
+    ...analyzedProviders,
+    providers: [...resolved, ...providers]
+  };
+};
+
+export const filterProviders = (providers: Provider[]) => {
+  const filtered: Provider[] = [];
+  for (let i = providers.length - 1; i >= 0; i--) {
+    const provider = providers[i];
+    let provide = (<any>provider).provide;
+    if (!filtered.some((p: any) => p.provide === provide)) {
+      filtered.push(provider);
+    }
+  }
+  return filtered.reverse();
 };
 
 /**
  * Resolve injected services
  */
-export const analyze = (exposed: NormalizedWorkerDeclaration) => {
+export const analyzeService = (exposed: NormalizedWorkerDeclaration) => {
   const output = new ScanOutput();
   const services: CustomCloudService[] = [];
   Object.values(exposed).map((CustomCloudService: CustomCloudService) => {
@@ -263,43 +320,97 @@ export const resolve = (client: ServerClient, output: ScanOutput): Provider[] =>
   }))
 ];
 
+export interface DependencyInjectionAnalysis {
+  /**
+   * Original worker declaration
+   */
+  declaration: WorkerDeclaration;
+  /**
+   * The list of resolved providers after analysis
+   */
+  providers: Provider[];
+  /**
+   * The list of platform services
+   */
+  platformServices: Service[];
+  /**
+   * The exposed class or namespace/class pairs
+   */
+  exposed: NormalizedWorkerDeclaration;
+  /**
+   * Automatic scan result
+   */
+  analyzed: ScanOutput;
+  /**
+   * Merge boot layers
+   */
+  bootLayers: Service[];
+}
+
+export const analyze = async (
+  client: ServerClient,
+  declaration: WorkerDeclaration,
+  customNormalizer: WorkerDeclarationNormalizer = normalize
+): Promise<DependencyInjectionAnalysis> => {
+  // Normalize worker declaration
+  const normalized = await customNormalizer(declaration);
+  // Get providers from imports module list
+  const resolvedImports = resolveProviders(client, await getProvidersByImports(normalized.imports || []));
+  const imported = resolvedImports.providers;
+  // Get exposed CloudService
+  const exposed = clean(normalized.expose);
+  // Analyze exposed CloudService to get an ordered providers list
+  const analyzed = analyzeService(exposed);
+  // Get a resolved list of providers used in exposed DI graph
+  const resolved = resolve(client, analyzed);
+  // Configured providers
+  const resolvedConfigured = resolveProviders(client, await getProvidersByConfigurers(normalized.configurers || []));
+  const configured = resolvedConfigured.providers;
+  // Explicit providers
+  const resolvedProviders = resolveProviders(client, normalized.providers || []);
+  const providers = resolvedProviders.providers;
+  // Priorize providers
+  const priorized = filterProviders([
+    ...resolved, // Providers via scan of exposed DI Graph
+    ...imported, // Providers via imports module list
+    ...configured, // Providers via configurer
+    ...providers // Providers via module provider
+  ]);
+  const platformServices = getPlatformServices(priorized);
+  const bootLayers = analyzed.bootLayer
+    .concat(resolvedImports.bootLayer)
+    .concat(resolvedConfigured.bootLayer)
+    .concat(resolvedProviders.bootLayer);
+  trace('analyzed providers', priorized);
+  trace('analyzed platformServices', platformServices);
+  trace('bootstrap layers', bootLayers);
+  return {
+    declaration,
+    providers: priorized,
+    platformServices,
+    exposed,
+    analyzed,
+    bootLayers
+  };
+};
+
 /**
  * Resolve and inject dependencies
  */
-export const instantiate = async (client: ServerClient, declaration: WorkerDeclaration) => {
-  let singleton;
+export const instantiate = async (analysis: DependencyInjectionAnalysis) => {
+  let singleton: any;
   try {
-    // Normalize worker declaration
-    const normalized = normalize(declaration);
-    // Get providers from imports module list
-    const imported = await getProvidersByImports(normalized.imports || []);
-    // Get exposed CloudService
-    const exposed = clean(normalized.expose);
-    // Analyze exposed CloudService to get an order providers list
-    const analyzed = analyze(exposed);
-    // Get a resolved list of providers used in exposed DI graph
-    const resolved = resolve(client, analyzed);
-    // Configured providers
-    const configured = await getProvidersByConfigurers(normalized.configurers || []);
-    // Explicit providers
-    const providers = normalized.providers || [];
-    // Priorize providers
-    const priorized = [
-      ...resolved, // Providers via scan of exposed DI Graph
-      ...imported, // Providers via imports module list
-      ...configured, // Providers via configurer
-      ...providers // Providers via module provider
-    ];
+    const { providers, bootLayers, exposed } = analysis;
     // Create a root injector
-    const injector = ReflectiveInjector.resolveAndCreate(priorized);
+    const injector = ReflectiveInjector.resolveAndCreate(providers);
     // Flag all instance as CloudServiceInstance
-    providers.forEach((provider) => {
+    providers.forEach((provider: any) => {
       const token = isFunction(provider) ? provider : (provider as any).provide;
       const instance = injector.get(token);
       CloudServiceInstance.flag(instance);
     });
     // Convert bootlayer declaration to instance
-    analyzed.bootLayer.forEach((layer) => {
+    bootLayers.forEach((layer) => {
       layer.forEach((CloudService: CustomCloudService, key: any) => {
         const instance = injector.get(CloudService);
         layer[key] = instance;
@@ -311,10 +422,17 @@ export const instantiate = async (client: ServerClient, declaration: WorkerDecla
       return instance;
     }, Object.create(null));
     // Add bootlayers reference in singleton instance
-    singleton.bootLayers = analyzed.bootLayer;
+    singleton.bootLayers = bootLayers;
   } catch (ex) {
     error('instantiate', ex);
+    throw ex;
   }
   trace('instantiate', singleton);
   return singleton;
+};
+
+export const getPlatformServices = (providers: Provider[]): Service[] => {
+  return providers
+    .map((provider: Provider) => (isFunction(provider) ? provider : (provider as any).provide))
+    .filter((token: any) => !!token.DEFAULT_DEPLOYMENT_ID);
 };

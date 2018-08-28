@@ -1,4 +1,7 @@
-import { Token, Message, SentMessage } from '../../common/api';
+import { Token, Message, SentMessage, EmailAddress, Variables } from '../../common/api';
+import { BaseError } from '../../common/api/exception/BaseError';
+import { Credentials } from './Credentials';
+import { ConfigurationProperties, ZetaPushContext } from '../../common/configurer';
 
 /**
  * The account creation manager is in charge to create a user account based
@@ -25,8 +28,8 @@ import { Token, Message, SentMessage } from '../../common/api';
  * Likewise, each AccountCreationManager may be configured to set initial account status
  * through an AccountStatusProvider. The aim is to be able to control the account lifecycle.
  *
- * @see UsernamePasswordAccountCreationManager
- * @see UsernamePasswordAccountDetails
+ * @see LoginPasswordAccountCreationManager
+ * @see LoginPasswordAccountDetails
  * @see AccountDetailsProvider
  * @see AccountStatusProvider
  */
@@ -42,8 +45,11 @@ export interface AccountCreationManager {
    */
   createAccount(accountCreationDetails: AccountCreationDetails): Promise<Account | null>;
 }
+export abstract class AccountCreationManagerInjectable implements AccountCreationManager {
+  abstract createAccount(accountCreationDetails: AccountCreationDetails): Promise<Account | null>;
+}
 
-export class AccountCreationError extends Error {
+export class AccountCreationError extends BaseError {
   constructor(message: string, public details: AccountCreationDetails, public cause?: Error) {
     super(message);
   }
@@ -66,14 +72,63 @@ export interface AccountDetailsProvider {
    */
   getUserProfile(original: any): Promise<UserProfile>;
 }
-
-export interface AccountConfirmationManager {
-  askConfirmation(accountToConfirm: Account): Promise<PendingAccountConfirmation>;
-  confirm(token: Token): Promise<ConfirmedAccount>;
+export abstract class AccountDetailsProviderInjectable implements AccountDetailsProvider {
+  abstract getUserProfile(original: any): Promise<UserProfile>;
 }
 
-export interface AccountConfirmationMessageManager {
-  send(message: Message): Promise<SentMessage>;
+/**
+ * The 'AccountConfirmationManager' is in charge to manage the account confirmation
+ * in an application. In many applications, a user account need to be validated to be used.
+ *
+ * The 'AccountConfirmationManager' is just a marker interface. Account confirmation process
+ * may vary a lot, that's why we use the interface to mark the concept.
+ * This interface exposes you two methods :
+ *  - 'askConfirmation()' to launch the validation process for a created account
+ *  - 'confirm()' to validate a created account
+ *
+ * The account confirmation process may vary a lot. For example,
+ * 'TemplatedMessageAccountConfirmationManager' is an implementation of AccountConfirmationManager
+ * that send an email to validate the account via a link.
+ * You can choose your implementation depending of your case or create your own implementation.
+ *
+ * @see TemplatedMessageAccountConfirmationManager
+ * @see Account
+ * @see PendingAccountConfirmation
+ * @see Token
+ * @see ConfirmedAccount
+ */
+export interface AccountConfirmationManager {
+  /**
+   * Ask the confirmation of a created account.
+   *
+   * accountToConfirm can takes many different forms. In the case of we use the login/password
+   * connection process this is an account ID, an account status and an user profile.
+   * This can be very different in other case, for example in the case of a GitHub OAuth authentication.
+   *
+   * @param {Account} accountToConfirm Created account that we want to ask confirmation
+   * @returns {Promise<PendingAccountConfirmation>} Object that includes the ID of the created account and the token to validate it
+   */
+  askConfirmation(accountToConfirm: Account): Promise<PendingAccountConfirmation>;
+
+  /**
+   * Confirm a pending confirmation account
+   *
+   * @param {PendingAccountConfirmation} confirmation Unique token to validate a specific account
+   * @returns {Promise<ConfirmedAccount} Object with the accountId, the status of the account and the user profile
+   */
+  confirm(confirmation: PendingAccountConfirmation): Promise<ConfirmedAccount>;
+}
+export abstract class AccountConfirmationManagerInjectable implements AccountConfirmationManager {
+  abstract askConfirmation(accountToConfirm: Account): Promise<PendingAccountConfirmation>;
+  abstract confirm(confirmation: PendingAccountConfirmation): Promise<ConfirmedAccount>;
+}
+
+export interface AccountConfirmationTemplateVariables extends Variables {
+  readonly account: Account;
+  readonly token: Token;
+  readonly properties: ConfigurationProperties;
+  readonly zetapushContext: ZetaPushContext;
+  readonly confirmationUrl: string;
 }
 
 /**
@@ -93,7 +148,7 @@ export interface AccountConfirmationMessageManager {
 export interface Account {
   accountId: string;
   accountStatus: AccountStatus;
-  userProfile: UserProfile;
+  profile: UserProfile;
 }
 
 /**
@@ -116,22 +171,62 @@ export interface AccountStatusProvider {
    */
   getStatus(): Promise<AccountStatus>;
 }
+export abstract class AccountStatusProviderInjectable implements AccountStatusProvider {
+  abstract getStatus(): Promise<AccountStatus>;
+}
 
+/**
+ * Define the status of an account (example : 'active', 'disabled', ...).
+ *
+ * The default behavior provides default statuses through {@link StandardAccountStatus} enum.
+ *
+ * @see StandardAccountStatus
+ */
 export type AccountStatus = string;
 
+/**
+ * Information of the user
+ * That includes for example the username, birthdate, gender...
+ */
 export interface UserProfile {
   [property: string]: any;
 }
 
-export interface AccountCreationDetails {}
+/**
+ * Necessary informations for the account creation process
+ * These informations may vary a lot. In the case of a username/password
+ * login process with an email confirmation, the needed informations are
+ * the login, the email, the password (x2 for confirmation password).
+ */
+export interface AccountCreationDetails {
+  credentials: Credentials;
+  profile?: UserProfile;
+}
 
+/**
+ * This is returned when an account is validated.
+ * By default it includes the same informations that an Account
+ * but it can takes extra informations if you want.
+ *
+ * @see Account
+ */
 export interface ConfirmedAccount extends Account {}
 
+/**
+ * Returned when you ask an account confirmation
+ */
 export interface PendingAccountConfirmation {
-  createdAccountId: string;
+  createdAccount: Partial<Account>;
   token: Token;
 }
 
 export interface AccountDetails {
   accountId: string;
+}
+
+export interface EmailAddressProvider {
+  getEmailAddress(account: Account): Promise<EmailAddress>;
+}
+export abstract class EmailAddressProviderInjectable {
+  abstract getEmailAddress(account: Account): Promise<EmailAddress>;
 }

@@ -1,13 +1,9 @@
 const execa = require('execa');
 import { ExecaChildProcess } from 'execa';
-// import * as util from 'util';
 import * as fs from 'fs';
 import { PathLike, readFileSync, writeFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import * as process from 'process';
-// const readFile = util.promisify(fs.readFile);
-// const writeFile = util.promisify(fs.writeFile);
-// const exists = util.promisify(fs.exists);
 const rimraf = require('rimraf');
 import { fetch, ResolvedConfig } from '@zetapush/common';
 const kill = require('tree-kill');
@@ -115,7 +111,7 @@ export const npmInit = (developerLogin: string, developerPassword: string, dir: 
   } else if (useSymlinkedDependencies()) {
     const createPath = getZetapushModuleDirectoryPath('create', 'index.js');
     commandLogger.debug(
-      `npmInit() -> [node ${createPath} ${relativeDir} --developer-login xxx --developer-password xxx ${
+      `npmInit() -> [node ${createPath} ${relativeDir} --force-current-version --developer-login xxx --developer-password xxx ${
         platformUrl ? '--platform-url ' + platformUrl : ''
       }]`
     );
@@ -128,7 +124,8 @@ export const npmInit = (developerLogin: string, developerPassword: string, dir: 
         developerLogin,
         '--developer-password',
         developerPassword,
-        ...(platformUrl ? ['--platform-url', platformUrl] : [])
+        ...(platformUrl ? ['--platform-url', platformUrl] : []),
+        '--force-current-version' // force current version for `zeta push`
       ],
       { cwd: '.generated-projects' }
     );
@@ -593,6 +590,7 @@ export const nukeApp = (zetarc: ResolvedConfig) => {
  */
 export class Runner {
   private cmd?: ExecaChildProcess;
+  private runExitCode = 0;
 
   constructor(private dir: string, private timeout = 300000) {}
 
@@ -601,6 +599,16 @@ export class Runner {
     const start = Date.now();
     return new Promise((resolve, reject) => {
       const getStatus = async () => {
+        if (this.runExitCode > 0) {
+          commandLogger.silly('Runner:waitForWorkerUp() -> run() FAILED with code', this.runExitCode);
+          return reject(
+            new Error(
+              `runner.run() has exited with code ${
+                this.runExitCode
+              }. The worker won't start correctly so waiting to be up has been stopped`
+            )
+          );
+        }
         if (Date.now() - start > this.timeout) {
           commandLogger.error('Runner:waitForWorkerUp() -> timeout');
           reject(new Error(`Worker for ${this.dir} not up after ${this.timeout}ms`));
@@ -633,6 +641,7 @@ export class Runner {
           }
         } catch (e) {
           commandLogger.silly('Runner:waitForWorkerUp() -> getStatus() FAILED', e);
+          // retry later
         }
         setTimeout(getStatus, 300);
       };
@@ -659,6 +668,9 @@ export class Runner {
     if (this.cmd && !quiet) {
       this.cmd.stdout.pipe(new SubProcessLoggerStream('silly'));
       this.cmd.stderr.pipe(new SubProcessLoggerStream('warn'));
+    }
+    if (this.cmd) {
+      this.cmd.once('close', (code) => (this.runExitCode = code));
     }
     return this.cmd;
   }

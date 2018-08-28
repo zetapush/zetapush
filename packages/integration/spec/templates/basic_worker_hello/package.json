@@ -1,7 +1,7 @@
 {
   "name": "basic-worker-case",
   "version": "0.1.0",
-  "main": "worker/index.js",
+  "main": "worker/index.ts",
   "private": true,
   "scripts": {
     "deploy": "zeta push",

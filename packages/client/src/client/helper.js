@@ -53,7 +53,7 @@ export class ClientHelper {
     resource = null,
     transports = Transports
   } = {}) {
-    // Merge config with overloaded environement
+    // Merge config with overloaded environment
     const options = merge(
       {
         platformUrl,

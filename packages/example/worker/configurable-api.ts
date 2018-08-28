@@ -1,4 +1,4 @@
-import { Configurable, Injectable } from '@zetapush/core';
+import { Injectable } from '@zetapush/core';
 
 export class ConfigurableApiOptions {
   enabled = false;
@@ -11,11 +11,8 @@ export class ConfigurableApiOptions {
 }
 
 @Injectable()
-@Configurable(ConfigurableApiOptions)
 export class ConfigurableApi {
-  constructor(
-    private options: ConfigurableApiOptions
-  ) {}
+  constructor(private options: ConfigurableApiOptions) {}
   isEnabled() {
     return this.options.enabled;
   }

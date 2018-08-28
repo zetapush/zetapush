@@ -28,6 +28,7 @@
     "lerna": "lerna",
     "lerna:clean": "lerna clean",
     "lerna:bootstrap": "lerna bootstrap",
+    "lerna:clean+bootstrap": "npm run lerna:clean -- --yes && npm run lerna:bootstrap",
     "lerna:build": "lerna run build",
     "lerna:publish": "lerna publish --conventional-commits --changelog-preset angular --force-publish=* --exact",
     "lerna:publish:canary": "lerna publish --canary --conventional-commits --changelog-preset angular --force-publish=* --exact",
@@ -43,5 +44,8 @@
     "commitizen": {
       "path": "./node_modules/cz-lerna-changelog"
     }
+  },
+  "dependencies": {
+    "@zetapush/client": "^0.31.4"
   }
 }

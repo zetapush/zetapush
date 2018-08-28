@@ -52,7 +52,7 @@ program
   .option('-l, --developer-login <developer-login>', 'Developer login')
   .option('-p, --developer-password <developer-password>', 'Developer password')
   .option('-a, --app-name <app-name>', 'Application name')
-  .option('-e, --env-name <env-name>', 'Environement name')
+  .option('-e, --env-name <env-name>', 'Environment name')
   .option(
     '-v, --verbose',
     'Verbosity level (-v=error+warn+info, -vv=error+warn+info+log, -vvv=error+warn+info+log+trace)',

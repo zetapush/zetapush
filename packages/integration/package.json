@@ -5,6 +5,9 @@
     "test": "jasmine"
   },
   "dependencies": {
+    "find-free-port": "^1.2.0",
+    "rimraf": "^2.6.2",
+    "toxy": "^0.3.15"
   },
   "devDependencies": {
     "@zetapush/testing": "0.31.4",

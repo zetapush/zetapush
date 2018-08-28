@@ -19,10 +19,7 @@ describe(`As developer with
   });
 
   xit(
-    `should be able to
-      - have a new hello-world project
-      - push hello-world
-      - use published hello-world custom cloud services`,
+    `TODO`,
     async () => {
       // // 1) npm init
       // await npmInit(this.developerLogin, this.developerPassword, projectDir);
