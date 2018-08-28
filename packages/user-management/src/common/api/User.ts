@@ -1,4 +1,4 @@
-import { AccountStatus, Credentials, UserProfile } from '../../standard-user-workflow/api';
+import { AccountStatus, Credentials, UserProfile, Account } from '../../standard-user-workflow/api';
 
 export interface UserRepository {
   exists(credentials: Credentials): Promise<boolean>;
@@ -8,7 +8,7 @@ export interface UserRepository {
     userProfile: UserProfile,
     accountStatus: AccountStatus,
     accountId?: string
-  ): Promise<string>;
+  ): Promise<Account>;
 
   getProfile(accountId: string): Promise<UserProfile>;
 
@@ -23,7 +23,7 @@ export abstract class UserRepositoryInjectable implements UserRepository {
     userProfile: UserProfile,
     accountStatus: AccountStatus,
     accountId?: string
-  ): Promise<string>;
+  ): Promise<Account>;
 
   abstract getProfile(accountId: string): Promise<UserProfile>;
 

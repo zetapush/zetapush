@@ -1,3 +1,3 @@
 export * from './account';
-export * from './login';
+export * from './authentication';
 export * from './exceptions';

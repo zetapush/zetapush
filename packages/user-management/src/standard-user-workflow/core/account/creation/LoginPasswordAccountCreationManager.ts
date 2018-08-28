@@ -74,11 +74,12 @@ export class LoginPasswordAccountCreationManager implements AccountCreationManag
           details.credentials.login
         );
       }
-      const newAccountId = await this.userRepository.addUser(credentials, profile, accountStatus, accountId);
+      const account = await this.userRepository.addUser(credentials, profile, accountStatus, accountId);
+
       return {
-        accountId: newAccountId || accountId,
-        accountStatus,
-        profile
+        accountId: account.accountId || accountId,
+        accountStatus: account.accountStatus,
+        profile: account.profile
       };
     } catch (e) {
       if (e instanceof AccountCreationError) {

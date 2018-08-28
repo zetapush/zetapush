@@ -1,7 +1,7 @@
 import {
   StandardUserWorkflowConfigurer,
   RegistrationConfigurer,
-  LoginConfigurer,
+  AuthenticationConfigurer,
   LostPasswordConfigurer
 } from '../../common/configurer/grammar';
 import { Provider } from '@zetapush/core';
@@ -130,8 +130,8 @@ export class DefaultUserWorkflowConfigurer implements Configurer {
         //   .failureUrl(`${this.zetapushContext.frontUrl}#error`);
   }
 
-  configureLogin(loginConfigurer: LoginConfigurer) {
-    loginConfigurer.fields();
+  configureLogin(loginConfigurer: AuthenticationConfigurer) {
+    loginConfigurer.loginPassword();
     // .field(or('username', 'email')).and()
     // .field('password')
   }

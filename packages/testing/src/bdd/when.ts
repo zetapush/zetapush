@@ -1,4 +1,4 @@
-import { WeakClient } from '@zetapush/client';
+import { SmartClient } from '@zetapush/client';
 import { ResolvedConfig, Service } from '@zetapush/common';
 import { FactoryProvider } from '@zetapush/core';
 import { WorkerRunner, WorkerRunnerEvents } from '@zetapush/worker';
@@ -12,6 +12,7 @@ import {
   TestWorker,
   getTestNormalizer
 } from '../worker/test-instance';
+import { Credentials } from '@zetapush/client';
 
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
@@ -34,19 +35,24 @@ export const consoleUserAction = async (name: string, func: () => any) => {
 export const frontUserAction = async (
   name: string,
   testOrContext: Context,
-  func: (api: any, client: WeakClient) => any
+  func: (api: any, client: SmartClient) => any,
+  credentials?: Credentials
 ) => {
   return await userAction(name + ' from front', async () => {
     let api;
     let client;
     try {
       const zetarc = new ContextWrapper(testOrContext).getContext().zetarc;
-      client = new WeakClient({
+      client = new SmartClient({
         ...(<any>zetarc),
         transports
       });
       frontUserActionLogger.debug('Connecting to worker...');
-      await client.connect();
+      await client.disconnect();
+      if (credentials) {
+        await client.setCredentials(credentials);
+      }
+      const resu = await client.connect();
       frontUserActionLogger.debug('Connected to worker');
       api = (<any>client).createProxyTaskService();
       frontUserActionLogger.debug('Api instance created');
