@@ -69,7 +69,6 @@ describe(`TemplatedEmail`, () => {
           await runInWorker(
             this,
             async (
-              _,
               sender: MessageSender,
               htmlTemplateManager: TemplateManager,
               textTemplateManager: TemplateManager

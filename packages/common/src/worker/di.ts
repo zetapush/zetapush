@@ -252,12 +252,15 @@ export const scanProviders = (providers: Provider[], output = new ScanOutput()) 
 export const resolveProviders = (client: ServerClient, providers: Provider[]) => {
   const analyzedProviders = scanProviders(providers || []);
   const resolved = resolve(client, analyzedProviders);
-  return [...resolved, ...providers];
+  return {
+    ...analyzedProviders,
+    providers: [...resolved, ...providers]
+  };
 };
 
 export const filterProviders = (providers: Provider[]) => {
   const filtered: Provider[] = [];
-  for (let i = providers.length - 1; i > 0; i--) {
+  for (let i = providers.length - 1; i >= 0; i--) {
     const provider = providers[i];
     let provide = (<any>provider).provide;
     if (!filtered.some((p: any) => p.provide === provide)) {
@@ -270,7 +273,7 @@ export const filterProviders = (providers: Provider[]) => {
 /**
  * Resolve injected services
  */
-export const analyze = (exposed: NormalizedWorkerDeclaration) => {
+export const analyzeService = (exposed: NormalizedWorkerDeclaration) => {
   const output = new ScanOutput();
   const services: CustomCloudService[] = [];
   Object.values(exposed).map((CustomCloudService: CustomCloudService) => {
@@ -317,48 +320,97 @@ export const resolve = (client: ServerClient, output: ScanOutput): Provider[] =>
   }))
 ];
 
-/**
- * Resolve and inject dependencies
- */
-export const instantiate = async (
+export interface DependencyInjectionAnalysis {
+  /**
+   * Original worker declaration
+   */
+  declaration: WorkerDeclaration;
+  /**
+   * The list of resolved providers after analysis
+   */
+  providers: Provider[];
+  /**
+   * The list of platform services
+   */
+  platformServices: Service[];
+  /**
+   * The exposed class or namespace/class pairs
+   */
+  exposed: NormalizedWorkerDeclaration;
+  /**
+   * Automatic scan result
+   */
+  analyzed: ScanOutput;
+  /**
+   * Merge boot layers
+   */
+  bootLayers: Service[];
+}
+
+export const analyze = async (
   client: ServerClient,
   declaration: WorkerDeclaration,
   customNormalizer: WorkerDeclarationNormalizer = normalize
-) => {
-  let singleton;
-  try {
-    // Normalize worker declaration
-    const normalized = await customNormalizer(declaration);
-    // Get providers from imports module list
-    const imported = resolveProviders(client, await getProvidersByImports(normalized.imports || []));
-    // Get exposed CloudService
-    const exposed = clean(normalized.expose);
-    // Analyze exposed CloudService to get an order providers list
-    const analyzed = analyze(exposed);
-    // Get a resolved list of providers used in exposed DI graph
-    const resolved = resolve(client, analyzed);
-    // Configured providers
-    const configured = resolveProviders(client, await getProvidersByConfigurers(normalized.configurers || []));
-    // Explicit providers
-    const providers = resolveProviders(client, normalized.providers || []);
-    // Priorize providers
-    const priorized = filterProviders([
-      ...resolved, // Providers via scan of exposed DI Graph
-      ...imported, // Providers via imports module list
-      ...configured, // Providers via configurer
-      ...providers // Providers via module provider
-    ]);
+): Promise<DependencyInjectionAnalysis> => {
+  // Normalize worker declaration
+  const normalized = await customNormalizer(declaration);
+  // Get providers from imports module list
+  const resolvedImports = resolveProviders(client, await getProvidersByImports(normalized.imports || []));
+  const imported = resolvedImports.providers;
+  // Get exposed CloudService
+  const exposed = clean(normalized.expose);
+  // Analyze exposed CloudService to get an ordered providers list
+  const analyzed = analyzeService(exposed);
+  // Get a resolved list of providers used in exposed DI graph
+  const resolved = resolve(client, analyzed);
+  // Configured providers
+  const resolvedConfigured = resolveProviders(client, await getProvidersByConfigurers(normalized.configurers || []));
+  const configured = resolvedConfigured.providers;
+  // Explicit providers
+  const resolvedProviders = resolveProviders(client, normalized.providers || []);
+  const providers = resolvedProviders.providers;
+  // Priorize providers
+  const priorized = filterProviders([
+    ...resolved, // Providers via scan of exposed DI Graph
+    ...imported, // Providers via imports module list
+    ...configured, // Providers via configurer
+    ...providers // Providers via module provider
+  ]);
+  const platformServices = getPlatformServices(priorized);
+  const bootLayers = analyzed.bootLayer
+    .concat(resolvedImports.bootLayer)
+    .concat(resolvedConfigured.bootLayer)
+    .concat(resolvedProviders.bootLayer);
+  trace('analyzed providers', priorized);
+  trace('analyzed platformServices', platformServices);
+  trace('bootstrap layers', bootLayers);
+  return {
+    declaration,
+    providers: priorized,
+    platformServices,
+    exposed,
+    analyzed,
+    bootLayers
+  };
+};
 
+/**
+ * Resolve and inject dependencies
+ */
+export const instantiate = async (analysis: DependencyInjectionAnalysis) => {
+  let singleton: any;
+  try {
+    const { providers, bootLayers, exposed } = analysis;
     // Create a root injector
-    const injector = ReflectiveInjector.resolveAndCreate(priorized);
+    const injector = ReflectiveInjector.resolveAndCreate(providers);
     // Flag all instance as CloudServiceInstance
-    priorized.forEach((provider: any) => {
+    providers.forEach((provider: any) => {
       const token = isFunction(provider) ? provider : (provider as any).provide;
       const instance = injector.get(token);
       CloudServiceInstance.flag(instance);
     });
     // Convert bootlayer declaration to instance
-    analyzed.bootLayer.forEach((layer) => {
+    bootLayers.forEach((layer) => {
       layer.forEach((CloudService: CustomCloudService, key: any) => {
         const instance = injector.get(CloudService);
         layer[key] = instance;
@@ -370,11 +422,17 @@ export const instantiate = async (
       return instance;
     }, Object.create(null));
     // Add bootlayers reference in singleton instance
-    singleton.bootLayers = analyzed.bootLayer;
+    singleton.bootLayers = bootLayers;
   } catch (ex) {
     error('instantiate', ex);
     throw ex;
   }
   trace('instantiate', singleton);
   return singleton;
+};
+
+export const getPlatformServices = (providers: Provider[]): Service[] => {
+  return providers
+    .map((provider: Provider) => (isFunction(provider) ? provider : (provider as any).provide))
+    .filter((token: any) => !!token.DEFAULT_DEPLOYMENT_ID);
 };

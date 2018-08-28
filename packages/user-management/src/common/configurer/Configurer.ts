@@ -47,6 +47,9 @@ export const scoped = <T>(scope: Scope, provide: Class<T>): InjectionToken<T> =>
     throw new IllegalArgumentValueError(`You can't create a scoped dependency without its type`, 'provide', provide);
   }
   const key = `${scope.getKey()}<${extractName(provide)}>`;
+  if (scopedTokens.has(key)) {
+    return scopedTokens.get(key)!;
+  }
   const token = new InjectionToken<T>(key);
   scopedTokens.set(key, token);
   return token;
@@ -58,10 +61,11 @@ export const scopedDependency = <T>(scope: string | Scope, dep: Class<T>): Injec
   }
   const name = (<Scope>scope).getKey ? (<Scope>scope).getKey() : scope;
   const key = `${name}<${extractName(dep)}>`;
-  const token = scopedTokens.get(key);
-  if (!token) {
-    throw new IllegalStateError(`No token registered for scope ${name}. Do you have called scoped() ?`);
+  if (scopedTokens.has(key)) {
+    return scopedTokens.get(key)!;
   }
+  const token = new InjectionToken<T>(key);
+  scopedTokens.set(key, token);
   return token;
 };
 

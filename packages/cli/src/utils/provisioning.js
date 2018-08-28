@@ -4,7 +4,7 @@ const core = require('@zetapush/common');
 
 /**
  * Get deployment id list from injected service to provisioning items
- * @param {WorkerDeclaration} declaration
+ * @param {Analyzed} declaration
  * @return {string[]}
  */
 const getDeploymentIdList = (declaration) => core.getDeploymentIdList(declaration, [], [Queue]);
@@ -19,7 +19,7 @@ const getBootstrapProvision = (config) => core.getBootstrapProvision(config, [Wo
 /**
  * Get provisioning from injected service to provisioning items
  * @param {ZetaPushConfig} config
- * @param {WorkerDeclaration} declaration
+ * @param {Analyzed} declaration
  */
 const getRuntimeProvision = (config, declaration) => core.getRuntimeProvision(config, declaration, [], [Queue]);
 
