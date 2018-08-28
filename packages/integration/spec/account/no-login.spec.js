@@ -14,7 +14,7 @@ describe(`As developer with
       /*   */ .and()
       /**/ .project()
       /*   */ .template()
-      /*     */ .sourceDir('empty-app')
+      /*     */ .sourceDir('basic_worker_hello')
       /*     */ .and()
       /*   */ .and()
       /**/ .apply(this);
