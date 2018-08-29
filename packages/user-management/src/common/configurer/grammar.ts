@@ -157,7 +157,7 @@ export interface StandardUserWorkflowConfigurer {
    */
   registration(): RegistrationConfigurer;
 
-  login(): LoginConfigurer;
+  login(): AuthenticationConfigurer;
 
   lostPassword(): LostPasswordConfigurer;
 }
@@ -310,9 +310,11 @@ export interface RegistrationConfirmationConfigurer extends And<RegistrationConf
 
 //==================== account login ====================//
 
-export interface LoginConfigurer extends And<AccountConfigurer> {
-  fields(): FieldsConfigurer<LoginConfigurer>;
+export interface AuthenticationConfigurer extends And<StandardUserWorkflowConfigurer> {
+  loginPassword(): LoginPasswordAuthenticationConfigurer;
 }
+
+export interface LoginPasswordAuthenticationConfigurer {}
 
 //==================== account password reset ====================//
 

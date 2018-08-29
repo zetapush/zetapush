@@ -21,7 +21,14 @@ describe(`LoginPasswordAccountCreationManager`, () => {
         this.uuidGenerator.generate.and.returnValue({ value: '42' });
         this.accountStatusProvider.getStatus.and.returnValue(StandardAccountStatus.WaitingConfirmation);
         this.userRepository.exists.and.returnValue(false);
-        this.userRepository.addUser.and.returnValue();
+        this.userRepository.addUser.and.returnValue({
+          accountId: '42',
+          accountStatus: StandardAccountStatus.WaitingConfirmation,
+          profile: {
+            firstname: 'Odile',
+            lastname: 'DERAY'
+          }
+        });
         // WHEN
         const account = await this.creationManager.createAccount({
           credentials: {
@@ -33,6 +40,7 @@ describe(`LoginPasswordAccountCreationManager`, () => {
             lastname: 'DERAY'
           }
         });
+
         // THEN
         expect(account).toBeDefined();
         expect(account).not.toBeNull();

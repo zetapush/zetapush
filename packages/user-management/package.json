@@ -33,7 +33,7 @@
     "@zetapush/client": "0.31.4",
     "@zetapush/http-server": "0.31.4",
     "@zetapush/platform-legacy": "0.31.4",
-    "axios": "0.19.0-beta.1",
+    "axios": "0.18.0",
     "class-validator": "0.8.5"
   },
   "devDependencies": {

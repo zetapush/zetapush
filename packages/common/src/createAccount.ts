@@ -39,9 +39,8 @@ export const createAccount = (config: Config) =>
     }))
     .catch((failure: any) => {
       try {
-        const body = JSON.parse(failure.body);
-        if (body.code !== 'EMAIL_EXISTS') {
-          todo(`Catch 'createAccount' failure`, body);
+        if (failure.body.code !== 'EMAIL_EXISTS') {
+          todo(`Catch 'createAccount' failure`, failure.body);
         }
       } catch (exception) {
         todo(`Catch 'createAccount' failure`, exception);

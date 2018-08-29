@@ -7,3 +7,9 @@ export class FailedGetUserProfileError extends AccountAuthenticationError {
     super(message);
   }
 }
+
+export class RequiredAccountIdError extends AccountAuthenticationError {
+  constructor(message: string) {
+    super(message);
+  }
+}

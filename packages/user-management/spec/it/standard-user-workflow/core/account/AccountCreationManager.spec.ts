@@ -60,12 +60,14 @@ describe(`AccountCreationManager`, () => {
                   lastname: 'DERAY'
                 }
               });
-              console.log('account', account);
 
               // THEN
               expect(account).toBeDefined();
               expect(account).not.toBeNull();
               expect(account.accountId).toBeDefined();
+
+              console.log('==> account status', account.accountStatus);
+
               expect(account.accountStatus).toBe(StandardAccountStatus.WaitingConfirmation);
               expect(<any>account.profile).toEqual({
                 firstname: 'Odile',

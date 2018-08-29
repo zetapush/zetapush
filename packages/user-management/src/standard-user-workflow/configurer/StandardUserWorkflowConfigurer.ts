@@ -1,7 +1,7 @@
 import {
   StandardUserWorkflowConfigurer,
   RegistrationConfigurer,
-  LoginConfigurer,
+  AuthenticationConfigurer,
   LostPasswordConfigurer
 } from '../../common/configurer/grammar';
 import { StandardUserWorkflow } from '../core/StandardUserWorkflow';
@@ -25,9 +25,11 @@ import {
 } from '../api';
 import { ConfirmationUrlHttpHandler } from '../core/account/confirmation/ConfirmationUrlHttpHandler';
 import { HttpServerInjectable, HttpServer, ExpressServerConfigurer } from '@zetapush/http-server';
+import { AuthenticationConfigurerImpl } from '../configurer/account/AuthenticationConfigurerImpl';
 
 export class StandardUserWorkflowConfigurerImpl implements StandardUserWorkflowConfigurer, Configurer {
   private registrationConfigurer?: RegistrationConfigurerImpl;
+  private authenticationConfigurer?: AuthenticationConfigurerImpl;
 
   constructor(private properties: ConfigurationProperties, private zetapushContext: ZetaPushContext) {}
 
@@ -36,8 +38,9 @@ export class StandardUserWorkflowConfigurerImpl implements StandardUserWorkflowC
     return this.registrationConfigurer;
   }
 
-  login(): LoginConfigurer {
-    throw new Error('Not implemented');
+  login(): AuthenticationConfigurer {
+    this.authenticationConfigurer = new AuthenticationConfigurerImpl(this, this.properties, this.zetapushContext);
+    return this.authenticationConfigurer;
   }
 
   lostPassword(): LostPasswordConfigurer {
@@ -46,7 +49,7 @@ export class StandardUserWorkflowConfigurerImpl implements StandardUserWorkflowC
 
   async getProviders(): Promise<Provider[]> {
     const providerRegistry = new SimpleProviderRegistry();
-    await providerRegistry.registerConfigurer(this.registrationConfigurer);
+    await providerRegistry.registerConfigurer(this.registrationConfigurer, this.authenticationConfigurer);
     providerRegistry.registerFactory(
       StandardUserWorkflow,
       [
