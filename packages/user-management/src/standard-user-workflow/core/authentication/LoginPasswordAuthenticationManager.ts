@@ -3,7 +3,7 @@ import { Account } from '../../api/Account';
 import { LoginPasswordCredentials } from '../../api/Credentials';
 import { Client } from '@zetapush/client';
 import { Simple } from '@zetapush/platform-legacy';
-import { FailedGetUserProfileError } from '../exceptions/AccountAuthenticationError';
+import { RequiredAccountIdError } from '../exceptions/AccountAuthenticationError';
 
 export class LoginPasswordAuthenticationManager implements AuthenticationManager {
   constructor(private authService: Simple) {}
@@ -19,7 +19,7 @@ export class LoginPasswordAuthenticationManager implements AuthenticationManager
     // try {
     //   user = await this.authService.checkUser({ key: credentials.login });
     // } catch (err) {
-    //   throw new FailedGetUserProfileError(`The service failed to get the user profile`);
+    //   throw new RequiredAccountIdError(`The service failed to get the user profile`);
     // }
 
     // return user as Account;

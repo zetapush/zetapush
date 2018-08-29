@@ -12,7 +12,7 @@ export class LegacySimpleError extends BaseError {
   }
 }
 
-export class LegacyUpdateAccountStatus extends BaseError {
+export class LegacyUpdateAccountStatus extends LegacySimpleError {
   constructor(message: string, public cause?: Error) {
     super(message);
   }
@@ -128,6 +128,8 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
             e
           )
         );
+      } else if (e instanceof LegacySimpleError) {
+        throw e;
       }
       throw new LegacySimpleError(`Account creation for '${credentials.login}' has failed`, e);
     }
@@ -158,7 +160,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
    * Get the login of a user from his ID
    * @param accountId unique ID of a user
    */
-  async getLoginFromAccountId(accountId: string): Promise<string> {
+  private async getLoginFromAccountId(accountId: string): Promise<string> {
     let columns;
     try {
       const { result } = await this.gda.get({

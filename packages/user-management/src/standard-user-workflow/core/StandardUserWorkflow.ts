@@ -49,13 +49,32 @@ export class StandardUserWorkflow {
    * @returns Account of the connected user
    */
   async login(credentials: Credentials): Promise<Account> {
-    throw 'Method not implemented';
+    throw `
+    This method is not implemented.
+
+    You need to use the ZetaPush SDK to connect your user to your application.
+    You create a new SmartClient, set credentials and call the 'connect()' method.
+
+    const client = new SmartClient();
+    await client.setCredentials({ login: 'login', password: 'password' });
+    await client.connect();
+
+    `;
   }
 
   /**
    * Allows a user to log out the application.
    */
   async logout(): Promise<void> {
-    throw 'Method not implemented';
+    throw `
+    This method is not implemented.
+
+    You need to use the ZetaPush SDK to disconnect your user from your application.
+    You create a new SmartClient and call the 'disconnect()' method.
+
+    const client = new SmartClient();
+    await client.disconnect();
+    
+    `;
   }
 }

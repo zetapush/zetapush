@@ -23,12 +23,12 @@ describe(`StandardAccountAuthentication`, () => {
     describe(`that use the LoginPasswordAuthenticationManager`, () => {
       beforeEach(async () => {
         await given()
-          .credentials()
-          .fromEnv()
-          .newApp()
-          .and()
-          .worker()
-          .testModule(async () => {
+          /**/ .credentials()
+          /*  */ .fromEnv()
+          /*  */ .newApp()
+          /*  */ .and()
+          /**/ .worker()
+          /**/ .testModule(async () => {
             // create configurer + inject services
             const configurer = new AccountCreationManagerConfigurerImpl(registrationConfigurer);
             configurer
@@ -74,9 +74,7 @@ describe(`StandardAccountAuthentication`, () => {
 
             const credentials = { login: 'odile.deray', password: 'password' };
 
-            try {
-              await frontUserAction('Client connection', this, async (api, client) => {}, credentials);
-            } catch (e) {}
+            await frontUserAction('Client connection', this, async (api, client) => {}, credentials);
           },
           5 * 60 * 1000
         );
