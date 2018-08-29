@@ -1,16 +1,7 @@
 const process = require('process');
 const ora = require('ora');
 
-const {
-  log,
-  error,
-  warn,
-  info,
-  trace,
-  debugObject,
-  getVerbosity,
-  LocalDevEnvironmentProvider
-} = require('@zetapush/common');
+const { log, error, warn, info, trace, getVerbosity, LocalDevEnvironmentProvider } = require('@zetapush/common');
 const { displayHelp } = require('@zetapush/troubleshooting');
 const { WorkerRunner, WorkerRunnerEvents } = require('@zetapush/worker');
 
@@ -19,10 +10,10 @@ const { createServer } = require('../utils/http-server');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
 const cliVerbosityToCometdLogLevel = (verbosity) => {
-  if (verbosity < 3) {
+  if (verbosity > 3) {
     return 'debug';
   }
-  if (verbosity < 2) {
+  if (verbosity > 2) {
     return 'info';
   }
   return 'warn';
@@ -104,12 +95,13 @@ const run = (command, config, declaration) => {
 
 const listenTerminalSignals = (client, runner) => {
   const clean = () => {
-    info('exiting worker');
+    info('exiting worker...');
     return runner
       .destroy()
-      .then(() => debug(`Properly disconnect client`))
+      .then(() => trace(`Properly disconnect client`))
       .then(() => client.disconnect())
-      .then(() => debug(`Client properly disconnected`));
+      .then(() => trace(`Client properly disconnected`))
+      .then(() => info(`worker exited properly`));
   };
 
   const onTerminalSignal = () => {

@@ -58,9 +58,6 @@ export class DefaultUserWorkflowConfigurer implements Configurer {
   constructor() {}
   
   configure(env: Environment) {
-    console.log("============================")
-    console.log(JSON.stringify(env, null, 2));
-    console.log("============================")
     this.properties = env.properties;
     this.zetapushContext = env.context;
     this.userManagementConfigurer = new StandardUserWorkflowConfigurerImpl(this.properties, this.zetapushContext);

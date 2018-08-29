@@ -2,6 +2,7 @@ import { Environment } from '@zetapush/core';
 import { defaultConfigurationPropertiesFactory } from './properties';
 import { ResolvedConfig } from '../common-types';
 import { defaultZetaPushContextFactory } from './context';
+import { trace } from '../utils/log';
 
 export interface EnvironmentProvider {
   get(): Promise<Environment>;
@@ -16,7 +17,8 @@ export class LocalDevEnvironmentProvider implements EnvironmentProvider {
   ) {}
 
   async get(): Promise<Environment> {
-    console.log('===================', this.confPath, process.cwd());
+    trace('confPath', process.cwd() + '/' + this.confPath);
+    trace('externalConfPath', this.externalConfPath);
     return {
       name: this.envName,
       context: await defaultZetaPushContextFactory(this.config),
