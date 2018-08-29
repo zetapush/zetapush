@@ -15,7 +15,8 @@ import {
   setPlatformUrlToZetarc,
   createZetarc,
   Runner,
-  getCurrentEnv
+  getCurrentEnv,
+  npmInstall
 } from '../utils/commands';
 import { TestContext, Dependencies } from '../utils/types';
 import { createApplication, DEFAULTS } from '@zetapush/common';
@@ -368,7 +369,8 @@ class GivenTemplatedApp extends Parent<GivenApp> {
         })`
       );
       copydir.sync('spec/templates/' + this.templateApp, '.generated-projects/' + this.templateApp);
-      await npmInstallLatestVersion(`.generated-projects/${this.templateApp}`);
+      // await npmInstallLatestVersion(`.generated-projects/${this.templateApp}`);
+      await npmInstall(`.generated-projects/${this.templateApp}`, '*');
 
       if (this.credentials) {
         givenLogger.silly(

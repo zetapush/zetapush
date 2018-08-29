@@ -1,0 +1,16 @@
+{
+  "name": "default-standard-user-workflow-case",
+  "version": "0.1.0",
+  "main": "worker/index.ts",
+  "private": true,
+  "scripts": {
+    "deploy": "zeta push",
+    "start": "zeta run",
+    "troubleshoot": "zeta troubleshoot"
+  },
+  "dependencies": {
+    "@zetapush/cli": "0.31.4",
+    "@zetapush/core": "0.31.4",
+    "@zetapush/user-management": "0.31.4"
+  }
+}

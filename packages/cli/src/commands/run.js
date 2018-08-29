@@ -31,7 +31,7 @@ const run = (command, config, declaration) => {
     command.skipBootstrap,
     config,
     transports,
-    new LocalDevEnvironmentProvider('dev', command.worker),
+    new LocalDevEnvironmentProvider(config, 'dev', command.worker),
     undefined,
     cliVerbosityToCometdLogLevel(getVerbosity())
   );

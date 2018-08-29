@@ -84,10 +84,21 @@ export class MailjetEmailConfigurerImpl<P> extends AbstractParent<P> implements 
     return this;
   }
   apiKeyPublic(mailjetApiKeyPublic: string): MailjetEmailConfigurer<P> {
+    console.log('kdfkjsdkggfhdjsgdjgs', mailjetApiKeyPublic);
+    console.log('kdfkjsdkggfhdjsgdjgs');
+    console.log('kdfkjsdkggfhdjsgdjgs');
+    console.log('kdfkjsdkggfhdjsgdjgs');
+    console.log('kdfkjsdkggfhdjsgdjgs');
+    console.log('kdfkjsdkggfhdjsgdjgs');
     this.mailjetApiKeyPublic = mailjetApiKeyPublic;
     return this;
   }
   apiKeyPrivate(mailjetApiKeyPrivate: string): MailjetEmailConfigurer<P> {
+    console.log('kdfkjsdkggfhdjsgdjgs', mailjetApiKeyPrivate);
+    console.log('kdfkjsdkggfhdjsgdjgs');
+    console.log('kdfkjsdkggfhdjsgdjgs');
+    console.log('kdfkjsdkggfhdjsgdjgs');
+    console.log('kdfkjsdkggfhdjsgdjgs');
     this.mailjetApiKeyPrivate = mailjetApiKeyPrivate;
     return this;
   }
@@ -100,6 +111,9 @@ export class MailjetEmailConfigurerImpl<P> extends AbstractParent<P> implements 
     const providerRegistry = new SimpleProviderRegistry();
     providerRegistry.registerFactory(EmailSenderInjectable, [], () => {
       const url = this.mailjetUrl || DEFAULT_MAILJET_URL;
+
+      console.log('CONSOLE ====>', this.mailjetApiKeyPublic, this.mailjetApiKeyPrivate);
+
       if (!this.mailjetApiKeyPublic || !this.mailjetApiKeyPrivate) {
         throw new MissingMandatoryConfigurationError('Missing apiKeyPublic or apiKeyPrivate for Mailjet');
       }

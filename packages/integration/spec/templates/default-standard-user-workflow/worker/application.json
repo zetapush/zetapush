@@ -1,0 +1,17 @@
+{
+  "organization": {
+    "name": "ZetaPush"
+  },
+  "email": {
+    "from": "root@zetapush.com"
+  },
+  "registration": {
+    "confirmation": {
+      "subject": "Please confirm your account registration"
+    }
+  },
+  "mailjet": {
+    "apikey-public": "abb13e7529f0bb01e9768a8068017556",
+    "apikey-private": "b84b601427442843f67a8a91b2c183bd"
+  }
+}
