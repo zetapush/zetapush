@@ -1,7 +1,16 @@
 const process = require('process');
 const ora = require('ora');
 
-const { log, error, warn, info, trace, getVerbosity, LocalDevEnvironmentProvider } = require('@zetapush/common');
+const {
+  log,
+  error,
+  warn,
+  info,
+  trace,
+  debugObject,
+  getVerbosity,
+  LocalDevEnvironmentProvider
+} = require('@zetapush/common');
 const { displayHelp } = require('@zetapush/troubleshooting');
 const { WorkerRunner, WorkerRunnerEvents } = require('@zetapush/worker');
 
@@ -26,7 +35,6 @@ const cliVerbosityToCometdLogLevel = (verbosity) => {
  * @param {WorkerDeclaration} declaration
  */
 const run = (command, config, declaration) => {
-  console.log('~~~~~~~~~~~~~~~~~~~~', config, command);
   const runner = new WorkerRunner(
     command.skipProvisionning,
     command.skipBootstrap,
@@ -95,11 +103,17 @@ const run = (command, config, declaration) => {
 };
 
 const listenTerminalSignals = (client, runner) => {
+  const clean = () => {
+    info('exiting worker');
+    return runner
+      .destroy()
+      .then(() => debug(`Properly disconnect client`))
+      .then(() => client.disconnect())
+      .then(() => debug(`Client properly disconnected`));
+  };
+
   const onTerminalSignal = () => {
-    runner.destroy();
-    warn(`Properly disconnect client`);
-    client.disconnect().then(() => {
-      warn(`Client properly disconnected`);
+    clean().then(() => {
       process.exit(0);
     });
   };
@@ -107,9 +121,12 @@ const listenTerminalSignals = (client, runner) => {
   const TERMINATE_SIGNALS = ['SIGINT', 'SIGTERM', 'SIGQUIT'];
   TERMINATE_SIGNALS.forEach((signal) => {
     process.on(signal, () => {
+      trace('received signal', signal);
       onTerminalSignal(signal);
     });
   });
+
+  process.on('beforeExit', () => clean());
 };
 
 module.exports = run;

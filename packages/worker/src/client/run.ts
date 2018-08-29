@@ -325,8 +325,11 @@ export class WorkerRunner extends EventEmitter {
   }
 
   async destroy() {
+    trace('runner.destroy()');
     if (this.currentInstance) {
+      trace('cleaning worker instance...');
       await this.currentInstance.clean();
+      trace('worker instance cleaned...');
     }
     this.removeAllListeners();
   }
