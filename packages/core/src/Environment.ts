@@ -1,4 +1,6 @@
 export interface ZetaPushContext {
+  getAppName(): string;
+  getPlatformUrl(): string;
   getFrontUrl(name?: string): string;
   getWorkerUrl(name?: string): string;
 }

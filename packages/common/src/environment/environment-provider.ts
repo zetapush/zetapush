@@ -16,6 +16,7 @@ export class LocalDevEnvironmentProvider implements EnvironmentProvider {
   ) {}
 
   async get(): Promise<Environment> {
+    console.log('===================', this.confPath, process.cwd());
     return {
       name: this.envName,
       context: await defaultZetaPushContextFactory(this.config),

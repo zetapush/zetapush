@@ -24,6 +24,7 @@ export class PriorizedConfigurationProperties implements ConfigurationProperties
     for (let delegate of this.delegates) {
       if (delegate.has(key)) {
         const value = delegate.get(key);
+        console.log('############', key, value);
         if (typeof value !== 'undefined' && value !== null) {
           return value;
         }

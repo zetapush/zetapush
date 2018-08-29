@@ -20,6 +20,7 @@ export class Json5ConfigurationProperties implements ConfigurationProperties, Lo
   }
 
   async canLoad(): Promise<boolean> {
+    console.log('-----------------------', this.file, process.cwd(), existsSync(this.file));
     return existsSync(this.file);
   }
 

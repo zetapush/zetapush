@@ -9,21 +9,36 @@ import { Token } from '../../common/api';
 import { Account, AccountConfirmationTemplateVariables } from '../api';
 import { AccountConfirmationContext } from '../api/Confirmation';
 
+// TODO: general provider
+export const DEFAULT_USERNAME = (account: Account) => {
+  if (account.profile.login) {
+    return account.profile.login;
+  }
+  if (account.profile.username) {
+    return account.profile.username;
+  }
+  if (account.profile.firstname && account.profile.lastname) {
+    return `${account.profile.firstname} ${account.profile.lastname}`;
+  }
+  return 'you';
+};
+
 export const DEFAULT_CONFIRMATION_URL = async ({
   properties,
   zetapushContext,
   account,
   token
 }: AccountConfirmationContext) =>
-  `${properties.get(RegistrationConfirmationPropertyKeys.BaseUrl, zetapushContext.getWorkerUrl())}/${
-    account.accountId
-  }/confirm/${token.value}`;
+  `${properties.get(
+    RegistrationConfirmationPropertyKeys.BaseUrl,
+    `http://queuea0-${zetapushContext.getAppName()}.zetapush.app/@zetapush` /*TODO: zetapushContext.getWorkerUrl()*/
+  )}/users/${account.accountId}/confirm/${token.value}`;
 
 export const DEFAULT_CONFIRMATION_HTML_TEMPLATE = ({
   account,
   confirmationUrl
 }: AccountConfirmationTemplateVariables) =>
-  `Hello ${account.profile.login}, 
+  `Hello ${DEFAULT_USERNAME(account)}, 
 
 <a href="${confirmationUrl}">Please confirm your account</a>`;
 
@@ -31,7 +46,7 @@ export const DEFAULT_CONFIRMATION_TEXT_TEMPLATE = ({
   account,
   confirmationUrl
 }: AccountConfirmationTemplateVariables) =>
-  `Hello ${account.profile.login}, 
+  `Hello ${DEFAULT_USERNAME(account)}, 
 
 Please confirm your account: ${confirmationUrl}`;
 
@@ -57,3 +72,21 @@ export const DEFAULT_MAILJET_API_KEY_PUBLIC = (properties: ConfigurationProperti
 
 export const DEFAULT_MAILJET_API_KEY_PRIVATE = (properties: ConfigurationProperties): string =>
   properties.get(MailjetPropertyKey.ApiKeyPrivate, '');
+
+export const DEFAULT_CONFIRMATION_SUCCESS_REDIRECTION = (
+  properties: ConfigurationProperties,
+  zetapushContext: ZetaPushContext
+): string =>
+  properties.get(
+    RegistrationConfirmationPropertyKeys.AccountConfirmedRedirectionUrl,
+    '' //TODO: `${zetapushContext.getFrontUrl()}#account-confirmed`
+  );
+
+export const DEFAULT_CONFIRMATION_FAILURE_REDIRECTION = (
+  properties: ConfigurationProperties,
+  zetapushContext: ZetaPushContext
+): string =>
+  properties.get(
+    RegistrationConfirmationPropertyKeys.AccountConfirmationFailedRedirectionUrl,
+    '' //TODO: `${zetapushContext.getFrontUrl()}#account-confirmation-error`
+  );

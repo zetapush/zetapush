@@ -17,7 +17,7 @@ describe(`As developer with
   const appDir = 'default-standard-user-workflow';
 
   describe(`Nominal case with correct process`, () => {
-    it(
+    fit(
       `The user should be connected at the and of the process`,
       async () => {
         await given()
@@ -43,28 +43,31 @@ describe(`As developer with
             email: 'firstname.lastname@yopmail.com'
           };
 
-          const result = await api.user.signup({
-            credentials: {
-              login: userAccount.login,
-              password: userAccount.password
+          const result = await api.signup(
+            {
+              credentials: {
+                login: userAccount.login,
+                password: userAccount.password
+              },
+              profile: {
+                firstname: userAccount.firstname,
+                lastname: userAccount.lastname,
+                email: userAccount.email
+              }
             },
-            profile: {
-              firstname: userAccount.firstname,
-              lastname: userAccount.lastname,
-              email: userAccount.email
-            }
-          });
+            'user'
+          );
 
           console.log('======>>>>> RESIULT =>', result);
         });
 
-        await frontUserAction(`Validate the user account`, this, async (api) => {
-          // TODO: Launch the validation of a user account
-        });
+        // await frontUserAction(`Validate the user account`, this, async (api) => {
+        //   // TODO: Launch the validation of a user account
+        // });
 
-        await frontUserAction(`Connection of the user on the application`, this, async (api) => {
-          // TODO: Launch the connection of the user
-        });
+        // await frontUserAction(`Connection of the user on the application`, this, async (api) => {
+        //   // TODO: Launch the connection of the user
+        // });
       },
       60 * 1000 * 10
     );

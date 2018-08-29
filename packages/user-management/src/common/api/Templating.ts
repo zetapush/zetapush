@@ -47,7 +47,9 @@ export interface Template {
   resource: Resource;
 }
 
-export interface ParsedTemplate {}
+export interface ParsedTemplate {
+  toString(): string;
+}
 
 export interface Variables {
   readonly [property: string]: any;

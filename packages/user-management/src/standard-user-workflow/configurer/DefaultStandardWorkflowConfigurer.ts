@@ -26,7 +26,9 @@ import {
   DEFAULT_CONFIRMATION_HTML_TEMPLATE,
   DEFAULT_CONFIRMATION_TEXT_TEMPLATE,
   DEFAULT_CONFIRMATION_TOKEN_VALIDITY,
-  DEFAULT_CONFIRMATION_URL
+  DEFAULT_CONFIRMATION_URL,
+  DEFAULT_CONFIRMATION_SUCCESS_REDIRECTION,
+  DEFAULT_CONFIRMATION_FAILURE_REDIRECTION
 } from './defaults';
 import { LegacyAdapterUserRepository } from '../legacy';
 import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
@@ -56,6 +58,9 @@ export class DefaultUserWorkflowConfigurer implements Configurer {
   constructor() {}
   
   configure(env: Environment) {
+    console.log("============================")
+    console.log(JSON.stringify(env, null, 2));
+    console.log("============================")
     this.properties = env.properties;
     this.zetapushContext = env.context;
     this.userManagementConfigurer = new StandardUserWorkflowConfigurerImpl(this.properties, this.zetapushContext);
@@ -125,10 +130,11 @@ export class DefaultUserWorkflowConfigurer implements Configurer {
             .and()
           .textTemplate(/*new MustacheTemplateProvider('templates/email/confirm.txt')*/)
             .template(DEFAULT_CONFIRMATION_TEXT_TEMPLATE)
-        //   .and()
-        // .redirection()
-        //   .successUrl(`${this.zetapushContext.frontUrl}#account-confirmed`)
-        //   .failureUrl(`${this.zetapushContext.frontUrl}#error`);
+            .and()
+          .and()
+        .redirection()
+          .successUrl(DEFAULT_CONFIRMATION_SUCCESS_REDIRECTION(this.properties, this.zetapushContext))
+          .failureUrl(DEFAULT_CONFIRMATION_FAILURE_REDIRECTION(this.properties, this.zetapushContext));
   }
 
   configureLogin(loginConfigurer: AuthenticationConfigurer) {

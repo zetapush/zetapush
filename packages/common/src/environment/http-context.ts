@@ -38,37 +38,16 @@ export class HttpZetaPushContext implements ZetaPushContext, Loadable {
     }
   }
 
-  private rewrite(liveStatus: any) {
-    const nodes = Object.values(liveStatus.nodes);
-    const rawFronts = nodes.reduce((reduced, node: any) => {
-      const contexts = node.liveData['jetty.local.static.files.contexts'] || [];
-      return {
-        ...reduced,
-        ...contexts.reduce((acc: any, context: any) => {
-          acc[context.name] = context.urls;
-          return acc;
-        }, {})
-      };
-    }, {});
-    const fronts: ContextIndexedByName<FrontContext> = {};
-    const workers: ContextIndexedByName<WorkerContext> = {};
-    for (let name in rawFronts) {
-      fronts[name] = {
-        urls: (<any>rawFronts)[name].urls
-      };
-      workers[name] = {
-        urls: (<any>rawFronts)[name].urls // FIXME: retrieve worker urls from platform
-      };
-    }
-    // FIXME: how to handle local development ? Provide localhost:3000 and localhost:2999 ?
-    return {
-      fronts,
-      workers
-    };
-  }
-
   async canLoad(): Promise<boolean> {
     return true;
+  }
+
+  getAppName() {
+    return this.config.appName;
+  }
+
+  getPlatformUrl() {
+    return this.config.platformUrl;
   }
 
   getFrontUrl(name?: string): string {
@@ -106,5 +85,34 @@ export class HttpZetaPushContext implements ZetaPushContext, Loadable {
         `You are trying to get a value from ZetaPush context but the context has not been loaded yet`
       );
     }
+  }
+
+  private rewrite(liveStatus: any) {
+    const nodes = Object.values(liveStatus.nodes);
+    const rawFronts = nodes.reduce((reduced, node: any) => {
+      const contexts = node.liveData['jetty.local.static.files.contexts'] || [];
+      return {
+        ...reduced,
+        ...contexts.reduce((acc: any, context: any) => {
+          acc[context.name] = context.urls;
+          return acc;
+        }, {})
+      };
+    }, {});
+    const fronts: ContextIndexedByName<FrontContext> = {};
+    const workers: ContextIndexedByName<WorkerContext> = {};
+    for (let name in rawFronts) {
+      fronts[name] = {
+        urls: (<any>rawFronts)[name].urls
+      };
+      workers[name] = {
+        urls: (<any>rawFronts)[name].urls // FIXME: retrieve worker urls from platform
+      };
+    }
+    // FIXME: how to handle local development ? Provide localhost:3000 and localhost:2999 ?
+    return {
+      fronts,
+      workers
+    };
   }
 }

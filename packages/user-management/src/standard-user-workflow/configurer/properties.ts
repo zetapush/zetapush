@@ -9,7 +9,9 @@ export enum EmailPropertyKeys {
 export enum RegistrationConfirmationPropertyKeys {
   BaseUrl = 'registration.confirmation.base-url',
   EmailFrom = 'registration.confirmation.email.from',
-  EmailSubject = 'registration.confirmation.email.subject'
+  EmailSubject = 'registration.confirmation.email.subject',
+  AccountConfirmedRedirectionUrl = 'registration.confirmation.success-url',
+  AccountConfirmationFailedRedirectionUrl = 'registration.confirmation.failure-url'
 }
 
 export enum MailjetPropertyKey {

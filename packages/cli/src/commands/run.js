@@ -26,6 +26,7 @@ const cliVerbosityToCometdLogLevel = (verbosity) => {
  * @param {WorkerDeclaration} declaration
  */
 const run = (command, config, declaration) => {
+  console.log('~~~~~~~~~~~~~~~~~~~~', config, command);
   const runner = new WorkerRunner(
     command.skipProvisionning,
     command.skipBootstrap,

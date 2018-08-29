@@ -58,8 +58,8 @@ export class TemplatedEmailAccountConfirmationManager implements AccountConfirma
       await this.sender.send(<Email>{
         to: [email],
         body: {
-          html: html,
-          text: text
+          html: html ? html.toString() : '',
+          text: text ? text.toString() : ''
         }
       });
       return confirmation;
