@@ -3,7 +3,7 @@ import { IllegalStateError, IllegalArgumentValueError, BootstrapError } from '..
 import { Simple, Gda, GdaConfigurer, GdaDataType, Idempotence } from '@zetapush/platform-legacy';
 import { UserProfile, AccountStatus, LoginPasswordCredentials, Account } from '../api';
 import { Bootstrappable, Injectable } from '@zetapush/core';
-import { BaseError } from '../../common/api/exception/BaseError';
+import { BaseError } from '@zetapush/common';
 import { StandardAccountStatus } from '../core/account';
 
 export class LegacySimpleError extends BaseError {

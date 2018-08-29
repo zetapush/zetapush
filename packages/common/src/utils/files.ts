@@ -1,6 +1,5 @@
 import * as path from 'path';
 import * as fs from 'fs';
-import { PathLike } from 'fs';
 import * as os from 'os';
 
 export const mkdirs = (file: string) => {
@@ -20,7 +19,7 @@ export const getZetaFilePath = (...relativePath: string[]) => {
   return p;
 };
 
-export const mkdir = (root: PathLike) =>
+export const mkdir = (root: string) =>
   new Promise((resolve, reject) => {
     fs.mkdir(root, (failure) => {
       if (failure) {

@@ -24,6 +24,58 @@
     {
       "type": "node",
       "request": "launch",
+      "name": "common [tests][debug]",
+      // When using nvm, you can use nvm instance instead of default node version
+      // "runtimeExecutable": "~/.nvm/versions/node/v10.6.0/bin/node",
+      "cwd": "${workspaceFolder}/packages/common",
+      "runtimeArgs": [
+        "-r",
+        "ts-node/register",
+        "-r",
+        "source-map-support/register",
+        "--inspect-brk=9229",
+      ],
+      "args": [
+        "node_modules/jasmine/bin/jasmine.js"
+      ],
+      "console": "integratedTerminal",
+      "port": 9229,
+      "envFile": "${env:HOME}/.celtia-env",
+      "env": {
+        "ZETAPUSH_PLATFORM_URL": "http://hq.zpush.io:9080/zbo/pub/business/",
+        "ZETAPUSH_LOCAL_DEV": "true",
+        "ZETAPUSH_LOG_LEVEL": "silly",
+        "COMETD_LOG_LEVEL": "info",
+        "TS_NODE_PROJECT": "tsconfig.test.json"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "common [tests][coverage]",
+      // When using nvm, you can use nvm instance instead of default node version
+      "runtimeExecutable": "~/.nvm/versions/node/v10.8.0/bin/node",
+      "cwd": "${workspaceFolder}/packages/common",
+      "runtimeArgs": [
+      ],
+      "args": [
+        "node_modules/.bin/nyc",
+        "node_modules/.bin/ts-node",
+        "node_modules/.bin/jasmine"
+      ],
+      "console": "integratedTerminal",
+      "envFile": "${env:HOME}/.celtia-env",
+      "env": {
+        "ZETAPUSH_PLATFORM_URL": "http://hq.zpush.io:9080/zbo/pub/business/",
+        "ZETAPUSH_LOCAL_DEV": "true",
+        "ZETAPUSH_LOG_LEVEL": "silly",
+        "COMETD_LOG_LEVEL": "info",
+        "TS_NODE_PROJECT": "tsconfig.test.json"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
       "name": "user-management [tests][debug]",
       // When using nvm, you can use nvm instance instead of default node version
       // "runtimeExecutable": "~/.nvm/versions/node/v10.6.0/bin/node",

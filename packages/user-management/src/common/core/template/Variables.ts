@@ -1,5 +1,5 @@
 import { Variables, VariablesProvider } from '../../api';
-import { ConfigurationProperties, ZetaPushContext } from '../../configurer';
+import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 
 export interface VariablesWithContext extends Variables {
   readonly properties: ConfigurationProperties;

@@ -6,14 +6,13 @@ import {
   RegistrationConfigurer,
   TokenManagerConfigurer
 } from '../../../common/configurer/grammar';
+import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 import { EmailConfigurerImpl } from '../../../common/configurer/email/EmailConfigurer';
 import { AbstractParent } from '../../../common/configurer/AbstractParent';
 import { AccountConfirmationManager, AccountConfirmationManagerInjectable } from '../../../standard-user-workflow/api';
 import { ExtractEmailAddressFromProfileProvider } from '../../../standard-user-workflow/core/account/ExtractEmailAddressFromProfileProvider';
 import { MissingMandatoryConfigurationError } from '../../../common/configurer/ConfigurerError';
 import { TokenManagerConfigurerImpl } from '../../../common/configurer/token/TokenConfigurerImpl';
-import { ConfigurationProperties } from '../../../common/configurer/ConfigurationProperties';
-import { ZetaPushContext } from '../../../common/configurer/ZetaPushContext';
 import { StaticAccountStatusProvider, StandardAccountStatus } from '../../../standard-user-workflow/core';
 import { FixedLocationTemplateManagerHelper } from '../../../common/core/template/FixedLocationTemplateManagerHelper';
 import { VariablesWithContextProvider } from '../../../common/core/template/Variables';

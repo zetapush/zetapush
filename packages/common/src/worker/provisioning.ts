@@ -3,7 +3,7 @@ import { Provider } from '@zetapush/core';
 import { log, error } from '../utils/log';
 import { analyze, DependencyInjectionAnalysis } from './di';
 import { Service, Config, WorkerDeclaration, ResolvedConfig } from '../common-types';
-import { PathLike, writeFile } from 'fs';
+import { writeFile } from 'fs';
 import { isNode } from '../utils/environment';
 
 const JSZip = require('jszip');
@@ -113,7 +113,7 @@ export const generateProvisioningContent = (
  * @param {Service[]} services the services to bootstrap
  * @returns {Promise<{object, string}>} The provisioning object and the file content
  */
-export const generateProvisioningFile = (filepath: PathLike, config: ResolvedConfig, services: Array<Service>) =>
+export const generateProvisioningFile = (filepath: string, config: ResolvedConfig, services: Array<Service>) =>
   new Promise((resolve, reject) => {
     generateProvisioningContent(config, services).then(({ json, provision }) => {
       writeFile(filepath, json, (failure) => {

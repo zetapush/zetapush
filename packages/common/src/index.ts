@@ -13,3 +13,5 @@ export * from './utils/log';
 export * from './utils/network';
 export * from './utils/types';
 export * from './utils/upload';
+export * from './error';
+export * from './environment';

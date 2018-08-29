@@ -10,7 +10,6 @@ import { MessageSender, Email, VariablesProvider } from '../../../../common/api'
 import { FixedLocationTemplateManagerHelper } from '../../../../common/core/template/FixedLocationTemplateManagerHelper';
 import { AccountConfirmationError, SendTokenError } from '../../exceptions/AccountConfirmationError';
 import { ConfirmationUrlProvider, AccountConfirmationContext } from '../../../api/Confirmation';
-import { ZetaPushContext } from '../../../../common/configurer';
 
 class EmailAccountConfirmationTemplateVariables implements AccountConfirmationTemplateVariables {
   constructor(private delegate: AccountConfirmationContext, public confirmationUrl: string) {}

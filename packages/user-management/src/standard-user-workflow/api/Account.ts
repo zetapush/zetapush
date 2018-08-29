@@ -1,7 +1,7 @@
 import { Token, Message, SentMessage, EmailAddress, Variables } from '../../common/api';
-import { BaseError } from '../../common/api/exception/BaseError';
+import { BaseError } from '@zetapush/common';
 import { Credentials } from './Credentials';
-import { ConfigurationProperties, ZetaPushContext } from '../../common/configurer';
+import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 
 /**
  * The account creation manager is in charge to create a user account based

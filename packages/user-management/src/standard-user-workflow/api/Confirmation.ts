@@ -1,6 +1,6 @@
 import { Account } from './Account';
 import { Token, Variables } from '../../common/api';
-import { ConfigurationProperties, ZetaPushContext } from '../../common/configurer';
+import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 
 export interface AccountConfirmationContext extends Variables {
   readonly account: Account;

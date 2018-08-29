@@ -8,7 +8,9 @@ import {
   Class,
   FactoryProvider,
   ClassProvider,
-  ValueProvider
+  ValueProvider,
+  ConfigurationProperties,
+  ZetaPushContext
 } from '@zetapush/core';
 import { DEFAULTS } from '../defaults';
 import { trace, error } from '../utils/log';
@@ -21,6 +23,7 @@ import {
   WorkerDeclarationNormalizer
 } from '../common-types';
 import { CloudServiceInstance } from './CloudServiceInstance';
+import { EnvironmentProvider } from '../environment/environment-provider';
 
 /**
  * Test if the value parameter in a function
@@ -35,7 +38,7 @@ const isObject = (value: any) => typeof value === Object.name.toLowerCase();
 /**
  * Get providers by configurers
  */
-const getProvidersByConfigurers = (configurers: any[], environment?: Environment) => {
+const getProvidersByConfigurers = (environment: Environment, configurers: any[]) => {
   return Promise.all(
     configurers
       .map((Configurer) => new Configurer())
@@ -47,7 +50,11 @@ const getProvidersByConfigurers = (configurers: any[], environment?: Environment
 /**
  * Recursivly get providers from imported modules
  */
-const getProvidersByImports = async (imports: Class[], imported: Provider[] = []): Promise<Provider[]> => {
+const getProvidersByImports = async (
+  environment: Environment,
+  imports: Class[],
+  imported: Provider[] = []
+): Promise<Provider[]> => {
   return (
     Promise.all(
       imports
@@ -58,9 +65,9 @@ const getProvidersByImports = async (imports: Class[], imported: Provider[] = []
         // Merge imported providers
         .map(async (m) => [
           // Recursivly get imported providers
-          ...(await getProvidersByImports(m.imports || [], imported)),
+          ...(await getProvidersByImports(environment, m.imports || [], imported)),
           // Add configured providers from configures
-          ...(await getProvidersByConfigurers(m.configurers || [])),
+          ...(await getProvidersByConfigurers(environment, m.configurers || [])),
           // Add static providers
           ...(m.providers || [])
         ])
@@ -350,12 +357,15 @@ export interface DependencyInjectionAnalysis {
 export const analyze = async (
   client: ServerClient,
   declaration: WorkerDeclaration,
+  environmentProvider: EnvironmentProvider,
   customNormalizer: WorkerDeclarationNormalizer = normalize
 ): Promise<DependencyInjectionAnalysis> => {
+  const env = await environmentProvider.get();
+  const envProviders = makeEnvironmentInjectable(env);
   // Normalize worker declaration
   const normalized = await customNormalizer(declaration);
   // Get providers from imports module list
-  const resolvedImports = resolveProviders(client, await getProvidersByImports(normalized.imports || []));
+  const resolvedImports = resolveProviders(client, await getProvidersByImports(env, normalized.imports || []));
   const imported = resolvedImports.providers;
   // Get exposed CloudService
   const exposed = clean(normalized.expose);
@@ -364,13 +374,17 @@ export const analyze = async (
   // Get a resolved list of providers used in exposed DI graph
   const resolved = resolve(client, analyzed);
   // Configured providers
-  const resolvedConfigured = resolveProviders(client, await getProvidersByConfigurers(normalized.configurers || []));
+  const resolvedConfigured = resolveProviders(
+    client,
+    await getProvidersByConfigurers(env, normalized.configurers || [])
+  );
   const configured = resolvedConfigured.providers;
   // Explicit providers
   const resolvedProviders = resolveProviders(client, normalized.providers || []);
   const providers = resolvedProviders.providers;
   // Priorize providers
   const priorized = filterProviders([
+    ...envProviders, // Providers for the environment
     ...resolved, // Providers via scan of exposed DI Graph
     ...imported, // Providers via imports module list
     ...configured, // Providers via configurer
@@ -435,4 +449,21 @@ export const getPlatformServices = (providers: Provider[]): Service[] => {
   return providers
     .map((provider: Provider) => (isFunction(provider) ? provider : (provider as any).provide))
     .filter((token: any) => !!token.DEFAULT_DEPLOYMENT_ID);
+};
+
+export const makeEnvironmentInjectable = (env: Environment): Provider[] => {
+  return [
+    {
+      provide: Environment,
+      useValue: env
+    },
+    {
+      provide: ConfigurationProperties,
+      useValue: env.properties
+    },
+    {
+      provide: ZetaPushContext,
+      useValue: env.context
+    }
+  ];
 };

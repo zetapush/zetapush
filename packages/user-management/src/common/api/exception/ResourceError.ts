@@ -1,5 +1,5 @@
 import { Template, Variables, Location } from '../Templating';
-import { BaseError } from './BaseError';
+import { BaseError } from '@zetapush/common';
 
 export class ResourceError extends BaseError {
   constructor(message: string, public cause?: Error) {

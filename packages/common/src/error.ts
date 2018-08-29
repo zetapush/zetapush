@@ -30,3 +30,9 @@ export abstract class BaseError extends Error {
 // TODO: wrap platform exceptions (code+message) in particular error class ?
 // TODO: use Error.prepareStackTrace(error, structuredStackTrace) ?
 // TODO: use lib like https://github.com/defunctzombie/node-superstack or https://github.com/ddsol/superStack ?
+
+export class IllegalStateError extends BaseError {
+  constructor(message: string, public cause?: Error) {
+    super(message);
+  }
+}

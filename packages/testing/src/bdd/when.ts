@@ -12,6 +12,7 @@ import {
   TestWorker,
   getTestNormalizer
 } from '../worker/test-instance';
+import { LocalDevEnvironmentProvider } from '@zetapush/common/lib/environment/environment-provider';
 import { Credentials } from '@zetapush/client';
 
 const transports = require('@zetapush/cometd/lib/node/Transports');
@@ -77,7 +78,7 @@ export const runInWorker = (testOrContext: Context, workerDeclaration: (...insta
   return new Promise(async (resolve, reject) => {
     // TODO: everything should be in given (except runner.run())
     const context = new ContextWrapper(testOrContext).getContext();
-    const { zetarc, dependencies, logLevel, moduleDeclaration } = context;
+    const { zetarc, dependencies, logLevel, moduleDeclaration, projectDir } = context;
 
     try {
       const resolvedDependencies = typeof dependencies === 'function' ? dependencies() : dependencies;
@@ -100,6 +101,7 @@ export const runInWorker = (testOrContext: Context, workerDeclaration: (...insta
         false,
         <ResolvedConfig>zetarc,
         transports,
+        new LocalDevEnvironmentProvider(<ResolvedConfig>zetarc, 'test', projectDir || ''), // TODO: provide environment provider that suits to tests (one that can be constructed through given())
         new TestWorkerInstanceFactory(),
         logLevel.cometd,
         await getTestNormalizer(factoryProvider, moduleDeclaration)

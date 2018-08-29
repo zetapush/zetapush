@@ -1,5 +1,5 @@
 import { Token } from '../Token';
-import { BaseError } from './BaseError';
+import { BaseError } from '@zetapush/common';
 
 export abstract class TokenError extends BaseError {
   constructor(message: string, public token?: Token, public cause?: Error) {

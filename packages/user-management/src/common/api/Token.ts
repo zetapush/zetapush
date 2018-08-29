@@ -1,4 +1,4 @@
-import { BaseError } from './exception/BaseError';
+import { BaseError } from '@zetapush/common';
 
 /**
  * ================================

@@ -1,4 +1,4 @@
-import { BaseError } from '../../../common/api/exception/BaseError';
+import { BaseError } from '@zetapush/common';
 
 export abstract class AccountAuthenticationError extends BaseError {}
 
