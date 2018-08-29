@@ -1,7 +1,7 @@
 const process = require('process');
 const ora = require('ora');
 
-const { log, error, warn, info, trace, getVerbosity } = require('@zetapush/common');
+const { log, error, warn, info, trace, getVerbosity, LocalDevEnvironmentProvider } = require('@zetapush/common');
 const { displayHelp } = require('@zetapush/troubleshooting');
 const { WorkerRunner, WorkerRunnerEvents } = require('@zetapush/worker');
 
@@ -31,6 +31,7 @@ const run = (command, config, declaration) => {
     command.skipBootstrap,
     config,
     transports,
+    new LocalDevEnvironmentProvider('dev', command.worker),
     undefined,
     cliVerbosityToCometdLogLevel(getVerbosity())
   );

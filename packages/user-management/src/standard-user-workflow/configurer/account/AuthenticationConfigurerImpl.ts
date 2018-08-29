@@ -1,13 +1,8 @@
 import { AuthenticationConfigurer } from '../../../common/configurer/grammar';
 import { AbstractParent } from '../../../common/configurer/AbstractParent';
 import { AuthenticationManagerInjectable } from '../../api/Authentication';
-import {
-  Configurer,
-  SimpleProviderRegistry,
-  ZetaPushContext,
-  ConfigurationProperties
-} from '../../../common/configurer';
-import { Provider } from '@zetapush/core';
+import { Configurer, SimpleProviderRegistry } from '../../../common/configurer';
+import { Provider, ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 import {
   StandardUserWorkflowConfigurer,
   LoginPasswordAuthenticationConfigurer

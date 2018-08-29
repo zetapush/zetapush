@@ -1,6 +1,6 @@
 import { Token } from '../../../common/api';
 import { Account } from '../../api';
-import { BaseError } from '../../../common/api/exception/BaseError';
+import { BaseError } from '@zetapush/common';
 
 export abstract class AccountConfirmationError extends BaseError {
   constructor(message: string, public account: Partial<Account>, public cause?: Error) {

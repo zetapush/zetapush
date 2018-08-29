@@ -3,10 +3,11 @@ import {
   RegistrationConfirmationConfigurer
 } from '../../../common/configurer/grammar';
 import { AbstractParent } from '../../../common/configurer/AbstractParent';
-import { Configurer, ConfigurationProperties, SimpleProviderRegistry, Scope, scoped } from '../../../common/configurer';
+import { Configurer, SimpleProviderRegistry, Scope, scoped } from '../../../common/configurer';
 import { Provider } from '@zetapush/core';
 import { RedirectionProviderInjectable } from '../../api';
 import { StaticUrlRedirectionProvider } from '../../core/account/confirmation/StaticUrlRedirectionProvider';
+import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 
 export class SuccessFailureRedirectionConfigurerImpl<P> extends AbstractParent<P>
   implements SuccessFailureRedirectionConfigurer<P>, Configurer {

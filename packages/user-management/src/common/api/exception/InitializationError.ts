@@ -1,4 +1,4 @@
-import { BaseError } from './BaseError';
+import { BaseError } from '@zetapush/common';
 
 export class InitializationError extends BaseError {
   constructor(message: string, public cause: Error) {

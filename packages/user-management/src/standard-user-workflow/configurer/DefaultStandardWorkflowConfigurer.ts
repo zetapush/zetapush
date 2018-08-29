@@ -10,7 +10,7 @@ import { DefaultLoginPasswordAccountDetails } from '../core';
 import { StandardAccountStatus } from '../core/account';
 import { StandardUserWorkflow } from '../core/StandardUserWorkflow';
 import { StandardUserWorkflowConfigurerImpl } from './StandardUserWorkflowConfigurer';
-import { ConfigurationProperties, ZetaPushContext, Configurer, SimpleProviderRegistry } from '../../common/configurer';
+import { Configurer, SimpleProviderRegistry } from '../../common/configurer';
 import {
   RegistrationConfirmationPropertyKeys,
   MailjetPropertyKey,
@@ -29,6 +29,7 @@ import {
   DEFAULT_CONFIRMATION_URL
 } from './defaults';
 import { LegacyAdapterUserRepository } from '../legacy';
+import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 
 // prettier-ignore
 

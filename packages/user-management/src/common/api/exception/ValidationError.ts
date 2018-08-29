@@ -1,4 +1,4 @@
-import { BaseError } from './BaseError';
+import { BaseError } from '@zetapush/common';
 
 export class ValidationError extends BaseError {
   constructor(message: string, public context: Array<ValidationErrorContext>) {

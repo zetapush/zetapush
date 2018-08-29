@@ -10,8 +10,6 @@ import {
   StandardAccountStatus,
   TokenGenerator,
   Base36RandomTokenGenerator,
-  ConfigurationProperties,
-  ZetaPushContext,
   AccountConfirmationManager,
   AccountConfirmationManagerInjectable,
   TokenRepository,
@@ -19,6 +17,7 @@ import {
   GdaTokenRepository
 } from '../../../../../src';
 import { RegistrationConfigurer } from '../../../../../src/common/configurer/grammar';
+import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 
 describe(`TemplatedMessageAccountConfirmationManager`, () => {
   const axiosInstance = axios.create({});

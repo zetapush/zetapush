@@ -1,5 +1,5 @@
 import { Email } from '../Email';
-import { BaseError } from './BaseError';
+import { BaseError } from '@zetapush/common';
 
 export abstract class MessageError extends BaseError {}
 

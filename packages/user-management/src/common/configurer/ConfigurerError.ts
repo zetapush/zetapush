@@ -1,4 +1,4 @@
-import { BaseError } from '../api/exception/BaseError';
+import { BaseError } from '@zetapush/common';
 
 export class ConfigurerError extends BaseError {
   constructor(message: string) {

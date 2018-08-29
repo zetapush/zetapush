@@ -7,13 +7,7 @@ import {
 import { StandardUserWorkflow } from '../core/StandardUserWorkflow';
 import { RegistrationConfigurerImpl } from './account/RegistrationConfigurerImpl';
 import { Provider } from '@zetapush/core';
-import {
-  ConfigurationProperties,
-  ZetaPushContext,
-  Configurer,
-  SimpleProviderRegistry,
-  scopedDependency
-} from '../../common/configurer';
+import { Configurer, SimpleProviderRegistry, scopedDependency } from '../../common/configurer';
 import {
   AccountConfirmationManagerInjectable,
   AccountCreationManagerInjectable,
@@ -25,6 +19,7 @@ import {
 } from '../api';
 import { ConfirmationUrlHttpHandler } from '../core/account/confirmation/ConfirmationUrlHttpHandler';
 import { HttpServerInjectable, HttpServer, ExpressServerConfigurer } from '@zetapush/http-server';
+import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 import { AuthenticationConfigurerImpl } from '../configurer/account/AuthenticationConfigurerImpl';
 
 export class StandardUserWorkflowConfigurerImpl implements StandardUserWorkflowConfigurer, Configurer {

@@ -1,4 +1,4 @@
-import { ConfigurationProperties, ZetaPushContext } from '../../common/configurer';
+import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 import {
   RegistrationConfirmationPropertyKeys,
   EmailPropertyKeys,
@@ -15,7 +15,7 @@ export const DEFAULT_CONFIRMATION_URL = async ({
   account,
   token
 }: AccountConfirmationContext) =>
-  `${properties.get(RegistrationConfirmationPropertyKeys.BaseUrl, zetapushContext.getFrontUrl())}/${
+  `${properties.get(RegistrationConfirmationPropertyKeys.BaseUrl, zetapushContext.getWorkerUrl())}/${
     account.accountId
   }/confirm/${token.value}`;
 

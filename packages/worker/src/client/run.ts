@@ -21,6 +21,7 @@ import {
 } from '@zetapush/common';
 import { EventEmitter } from 'events';
 import { WorkerInstance } from '../utils/worker-instance';
+import { EnvironmentProvider } from '@zetapush/common';
 
 export enum WorkerRunnerEvents {
   BOOTSTRAPING = 'bootstraping',
@@ -96,6 +97,7 @@ export class WorkerRunner extends EventEmitter {
     private skipBootstrap: boolean,
     private config: ResolvedConfig,
     private transports: any[],
+    private envProvider: EnvironmentProvider,
     private workerInstanceFactory?: WorkerInstanceFactory,
     private logLevel?: string,
     private customNormalizer?: WorkerDeclarationNormalizer
@@ -164,7 +166,7 @@ export class WorkerRunner extends EventEmitter {
       this.currentDeclaration = declaration;
 
       // analyze dependencies and modules
-      analyze(client, declaration, this.customNormalizer)
+      analyze(client, declaration, this.envProvider, this.customNormalizer)
         .then((analysis: DependencyInjectionAnalysis) => (this.currentAnalysis = analysis))
         .then(() =>
           this.emit(WorkerRunnerEvents.BOOTSTRAPING, {
@@ -283,7 +285,7 @@ export class WorkerRunner extends EventEmitter {
       config: this.config,
       declaration: reloaded
     });
-    const newAnalysis = await analyze(this.client, reloaded);
+    const newAnalysis = await analyze(this.client, reloaded, this.envProvider, this.customNormalizer);
     this.currentAnalysis = newAnalysis;
     let next = getDeploymentIdList(newAnalysis, [Queue]);
     const deploymentListHasChange = !equals(previous, next);

@@ -7,14 +7,10 @@ import {
 } from '../../../common/configurer/grammar';
 import { AbstractParent } from '../../../common/configurer/AbstractParent';
 import { AccountCreationManagerConfigurerImpl } from './AccountCreationManagerConfigurer';
-import {
-  ConfigurationProperties,
-  ZetaPushContext,
-  Configurer,
-  SimpleProviderRegistry
-} from '../../../common/configurer';
+import { Configurer, SimpleProviderRegistry } from '../../../common/configurer';
 import { Provider } from '@zetapush/core';
 import { RegistrationConfirmationConfigurerImpl } from '../confirmation';
+import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 
 export class RegistrationConfigurerImpl extends AbstractParent<StandardUserWorkflowConfigurer>
   implements RegistrationConfigurer, Configurer {

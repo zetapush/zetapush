@@ -9,8 +9,6 @@ import {
   StandardAccountStatus,
   TokenGenerator,
   Base36RandomTokenGenerator,
-  ConfigurationProperties,
-  ZetaPushContext,
   UuidGenerator,
   TimestampBasedUuidGenerator,
   LegacyAdapterUserRepository,
@@ -20,7 +18,8 @@ import { StandardUserWorkflowConfigurer } from '../../../../../src/common/config
 import { StandardUserWorkflowConfigurerImpl } from '../../../../../src/standard-user-workflow/configurer/StandardUserWorkflowConfigurer';
 import { StandardUserWorkflow } from '../../../../../src/standard-user-workflow/core/StandardUserWorkflow';
 import { ConfirmationUrlHttpHandler } from '../../../../../src/standard-user-workflow/core/account/confirmation/ConfirmationUrlHttpHandler';
-import { Simple } from '@zetapush/platform-legacy/lib';
+import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
+import { Simple } from '@zetapush/platform-legacy';
 import { getLocal } from 'mockttp';
 
 describe(`StandardAccountRegistration`, () => {
