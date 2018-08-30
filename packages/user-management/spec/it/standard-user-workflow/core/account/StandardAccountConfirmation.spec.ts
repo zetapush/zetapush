@@ -21,8 +21,9 @@ import { ConfirmationUrlHttpHandler } from '../../../../../src/standard-user-wor
 import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 import { Simple } from '@zetapush/platform-legacy';
 import { getLocal } from 'mockttp';
+import { HttpUrlRedirection } from '../../../../../src/standard-user-workflow/api';
 
-describe(`StandardAccountRegistration`, () => {
+describe(`StandardAccountConfirmation`, () => {
   const axiosInstance = axios.create({});
   const mockAxios = new MockAdapter(axiosInstance);
   const tokenGenerator: TokenGenerator = mock(Base36RandomTokenGenerator);
@@ -38,7 +39,7 @@ describe(`StandardAccountRegistration`, () => {
     `Hello ${account.profile.username}, 
     Please confirm your account:${confirmationUrl}`;
 
-  describe(`signup()`, () => {
+  describe(`confirm()`, () => {
     describe(`on valid account`, () => {
       beforeEach(async () => {
         // mock server is used to simulate a front application
@@ -113,11 +114,11 @@ describe(`StandardAccountRegistration`, () => {
       });
 
       it(
-        `creates the account and send an email with confirmation link to the email address of the user`,
+        `creates the account and validate it`,
         async () => {
           await runInWorker(this, async (workflow: StandardUserWorkflow, simple: Simple) => {
             // WHEN
-            const result = await workflow.signup({
+            const pendingConfirmation = await workflow.signup({
               credentials: {
                 login: 'odile.deray',
                 password: 'password'
@@ -130,90 +131,17 @@ describe(`StandardAccountRegistration`, () => {
               }
             });
 
-            // THEN
-            // check in database if user is well registered and confirmed
-            const user = await simple.checkAccount({ key: 'odile.deray' });
-            expect(user).toBeDefined();
-            expect(user.fields.accountId).toBeDefined();
-            expect(user.fields.accountId).toBe('42');
-            expect(user.status.data).toBe(StandardAccountStatus.WaitingConfirmation);
-            expect(user.status.active).toBe(false);
-            expect(user.fields.userProfile).toEqual({
-              firstname: 'Odile',
-              lastname: 'DERAY',
-              email: 'odile.deray@zetapush.com',
-              username: 'odile.deray'
-            });
-            // check that the email has been sent
-            verify(
-              axiosInstance.post(
-                'mailjet-url',
-                {
-                  Messages: [
-                    {
-                      From: {
-                        Name: '',
-                        Email: 'no-reply@zetapush.com'
-                      },
-                      To: [
-                        {
-                          Name: '',
-                          Email: 'odile.deray@zetapush.com'
-                        }
-                      ],
-                      Cc: [],
-                      Bcc: [],
-                      Subject: 'Confirm your inscription',
-                      TextPart: `Hello odile.deray, Please confirm your account: https://zetapush.com/42/123456`,
-                      HTMLPart: `Hello odile.deray, <a href="https://zetapush.com/42/123456">Please confirm your account</a>`
-                    }
-                  ]
-                },
-                anything()
-              )
-            );
-          });
-        },
-        5 * 60 * 1000
-      );
+            const resultOfConfirm = (await workflow.confirm(pendingConfirmation)) as HttpUrlRedirection;
 
-      it(
-        `confirms the account when link is clicked and redirect to a particular page`,
-        async () => {
-          await runInWorker(this, async (workflow: StandardUserWorkflow, simple: Simple) => {
-            // WHEN
-            const result = await workflow.signup({
-              credentials: {
-                login: 'odile.deray',
-                password: 'password'
-              },
-              profile: {
-                firstname: 'Odile',
-                lastname: 'DERAY',
-                email: 'odile.deray@zetapush.com',
-                username: 'odile.deray'
-              }
+            const confirmedUserAccount = await simple.checkAccount({
+              key: 'odile.deray'
             });
-            // make HTTP request to confirm the account
-            const response = await axios.get('http://localhost:2999/users/42/confirm/123456');
 
             // THEN
-            // check redirection
-            expect(response.status).toBe(200);
-            expect(response.data).toBe('Home !');
-            // check in database if user is well registered and confirmed
-            const user = await simple.checkAccount({ key: 'odile.deray' });
-            expect(user).toBeDefined();
-            expect(user.fields.accountId).toBeDefined();
-            expect(user.fields.accountId).toBe('42');
-            expect(user.status.data).toBe(StandardAccountStatus.Active);
-            expect(user.status.active).toBe(true);
-            expect(user.fields.userProfile).toEqual({
-              firstname: 'Odile',
-              lastname: 'DERAY',
-              email: 'odile.deray@zetapush.com',
-              username: 'odile.deray'
-            });
+            expect(resultOfConfirm.url).toContain('/home');
+            expect(resultOfConfirm.statusCode).toEqual(302);
+            expect(confirmedUserAccount.status.active).toEqual(true);
+            expect(confirmedUserAccount.status.data).toEqual(StandardAccountStatus.Active);
           });
         },
         5 * 60 * 1000

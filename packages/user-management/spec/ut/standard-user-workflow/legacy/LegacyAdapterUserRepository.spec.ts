@@ -11,7 +11,7 @@ import { IllegalStateError } from '../../../../src/common/api';
 describe(`LegacyAdapterUserRepository`, () => {
   describe(`addUser()`, () => {
     beforeEach(() => {
-      this.simple = jasmine.createSpyObj('Simple', ['createUser', 'checkUser', 'setStatus', 'createAccount']);
+      this.simple = jasmine.createSpyObj('Simple', ['checkAccount', 'setStatus', 'createAccount']);
       this.gda = jasmine.createSpyObj('Gda', ['get', 'put']);
       this.gdaConfigurer = jasmine.createSpyObj('GdaConfigurer', ['createTable']);
       this.userRepository = new LegacyAdapterUserRepository(this.simple, this.gda, this.gdaConfigurer);
@@ -22,11 +22,22 @@ describe(`LegacyAdapterUserRepository`, () => {
     it(`on valid account should return accountId`, async () => {
       // GIVEN
       this.simple.createAccount.and.returnValue({
-        status: { active: false },
+        status: { active: false, data: StandardAccountStatus.WaitingConfirmation },
         userKey: 'abc',
-        fields: { login: 'odile.deray' }
+        fields: { login: 'odile.deray', accountId: '42' }
       });
-      this.simple.checkUser.and.returnValue({ userProfile: { userKey: 'abc', login: 'odile.deray' } });
+      this.simple.checkAccount.and.returnValue({
+        fields: {
+          userProfile: {
+            userKey: 'abc',
+            login: 'odile.deray'
+          }
+        },
+        status: {
+          active: false,
+          data: StandardAccountStatus.WaitingConfirmation
+        }
+      });
       this.gda.get.and.returnValue({
         result: {
           data: { userKey: 'abc', login: 'odile.deray' }
@@ -106,62 +117,6 @@ describe(`LegacyAdapterUserRepository`, () => {
         expect(() => {
           throw e;
         }).toThrowError(IllegalStateError);
-      }
-    });
-
-    it(`The Legacy ZetaPush storage failed to retrieve the user account and should return 'LegacySimpleError' error`, async () => {
-      // GIVEN
-      this.simple.createUser.and.returnValue({ userKey: 'abc', login: 'odile.deray' });
-      const err = new Error('foobar');
-      (<any>err).code = 'FAILED_ACCESS_DATABASE'; // False code, important is that an error was threw
-      this.gda.get.and.throwError(err);
-      // WHEN
-      try {
-        await this.userRepository.addUser(
-          {
-            login: 'odile.deray',
-            password: '123456'
-          },
-          {
-            firstname: 'Odile',
-            lastname: 'DERAY'
-          },
-          StandardAccountStatus.WaitingConfirmation,
-          '42'
-        );
-        fail('should have failed with "LegacySimpleError" exception');
-      } catch (e) {
-        // THEN
-        expect(() => {
-          throw e;
-        }).toThrowError(LegacySimpleError, `Account creation for 'odile.deray' has failed`);
-      }
-    });
-
-    it(`The Legacy ZetaPush storage retrieve no result for the user account and should return 'LegacySimpleError' error`, async () => {
-      // GIVEN
-      this.simple.createUser.and.returnValue({ userKey: 'abc', login: 'odile.deray' });
-      this.gda.get.and.returnValue({ result: null });
-      // WHEN
-      try {
-        await this.userRepository.addUser(
-          {
-            login: 'odile.deray',
-            password: '123456'
-          },
-          {
-            firstname: 'Odile',
-            lastname: 'DERAY'
-          },
-          StandardAccountStatus.WaitingConfirmation,
-          '42'
-        );
-        fail('should have failed with "LegacySimpleError" exception');
-      } catch (e) {
-        // THEN
-        expect(() => {
-          throw e;
-        }).toThrowError(LegacySimpleError, `Account creation for 'odile.deray' has failed`);
       }
     });
   });

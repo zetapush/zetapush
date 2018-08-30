@@ -66,20 +66,19 @@ describe(`AccountCreationManager`, () => {
               expect(account).not.toBeNull();
               expect(account.accountId).toBeDefined();
 
-              console.log('==> account status', account.accountStatus);
-
               expect(account.accountStatus).toBe(StandardAccountStatus.WaitingConfirmation);
               expect(<any>account.profile).toEqual({
                 firstname: 'Odile',
                 lastname: 'DERAY'
               });
               // check in database
-              const user = await simple.checkUser({ key: 'odile.deray' });
+              const user = await simple.checkAccount({ key: 'odile.deray' });
               expect(user).toBeDefined();
-              expect(user.accountId).toBeDefined();
-              expect(user.accountId).toBe(account.accountId);
-              expect(user.accountStatus).toBe(StandardAccountStatus.WaitingConfirmation);
-              expect(user.userProfile).toEqual({
+              expect(user.fields.accountId).toBeDefined();
+              expect(user.fields.accountId).toBe(account.accountId);
+              expect(user.status.data).toBe(StandardAccountStatus.WaitingConfirmation);
+              expect(user.status.active).toBe(false);
+              expect(user.fields.userProfile).toEqual({
                 firstname: 'Odile',
                 lastname: 'DERAY'
               });
