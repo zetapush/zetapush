@@ -195,14 +195,9 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
     try {
       const login = await this.getLoginFromAccountId(accountId);
 
-      let userAccountActivated = false;
-      if (newStatus === StandardAccountStatus.Active) {
-        userAccountActivated = true;
-      }
-
       const result = await this.simple.setStatus({
         status: {
-          active: userAccountActivated
+          active: newStatus === StandardAccountStatus.Active
         },
         key: login
       });
