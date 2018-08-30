@@ -17,7 +17,9 @@ describe(`As developer with
   const appDir = 'default-standard-user-workflow';
 
   describe(`Nominal case with correct process`, () => {
-    it(
+    let resultOfSignUp = null;
+    let resultOfConfirm = null;
+    fit(
       `The user should be connected at the and of the process`,
       async () => {
         await given()
@@ -43,7 +45,7 @@ describe(`As developer with
             email: 'firstname.lastname@yopmail.com'
           };
 
-          const result = await api.signup(
+          resultOfSignUp = await api.signup(
             {
               credentials: {
                 login: userAccount.login,
@@ -58,16 +60,25 @@ describe(`As developer with
             'user'
           );
 
-          console.log('======>>>>> RESIULT =>', result);
+          expect(resultOfSignUp.createdAccount.accountId).toBeDefined();
+          expect(resultOfSignUp.createdAccount.accountStatus).toEqual('WAITING_FOR_CONFIRMATION');
+          expect(resultOfSignUp.createdAccount.profile).toEqual({
+            firstname: 'Firstname',
+            lastname: 'Lastname',
+            email: 'firstname.lastname@yopmail.com'
+          });
+          expect(resultOfSignUp.token.original.value).toBeDefined();
+
+          console.log('==> RESULT OF SIGNUP\n', JSON.stringify(resultOfSignUp, null, 4));
         });
 
-        // await frontUserAction(`Validate the user account`, this, async (api) => {
-        //   // TODO: Launch the validation of a user account
-        // });
+        await frontUserAction(`Validate the user account`, this, async (api) => {
+          resultOfConfirm = await api.confirm(resultOfSignUp, 'user');
+          console.log('==> RESULT OF CONFIRM\n', JSON.stringify(resultOfConfirm, null, 4));
+        });
 
-        // await frontUserAction(`Connection of the user on the application`, this, async (api) => {
-        //   // TODO: Launch the connection of the user
-        // });
+        // await frontUserAction(`Connection of the user on the application`, this, async (api, client) => {
+        // }, { login: 'login', password: 'password'});
       },
       60 * 1000 * 10
     );
