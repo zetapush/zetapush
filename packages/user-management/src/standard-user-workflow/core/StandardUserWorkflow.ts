@@ -21,22 +21,19 @@ export class StandardUserWorkflow {
   ) {}
 
   async signup(accountDetails: AccountCreationDetails, confirmationRedirection?: Redirection) {
-    debugObject('signup', accountDetails);
     try {
       const account = await this.accountCreationManager.createAccount(accountDetails);
-      debugObject('signup-account', account);
-
       if (!account) {
         throw new NoAccountCreatedError(
           'Account creation manager could not handle account details. Account has not been created',
           accountDetails
         );
       }
-      debugObject('signup-account-ask', account);
 
       return await this.accountConfirmationManager.askConfirmation(account);
     } catch (e) {
-      debugObject('signup-error', e);
+      // TODO: log
+      console.error(`Failed to create account for ${accountDetails.profile}. Cause: ${e.toString()}`, e);
       throw e;
     }
   }

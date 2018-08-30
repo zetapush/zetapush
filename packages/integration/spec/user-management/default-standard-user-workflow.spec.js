@@ -17,7 +17,7 @@ describe(`As developer with
   const appDir = 'default-standard-user-workflow';
 
   describe(`Nominal case with correct process`, () => {
-    fit(
+    it(
       `The user should be connected at the and of the process`,
       async () => {
         await given()

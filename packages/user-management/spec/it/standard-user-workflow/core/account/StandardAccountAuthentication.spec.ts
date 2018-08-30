@@ -1,19 +1,8 @@
 import 'jasmine';
 import { given, runInWorker, autoclean, frontUserAction } from '@zetapush/testing';
-import { AuthenticationConfigurerImpl } from '../../../../../src/standard-user-workflow/configurer/account/AuthenticationConfigurerImpl';
-import { mock } from 'ts-mockito';
 import { LegacyAdapterUserRepository } from '../../../../../src/standard-user-workflow/legacy';
-import {
-  ZetaPushContext,
-  ConfigurationProperties,
-  AccountCreationManager,
-  StandardAccountStatus
-} from '../../../../../src';
-import { StandardUserWorkflow } from '../../../../../src/standard-user-workflow/core/StandardUserWorkflow';
-import { UserRepositoryInjectable } from '../../../../../src/common/api/User';
+import { AccountCreationManager, StandardAccountStatus } from '../../../../../src';
 import { AccountCreationManagerInjectable } from '../../../../../src/';
-import { SmartClient } from '@zetapush/client';
-import transports from '@zetapush/cometd/lib/node/Transports';
 import { AccountCreationManagerConfigurerImpl } from '../../../../../src/standard-user-workflow/configurer/account';
 import { TimestampBasedUuidGenerator } from '../../../../../src/common/core';
 
@@ -28,7 +17,7 @@ describe(`StandardAccountAuthentication`, () => {
           /*  */ .newApp()
           /*  */ .and()
           /**/ .worker()
-          /**/ .testModule(async () => {
+          /*  */ .testModule(async () => {
             // create configurer + inject services
             const configurer = new AccountCreationManagerConfigurerImpl(registrationConfigurer);
             configurer
