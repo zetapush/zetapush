@@ -16,7 +16,8 @@ import {
   createZetarc,
   Runner,
   getCurrentEnv,
-  npmInstall
+  npmInstall,
+  zetaPush
 } from '../utils/commands';
 import { TestContext, Dependencies } from '../utils/types';
 import { createApplication, DEFAULTS } from '@zetapush/common';
@@ -403,6 +404,7 @@ class GivenTemplatedApp extends Parent<GivenApp> {
 class GivenWorker extends Parent<Given> {
   private createRunner = false;
   private workerUp = false;
+  private workerPushed = false;
   private timeout?: number;
   private isQuiet = false;
   private moduleDeclaration?: () => Promise<Module>;
@@ -427,6 +429,15 @@ class GivenWorker extends Parent<Given> {
    */
   up(timeout: number) {
     this.workerUp = true;
+    this.timeout = timeout;
+    return this;
+  }
+
+  /**
+   * Push the worker and Wait for the worker to be up before executing the test
+   */
+  pushed(timeout: number) {
+    this.workerPushed = true;
     this.timeout = timeout;
     return this;
   }
@@ -523,6 +534,13 @@ class GivenWorker extends Parent<Given> {
         await runner.waitForWorkerUp();
         return {
           runner,
+          ...deps
+        };
+      }
+      if (this.workerPushed && currentDir) {
+        givenLogger.info(`>>> Given worker: push and wait for worker up ${currentDir}`);
+        await zetaPush(currentDir);
+        return {
           ...deps
         };
       }
