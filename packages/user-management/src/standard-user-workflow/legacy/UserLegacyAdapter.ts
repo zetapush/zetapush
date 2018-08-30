@@ -5,16 +5,17 @@ import { UserProfile, AccountStatus, LoginPasswordCredentials, Account } from '.
 import { Bootstrappable, Injectable } from '@zetapush/core';
 import { BaseError } from '@zetapush/common';
 import { StandardAccountStatus } from '../core/account';
+import { debugObject } from '@zetapush/common';
 
 export class LegacySimpleError extends BaseError {
-  constructor(message: string, public cause?: Error) {
-    super(message);
+  constructor(message: string, cause?: Error) {
+    super(message, cause);
   }
 }
 
 export class LegacyUpdateAccountStatus extends LegacySimpleError {
-  constructor(message: string, public cause?: Error) {
-    super(message);
+  constructor(message: string, public accountId: string, cause?: Error) {
+    super(message, cause);
   }
 }
 
@@ -88,18 +89,20 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
           login: credentials.login,
           password: credentials.password,
           userProfile,
-          accountStatus,
           accountId
         },
-        status: { active: false }
+        status: {
+          data: accountStatus,
+          active: false
+        }
       });
 
-      if (result.userKey && result.fields) {
+      if (result.userKey && result.fields && result.status) {
         await this.saveAssociations(accountId, result.userKey, result.fields.login);
 
         return {
-          accountId,
-          accountStatus,
+          accountId: result.fields.accountId,
+          accountStatus: result.status.data,
           profile: userProfile
         };
       } else {
@@ -195,23 +198,19 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
     try {
       const login = await this.getLoginFromAccountId(accountId);
 
-      const result = await this.simple.setStatus({
+      await this.simple.setStatus({
         status: {
-          active: newStatus === StandardAccountStatus.Active
+          active: newStatus === StandardAccountStatus.Active,
+          data: newStatus
         },
         key: login
       });
-
-      if (result.fields) {
-        await this.simple.updateAccount({
-          key: result.fields.login,
-          fields: {
-            accountStatus: newStatus
-          }
-        });
-      }
     } catch (e) {
-      throw new LegacyUpdateAccountStatus(`Failed to update the status of the user (accountId: ${accountId}.`, e);
+      throw new LegacyUpdateAccountStatus(
+        `Failed to update the status of the user (accountId: ${accountId}).`,
+        accountId,
+        e
+      );
     }
   }
 

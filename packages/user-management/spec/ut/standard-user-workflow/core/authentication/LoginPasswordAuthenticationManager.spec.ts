@@ -1,10 +1,11 @@
 import 'jasmine';
 import { LoginPasswordAuthenticationManager } from '../../../../../src/standard-user-workflow/core/authentication/LoginPasswordAuthenticationManager';
+import { StandardAccountStatus } from '../../../../../src/standard-user-workflow/core';
 
 describe(`LoginPasswordAuthenticationManager`, () => {
   beforeEach(() => {
     this.zetaClient = jasmine.createSpyObj('ZetaPushClient', ['connect', 'disconnect', 'getUserId']);
-    this.userManager = jasmine.createSpyObj('Simple', ['checkUser']);
+    this.userManager = jasmine.createSpyObj('Simple', ['checkAccount']);
     this.authManager = new LoginPasswordAuthenticationManager(this.userManager);
   });
 
@@ -13,10 +14,17 @@ describe(`LoginPasswordAuthenticationManager`, () => {
       xit(`Login an user and should returns his user profile`, async () => {
         // GIVEN
         this.zetaClient.getUserId.and.returnValue('42');
-        this.userManager.checkUser.and.returnValue({
-          accountId: '5',
-          accountStatus: 'active',
-          profile: { login: 'odile.deray' }
+        this.userManager.checkAccount.and.returnValue({
+          fields: {
+            accountId: '5',
+            accountStatus: 'active',
+            profile: { login: 'odile.deray' }
+          },
+          status: {
+            active: true,
+            data: StandardAccountStatus.Active
+          },
+          userKey: '42'
         });
 
         // WHEN
