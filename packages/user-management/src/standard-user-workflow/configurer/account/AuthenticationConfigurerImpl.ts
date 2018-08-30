@@ -30,11 +30,11 @@ export class AuthenticationConfigurerImpl extends AbstractParent<StandardUserWor
   async getProviders(): Promise<Provider[]> {
     const providerRegistry = new SimpleProviderRegistry();
 
-    if (!this.loginPasswordAuthenticationConfigurer) {
-      providerRegistry.registerClass(AuthenticationManagerInjectable, LoginPasswordAuthenticationManager);
-    } else {
-      await providerRegistry.registerConfigurer(this.loginPasswordAuthenticationConfigurer);
-    }
+    // if (!this.loginPasswordAuthenticationConfigurer) {
+    //   providerRegistry.registerClass(AuthenticationManagerInjectable, LoginPasswordAuthenticationManager);
+    // } else {
+    //   await providerRegistry.registerConfigurer(this.loginPasswordAuthenticationConfigurer);
+    // }
 
     return providerRegistry.getProviders();
   }

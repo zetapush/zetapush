@@ -42,8 +42,28 @@ const load = async (delegates: ZetaPushContext[]) => {
   }
 };
 
+export class FakeZetaPushContext implements ZetaPushContext {
+  constructor(private config: ResolvedConfig) {}
+
+  getAppName(): string {
+    return this.config.appName;
+  }
+
+  getPlatformUrl(): string {
+    return this.config.platformUrl;
+  }
+
+  getFrontUrl(name?: string | undefined): string {
+    throw new Error('getFrontUrl not implemented.');
+  }
+
+  getWorkerUrl(name?: string | undefined): string {
+    throw new Error('getWorkerUrl not implemented.');
+  }
+}
+
 export const defaultZetaPushContextFactory = async (config: ResolvedConfig) => {
-  const context = new HttpZetaPushContext(config);
+  const context = new FakeZetaPushContext(config);
   await load([context]);
   return context;
 };

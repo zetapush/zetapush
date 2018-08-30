@@ -10,6 +10,7 @@ import {
 } from '../api';
 import { NoAccountCreatedError } from './exceptions/NoAccountCreatedError';
 import { Credentials, Account } from '../api';
+import { debugObject } from '@zetapush/common';
 
 export class StandardUserWorkflow {
   constructor(
@@ -20,14 +21,21 @@ export class StandardUserWorkflow {
   ) {}
 
   async signup(accountDetails: AccountCreationDetails, confirmationRedirection?: Redirection) {
-    const account = await this.accountCreationManager.createAccount(accountDetails);
-    if (!account) {
-      throw new NoAccountCreatedError(
-        'Account creation manager could not handle account details. Account has not been created',
-        accountDetails
-      );
+    try {
+      const account = await this.accountCreationManager.createAccount(accountDetails);
+      if (!account) {
+        throw new NoAccountCreatedError(
+          'Account creation manager could not handle account details. Account has not been created',
+          accountDetails
+        );
+      }
+
+      return await this.accountConfirmationManager.askConfirmation(account);
+    } catch (e) {
+      // TODO: log
+      console.error(`Failed to create account for ${accountDetails.profile}. Cause: ${e.toString()}`, e);
+      throw e;
     }
-    return await this.accountConfirmationManager.askConfirmation(account);
   }
 
   async confirm(confirmation: PendingAccountConfirmation) {

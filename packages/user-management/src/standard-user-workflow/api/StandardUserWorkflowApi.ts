@@ -18,7 +18,7 @@ import { Credentials, AccountCreationDetails, Account, Redirection } from '.';
  * 4. The user's account is validated and the user is redirected to a specific page in the application
  * 5. The user is automatically connected to the application
  */
-export interface StandardUserWorkflow {
+export interface StandardUserWorkflowApi {
   /**
    * The 'login()' method allows an user to log into the application.
    * The user need to have an 'active' account. So the account need to be validated if the workflow imply it.

@@ -16,7 +16,7 @@ export class LoginPasswordAuthenticationConfigurerImpl extends AbstractParent<Au
   async getProviders(): Promise<Provider[]> {
     const providerRegistry = new SimpleProviderRegistry();
 
-    providerRegistry.registerClass(AuthenticationManagerInjectable, LoginPasswordAuthenticationManager);
+    // providerRegistry.registerClass(AuthenticationManagerInjectable, LoginPasswordAuthenticationManager);
     return providerRegistry.getProviders();
   }
 }

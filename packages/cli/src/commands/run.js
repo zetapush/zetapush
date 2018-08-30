@@ -10,10 +10,10 @@ const { createServer } = require('../utils/http-server');
 const transports = require('@zetapush/cometd/lib/node/Transports');
 
 const cliVerbosityToCometdLogLevel = (verbosity) => {
-  if (verbosity < 3) {
+  if (verbosity > 3) {
     return 'debug';
   }
-  if (verbosity < 2) {
+  if (verbosity > 2) {
     return 'info';
   }
   return 'warn';
@@ -31,7 +31,7 @@ const run = (command, config, declaration) => {
     command.skipBootstrap,
     config,
     transports,
-    new LocalDevEnvironmentProvider('dev', command.worker),
+    new LocalDevEnvironmentProvider(config, 'dev', command.worker),
     undefined,
     cliVerbosityToCometdLogLevel(getVerbosity())
   );
@@ -94,11 +94,18 @@ const run = (command, config, declaration) => {
 };
 
 const listenTerminalSignals = (client, runner) => {
+  const clean = () => {
+    info('exiting worker...');
+    return runner
+      .destroy()
+      .then(() => trace(`Properly disconnect client`))
+      .then(() => client.disconnect())
+      .then(() => trace(`Client properly disconnected`))
+      .then(() => info(`worker exited properly`));
+  };
+
   const onTerminalSignal = () => {
-    runner.destroy();
-    warn(`Properly disconnect client`);
-    client.disconnect().then(() => {
-      warn(`Client properly disconnected`);
+    clean().then(() => {
       process.exit(0);
     });
   };
@@ -106,9 +113,12 @@ const listenTerminalSignals = (client, runner) => {
   const TERMINATE_SIGNALS = ['SIGINT', 'SIGTERM', 'SIGQUIT'];
   TERMINATE_SIGNALS.forEach((signal) => {
     process.on(signal, () => {
+      trace('received signal', signal);
       onTerminalSignal(signal);
     });
   });
+
+  process.on('beforeExit', () => clean());
 };
 
 module.exports = run;

@@ -31,6 +31,7 @@ export class TokenCheckerAccountConfirmationManager implements AccountConfirmati
   async confirm(confirmation: PendingAccountConfirmation): Promise<ConfirmedAccount> {
     // TODO: can be reused
     const { token, createdAccount } = confirmation;
+
     try {
       // Validate the token
       const storeToken = await this.tokenManager.validate(token, this.getMatcher(createdAccount));

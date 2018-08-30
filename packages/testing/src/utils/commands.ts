@@ -416,8 +416,10 @@ export const npmInstall = async (dir: PathLike, version: string) => {
 
   const content = readFileSync(`${dir}/package.json`, { encoding: 'utf-8' });
   let jsonContent = JSON.parse(content);
-  jsonContent.dependencies['@zetapush/cli'] = version;
-  jsonContent.dependencies['@zetapush/platform-legacy'] = version;
+
+  Object.keys(jsonContent.dependencies).map(function(data) {
+    jsonContent.dependencies[data] = version;
+  });
 
   writeFileSync(`${dir}/package.json`, JSON.stringify(jsonContent), {
     encoding: 'utf-8'
