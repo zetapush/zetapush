@@ -81,6 +81,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
     // TODO: configure local authentication service, use default values or retrieve configuration to use it ?
     // TODO: configure mandatory fields (not really necessary thanks to validator) ?
     // TODO: configure public fields or use custom search ?
+
     try {
       const result = await this.simple.createAccount({
         fields: {
@@ -137,6 +138,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
 
   async getProfile(accountId: string): Promise<UserProfile> {
     let columns;
+
     try {
       const { result } = await this.gda.get({
         table: USER_LEGACY_ADAPTER_TABLE_SIMPLE_ASSOCIATIONS,
@@ -153,6 +155,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
       );
     }
     const userInfo = await this.simple.checkUser({ key: columns[USER_LEGACY_ADAPTER_COLUMN_DATA].login });
+
     return userInfo.userProfile;
   }
 
@@ -188,6 +191,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
    */
   async updateStatus(accountId: string, newStatus: AccountStatus): Promise<void> {
     // Get the user account from his ID
+
     try {
       const login = await this.getLoginFromAccountId(accountId);
 
@@ -211,8 +215,6 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
           }
         });
       }
-
-      console.log('====> USER ACCOUNT\n', JSON.stringify(await this.simple.checkAccount({ key: 'login' }), null, 4));
     } catch (e) {
       throw new LegacyUpdateAccountStatus(`Failed to update the status of the user (accountId: ${accountId}.`, e);
     }

@@ -82,9 +82,12 @@ export class GdaTokenRepository implements TokenRepository {
 
   async getFromToken(token: Token): Promise<StoredToken> {
     let outputStorage;
+
+    const t = this.factory.fromRaw(token);
+
     try {
       outputStorage = await this.gdaStorage.get({
-        key: token.value,
+        key: t.value,
         table: this.STORAGE_TOKEN_NAME_TABLE
       });
     } catch (e) {
