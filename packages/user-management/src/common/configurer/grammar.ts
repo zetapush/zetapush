@@ -186,7 +186,7 @@ export interface EmailConfigurer<P> extends And<P> {
 
 export interface SmtpEmailConfigurer<P> extends And<P> {
   host(smtpHost: string): SmtpEmailConfigurer<P>;
-  port(smtpPort: string): SmtpEmailConfigurer<P>;
+  port(smtpPort: number): SmtpEmailConfigurer<P>;
   username(smtpUsername: string): SmtpEmailConfigurer<P>;
   password(smtpPassword: string): SmtpEmailConfigurer<P>;
   ssl(enableSsl: boolean): SmtpEmailConfigurer<P>;

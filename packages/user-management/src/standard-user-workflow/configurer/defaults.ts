@@ -3,7 +3,8 @@ import {
   RegistrationConfirmationPropertyKeys,
   EmailPropertyKeys,
   ProductPropertyKeys,
-  MailjetPropertyKey
+  MailjetPropertyKey,
+  SmtpPropertyKey
 } from './properties';
 import { Token } from '../../common/api';
 import { Account, AccountConfirmationTemplateVariables } from '../api';
@@ -90,3 +91,21 @@ export const DEFAULT_CONFIRMATION_FAILURE_REDIRECTION = (
     RegistrationConfirmationPropertyKeys.AccountConfirmationFailedRedirectionUrl,
     '' //TODO: `${zetapushContext.getFrontUrl()}#account-confirmation-error`
   );
+
+export const DEFAULT_SMTP_HOST = (properties: ConfigurationProperties): string =>
+  properties.get(SmtpPropertyKey.Host, '');
+
+export const DEFAULT_SMTP_PORT = (properties: ConfigurationProperties): number =>
+  properties.get(SmtpPropertyKey.Port, 465);
+
+export const DEFAULT_SMTP_USERNAME = (properties: ConfigurationProperties): string =>
+  properties.get(SmtpPropertyKey.Username, '');
+
+export const DEFAULT_SMTP_PASSWORD = (properties: ConfigurationProperties): string =>
+  properties.get(SmtpPropertyKey.Password, '');
+
+export const DEFAULT_SMTP_SSL = (properties: ConfigurationProperties): boolean =>
+  properties.get(SmtpPropertyKey.UseSsl, true);
+
+export const DEFAULT_SMTP_STARTTLS = (properties: ConfigurationProperties): boolean =>
+  properties.get(SmtpPropertyKey.StartTls, true);

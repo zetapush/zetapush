@@ -4,22 +4,21 @@ import {
   OvhEmailConfigurer,
   MailjetEmailConfigurer,
   EmailTemplateConfigurer,
-  TemplateConfigurer,
   TextTemplateConfigurer
 } from '../grammar';
 import { AbstractParent } from '../AbstractParent';
-import { MailjetHttpEmailSender, MailjetAuth } from '../../core';
-import { MissingMandatoryConfigurationError } from '../ConfigurerError';
-import { Email, EmailSenderInjectable } from '../../api';
-import axios, { AxiosInstance } from 'axios';
+import { Email } from '../../api';
 import { EmailTemplateConfigurerImpl } from '../template/EmailTemplateConfigurer';
-import { TemplateConfigurerImpl } from '../template/TemplateConfigurer';
 import { TextTemplateConfigurerImpl } from '../template/TextTemplateConfigurer';
 import { Configurer, SimpleProviderRegistry, Scope } from '../Configurer';
-import { Provider, InjectionToken } from '@zetapush/core';
+import { Provider } from '@zetapush/core';
+import { MailjetEmailConfigurerImpl } from './MailjetConfigurerImpl';
+import { SmtpEmailConfigurerImpl } from './SmtpConfigurerImpl';
+import { createTransport } from 'nodemailer';
 
 export class EmailConfigurerImpl<P> extends AbstractParent<P> implements EmailConfigurer<P>, Configurer {
   private mailjetConfigurer: MailjetEmailConfigurerImpl<EmailConfigurer<P>>;
+  private smtpConfigurer: SmtpEmailConfigurerImpl<EmailConfigurer<P>>;
   private defaults: Partial<Email> = {};
   private htmlTemplateConfigurer: EmailTemplateConfigurerImpl<EmailConfigurer<P>>;
   private textTemplateConfigurer: TextTemplateConfigurerImpl<EmailConfigurer<P>>;
@@ -39,7 +38,8 @@ export class EmailConfigurerImpl<P> extends AbstractParent<P> implements EmailCo
   }
 
   smtp(): SmtpEmailConfigurer<EmailConfigurer<P>> {
-    throw new Error('Method not implemented.');
+    this.smtpConfigurer = new SmtpEmailConfigurerImpl(this, this.defaults, createTransport);
+    return this.smtpConfigurer;
   }
   ovh(): OvhEmailConfigurer<EmailConfigurer<P>> {
     throw new Error('Method not implemented.');
@@ -63,53 +63,6 @@ export class EmailConfigurerImpl<P> extends AbstractParent<P> implements EmailCo
     await providerRegistry.registerConfigurer(this.mailjetConfigurer);
     await providerRegistry.registerConfigurer(this.htmlTemplateConfigurer);
     await providerRegistry.registerConfigurer(this.textTemplateConfigurer);
-    return providerRegistry.getProviders();
-  }
-}
-
-export const DEFAULT_MAILJET_URL = 'https://api.mailjet.com/v3.1/send';
-
-export class MailjetEmailConfigurerImpl<P> extends AbstractParent<P> implements MailjetEmailConfigurer<P>, Configurer {
-  private mailjetUrl?: string;
-  private mailjetApiKeyPublic?: string;
-  private mailjetApiKeyPrivate?: string;
-  private axiosInstance: AxiosInstance;
-
-  constructor(parent: P, private defaults: Partial<Email>, private axios?: AxiosInstance) {
-    super(parent);
-  }
-
-  url(mailjetUrl: string): MailjetEmailConfigurer<P> {
-    this.mailjetUrl = mailjetUrl;
-    return this;
-  }
-  apiKeyPublic(mailjetApiKeyPublic: string): MailjetEmailConfigurer<P> {
-    this.mailjetApiKeyPublic = mailjetApiKeyPublic;
-    return this;
-  }
-  apiKeyPrivate(mailjetApiKeyPrivate: string): MailjetEmailConfigurer<P> {
-    this.mailjetApiKeyPrivate = mailjetApiKeyPrivate;
-    return this;
-  }
-  httpClient(axios: AxiosInstance) {
-    this.axiosInstance = axios;
-    return this;
-  }
-
-  async getProviders(): Promise<Provider[]> {
-    const providerRegistry = new SimpleProviderRegistry();
-    providerRegistry.registerFactory(EmailSenderInjectable, [], () => {
-      const url = this.mailjetUrl || DEFAULT_MAILJET_URL;
-      if (!this.mailjetApiKeyPublic || !this.mailjetApiKeyPrivate) {
-        throw new MissingMandatoryConfigurationError('Missing apiKeyPublic or apiKeyPrivate for Mailjet');
-      }
-      return new MailjetHttpEmailSender(
-        url,
-        new MailjetAuth(this.mailjetApiKeyPublic, this.mailjetApiKeyPrivate),
-        this.defaults,
-        this.axiosInstance || this.axios || axios
-      );
-    });
     return providerRegistry.getProviders();
   }
 }
