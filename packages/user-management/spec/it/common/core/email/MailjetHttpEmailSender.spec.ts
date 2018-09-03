@@ -1,7 +1,6 @@
 import { given, autoclean, runInWorker } from '@zetapush/testing';
 import { MailjetEmailConfigurerImpl, MessageSender, EmailSenderInjectable } from '../../../../../src';
-import { mock, anyString, anything, when, verify } from 'ts-mockito';
-import { AxiosInstance, AxiosResponse, AxiosPromise } from 'axios';
+import { mock, anything, verify } from 'ts-mockito';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import 'jasmine';

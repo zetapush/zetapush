@@ -28,7 +28,13 @@ import {
   DEFAULT_CONFIRMATION_TOKEN_VALIDITY,
   DEFAULT_CONFIRMATION_URL,
   DEFAULT_CONFIRMATION_SUCCESS_REDIRECTION,
-  DEFAULT_CONFIRMATION_FAILURE_REDIRECTION
+  DEFAULT_CONFIRMATION_FAILURE_REDIRECTION,
+  DEFAULT_SMTP_HOST,
+  DEFAULT_SMTP_PORT,
+  DEFAULT_SMTP_USERNAME,
+  DEFAULT_SMTP_PASSWORD,
+  DEFAULT_SMTP_SSL,
+  DEFAULT_SMTP_STARTTLS
 } from './defaults';
 import { LegacyAdapterUserRepository } from '../legacy';
 import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
@@ -115,6 +121,14 @@ export class DefaultUserWorkflowConfigurer implements Configurer {
             .url(DEFAULT_MAILJET_URL(this.properties))
             .apiKeyPublic(DEFAULT_MAILJET_API_KEY_PUBLIC(this.properties))
             .apiKeyPrivate(DEFAULT_MAILJET_API_KEY_PRIVATE(this.properties))
+            .and()
+          .smtp()
+            .host(DEFAULT_SMTP_HOST(this.properties))
+            .port(DEFAULT_SMTP_PORT(this.properties))
+            .username(DEFAULT_SMTP_USERNAME(this.properties))
+            .password(DEFAULT_SMTP_PASSWORD(this.properties))
+            .ssl(DEFAULT_SMTP_SSL(this.properties))
+            .starttls(DEFAULT_SMTP_STARTTLS(this.properties))
             .and()
           .from(DEFAULT_CONFIRMATION_SENDER(this.properties))
           .subject(DEFAULT_CONFIRMATION_SUBJECT(this.properties))

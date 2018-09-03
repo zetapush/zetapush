@@ -60,3 +60,14 @@ export class EmailContentWrapper {
     }
   }
 }
+
+export interface SmtpConfiguration {
+  host: string;
+  port?: number;
+  username?: string;
+  password?: string;
+  ssl?: boolean;
+  startTls?: boolean;
+}
+
+export type ConfigureSmtpTransport = Function;

@@ -19,3 +19,12 @@ export enum MailjetPropertyKey {
   ApiKeyPublic = 'mailjet.apikey-public',
   ApiKeyPrivate = 'mailjet.apikey-private'
 }
+
+export enum SmtpPropertyKey {
+  Host = 'smtp.host',
+  Port = 'smtp.port',
+  Username = 'smtp.username',
+  Password = 'smtp.password',
+  UseSsl = 'smtp.ssl',
+  StartTls = 'smtp.starttls'
+}
