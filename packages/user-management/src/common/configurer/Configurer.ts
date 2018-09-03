@@ -1,5 +1,6 @@
 import { Provider, Type, ValueProvider, InjectionToken, Injector, ReflectiveInjector } from '@zetapush/core';
 import { IllegalStateError, IllegalArgumentValueError } from '../api';
+import { MissingMandatoryConfigurationError, ConfigurationValidationError } from './ConfigurerError';
 
 /**
  * An effective configurer must implement this interface.
@@ -16,6 +17,10 @@ export interface Decorator<T> {
   providerOrDependencyToDecorate: Provider | T;
   dependencies: any[];
   decorate: (decoree: T, ...dependencies: any[]) => any;
+}
+
+export interface Validation {
+  validate(providers: Provider[]): Error | undefined | null;
 }
 
 export class Scope {
@@ -92,12 +97,16 @@ export interface ProviderRegistry {
 
   registerClass<T, C extends T>(provide: Class<T> | InjectionToken<T>, clazz?: Class<C>): void;
 
+  required<T>(provides: Array<Class<T> | InjectionToken<T>>, error?: Error): void;
+  required<T>(provide: Class<T> | InjectionToken<T>, error?: Error): void;
+
   getProviders(): Provider[];
 }
 
 export class SimpleProviderRegistry implements ProviderRegistry {
   private providers: Provider[] = [];
   private decorators: Decorator<any>[] = [];
+  private validations: Validation[] = [];
   static counter = 0;
 
   async registerConfigurer(...configurer: Array<Configurer | null | undefined>): Promise<void> {
@@ -190,9 +199,23 @@ export class SimpleProviderRegistry implements ProviderRegistry {
     });
   }
 
+  required<T>(provide: Class<T> | InjectionToken<T>, error?: Error): void;
+  required<T>(provides: Array<Class<T> | InjectionToken<T>>, error?: Error): void;
+  required<T>(provide: any, error?: Error): void {
+    this.validations.push(new RequiredClassOrToken(Array.isArray(provide) ? provide : [provide], error));
+  }
+
   getProviders(): Provider[] {
+    this.checkValid();
     this.applyDecorators();
     return this.providers;
+  }
+
+  private checkValid() {
+    const errs = this.validations.map((v) => v.validate(this.providers)).filter((err) => !!err) as Error[];
+    if (errs.length) {
+      throw new ConfigurationValidationError(`The configuration of the worker is not valid`, errs);
+    }
   }
 
   private applyDecorators() {
@@ -239,5 +262,39 @@ export class SimpleProviderRegistry implements ProviderRegistry {
         this.providers.push(provider);
       }
     }
+  }
+}
+
+export class RequiredClassOrToken implements Validation {
+  constructor(private provides: Array<Class<any> | InjectionToken<any>>, private err?: Error) {}
+
+  validate(providers: Provider[]): Error | undefined | null {
+    const tokens = providers.map((p) => (<any>p).provide || p);
+    const containsAtLeastOneRequired = this.provides.some((p) => tokens.includes(p));
+    if (!containsAtLeastOneRequired) {
+      return (
+        this.err || new MissingMandatoryConfigurationError(`Missing configuration for ${this.names(this.provides)}`)
+      );
+    }
+  }
+
+  private names(provides: Array<Class<any> | InjectionToken<any>>): string {
+    if (provides.length == 1) {
+      return this.name(provides[0]);
+    }
+    return this.provides.map(this.name).join(' or ');
+  }
+
+  private name(provide: Class<any> | InjectionToken<any>): string {
+    if (provide instanceof InjectionToken) {
+      return provide.toString();
+    }
+    if (provide.constructor && provide.constructor.name) {
+      return provide.constructor.name;
+    }
+    if (provide.prototype && provide.prototype.constructor && provide.prototype.constructor.name) {
+      return provide.prototype.constructor.name;
+    }
+    return provide.toString();
   }
 }

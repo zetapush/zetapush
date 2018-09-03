@@ -22,6 +22,8 @@ import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 import { Simple } from '@zetapush/platform-legacy';
 import { getLocal } from 'mockttp';
 import { HttpUrlRedirection } from '../../../../../src/standard-user-workflow/api';
+import { MissingConfigurationProperty } from '@zetapush/common';
+import { ConfigurationValidationError } from '../../../../../src/common/configurer/ConfigurerError';
 
 describe(`StandardAccountConfirmation`, () => {
   const axiosInstance = axios.create({});
@@ -87,6 +89,7 @@ describe(`StandardAccountConfirmation`, () => {
               /*    */ .and()
               /*  */ .email()
               /*    */ .mailjet()
+              /*      */ .enable(true)
               /*      */ .apiKeyPublic('public-key')
               /*      */ .apiKeyPrivate('private-key')
               /*      */ .url('mailjet-url')
@@ -149,6 +152,79 @@ describe(`StandardAccountConfirmation`, () => {
 
       afterEach(async () => {
         await this.mockServer.stop();
+        await autoclean(this);
+      });
+    });
+  });
+
+  describe(`initialization`, () => {
+    describe(`without email or sms sender`, () => {
+      beforeEach(async () => {
+        await given()
+          .credentials()
+          /**/ .fromEnv()
+          /**/ .newApp()
+          /**/ .and()
+          .worker()
+          /**/ .testModule(async () => {
+            // create configurer
+            const configurer = new StandardUserWorkflowConfigurerImpl(properties, zetapushContext);
+            configurer
+              .registration()
+              /**/ .account()
+              /*  */ .uuid()
+              /*    */ .generator(instance(uuidGenerator))
+              /*    */ .and()
+              /*  */ .initialStatus()
+              /*    */ .value(StandardAccountStatus.WaitingConfirmation)
+              /*    */ .and()
+              /*  */ .storage(LegacyAdapterUserRepository)
+              /*  */ .and()
+              // /*  */ .fields()
+              // /*    */.scan()
+              // /*      */.annotations()
+              // /*      */.and()
+              // /*    */.and()
+              /**/ .confirmation()
+              /*  */ .url(confirmationUrl)
+              /*  */ .token()
+              /*    */ .generator(instance(tokenGenerator))
+              /*    */ .validity(5000)
+              /*    */ .storage(GdaTokenRepository)
+              /*    */ .and()
+              /*  */ .email()
+              /*    */ .mailjet()
+              /*      */ .enable(false)
+              /*      */ .and()
+              /*    */ .and()
+              /*  */ .redirection()
+              /*    */ .successUrl('dontcare')
+              /*    */ .failureUrl('dontcare');
+            return {
+              providers: await configurer.getProviders()
+            };
+          })
+          /**/ .dependencies(StandardUserWorkflow, Simple, ConfirmationUrlHttpHandler)
+          /**/ .and()
+          .apply(this);
+      });
+
+      it(
+        `fails indicating missing configuration for email or sms`,
+        async () => {
+          try {
+            await runInWorker(this, async (workflow: StandardUserWorkflow, simple: Simple) => {});
+            fail('should have failed indicating missing configuration');
+          } catch (e) {
+            expect(() => {
+              throw e;
+            }).toThrowError(ConfigurationValidationError, 'The configuration of the worker is not valid');
+          }
+        },
+        5 * 60 * 1000
+      );
+
+      afterEach(async () => {
         await autoclean(this);
       });
     });

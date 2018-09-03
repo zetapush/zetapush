@@ -42,6 +42,7 @@ describe(`TemplatedEmail`, () => {
               const configurer = new EmailConfigurerImpl(parent, new Scope('foo'));
               configurer
                 .mailjet()
+                /**/ .enable(true)
                 /**/ .apiKeyPublic('public-key')
                 /**/ .apiKeyPrivate('private-key')
                 /**/ .url('mailjet-url')

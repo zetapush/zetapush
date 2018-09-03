@@ -28,6 +28,7 @@ describe(`MailjetHttpEmailSender`, () => {
               axiosInstance
             );
             configurer
+              .enable(true)
               .apiKeyPublic('public-key')
               .apiKeyPrivate('private-key')
               .url('mailjet-url');

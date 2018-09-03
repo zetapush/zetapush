@@ -101,6 +101,13 @@ export class RegistrationConfirmationConfigurerImpl extends AbstractParent<Regis
 
   async getProviders(): Promise<Provider[]> {
     const providerRegistry = new SimpleProviderRegistry();
+    providerRegistry.required(
+      EmailSenderInjectable,
+      new MissingMandatoryConfigurationError(
+        `Confirmation is enabled but neither email nor sms is enabled to send confirmation message`
+      )
+    );
+
     await providerRegistry.registerConfigurer(this.emailConfigurer);
     await providerRegistry.registerConfigurer(this.tokenConfigurer);
     if (this.confirmationUrl) {

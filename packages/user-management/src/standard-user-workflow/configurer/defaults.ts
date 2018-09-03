@@ -65,6 +65,11 @@ export const DEFAULT_CONFIRMATION_SENDER = (properties: ConfigurationProperties)
 
 export const DEFAULT_CONFIRMATION_TOKEN_VALIDITY = 60 * 60 * 1000;
 
+export const DEFAULT_MAILJET_ENABLE = (properties: ConfigurationProperties) =>
+  properties.get(MailjetPropertyKey.Enable, true) &&
+  properties.has(MailjetPropertyKey.ApiKeyPublic) &&
+  properties.has(MailjetPropertyKey.ApiKeyPrivate);
+
 export const DEFAULT_MAILJET_URL = (properties: ConfigurationProperties) =>
   properties.get(MailjetPropertyKey.Url, 'https://api.mailjet.com/v3.1/send');
 
@@ -91,6 +96,9 @@ export const DEFAULT_CONFIRMATION_FAILURE_REDIRECTION = (
     RegistrationConfirmationPropertyKeys.AccountConfirmationFailedRedirectionUrl,
     '' //TODO: `${zetapushContext.getFrontUrl()}#account-confirmation-error`
   );
+
+export const DEFAULT_SMTP_ENABLE = (properties: ConfigurationProperties) =>
+  properties.get(SmtpPropertyKey.Enable, true) && properties.has(SmtpPropertyKey.Host);
 
 export const DEFAULT_SMTP_HOST = (properties: ConfigurationProperties): string =>
   properties.get(SmtpPropertyKey.Host, '');

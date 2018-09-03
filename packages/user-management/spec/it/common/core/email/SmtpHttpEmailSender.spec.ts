@@ -28,6 +28,7 @@ describe(`SmtpHttpEmailSender`, () => {
 
             const configurer = new SmtpEmailConfigurerImpl(parent, {}, createAndGetTransport);
             configurer
+              .enable(true)
               .host('smtp-host')
               .port(465)
               .username('smtp-user')
@@ -53,7 +54,7 @@ describe(`SmtpHttpEmailSender`, () => {
               html: '<h1>Yeah !</h1>'
             }
           });
-          
+
           const sentMail = nodemailerMock.mock.sentMail();
 
           expect(result.message.response).toContain('success');

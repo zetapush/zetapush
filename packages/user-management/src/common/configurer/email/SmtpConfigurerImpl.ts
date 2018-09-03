@@ -6,6 +6,7 @@ import { Email, EmailSenderInjectable } from '../../api';
 import { MissingMandatoryConfigurationError } from '../ConfigurerError';
 import { SmtpEmailSender, SmtpConfiguration } from '../../core';
 import { ConfigureSmtpTransport } from '../../../common/core/email/email-utils';
+import { AlternativeHelper } from '../AlternativeHelper';
 
 export class SmtpEmailConfigurerImpl<P> extends AbstractParent<P> implements SmtpEmailConfigurer<P>, Configurer {
   private smtpHost?: string;
@@ -14,9 +15,17 @@ export class SmtpEmailConfigurerImpl<P> extends AbstractParent<P> implements Smt
   private smtpPassword?: string;
   private enableSsl?: boolean;
   private enableTls?: boolean;
+  private alternativeHelper: AlternativeHelper<this>;
 
   constructor(parent: P, private defaults: Partial<Email>, private mailer: ConfigureSmtpTransport) {
     super(parent);
+    this.alternativeHelper = new AlternativeHelper(this);
+  }
+
+  enable(enable: boolean): this;
+  enable(enable: () => boolean | Promise<boolean>): this;
+  enable(enable: any): this {
+    return this.alternativeHelper.enable(enable);
   }
 
   host(smtpHost: string): SmtpEmailConfigurer<P> {
@@ -50,16 +59,17 @@ export class SmtpEmailConfigurerImpl<P> extends AbstractParent<P> implements Smt
 
   async getProviders(): Promise<Provider[]> {
     const providerRegistry = new SimpleProviderRegistry();
-    providerRegistry.registerFactory(EmailSenderInjectable, [], () => {
-      if (!this.smtpHost || !this.smtpUser || !this.smtpPassword) {
-        throw new MissingMandatoryConfigurationError('Missing host, username or password for SMTP configuration');
-      }
+    if (await this.alternativeHelper.isEnabled()) {
+      providerRegistry.registerFactory(EmailSenderInjectable, [], () => {
+        if (!this.smtpHost) {
+          throw new MissingMandatoryConfigurationError('Missing host for SMTP configuration');
+        }
 
-      const smtpConf: SmtpConfiguration = this.getSmtpConfiguration();
+        const smtpConf: SmtpConfiguration = this.getSmtpConfiguration();
 
-      return new SmtpEmailSender(smtpConf, this.defaults, this.mailer);
-    });
-
+        return new SmtpEmailSender(smtpConf, this.defaults, this.mailer);
+      });
+    }
     return providerRegistry.getProviders();
   }
 
