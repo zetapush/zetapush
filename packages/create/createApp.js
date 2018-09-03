@@ -114,7 +114,8 @@ function createApp(name, zetarc, version, command) {
       start: 'zeta run',
       troubleshoot: 'zeta troubleshoot'
     },
-    dependencies: {}
+    dependencies: {},
+    devDependencies: {}
   };
   // Create package.json
   fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson, null, 2) + os.EOL);
@@ -252,12 +253,16 @@ function run(root, appName, originalDirectory, version, command) {
     `@zetapush/platform-legacy${versionStr}`,
     `typescript@latest`
   ];
+  const devDependencies = [
+    `@types/node`
+  ]
 
   console.log('Installing packages. This might take a couple of minutes.');
   console.log(`Installing ${dependencies.map((dependency) => `${chalk.cyan(dependency)}`).join(', ')}.`);
+  console.log(`Installing ${devDependencies.map((dependency) => `${chalk.cyan(dependency)}`).join(', ')}.`);
   console.log();
 
-  return install(dependencies)
+  return install(dependencies, devDependencies)
     .then(() => init(root, appName, originalDirectory, command))
     .catch((reason) => {
       console.log();
@@ -294,11 +299,17 @@ function run(root, appName, originalDirectory, version, command) {
     });
 }
 
-function install(dependencies) {
-  return new Promise((resolve, reject) => {
-    const command = 'npm';
-    const args = ['install', '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
+/**
+ * Install all dependencies in the same time (runtime and dev dependencies)
+ * @param {*} dependencies 
+ * @param {*} devDependencies 
+ */
+function install(dependencies, devDependencies) {
+  const command = 'npm';
+  const args = ['install', '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
+  const argsDev = ['install', '--save-dev', '--save-exact', '--loglevel', 'error'].concat(devDependencies);
 
+  const installDependencies = new Promise((resolve, reject) => {
     const child = spawn(command, args, { stdio: 'inherit' });
     child.on('close', (code) => {
       if (code !== 0) {
@@ -309,6 +320,27 @@ function install(dependencies) {
       }
       resolve();
     });
+  });
+
+  const installDevDependencies = new Promise((resolve, reject) => {
+    const child = spawn(command, argsDev, { stdio: 'inherit' });
+    child.on('close', (code) => {
+      if (code !== 0) {
+        reject({
+          command: `${command} ${args.join(' ')}`
+        });
+        return;
+      }
+      resolve();
+    });
+  });
+
+  return new Promise((resolve, reject) => {
+    Promise.all([installDependencies, installDevDependencies]).then((res) => {
+      resolve(res);
+    }).catch((err) => {
+      reject(err);
+    })
   });
 }
 
