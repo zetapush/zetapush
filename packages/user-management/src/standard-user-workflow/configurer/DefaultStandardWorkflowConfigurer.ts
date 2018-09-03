@@ -34,7 +34,9 @@ import {
   DEFAULT_SMTP_USERNAME,
   DEFAULT_SMTP_PASSWORD,
   DEFAULT_SMTP_SSL,
-  DEFAULT_SMTP_STARTTLS
+  DEFAULT_SMTP_STARTTLS,
+  DEFAULT_MAILJET_ENABLE,
+  DEFAULT_SMTP_ENABLE
 } from './defaults';
 import { LegacyAdapterUserRepository } from '../legacy';
 import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
@@ -118,11 +120,13 @@ export class DefaultUserWorkflowConfigurer implements Configurer {
         .url(DEFAULT_CONFIRMATION_URL)
         .email()
           .mailjet()
+            .enable(DEFAULT_MAILJET_ENABLE(this.properties))
             .url(DEFAULT_MAILJET_URL(this.properties))
             .apiKeyPublic(DEFAULT_MAILJET_API_KEY_PUBLIC(this.properties))
             .apiKeyPrivate(DEFAULT_MAILJET_API_KEY_PRIVATE(this.properties))
             .and()
           .smtp()
+            .enable(DEFAULT_SMTP_ENABLE(this.properties))
             .host(DEFAULT_SMTP_HOST(this.properties))
             .port(DEFAULT_SMTP_PORT(this.properties))
             .username(DEFAULT_SMTP_USERNAME(this.properties))

@@ -19,7 +19,7 @@ export interface And<P> {
 // TODO: add this everywhere the user can choose an implementation (ex: mail through SMTP, OVH or Mailjet)
 export interface Alternative<S> {
   enable(enable: boolean): S;
-  enable(enable: () => boolean): S;
+  enable(enable: () => boolean | Promise<boolean>): S;
 }
 
 export interface StandardUserWorkflowConfigurer {
@@ -184,7 +184,7 @@ export interface EmailConfigurer<P> extends And<P> {
   textTemplate(): TextTemplateConfigurer<EmailConfigurer<P>>;
 }
 
-export interface SmtpEmailConfigurer<P> extends And<P> {
+export interface SmtpEmailConfigurer<P> extends And<P>, Alternative<SmtpEmailConfigurer<P>> {
   host(smtpHost: string): SmtpEmailConfigurer<P>;
   port(smtpPort: number): SmtpEmailConfigurer<P>;
   username(smtpUsername: string): SmtpEmailConfigurer<P>;
@@ -193,12 +193,12 @@ export interface SmtpEmailConfigurer<P> extends And<P> {
   starttls(enableTls: boolean): SmtpEmailConfigurer<P>;
 }
 
-export interface OvhEmailConfigurer<P> extends And<P> {
+export interface OvhEmailConfigurer<P> extends And<P>, Alternative<OvhEmailConfigurer<P>> {
   url(ovhUrl: string): OvhEmailConfigurer<P>;
   username(ovhUsername: string): OvhEmailConfigurer<P>;
   password(ovhPassword: string): OvhEmailConfigurer<P>;
 }
-export interface MailjetEmailConfigurer<P> extends And<P> {
+export interface MailjetEmailConfigurer<P> extends And<P>, Alternative<MailjetEmailConfigurer<P>> {
   url(mailjetUrl: string): MailjetEmailConfigurer<P>;
   apiKeyPublic(mailjetApiKeyPublic: string): MailjetEmailConfigurer<P>;
   apiKeyPrivate(mailjetApiKeyPrivate: string): MailjetEmailConfigurer<P>;

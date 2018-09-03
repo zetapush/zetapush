@@ -23,7 +23,7 @@ export class MailjetHttpEmailSender implements MessageSender {
       await this.axios.post(
         this.mailjetUrl,
         {
-          Messages: [this.toOvhMessage(email)]
+          Messages: [this.toMailjetMessage(email)]
         },
         {
           headers: this.headers(),
@@ -49,7 +49,7 @@ export class MailjetHttpEmailSender implements MessageSender {
     };
   }
 
-  toOvhMessage(email: Email): any {
+  toMailjetMessage(email: Email): any {
     return {
       From: this.toMailjetAddress(email.from || this.defaults.from),
       To: (email.to || this.defaults.to || []).map(this.toMailjetAddress.bind(this)),
