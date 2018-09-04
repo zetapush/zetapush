@@ -62,16 +62,14 @@ export class SmtpEmailSender implements MessageSender {
     };
   }
 
-  toSmtpAddress(address?: EmailAddress | string): { Email: string; Name?: string } | null {
+  toSmtpAddress(address?: EmailAddress | string): string | null {
     if (!address) {
       return null;
     }
     if (typeof address === 'string') {
-      return this.toSmtpAddress(new EmailAddressWrapper(address));
+        return address;
     }
-    return {
-      Email: address.getEmailAddress(),
-      Name: address.getPersonal() || ''
-    };
+
+    return address.getEmailAddress();
   }
 }

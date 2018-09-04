@@ -58,8 +58,8 @@ describe(`SmtpHttpEmailSender`, () => {
           const sentMail = nodemailerMock.mock.sentMail();
 
           expect(result.message.response).toContain('success');
-          expect(sentMail[0].from.Email).toEqual('contact@zetapush.com');
-          expect(sentMail[0].to[0].Email).toEqual('odile.deray@zetapush.com');
+          expect(sentMail[0].from).toEqual('contact@zetapush.com');
+          expect(sentMail[0].to).toContain('odile.deray@zetapush.com');
           expect(sentMail[0].subject).toEqual('SMTP sender test');
           expect(sentMail[0].html).toEqual('<h1>Yeah !</h1>');
           expect(instanceOfTransport.mock.options.host).toEqual('smtp-host');
