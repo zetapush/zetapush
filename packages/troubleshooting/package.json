@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/troubleshooting",
-  "version": "0.31.4",
+  "version": "0.32.0",
   "description": "Zeta Push Next",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -20,7 +20,7 @@
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@zetapush/common": "0.31.4",
+    "@zetapush/common": "0.32.0",
     "axios": "0.18.0",
     "default-gateway": "2.7.2",
     "execa": "0.10.0",

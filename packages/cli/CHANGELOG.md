@@ -3,12 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.31.4](https://github.com/zetapush/zetapush/compare/v0.31.3...v0.31.4) (2018-07-27)
+# [0.32.0](https://github.com/zetapush/zetapush/compare/v0.31.4...v0.32.0) (2018-09-04)
+
+
+### Bug Fixes
+
+* **di:** fix dependency injection after merge ([4c830bb](https://github.com/zetapush/zetapush/commit/4c830bb))
+* **push:** Push fails due to miswritten skipProvisioning ([29a850a](https://github.com/zetapush/zetapush/commit/29a850a))
+* **testing:** provisionning of platform services wasn't effective ([304df48](https://github.com/zetapush/zetapush/commit/304df48))
+
+
+### Features
+
+* **externalize-metadata:** move metadata from platform package to core ([33217bb](https://github.com/zetapush/zetapush/commit/33217bb))
+* **externalize-metadata:** move metadata from platform package to core ([67a75fe](https://github.com/zetapush/zetapush/commit/67a75fe))
+* preprare configurable api ([67770b4](https://github.com/zetapush/zetapush/commit/67770b4))
+* preprare configurable api ([20d5923](https://github.com/zetapush/zetapush/commit/20d5923))
+* **properties:** load configuration properties ([0b4b6d0](https://github.com/zetapush/zetapush/commit/0b4b6d0))
+* **rename-platform-package:** rename platform package to platform-legacy ([e913921](https://github.com/zetapush/zetapush/commit/e913921)), closes [#114](https://github.com/zetapush/zetapush/issues/114)
+* **rename-platform-package:** rename platform package to platform-legacy ([9dfcef9](https://github.com/zetapush/zetapush/commit/9dfcef9)), closes [#114](https://github.com/zetapush/zetapush/issues/114)
+
+
+### BREAKING CHANGES
+
+* **rename-platform-package:** @zetapush/platform is no longer available use @zetapush/platform-legacy
+* **externalize-metadata:** Context and injection-js related class and interfaces are now available in core package
+* **rename-platform-package:** @zetapush/platform is no longer available use @zetapush/platform-legacy
+* **externalize-metadata:** Context and injection-js related class and interfaces are now available in core package
 
 
 
-
-**Note:** Version bump only for package @zetapush/cli
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

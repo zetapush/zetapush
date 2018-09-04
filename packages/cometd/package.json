@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/cometd",
-  "version": "0.31.4",
+  "version": "0.32.0",
   "description": "Zeta Push Next",
   "main": "index.js",
   "files": [
@@ -12,9 +12,9 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
+    "https-proxy-agent": "2.2.1",
     "node-fetch": "^2.1.0",
-    "ws": "^5.1.0",
-    "https-proxy-agent": "2.2.1"
+    "ws": "^5.1.0"
   },
   "optionalDependencies": {
     "bufferutil": "^3.0.4",

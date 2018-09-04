@@ -2,3 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+# [0.32.0](https://github.com/zetapush/zetapush/compare/v0.31.4...v0.32.0) (2018-09-04)
+
+
+### Features
+
+* **confirmation:** start HTTP server to handle confirmation link ([465a1c4](https://github.com/zetapush/zetapush/commit/465a1c4))
+* **properties:** load configuration properties ([0b4b6d0](https://github.com/zetapush/zetapush/commit/0b4b6d0))
+
+
+
+
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.

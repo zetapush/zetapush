@@ -3,18 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.31.4](https://github.com/zetapush/zetapush/compare/v0.31.3...v0.31.4) (2018-07-27)
+# [0.32.0](https://github.com/zetapush/zetapush/compare/v0.31.4...v0.32.0) (2018-09-04)
 
 
 ### Bug Fixes
 
-* **Client:** add the 'createProxyTaskService' method in index.d.ts ([92a9501](https://github.com/zetapush/zetapush/commit/92a9501))
-* **Client:** update the 'createProxyTaskService' method ([417c36d](https://github.com/zetapush/zetapush/commit/417c36d))
+* **Client connection:** add optional credentials parameters in the 'connect()' method ([2576729](https://github.com/zetapush/zetapush/commit/2576729))
+* **fix-build-client:** fix build client ([5657d28](https://github.com/zetapush/zetapush/commit/5657d28))
+* **fix-build-client:** fix build client ([f3fba81](https://github.com/zetapush/zetapush/commit/f3fba81))
+* **typo:** rename environement to environment ([cbdaacc](https://github.com/zetapush/zetapush/commit/cbdaacc))
 
 
 ### Features
 
-* **client:** use non target with empty prototype for proxified object ([df0c300](https://github.com/zetapush/zetapush/commit/df0c300))
+* **externalize-metadata:** move metadata from platform package to core ([33217bb](https://github.com/zetapush/zetapush/commit/33217bb))
+* **externalize-metadata:** move metadata from platform package to core ([67a75fe](https://github.com/zetapush/zetapush/commit/67a75fe))
+* **properties:** load configuration properties ([0b4b6d0](https://github.com/zetapush/zetapush/commit/0b4b6d0))
+* **rename-platform-package:** rename platform package to platform-legacy ([e913921](https://github.com/zetapush/zetapush/commit/e913921)), closes [#114](https://github.com/zetapush/zetapush/issues/114)
+* **rename-platform-package:** rename platform package to platform-legacy ([9dfcef9](https://github.com/zetapush/zetapush/commit/9dfcef9)), closes [#114](https://github.com/zetapush/zetapush/issues/114)
+* **rollup:** bump rollup version ([b841f1e](https://github.com/zetapush/zetapush/commit/b841f1e))
+
+
+### BREAKING CHANGES
+
+* **rename-platform-package:** @zetapush/platform is no longer available use @zetapush/platform-legacy
+* **externalize-metadata:** Context and injection-js related class and interfaces are now available in core package
+* **rename-platform-package:** @zetapush/platform is no longer available use @zetapush/platform-legacy
+* **externalize-metadata:** Context and injection-js related class and interfaces are now available in core package
 
 
 

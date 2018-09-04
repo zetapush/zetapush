@@ -3,12 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.31.4](https://github.com/zetapush/zetapush/compare/v0.31.3...v0.31.4) (2018-07-27)
+# [0.32.0](https://github.com/zetapush/zetapush/compare/v0.31.4...v0.32.0) (2018-09-04)
+
+
+### Bug Fixes
+
+* **platform:** update platform auto-generated services ([548639f](https://github.com/zetapush/zetapush/commit/548639f))
+
+
+### Features
+
+* preprare configurable api ([67770b4](https://github.com/zetapush/zetapush/commit/67770b4))
+* preprare configurable api ([20d5923](https://github.com/zetapush/zetapush/commit/20d5923))
+* **externalize-metadata:** move metadata from platform package to core ([c5f75fe](https://github.com/zetapush/zetapush/commit/c5f75fe))
+* **properties:** load configuration properties ([0b4b6d0](https://github.com/zetapush/zetapush/commit/0b4b6d0))
+* **rename-platform-package:** rename platform package to platform-legacy ([e913921](https://github.com/zetapush/zetapush/commit/e913921)), closes [#114](https://github.com/zetapush/zetapush/issues/114)
+* **rename-platform-package:** rename platform package to platform-legacy ([9dfcef9](https://github.com/zetapush/zetapush/commit/9dfcef9)), closes [#114](https://github.com/zetapush/zetapush/issues/114)
+* **rollup:** bump rollup version ([b841f1e](https://github.com/zetapush/zetapush/commit/b841f1e))
+
+
+### BREAKING CHANGES
+
+* **externalize-metadata:** Context and injection-js related class and interfaces are now available in core package
+* **rename-platform-package:** @zetapush/platform is no longer available use @zetapush/platform-legacy
+* **rename-platform-package:** @zetapush/platform is no longer available use @zetapush/platform-legacy
 
 
 
-
-**Note:** Version bump only for package @zetapush/platform-legacy-legacy
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
