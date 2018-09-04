@@ -10,8 +10,9 @@
   },
   "dependencies": {
     "typescript": "3.0.1",
-    "@zetapush/core": "0.32.0-alpha.d8c1c228",
-    "@zetapush/user-management": "0.32.0-alpha.d8c1c228",
-    "@zetapush/cli": "0.32.0-alpha.d8c1c228"
+    "@types/node": "10.9.4",
+    "@zetapush/core": "0.32.0-alpha.af005cd8",
+    "@zetapush/user-management": "0.32.0-alpha.af005cd8",
+    "@zetapush/cli": "0.32.0-alpha.af005cd8"
   }
 }

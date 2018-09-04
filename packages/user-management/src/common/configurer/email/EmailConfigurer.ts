@@ -61,6 +61,7 @@ export class EmailConfigurerImpl<P> extends AbstractParent<P> implements EmailCo
   async getProviders(): Promise<Provider[]> {
     let providerRegistry = new SimpleProviderRegistry();
     await providerRegistry.registerConfigurer(this.mailjetConfigurer);
+    await providerRegistry.registerConfigurer(this.smtpConfigurer);
     await providerRegistry.registerConfigurer(this.htmlTemplateConfigurer);
     await providerRegistry.registerConfigurer(this.textTemplateConfigurer);
     return providerRegistry.getProviders();
