@@ -5,3 +5,4 @@
 # TypeScript Generated Files
 /worker/**/*.js
 /worker/**/*.d.ts
+package-lock.json
