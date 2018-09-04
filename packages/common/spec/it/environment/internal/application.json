@@ -1,0 +1,6 @@
+{
+  mailjet: {
+    apiKeyPublic: 'public-key-from-default',
+    apiKeyPrivate: 'private-key-from-default'
+  }
+}

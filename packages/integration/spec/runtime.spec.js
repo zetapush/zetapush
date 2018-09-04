@@ -1,14 +1,4 @@
-const {
-  rm,
-  npmInit,
-  zetaPush,
-  readZetarc,
-  Runner,
-  createZetarc,
-  npmInstallLatestVersion,
-  nukeApp,
-} = require('./utils/commands');
-const { given, frontUserAction, autoclean } = require('./utils/tdd');
+const { given, frontUserAction, autoclean } = require('@zetapush/testing');
 
 const sleep = (millis) => {
   return new Promise((resolve) => setTimeout(resolve, millis));
@@ -33,8 +23,10 @@ describe(`As developer with
         /**/ .credentials()
         /*   */ .fromEnv()
         /*   */ .and()
-        /**/ .templatedApp()
-        /*   */ .dir(basicWorkerDir)
+        /**/ .project()
+        /*   */ .template()
+        /*     */ .sourceDir(basicWorkerDir)
+        /*     */ .and()
         /*   */ .and()
         /**/ .worker()
         /*   */ .up()
@@ -52,7 +44,7 @@ describe(`As developer with
         expect(failure).toBe(false);
       });
     },
-    60 * 1000 * 10,
+    60 * 1000 * 10
   );
 
   /**
@@ -66,8 +58,10 @@ describe(`As developer with
         /**/ .credentials()
         /*   */ .fromEnv()
         /*   */ .and()
-        /**/ .templatedApp()
-        /*   */ .dir(brokenWorkerDir)
+        /**/ .project()
+        /*   */ .template()
+        /*     */ .sourceDir(brokenWorkerDir)
+        /*     */ .and()
         /*   */ .and()
         /**/ .worker()
         /*   */ .up()
@@ -85,7 +79,7 @@ describe(`As developer with
         expect(failure).toBe(true);
       });
     },
-    60 * 1000 * 2,
+    60 * 1000 * 2
   );
 
   /**
@@ -99,8 +93,10 @@ describe(`As developer with
         /**/ .credentials()
         /*   */ .fromEnv()
         /*   */ .and()
-        /**/ .templatedApp()
-        /*   */ .dir(brokenWorkerInitDir)
+        /**/ .project()
+        /*   */ .template()
+        /*     */ .sourceDir(brokenWorkerInitDir)
+        /*     */ .and()
         /*   */ .and()
         /**/ .worker()
         /*   */ .runner()
@@ -110,13 +106,13 @@ describe(`As developer with
       // worker can't start due to runtime error
       let failure = false;
       try {
-        await this.context.runner.run((quiet = false));
+        await this.context.runner.run();
       } catch (error) {
         failure = true;
       }
       expect(failure).toBe(true);
     },
-    60 * 1000 * 10,
+    60 * 1000 * 10
   );
 
   /**
@@ -130,8 +126,10 @@ describe(`As developer with
         /**/ .credentials()
         /*   */ .fromEnv()
         /*   */ .and()
-        /**/ .templatedApp()
-        /*   */ .dir(exitWorkerDir)
+        /**/ .project()
+        /*   */ .template()
+        /*     */ .sourceDir(exitWorkerDir)
+        /*     */ .and()
         /*   */ .and()
         /**/ .worker()
         /*   */ .up()
@@ -152,7 +150,7 @@ describe(`As developer with
         expect(helloReceived).toBe(false);
       });
     },
-    60 * 1000 * 10,
+    60 * 1000 * 10
   );
 
   /**

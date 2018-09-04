@@ -1,7 +1,7 @@
 {
-  "name": "broken-worker-case",
+  "name": "broken-worker-hello",
   "version": "0.1.0",
-  "main": "worker/index.js",
+  "main": "worker/index.ts",
   "private": true,
   "scripts": {
     "deploy": "zeta push",
@@ -9,7 +9,7 @@
     "troubleshoot": "zeta troubleshoot"
   },
   "dependencies": {
-    "@zetapush/cli": "*",
-    "@zetapush/platform": "*"
+    "@zetapush/cli":  "0.31.4",
+    "@zetapush/platform-legacy":  "0.31.4"
   }
 }

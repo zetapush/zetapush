@@ -22,52 +22,49 @@ const pkg = require('./package.json');
 
 // These files should be allowed to remain on a failed install,
 // but then silently removed during the next create.
-const errorLogFilePatterns = [
-  'npm-debug.log',
-  'yarn-error.log',
-  'yarn-debug.log',
-];
+const errorLogFilePatterns = ['npm-debug.log', 'yarn-error.log', 'yarn-debug.log'];
 
 const program = new commander.Command(pkg.name)
   .version(pkg.version)
-  .option(
-    '-u, --platform-url <platform-url>',
-    'Platform URL',
-    DEFAULTS.PLATFORM_URL,
-  )
+  .option('-u, --platform-url <platform-url>', 'Platform URL', DEFAULTS.PLATFORM_URL)
   .option('-l, --developer-login <developer-login>', 'Developer login')
   .option('-p, --developer-password <developer-password>', 'Developer password')
   .option('-a, --app-name <app-name>', 'Application name')
-  .option('-f, --force-current-version', 'Use the same version as built version for the generated project', () => true, false)
-  .option('-t, --javascript', 'Generate a project with JavaScript instead of TypeScript', () => true, false)
+  .option(
+    '-f, --force-current-version',
+    'Use the same version as built version for the generated project',
+    () => true,
+    false
+  )
   .option(
     '-v, --verbose',
     'Verbosity level (-v=error+warn+info, -vv=error+warn+info+log, -vvv=error+warn+info+log+trace)',
     increaseVerbosity,
-    1,
+    1
   )
   .arguments('<project-directory>')
   .usage(`${chalk.green('<project-directory>')} [options]`)
   .action((name, command) => {
     const version = getCurrentVersion(command);
     const config = validateOptions(command);
-    createAccount(config).then((zetarc) => {
-      createApp(name, zetarc, version, command);
-    }).catch((failure) => {
-      logger.error('createAccount', failure)
-    });
+    createAccount(config)
+      .then((zetarc) => {
+        createApp(name, zetarc, version, command);
+      })
+      .catch((failure) => {
+        logger.error('createAccount', failure);
+      });
   })
-  .on('--help', () => {
-
-  })
+  .on('--help', () => {})
   .parse(process.argv);
 
 function getCurrentVersion(command) {
-  if(!command.forceCurrentVersion) {
-    return null
+  if (!command.forceCurrentVersion) {
+    return null;
   }
-  console.log("__dirname=", __dirname);
-  return JSON.parse(fs.readFileSync(__dirname + '/package.json')).version
+  const version = JSON.parse(fs.readFileSync(__dirname + '/package.json')).version;
+  logger.trace(`using current version (${version})`);
+  return version;
 }
 
 function validateOptions({ appName, developerLogin, developerPassword, platformUrl }) {
@@ -79,8 +76,12 @@ function validateOptions({ appName, developerLogin, developerPassword, platformU
     developerPassword = getDeveloperPassword();
   }
   const missing = [];
-  if (!developerLogin) { missing.push('--developer-login'); }
-  if (!developerPassword) { missing.push('--developer-password'); }
+  if (!developerLogin) {
+    missing.push('--developer-login');
+  }
+  if (!developerPassword) {
+    missing.push('--developer-password');
+  }
   if (missing.length > 0) {
     console.log();
     console.log('Aborting init.');
@@ -88,7 +89,7 @@ function validateOptions({ appName, developerLogin, developerPassword, platformU
     console.log();
     process.exit(1);
   }
-  return { appName, developerLogin, developerPassword, platformUrl }
+  return { appName, developerLogin, developerPassword, platformUrl };
 }
 
 function createApp(name, zetarc, version, command) {
@@ -106,7 +107,7 @@ function createApp(name, zetarc, version, command) {
   const packageJson = {
     name: appName,
     version: '0.1.0',
-    main: `worker/index.${command.javascript ? 'js' : 'ts'}`,
+    main: `worker/index.ts`,
     private: true,
     scripts: {
       deploy: 'zeta push',
@@ -116,15 +117,9 @@ function createApp(name, zetarc, version, command) {
     dependencies: {}
   };
   // Create package.json
-  fs.writeFileSync(
-    path.join(root, 'package.json'),
-    JSON.stringify(packageJson, null, 2) + os.EOL
-  );
+  fs.writeFileSync(path.join(root, 'package.json'), JSON.stringify(packageJson, null, 2) + os.EOL);
   // Create .zetarc
-  fs.writeFileSync(
-    path.join(root, '.zetarc'),
-    JSON.stringify(zetarc, null, 2) + os.EOL
-  );
+  fs.writeFileSync(path.join(root, '.zetarc'), JSON.stringify(zetarc, null, 2) + os.EOL);
 
   const originalDirectory = process.cwd();
   process.chdir(root);
@@ -155,38 +150,32 @@ function isSafeToCreateProjectIn(root, name) {
     'docs',
     '.travis.yml',
     '.gitlab-ci.yml',
-    '.gitattributes',
+    '.gitattributes'
   ];
   console.log();
 
   const conflicts = fs
     .readdirSync(root)
-    .filter(file => !validFiles.includes(file))
+    .filter((file) => !validFiles.includes(file))
     // Don't treat log files from previous installation as conflicts
-    .filter(
-      file => !errorLogFilePatterns.some(pattern => file.indexOf(pattern) === 0)
-    );
+    .filter((file) => !errorLogFilePatterns.some((pattern) => file.indexOf(pattern) === 0));
 
   if (conflicts.length > 0) {
-    console.log(
-      `The directory ${chalk.green(name)} contains files that could conflict:`
-    );
+    console.log(`The directory ${chalk.green(name)} contains files that could conflict:`);
     console.log();
     for (const file of conflicts) {
       console.log(`  ${file}`);
     }
     console.log();
-    console.log(
-      'Either try using a new directory name, or remove the files listed above.'
-    );
+    console.log('Either try using a new directory name, or remove the files listed above.');
 
     return false;
   }
 
   // Remove any remnant files from a previous installation
   const currentFiles = fs.readdirSync(path.join(root));
-  currentFiles.forEach(file => {
-    errorLogFilePatterns.forEach(errorLogFilePattern => {
+  currentFiles.forEach((file) => {
+    errorLogFilePatterns.forEach((errorLogFilePattern) => {
       // This will catch `(npm-debug|yarn-error|yarn-debug).log*` files
       if (file.indexOf(errorLogFilePattern) === 0) {
         fs.removeSync(path.join(root, file));
@@ -196,32 +185,21 @@ function isSafeToCreateProjectIn(root, name) {
   return true;
 }
 
-function init(
-  appPath,
-  appName,
-  originalDirectory,
-  command
-) {
-  const language = command.javascript ? 'javascript' : 'typescript';
+function init(appPath, appName, originalDirectory, command) {
+  const language = 'typescript';
   // Copy the files for the user
   const templatePath = path.join(__dirname, 'template', language);
   if (fs.existsSync(templatePath)) {
     fs.copySync(templatePath, appPath);
   } else {
-    console.error(
-      `Could not locate supplied template: ${chalk.green(templatePath)}`
-    );
+    console.error(`Could not locate supplied template: ${chalk.green(templatePath)}`);
     return;
   }
 
   // Rename gitignore after the fact to prevent npm from renaming it to .npmignore
   // See: https://github.com/npm/npm/issues/1862
   try {
-    fs.moveSync(
-      path.join(appPath, 'gitignore'),
-      path.join(appPath, '.gitignore'),
-      []
-    );
+    fs.moveSync(path.join(appPath, 'gitignore'), path.join(appPath, '.gitignore'), []);
   } catch (err) {
     // Append if there's already a `.gitignore` file there
     if (err.code === 'EEXIST') {
@@ -255,9 +233,7 @@ function init(
   console.log(chalk.cyan(`  npm run start`));
   console.log('    Starts the development server.');
   console.log();
-  console.log(
-    chalk.cyan(`  npm run deploy`)
-  );
+  console.log(chalk.cyan(`  npm run deploy`));
   console.log('    Deploy your application on ZetaPush platform.');
   console.log();
   console.log('We suggest that you begin by typing:');
@@ -266,34 +242,25 @@ function init(
   console.log(`  ${chalk.cyan(`npm run start`)}`);
   console.log();
   console.log('Enjoy, Celtia is on your back !');
-};
+}
 
-function run(
-  root,
-  appName,
-  originalDirectory,
-  version,
-  command
-) {
-  const versionStr = version ? '@'+version : '';
-  const dependencies = [`@zetapush/cli${versionStr}`, `@zetapush/platform${versionStr}`];
-
-  // Firstclass TypeScript support
-  if (!command.javascript) {
-    dependencies.push(`typescript@latest`);
-  }
+function run(root, appName, originalDirectory, version, command) {
+  const versionStr = version ? '@' + version : '';
+  const dependencies = [
+    `@types/node@10`,
+    `@zetapush/core${versionStr}`,
+    `@zetapush/cli${versionStr}`,
+    `@zetapush/platform-legacy${versionStr}`,
+    `typescript@latest`
+  ];
 
   console.log('Installing packages. This might take a couple of minutes.');
-  console.log(
-    `Installing ${dependencies.map((dependency) => `${chalk.cyan(dependency)}`).join(', ')}.`
-  );
+  console.log(`Installing ${dependencies.map((dependency) => `${chalk.cyan(dependency)}`).join(', ')}.`);
   console.log();
 
   return install(dependencies)
-    .then(() =>
-      init(root, appName, originalDirectory, command)
-    )
-    .catch(reason => {
+    .then(() => init(root, appName, originalDirectory, command))
+    .catch((reason) => {
       console.log();
       console.log('Aborting installation.');
       if (reason.command) {
@@ -307,8 +274,8 @@ function run(
       // On 'exit' we will delete these files from target directory.
       const knownGeneratedFiles = ['package.json', 'node_modules'];
       const currentFiles = fs.readdirSync(path.join(root));
-      currentFiles.forEach(file => {
-        knownGeneratedFiles.forEach(fileToMatch => {
+      currentFiles.forEach((file) => {
+        knownGeneratedFiles.forEach((fileToMatch) => {
           // This remove all of knownGeneratedFiles.
           if (file === fileToMatch) {
             console.log(`Deleting generated file... ${chalk.cyan(file)}`);
@@ -319,11 +286,7 @@ function run(
       const remainingFiles = fs.readdirSync(path.join(root));
       if (!remainingFiles.length) {
         // Delete target folder if empty
-        console.log(
-          `Deleting ${chalk.cyan(`${appName}/`)} from ${chalk.cyan(
-            path.resolve(root, '..')
-          )}`
-        );
+        console.log(`Deleting ${chalk.cyan(`${appName}/`)} from ${chalk.cyan(path.resolve(root, '..'))}`);
         process.chdir(path.resolve(root, '..'));
         fs.removeSync(path.join(root));
       }
@@ -332,24 +295,21 @@ function run(
     });
 }
 
+/**
+ * Install all dependencies
+ * @param {*} dependencies 
+ */
 function install(dependencies) {
-  return new Promise((resolve, reject) => {
-    const command = 'npm';
-    const args = [
-      'install',
-      '--save',
-      '--save-exact',
-      '--loglevel',
-      'error',
-    ].concat(dependencies);
+  const command = 'npm';
+  const args = ['install', '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
 
+  return new Promise((resolve, reject) => {
     const child = spawn(command, args, { stdio: 'inherit' });
-    child.on('close', code => {
+    child.on('close', (code) => {
       if (code !== 0) {
-        reject({
-          command: `${command} ${args.join(' ')}`,
+        return reject({
+          command: `${command} ${args.join(' ')}`
         });
-        return;
       }
       resolve();
     });
@@ -369,7 +329,7 @@ function tryGitInit(appPath) {
 
     execSync('git add -A', { stdio: 'ignore' });
     execSync('git commit -m "Initial commit from Create React App"', {
-      stdio: 'ignore',
+      stdio: 'ignore'
     });
     return true;
   } catch (e) {

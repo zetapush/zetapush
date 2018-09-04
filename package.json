@@ -10,6 +10,7 @@
   "license": "MIT",
   "private": true,
   "devDependencies": {
+    "@types/ora": "^1.3.4",
     "commitizen": "^2.10.1",
     "conventional-changelog-angular": "^5.0.0",
     "conventional-changelog-core": "^3.0.0",
@@ -27,9 +28,10 @@
     "lerna": "lerna",
     "lerna:clean": "lerna clean",
     "lerna:bootstrap": "lerna bootstrap",
+    "lerna:clean+bootstrap": "npm run lerna:clean -- --yes && npm run lerna:bootstrap",
     "lerna:build": "lerna run build",
-    "lerna:publish": "lerna publish --conventional-commits --changelog-preset angular --force-publish=*",
-    "lerna:publish:canary": "lerna publish --canary --conventional-commits --changelog-preset angular --force-publish=*",
+    "lerna:publish": "lerna publish --conventional-commits --changelog-preset angular --force-publish=* --exact",
+    "lerna:publish:canary": "lerna publish --canary --conventional-commits --changelog-preset angular --force-publish=* --exact",
     "lerna:test": "lerna run test:ci"
   },
   "lint-staged": {
@@ -42,5 +44,8 @@
     "commitizen": {
       "path": "./node_modules/cz-lerna-changelog"
     }
+  },
+  "dependencies": {
+    "@zetapush/client": "^0.31.4"
   }
 }

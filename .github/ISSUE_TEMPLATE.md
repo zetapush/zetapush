@@ -10,11 +10,18 @@ IF YOU DON'T FILL OUT THE FOLLOWING INFORMATION WE MIGHT CLOSE YOUR ISSUE WITHOU
 
 **Scope** (check one with "x")
 ```
+[ ] <root>
 [ ] @zetapush/cli
-[ ] @zetapush/cometd
 [ ] @zetapush/client
+[ ] @zetapush/cometd
+[ ] @zetapush/common
+[ ] @zetapush/core
 [ ] @zetapush/create
-[ ] @zetapush/platform
+[ ] @zetapush/http-server
+[ ] @zetapush/platform-legacy
+[ ] @zetapush/testing
+[ ] @zetapush/troubleshooting
+[ ] @zetapush/user-management
 [ ] @zetapush/worker
 ```
 

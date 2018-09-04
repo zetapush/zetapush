@@ -1,0 +1,22 @@
+{
+  "organization": {
+    "name": "ZetaPush"
+  },
+  "email": {
+    "from": "immersive@zetapush.fr"
+  },
+  "registration": {
+    "confirmation": {
+      "base-url": "http://localhost:2999",
+      "email": {
+        "subject": "Please confirm your account registration"
+      },
+      "success-url": "http://www.immersive.fr#account-confirmed",
+      "failure-url": "http://www.immersive.fr#account-failure"
+    }
+  },
+  "mailjet": {
+    "apikey-public": "f81f5b1d64a395a528e5f5c44aeba1af",
+    "apikey-private": "445647e5cf8517969b95e3363c3db7d2"
+  }
+}

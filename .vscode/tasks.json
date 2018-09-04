@@ -1,0 +1,225 @@
+{
+  // See https://go.microsoft.com/fwlink/?LinkId=733558
+  // for the documentation about the tasks.json format
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "lerna:build",
+      "label": "lerna [build]",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
+      "type": "npm",
+      "script": "lerna:clean+bootstrap",
+      "label": "lerna [clean+bootstrap]",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
+      "type": "npm",
+      "label": "lerna [clean]",
+      "script": "lerna:clean",
+      "options": {
+        
+      },
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
+      "type": "npm",
+      "label": "lerna [bootstrap]",
+      "script": "lerna:bootstrap",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
+      "label": "core [prepublish]",
+      "type": "npm",
+      "script": "prepublish",
+      "path": "packages/core/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "options": {
+
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
+      "label": "common [prepublish]",
+      "type": "npm",
+      "script": "prepublish",
+      "path": "packages/common/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "options": {
+
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
+      "label": "testing [prepublish]",
+      "type": "npm",
+      "script": "prepublish",
+      "path": "packages/testing/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "options": {
+
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
+      "label": "platform-legacy [prepublish]",
+      "type": "npm",
+      "script": "prepublish",
+      "path": "packages/platform-legacy/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "options": {
+
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
+      "label": "worker [prepublish]",
+      "type": "npm",
+      "script": "prepublish",
+      "path": "packages/worker/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "options": {
+
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
+      "label": "http-server [prepublish]",
+      "type": "npm",
+      "script": "prepublish",
+      "path": "packages/http-server/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "options": {
+
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
+      "label": "user-management [prepublish]",
+      "type": "npm",
+      "script": "prepublish",
+      "path": "packages/user-management/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "options": {
+
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    }
+  ]
+}

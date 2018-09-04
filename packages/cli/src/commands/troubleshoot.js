@@ -1,4 +1,4 @@
-const { displayHelpMessage } = require('../errors/troubleshooting');
+const { displayHelpMessage } = require('@zetapush/troubleshooting');
 
 const troubleshoot = async (code) => {
   await displayHelpMessage({ code });

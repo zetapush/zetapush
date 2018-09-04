@@ -1,12 +1,13 @@
+import { Injectable, Context, Module, Environment } from '@zetapush/core';
 
-import { Injectable, Context } from '@zetapush/platform';
-
-import { Calendar } from './calendar';
+import CalendarModule, { Calendar } from './calendar';
 import { Storage } from './storage';
+import { LoggerConfig } from './logger';
 
 @Injectable()
-export default class Api {
-  constructor(private storage: Storage, private calendar: Calendar) {}
+export class Api {
+  constructor(private storage: Storage, private calendar: Calendar, config: LoggerConfig) {}
+
   add(item: any) {
     return this.storage.push(item);
   }
@@ -21,3 +22,45 @@ export default class Api {
     return list.reduce((cumulator, value) => cumulator + value, 0);
   }
 }
+
+class ApiConfigurer {
+  configure(env: Environment) {
+    // Le code du dev
+  }
+  async getProviders() {
+    return [
+      {
+        provide: Calendar,
+        useClass: PastCalendar
+      }
+    ];
+  }
+}
+
+export class PastCalendar {
+  getNow() {
+    return new Date(0).toLocaleDateString();
+  }
+}
+
+export class VeryPastCalendar {
+  getNow() {
+    return new Date(-10000000).toLocaleDateString();
+  }
+}
+
+@Module({
+  imports: [CalendarModule],
+  providers: [
+    {
+      provide: Calendar,
+      useFactory: () => {
+        return new VeryPastCalendar();
+      },
+      deps: []
+    }
+  ],
+  configurers: [ApiConfigurer],
+  expose: Api
+})
+export default class ApiModule {}

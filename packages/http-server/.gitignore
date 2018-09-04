@@ -1,0 +1,15 @@
+# Generated documentation
+/.esdoc/
+/docs/
+# Generated sources
+/dist/
+/es/
+/lib/
+# Third part dependencies
+/node_modules/
+# Log
+/lerna-*.log
+/npm-*.log
+/yarn-*.log
+/coverage
+/.nyc_output

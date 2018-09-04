@@ -1,5 +1,7 @@
-import { Context, TaskRequest, CloudServiceInstance } from '@zetapush/platform';
-import { timeoutify } from './async';
+import { Context } from '@zetapush/core';
+import { timeoutify, trace, warn } from '@zetapush/common';
+import { TaskRequest } from '@zetapush/platform-legacy';
+
 import { inject } from './context';
 
 /**
@@ -7,32 +9,37 @@ import { inject } from './context';
  */
 const DEFAULT_ERROR_CODE = 'API_ERROR';
 
-export class WorkerInstance {
+export interface WorkerInstance {
+  setWorker(worker: any): void;
+  dispatch(request: TaskRequest, context: Context): Promise<{ result: any; success: boolean }>;
+  configure(): Promise<{ result: any; success: boolean }>;
+  clean(): Promise<void>;
+}
+
+export class TaskDispatcherWorkerInstance implements WorkerInstance {
   /**
    * Worker instance timeout
    */
-  private timeout: number;
+  protected timeout: number;
   /**
    * Worker implementation
    */
-  private worker: any;
+  protected worker: any;
   /**
    * Bootstraps layers
    */
   private bootLayers: any;
+  /**
+   * Store instances that have been bootstrapped to prevent
+   * calling onApplicationBootstrap several times
+   */
+  private bootstrapped: any[] = [];
+  private cleaned: any[] = [];
 
   /**
    *
    */
-  constructor({
-    timeout,
-    worker,
-    bootLayers,
-  }: {
-    timeout: number;
-    worker: any;
-    bootLayers: any;
-  }) {
+  constructor({ timeout, worker, bootLayers }: { timeout: number; worker: any; bootLayers: any }) {
     /**
      * @access private
      * @type {number}
@@ -51,34 +58,73 @@ export class WorkerInstance {
   }
 
   async configure() {
-    for (let layerIndex in this.bootLayers) {
-      for (let apiIndex in this.bootLayers[layerIndex]) {
-        const api = this.bootLayers[layerIndex][apiIndex];
-        if (typeof api['onApplicationBootstrap'] === 'function') {
-          try {
-            await api['onApplicationBootstrap']();
-          } catch (error) {
-            return {
-              success: false,
-              result: {
-                code: 'EBOOTFAIL',
-                message:
-                  'onApplicationBootstrap error on class ' +
-                  api.constructor.name +
-                  ' : ' +
-                  error.toString(),
-                context: {},
-                location: api.constructor.name,
-              },
-            };
-          }
+    try {
+      for (let layerIndex in this.bootLayers) {
+        for (let apiIndex in this.bootLayers[layerIndex]) {
+          const api = this.bootLayers[layerIndex][apiIndex];
+          await this.bootstrap(api);
         }
       }
+      return {
+        success: true,
+        result: {}
+      };
+    } catch (e) {
+      return e;
+    } finally {
+      this.bootstrapped = [];
     }
-    return {
-      success: true,
-      result: {},
-    };
+  }
+
+  async clean() {
+    try {
+      // TODO: clean in reverse order ?
+      for (let layerIndex in this.bootLayers) {
+        for (let apiIndex in this.bootLayers[layerIndex]) {
+          const api = this.bootLayers[layerIndex][apiIndex];
+          await this.cleanup(api);
+        }
+      }
+    } catch (e) {
+      warn(`Failed to cleanup`, e);
+    } finally {
+      this.cleaned = [];
+    }
+  }
+
+  private async bootstrap(instance: any) {
+    if (typeof instance['onApplicationBootstrap'] === 'function' && this.bootstrapped.indexOf(instance) == -1) {
+      try {
+        await instance['onApplicationBootstrap']();
+        this.bootstrapped.push(instance);
+      } catch (err) {
+        trace(`onApplicationBootstrap error on class ${this.getName(instance)} : ${err.toString()}`, err);
+        throw {
+          success: false,
+          result: {
+            code: 'EBOOTFAIL',
+            message: `onApplicationBootstrap error on class ${this.getName(instance)} : ${err.toString()}`,
+            context: {},
+            location: instance.constructor.name
+          }
+        };
+      }
+    }
+  }
+
+  private async cleanup(instance: any) {
+    if (typeof instance['onApplicationCleanup'] === 'function' && this.cleaned.indexOf(instance) == -1) {
+      try {
+        await instance['onApplicationCleanup']();
+        this.cleaned.push(instance);
+      } catch (err) {
+        warn(`Failed to cleanup ${this.getName(instance)}`, err);
+      }
+    }
+  }
+
+  private getName(instance: any) {
+    return instance.constructor.name;
   }
 
   async dispatch(request: TaskRequest, context: Context) {
@@ -102,21 +148,19 @@ export class WorkerInstance {
       // Inject context in a proxified worker namespace
       const injected = inject(tasker, context.contextId);
       // Delegate task to
-      const result = await timeoutify(
-        () => injected[name](parameters, context),
-        this.timeout,
-      );
+      const result = await timeoutify(() => injected[name](parameters, context), this.timeout);
       return {
         result,
-        success: true,
+        success: true
       };
     } catch ({ code = DEFAULT_ERROR_CODE, message }) {
       return {
         result: { code, message },
-        success: false,
+        success: false
       };
     }
   }
+
   setWorker(worker: any) {
     this.worker = worker;
   }

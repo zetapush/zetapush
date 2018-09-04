@@ -1,9 +1,6 @@
 // Packages
-const { createAccount } = require('./utils/createAccount');
-const { createApplication } = require('./utils/createApplication');
-const DEFAULTS = require('./utils/defaults');
-const logger = require('./utils/log');
-const { fetch } = require('./utils/network');
+const { createAccount, createApplication, DEFAULTS, fetch } = require('@zetapush/common');
+const logger = require('@zetapush/common');
 const { getDeveloperLogin, getDeveloperPassword } = require('./utils/security');
 
 module.exports = {
@@ -13,5 +10,5 @@ module.exports = {
   fetch,
   getDeveloperLogin,
   getDeveloperPassword,
-  logger,
+  logger
 };

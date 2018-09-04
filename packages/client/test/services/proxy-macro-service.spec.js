@@ -16,14 +16,14 @@ describe('Proxy Macro Service API', () => {
     const client = new ZetaPushClient.WeakClient({
       platformUrl, appName
     })
-    const service = client.createProxyMacroService(ZetaPushPlatform.Macro.DEFAULT_DEPLOYMENT_ID)
+    const service = client.createProxyMacroService(ZetaPushPlatformLegacy.Macro.DEFAULT_DEPLOYMENT_ID)
     expect(typeof service).toBe('object')
   })
   it('createProxyMacroService returned object should support arbitrary properties as defined method', () => {
     const client = new ZetaPushClient.WeakClient({
       platformUrl, appName
     })
-    const service = client.createProxyMacroService(ZetaPushPlatform.Macro.DEFAULT_DEPLOYMENT_ID)
+    const service = client.createProxyMacroService(ZetaPushPlatformLegacy.Macro.DEFAULT_DEPLOYMENT_ID)
     const method = String(Math.random())
     expect(typeof service[method]).toBe('function')
   })

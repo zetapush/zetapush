@@ -1,0 +1,73 @@
+#home .hero-body .container {
+  max-width: 700px;
+}
+#home .hero.is-success {
+  background: #209cee;
+}
+#home .hero-body .title {
+  color: hsl(192, 17%, 99%) !important;
+}
+#home .hero-body .subtitle {
+  color: hsl(192, 17%, 99%) !important;
+  padding-top: 2rem;
+  line-height: 1.5;
+}
+#home .features {
+  padding: 5rem 0;
+}
+#home .box.cta {
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
+}
+#home .card-image > .fa {
+  font-size: 8rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  color: #209cee;
+}
+#home .card-content .content {
+  font-size: 14px;
+  margin: 1rem 1rem;
+}
+#home .card-content .content h4 {
+  font-size: 16px;
+  font-weight: 700;
+}
+#home .card {
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.18);
+  margin-bottom: 2rem;
+}
+#home .intro {
+  padding: 5rem 0;
+  text-align: center;
+}
+#home .sandbox {
+  padding: 5rem 0;
+}
+#home .tile.notification {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+#home .is-shady {
+  animation: flyintoright 0.4s backwards;
+  background: #fff;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 1px 0;
+  border-radius: 4px;
+  display: inline-block;
+  margin: 10px;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+}
+#home .is-shady:hover {
+  box-shadow: 0 10px 16px rgba(0, 0, 0, 0.13), 0 6px 6px rgba(0, 0, 0, 0.19);
+}
+/*adds font awesome stars*/
+#home footer li:before {
+  content: '\f1b2';
+  font-family: 'FontAwesome';
+  float: left;
+  margin-left: -1.5em;
+  color: #147efb;
+}

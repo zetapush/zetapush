@@ -2,6 +2,7 @@ import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
 import resolve from 'rollup-plugin-node-resolve';
+import { sizeSnapshot } from 'rollup-plugin-size-snapshot';
 import { uglify } from 'rollup-plugin-uglify';
 import { minify as minifier } from 'uglify-es';
 
@@ -13,18 +14,16 @@ const config = {
       main: true,
     }),
     commonjs({
-      include: ['node_modules/**', '../cometd/**', '../platform/**'],
+      include: ['node_modules/**', '../cometd/**', '../platform-legacy/**'],
     }),
     babel({
       exclude: 'node_modules/**',
     }),
     json(),
+    sizeSnapshot(),
   ],
   output: {
     format: 'umd',
-    globals: {
-      '@zetapush/platform': 'ZetaPushPlatform'
-    },
     name: 'ZetaPushClient',
     sourcemap: true,
   },

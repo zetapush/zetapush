@@ -1,6 +1,7 @@
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
+import { sizeSnapshot } from 'rollup-plugin-size-snapshot';
 import ts from 'rollup-plugin-typescript';
 import typescript from 'typescript'
 import { uglify } from 'rollup-plugin-uglify';
@@ -14,16 +15,16 @@ const config = {
       main: true,
     }),
     commonjs({
-      include: ['node_modules/**', '../cometd/**'],
+      include: ['node_modules/**'],
     }),
     ts({
       typescript
     }),
-    json()
+    json(),
+    sizeSnapshot(),
   ],
   output: {
-    name: 'ZetaPush',
-    format: 'umd',
+    format: 'cjs',
     sourcemap: true,
   },
 };

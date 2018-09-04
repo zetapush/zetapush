@@ -13,7 +13,8 @@
   "scripts": {},
   "dependencies": {
     "node-fetch": "^2.1.0",
-    "ws": "^5.1.0"
+    "ws": "^5.1.0",
+    "https-proxy-agent": "2.2.1"
   },
   "optionalDependencies": {
     "bufferutil": "^3.0.4",

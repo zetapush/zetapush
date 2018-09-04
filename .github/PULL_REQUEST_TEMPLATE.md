@@ -14,6 +14,23 @@
 [ ] Other... Please describe:
 ```
 
+**Scope** (check one with "x")
+```
+[ ] <root>
+[ ] @zetapush/cli
+[ ] @zetapush/client
+[ ] @zetapush/cometd
+[ ] @zetapush/common
+[ ] @zetapush/core
+[ ] @zetapush/create
+[ ] @zetapush/http-server
+[ ] @zetapush/platform-legacy
+[ ] @zetapush/testing
+[ ] @zetapush/troubleshooting
+[ ] @zetapush/user-management
+[ ] @zetapush/worker
+```
+
 **What is the current behavior?** (You can also link to an open issue here)
 
 
