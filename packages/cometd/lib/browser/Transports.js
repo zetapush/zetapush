@@ -16,7 +16,7 @@ exports.fetch = function() {
     // Browser
     context = window;
   } else {
-    throw new Error('Unsupported global context object').
+    throw new Error('Unsupported global context object')
   }
   return fetch.apply(context, arguments);
 };
