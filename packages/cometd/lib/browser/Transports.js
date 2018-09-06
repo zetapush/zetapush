@@ -5,7 +5,20 @@ var WebSocketTransport = require('../WebSocketTransport');
 
 // Use node-fetch implementation
 exports.fetch = function() {
-  return fetch.apply(self, arguments);
+  var context = null;
+  if (typeof self !== 'undefined') {
+    // Default
+    context = self;
+  } else if (typeof global !== 'undefined') {
+    // React Native
+    context = global;
+  } else if (typeof window !== 'undefined') {
+    // Browser
+    context = window;
+  } else {
+    throw new Error('Unsupported global context object').
+  }
+  return fetch.apply(context, arguments);
 };
 
 // Use node-websocket implementation
