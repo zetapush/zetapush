@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.32.1](https://github.com/zetapush/zetapush/compare/v0.32.0...v0.32.1) (2018-09-07)
+
+
+
+
+**Note:** Version bump only for package @zetapush/testing
+
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 # [0.32.0](https://github.com/zetapush/zetapush/compare/v0.31.4...v0.32.0) (2018-09-04)
 
 

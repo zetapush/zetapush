@@ -3,75 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.32.0](https://github.com/zetapush/zetapush/compare/v0.31.4...v0.32.0) (2018-09-04)
+## [0.32.1](https://github.com/zetapush/zetapush/compare/v0.32.0...v0.32.1) (2018-09-07)
 
 
 ### Bug Fixes
 
-* **Client connection:** add optional credentials parameters in the 'connect()' method ([2576729](https://github.com/zetapush/zetapush/commit/2576729))
-* **Client connection:** add optional credentials parameters in the 'connect()' method ([e9dba13](https://github.com/zetapush/zetapush/commit/e9dba13))
-* **di:** fix dependency injection after merge ([4c830bb](https://github.com/zetapush/zetapush/commit/4c830bb))
-* **di:** fix di issue in tests after merge ([3050800](https://github.com/zetapush/zetapush/commit/3050800))
-* **example:** update logger config example ([44c3651](https://github.com/zetapush/zetapush/commit/44c3651))
-* **example:** update logger config example ([013693c](https://github.com/zetapush/zetapush/commit/013693c))
-* **fix-build-client:** fix build client ([f3fba81](https://github.com/zetapush/zetapush/commit/f3fba81))
-* **fix-build-client:** fix build client ([5657d28](https://github.com/zetapush/zetapush/commit/5657d28))
-* **new-di-algorythm:** remove log of worker instance ([0d15919](https://github.com/zetapush/zetapush/commit/0d15919))
-* **platform:** update platform auto-generated services ([548639f](https://github.com/zetapush/zetapush/commit/548639f))
-* **push:** Push fails due to miswritten skipProvisioning ([29a850a](https://github.com/zetapush/zetapush/commit/29a850a))
-* clean providers before hot module replacement ([4519330](https://github.com/zetapush/zetapush/commit/4519330))
-* **smtp:** fix missing registration of providers for smtp ([e18b67a](https://github.com/zetapush/zetapush/commit/e18b67a))
-* clean providers before hot module replacement ([e7c27c4](https://github.com/zetapush/zetapush/commit/e7c27c4))
-* **testing:** provisionning of platform services wasn't effective ([b8f5962](https://github.com/zetapush/zetapush/commit/b8f5962))
-* **testing:** provisionning of platform services wasn't effective ([53c227e](https://github.com/zetapush/zetapush/commit/53c227e))
-* **testing:** provisionning of platform services wasn't effective ([304df48](https://github.com/zetapush/zetapush/commit/304df48))
-* **tests:** update tests to use TypeScript ([8f519c6](https://github.com/zetapush/zetapush/commit/8f519c6))
-* **typo:** rename environement to environment ([cbdaacc](https://github.com/zetapush/zetapush/commit/cbdaacc))
+* **example:** remove unused examples ([60ea8b3](https://github.com/zetapush/zetapush/commit/60ea8b3))
+* **react-native:** fix typo ([e56240b](https://github.com/zetapush/zetapush/commit/e56240b))
 
 
 ### Features
 
-* **cometd:** support system proxy settings ([4d3bbcb](https://github.com/zetapush/zetapush/commit/4d3bbcb))
-* **configurer:** configurers now returns providers ([859527d](https://github.com/zetapush/zetapush/commit/859527d))
-* **confirmation:** start HTTP server to handle confirmation link ([465a1c4](https://github.com/zetapush/zetapush/commit/465a1c4))
-* **create:** set node typings as dependency instead of dev dependency ([65b76fc](https://github.com/zetapush/zetapush/commit/65b76fc)), closes [#131](https://github.com/zetapush/zetapush/issues/131)
-* **create-template-improvement:** update created templates with latest practices ([10f33e5](https://github.com/zetapush/zetapush/commit/10f33e5))
-* **create-template-improvement:** update created templates with latest practices ([f0f9241](https://github.com/zetapush/zetapush/commit/f0f9241))
-* **example:** update example with latest dependencies ([e8fefae](https://github.com/zetapush/zetapush/commit/e8fefae))
-* **example:** update example with latest dependencies ([2b904aa](https://github.com/zetapush/zetapush/commit/2b904aa))
-* **externalize-metadata:** move metadata from platform package to core ([33217bb](https://github.com/zetapush/zetapush/commit/33217bb))
-* **externalize-metadata:** move metadata from platform package to core ([c5f75fe](https://github.com/zetapush/zetapush/commit/c5f75fe))
-* **externalize-metadata:** move metadata from platform package to core ([67a75fe](https://github.com/zetapush/zetapush/commit/67a75fe))
-* **externalize-troubleshooting:** remove browser support for initial use case ([05f0328](https://github.com/zetapush/zetapush/commit/05f0328))
-* **externalize-troubleshooting:** remove browser support for initial use case ([06cee18](https://github.com/zetapush/zetapush/commit/06cee18))
-* **new-di-algorythm:** add imported providers to priorized providers list ([ce6a8d7](https://github.com/zetapush/zetapush/commit/ce6a8d7))
-* **new-di-algorythm:** improve comments and lisibility ([e2c5917](https://github.com/zetapush/zetapush/commit/e2c5917))
-* **new-di-algorythm:** improve hmr support ([95ab5ae](https://github.com/zetapush/zetapush/commit/95ab5ae))
-* **new-di-algorythm:** remove javascript flag in create package ([faded88](https://github.com/zetapush/zetapush/commit/faded88))
-* **new-di-algorythm:** remove legacy DI system ([82177a3](https://github.com/zetapush/zetapush/commit/82177a3))
-* **new-di-algorythm:** support environment interface ([4f03ecb](https://github.com/zetapush/zetapush/commit/4f03ecb))
-* **new-di-algorythm:** support imported providers via imports ([c2ed6a9](https://github.com/zetapush/zetapush/commit/c2ed6a9))
-* **new-di-algorythm:** update DI Sytem with module based approach ([0ac75fd](https://github.com/zetapush/zetapush/commit/0ac75fd))
-* preprare configurable api ([67770b4](https://github.com/zetapush/zetapush/commit/67770b4))
-* **oss:** update github templates ([d0d2b1b](https://github.com/zetapush/zetapush/commit/d0d2b1b))
-* **properties:** load configuration properties ([0b4b6d0](https://github.com/zetapush/zetapush/commit/0b4b6d0))
-* **rename-platform-package:** rename platform package to platform-legacy ([e913921](https://github.com/zetapush/zetapush/commit/e913921)), closes [#114](https://github.com/zetapush/zetapush/issues/114)
-* **rename-platform-package:** rename platform package to platform-legacy ([9dfcef9](https://github.com/zetapush/zetapush/commit/9dfcef9)), closes [#114](https://github.com/zetapush/zetapush/issues/114)
-* **rollup:** bump rollup version ([b841f1e](https://github.com/zetapush/zetapush/commit/b841f1e))
-* **tests:** Write tests in TypeScript ([00f6be3](https://github.com/zetapush/zetapush/commit/00f6be3))
-* **tests:** Write tests in TypeScript ([70c468e](https://github.com/zetapush/zetapush/commit/70c468e))
-* **user-management:** add support for alternative implementations and automatic discovery ([875948c](https://github.com/zetapush/zetapush/commit/875948c))
-* preprare configurable api ([20d5923](https://github.com/zetapush/zetapush/commit/20d5923))
-
-
-### BREAKING CHANGES
-
-* **new-di-algorythm:** Disable JavaScript support
-* **externalize-metadata:** Context and injection-js related class and interfaces are now available in core package
-* **rename-platform-package:** @zetapush/platform is no longer available use @zetapush/platform-legacy
-* **externalize-metadata:** Context and injection-js related class and interfaces are now available in core package
-* **rename-platform-package:** @zetapush/platform is no longer available use @zetapush/platform-legacy
-* **externalize-metadata:** Context and injection-js related class and interfaces are now available in core package
+* **react-native:** improve browser fetch support to handle react native context ([9a33e12](https://github.com/zetapush/zetapush/commit/9a33e12)), closes [#153](https://github.com/zetapush/zetapush/issues/153)
 
 
 

@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/testing",
-  "version": "0.32.0",
+  "version": "0.32.1",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-testing.js",
   "main": "lib/index.js",
@@ -25,11 +25,11 @@
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@zetapush/client": "0.32.0",
-    "@zetapush/cometd": "0.32.0",
-    "@zetapush/common": "0.32.0",
-    "@zetapush/core": "0.32.0",
-    "@zetapush/worker": "0.32.0",
+    "@zetapush/client": "0.32.1",
+    "@zetapush/cometd": "0.32.1",
+    "@zetapush/common": "0.32.1",
+    "@zetapush/core": "0.32.1",
+    "@zetapush/worker": "0.32.1",
     "chalk": "2.4.1",
     "copy-dir": "0.3.0",
     "execa": "0.10.0",
