@@ -3,31 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.32.0](https://github.com/zetapush/zetapush/compare/v0.31.4...v0.32.0) (2018-09-04)
-
-
-### Features
-
-* **create:** set node typings as dependency instead of dev dependency ([65b76fc](https://github.com/zetapush/zetapush/commit/65b76fc)), closes [#131](https://github.com/zetapush/zetapush/issues/131)
-* **create-template-improvement:** update created templates with latest practices ([f0f9241](https://github.com/zetapush/zetapush/commit/f0f9241))
-* **create-template-improvement:** update created templates with latest practices ([10f33e5](https://github.com/zetapush/zetapush/commit/10f33e5))
-* **externalize-metadata:** move metadata from platform package to core ([33217bb](https://github.com/zetapush/zetapush/commit/33217bb))
-* **externalize-metadata:** move metadata from platform package to core ([67a75fe](https://github.com/zetapush/zetapush/commit/67a75fe))
-* **new-di-algorythm:** remove javascript flag in create package ([faded88](https://github.com/zetapush/zetapush/commit/faded88))
-* **properties:** load configuration properties ([0b4b6d0](https://github.com/zetapush/zetapush/commit/0b4b6d0))
-* **rename-platform-package:** rename platform package to platform-legacy ([e913921](https://github.com/zetapush/zetapush/commit/e913921)), closes [#114](https://github.com/zetapush/zetapush/issues/114)
-* **rename-platform-package:** rename platform package to platform-legacy ([9dfcef9](https://github.com/zetapush/zetapush/commit/9dfcef9)), closes [#114](https://github.com/zetapush/zetapush/issues/114)
-
-
-### BREAKING CHANGES
-
-* **rename-platform-package:** @zetapush/platform is no longer available use @zetapush/platform-legacy
-* **externalize-metadata:** Context and injection-js related class and interfaces are now available in core package
-* **rename-platform-package:** @zetapush/platform is no longer available use @zetapush/platform-legacy
-* **externalize-metadata:** Context and injection-js related class and interfaces are now available in core package
+## [0.32.1](https://github.com/zetapush/zetapush/compare/v0.32.0...v0.32.1) (2018-09-07)
 
 
 
+
+**Note:** Version bump only for package @zetapush/create
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

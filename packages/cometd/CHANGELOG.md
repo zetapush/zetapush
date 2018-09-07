@@ -3,25 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.32.0](https://github.com/zetapush/zetapush/compare/v0.31.4...v0.32.0) (2018-09-04)
+## [0.32.1](https://github.com/zetapush/zetapush/compare/v0.32.0...v0.32.1) (2018-09-07)
 
 
 ### Bug Fixes
 
-* **di:** fix di issue in tests after merge ([3050800](https://github.com/zetapush/zetapush/commit/3050800))
-* **typo:** rename environement to environment ([cbdaacc](https://github.com/zetapush/zetapush/commit/cbdaacc))
+* **react-native:** fix typo ([e56240b](https://github.com/zetapush/zetapush/commit/e56240b))
 
 
 ### Features
 
-* **cometd:** support system proxy settings ([4d3bbcb](https://github.com/zetapush/zetapush/commit/4d3bbcb))
-* **properties:** load configuration properties ([0b4b6d0](https://github.com/zetapush/zetapush/commit/0b4b6d0))
-* **rename-platform-package:** rename platform package to platform-legacy ([9dfcef9](https://github.com/zetapush/zetapush/commit/9dfcef9)), closes [#114](https://github.com/zetapush/zetapush/issues/114)
-
-
-### BREAKING CHANGES
-
-* **rename-platform-package:** @zetapush/platform is no longer available use @zetapush/platform-legacy
+* **react-native:** improve browser fetch support to handle react native context ([9a33e12](https://github.com/zetapush/zetapush/commit/9a33e12)), closes [#153](https://github.com/zetapush/zetapush/issues/153)
 
 
 
