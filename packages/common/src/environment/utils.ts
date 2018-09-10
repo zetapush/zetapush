@@ -1,4 +1,4 @@
-import { MissingConfigurationProperty } from './properties';
+import { MissingConfigurationProperty } from './error';
 
 export const missingKeyError = (key: string, error?: Error) => {
   return error || new MissingConfigurationProperty(`The key '${key}' is not defined`, key);
