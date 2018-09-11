@@ -104,18 +104,22 @@ export class Client {
           // Remove connection status listener
           this.removeConnectionStatusListener(handler);
           // Reject connection
-          reject(error);
+          reject({
+            code: 'CONNECTION_FAILED',
+            message: 'Unable to connect to platform',
+            cause: error
+          });
         };
         // Register connection status listener
         handler = this.addConnectionStatusListener({
-          onConnectionEstablished: onSucess,
-          onConnectionToServerFail: onError,
-          onFailedHandshake: onError,
           onConnectionBroken: onError,
           onConnectionClosed: onError,
-          onNegotiationFailed: onError,
+          onConnectionEstablished: onSucess,
+          onConnectionToServerFail: onError,
           onConnectionWillClose: onError,
-          onNoServerUrlAvailable: onError
+          onFailedHandshake: onError,
+          onNegotiationFailed: () => onError(new Error('Negotiation Failed')),
+          onNoServerUrlAvailable: () => onError(new Error('No Server Url Available'))
         });
         // Connect client to ZetaPush backend
         this.helper.connect();
