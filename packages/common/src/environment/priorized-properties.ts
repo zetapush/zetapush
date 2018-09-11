@@ -1,5 +1,4 @@
 import { ConfigurationProperties } from '@zetapush/core';
-import { MissingConfigurationProperty } from './properties';
 import { missingKeyError, normalizeDefaultValue, missingValueError } from './utils';
 
 export class PriorizedConfigurationProperties implements ConfigurationProperties {
