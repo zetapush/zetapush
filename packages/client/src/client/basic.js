@@ -92,72 +92,35 @@ export class Client {
    */
   connect() {
     return new Promise((resolve, reject) => {
-      const handlers = [];
+      let handler = null;
       this.disconnect().then(() => {
-        const onConnectionEstablished = () => {
+        const onSucess = () => {
           // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
+          this.removeConnectionStatusListener(handler);
           // Resolve connection success
           resolve();
         };
-        const onConnectionToServerFail = (error) => {
+        const onError = (error) => {
           // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
+          this.removeConnectionStatusListener(handler);
           // Reject connection
-          reject(error);
-        };
-        const onFailedHandshake = (error) => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
+          reject({
+            code: 'CONNECTION_FAILED',
+            message: 'Unable to connect to platform',
+            cause: error
           });
-          // Reject connection
-          reject(error);
         };
-        const onConnectionBroken = (error) => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
-          // Reject connection
-          reject(error);
-        };
-        const onConnectionClosed = (error) => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
-          // Reject connection
-          reject(error);
-        };
-        const onNegotiationFailed = (error) => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
-          // Reject connection
-          reject(error);
-        };
-        const onConnectionWillClose = (error) => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
-          // Reject connection
-          reject(error);
-        };
-        // Handle connection success and fail
-        handlers.push(this.onConnectionEstablished(onConnectionEstablished));
-        handlers.push(this.onConnectionToServerFail(onConnectionToServerFail));
-        handlers.push(this.onFailedHandshake(onFailedHandshake));
-        handlers.push(this.onConnectionBroken(onConnectionBroken));
-        handlers.push(this.onConnectionClosed(onConnectionClosed));
-        handlers.push(this.onNegotiationFailed(onNegotiationFailed));
-        handlers.push(this.onConnectionWillClose(onConnectionWillClose));
+        // Register connection status listener
+        handler = this.addConnectionStatusListener({
+          onConnectionBroken: onError,
+          onConnectionClosed: onError,
+          onConnectionEstablished: onSucess,
+          onConnectionToServerFail: onError,
+          onConnectionWillClose: onError,
+          onFailedHandshake: onError,
+          onNegotiationFailed: () => onError(new Error('Negotiation Failed')),
+          onNoServerUrlAvailable: () => onError(new Error('No Server Url Available'))
+        });
         // Connect client to ZetaPush backend
         this.helper.connect();
       });
