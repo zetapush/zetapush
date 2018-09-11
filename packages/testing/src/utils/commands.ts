@@ -9,6 +9,7 @@ import { fetch, ResolvedConfig } from '@zetapush/common';
 const kill = require('tree-kill');
 import { commandLogger, SubProcessLoggerStream, subProcessLogger } from './logger';
 import { PassThrough } from 'stream';
+import { FrontOptions } from './types';
 
 const PLATFORM_URL = 'https://celtia.zetapush.com/zbo/pub/business';
 
@@ -610,7 +611,8 @@ export class Runner {
   constructor(
     private dir: string,
     private timeout = 300000,
-    private localNpmRegistry: string = 'https://registry.npmjs.org'
+    private localNpmRegistry: string = 'https://registry.npmjs.org',
+    private frontOptions?: FrontOptions
   ) {}
 
   async waitForWorkerUp() {
@@ -680,9 +682,8 @@ export class Runner {
   }
 
   run(quiet = false) {
-    // Handle the case of we want to use private npm registry
-    commandLogger.info(`Runner:run() -> [npm run start -- ${zpLogLevel()}]`);
-    this.cmd = execa.shell(`npm run start -- ${zpLogLevel()}`, {
+    commandLogger.info(`Runner:run() -> [npm run start -- ${zpLogLevel()} ${this.serveFront()}]`);
+    this.cmd = execa.shell(`npm run start -- ${zpLogLevel()} ${this.serveFront()}`, {
       cwd: this.dir
     });
     if (this.cmd && !quiet) {
@@ -693,6 +694,10 @@ export class Runner {
       this.cmd.once('close', (code) => (this.runExitCode = code));
     }
     return this.cmd;
+  }
+
+  private serveFront() {
+    return this.frontOptions && this.frontOptions.serveFront ? '--serve-front' : '';
   }
 }
 

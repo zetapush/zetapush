@@ -7,7 +7,8 @@
       "packages/common/src/**"
     ],
     "client [prepare]": [
-      "packages/client/src/**"
+      "packages/client/src/**",
+      "packages/client/bin/**"
     ],
     "core [prepare]": [
       "packages/core/src/**"

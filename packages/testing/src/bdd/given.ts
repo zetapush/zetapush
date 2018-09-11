@@ -19,7 +19,7 @@ import {
   npmInstall,
   zetaPush
 } from '../utils/commands';
-import { TestContext, Dependencies } from '../utils/types';
+import { TestContext, Dependencies, FrontOptions } from '../utils/types';
 import { createApplication, DEFAULTS } from '@zetapush/common';
 import { InjectionToken, Module } from '@zetapush/core';
 const fp = require('find-free-port');
@@ -39,6 +39,7 @@ class Given {
   private givenApp?: GivenApp;
   private givenWorker?: GivenWorker;
   private givenNpm?: GivenNpm;
+  private givenFront?: GivenFront;
 
   constructor() {
     this.sharedCredentials = {};
@@ -82,6 +83,14 @@ class Given {
     return this.givenNpm;
   }
 
+  /*
+   * Configure the behavior of the front.
+   */
+  front() {
+    this.givenFront = new GivenFront(this);
+    return this.givenFront;
+  }
+
   /**
    * Once you have prepare the environment for your test, call this method to run the given treatments.
    *
@@ -110,10 +119,13 @@ class Given {
       if (this.givenApp) {
         projectDir = await this.givenApp.execute(localNpmRegistry);
       }
-
+      let frontOptions;
+      if (this.givenFront) {
+        frontOptions = await this.givenFront.execute();
+      }
       let runnerAndDeps;
       if (this.givenWorker) {
-        runnerAndDeps = await this.givenWorker.execute(projectDir, localNpmRegistry);
+        runnerAndDeps = await this.givenWorker.execute(projectDir, localNpmRegistry, frontOptions);
       }
 
       const zetarc = projectDir ? await readZetarc(projectDir) : this.sharedCredentials;
@@ -754,7 +766,7 @@ class GivenWorker extends Parent<Given> {
     return this;
   }
 
-  async execute(currentDir?: string, localNpmRegistry?: string) {
+  async execute(currentDir?: string, localNpmRegistry?: string, frontOptions?: FrontOptions) {
     try {
       const deps = {
         moduleDeclaration: this.moduleDeclaration,
@@ -767,15 +779,13 @@ class GivenWorker extends Parent<Given> {
       }
       if (this.createRunner && currentDir) {
         return {
-          runner: !!localNpmRegistry ? new Runner(currentDir, 300000, localNpmRegistry) : new Runner(currentDir),
+          runner: new Runner(currentDir, this.timeout, localNpmRegistry, frontOptions),
           ...deps
         };
       }
       if (this.workerUp && currentDir) {
         givenLogger.info(`>>> Given worker: run and wait for worker up ${currentDir}`);
-        const runner = !!localNpmRegistry
-          ? new Runner(currentDir, this.timeout, localNpmRegistry)
-          : new Runner(currentDir, this.timeout);
+        const runner = new Runner(currentDir, this.timeout, localNpmRegistry, frontOptions);
         runner.run(this.isQuiet);
         await runner.waitForWorkerUp();
         return {
@@ -798,5 +808,37 @@ class GivenWorker extends Parent<Given> {
       givenLogger.error(`>>> Given worker: FAILED ${currentDir}`, e);
       throw e;
     }
+  }
+}
+
+class GivenFront extends Parent<Given> {
+  private serveFront = false;
+  private pushFront = false;
+
+  constructor(parent: Given) {
+    super(parent);
+  }
+
+  /**
+   * Start a local server for serving front static resources
+   */
+  serve() {
+    this.serveFront = true;
+    return this;
+  }
+
+  /**
+   * Start a local server for serving front static resources
+   */
+  pushed() {
+    this.pushFront = true;
+    return this;
+  }
+
+  async execute(): Promise<FrontOptions> {
+    return {
+      serveFront: this.serveFront,
+      pushFront: this.pushFront
+    };
   }
 }

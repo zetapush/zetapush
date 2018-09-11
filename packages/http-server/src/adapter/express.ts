@@ -8,7 +8,7 @@ import {
 } from '../server/http-server';
 const express = require('express');
 import { Application } from 'express';
-import { Bootstrappable, Provider, Cleanable } from '@zetapush/core';
+import { Bootstrappable, Provider, Cleanable, ZetaPushContext } from '@zetapush/core';
 import { trace } from '@zetapush/common';
 import { Server } from 'http';
 
@@ -19,10 +19,10 @@ export class ExpressServerConfigurer implements HttpServerConfigurer {
     return [
       {
         provide: HttpServerInjectable,
-        useFactory: () => {
-          return new ExpressServerWrapper(express());
+        useFactory: (zpContext: ZetaPushContext) => {
+          return new ExpressServerWrapper(express(), zpContext.getLocalZetaPushHttpPort() || 2999);
         },
-        deps: []
+        deps: [ZetaPushContext]
       }
     ];
   }
@@ -31,11 +31,10 @@ export class ExpressServerConfigurer implements HttpServerConfigurer {
 export class ExpressServerWrapper implements HttpServer, Bootstrappable, Cleanable {
   private server?: Server;
 
-  constructor(private app: Application) {}
+  constructor(private app: Application, private port: number) {}
 
   async onApplicationBootstrap() {
-    const port = process.env.ZETAPUSH_HTTP_PORT || 2999;
-    this.server = this.app.listen(port, () => trace(`express server started on port ${port}`));
+    this.server = this.app.listen(this.port, () => trace(`express server started on port ${this.port}`));
   }
 
   async onApplicationCleanup() {

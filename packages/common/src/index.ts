@@ -11,6 +11,7 @@ export * from './utils/files';
 export * from './utils/helpers';
 export * from './utils/log';
 export * from './utils/network';
+export * from './utils/server-registry';
 export * from './utils/types';
 export * from './utils/upload';
 export * from './error';
