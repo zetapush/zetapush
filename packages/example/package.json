@@ -7,12 +7,10 @@
     "start": "zeta run -vvv"
   },
   "dependencies": {
-    "@zetapush/core": "0.32.0",
-    "@zetapush/cli": "0.32.0",
-    "@zetapush/platform-legacy": "0.32.0",
+    "@types/node": "10.5.7",
+    "@zetapush/core": "0.32.1",
+    "@zetapush/cli": "0.32.1",
+    "@zetapush/platform-legacy": "0.32.1",
     "typescript": "3.0.1"
-  },
-  "devDependencies": {
-    "@types/node": "10.5.7"
   }
 }
