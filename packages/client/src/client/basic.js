@@ -170,7 +170,7 @@ export class Client {
   }
   /**
    * Create a promise based task service instance
-   * @param {{deploymentId: string, Type: class}} parameters
+   * @param {{deploymentId: string, namespace: string, Type: class}} parameters
    * @return {Object} service
    * @example
    * const api = client.createAsyncMacroService({
@@ -182,9 +182,10 @@ export class Client {
    *   console.log(message)
    * })
    */
-  createAsyncTaskService({ deploymentId, Type }) {
+  createAsyncTaskService({ deploymentId, namespace = '', Type }) {
     return this.helper.createAsyncTaskService({
       deploymentId,
+      namespace,
       Type
     });
   }
@@ -215,12 +216,12 @@ export class Client {
    * @example
    * const service = client.createProxyTaskService();
    * service.myMethod({ key: 'value' }).then((response) => console.log('myMethod', response))
-   * @param {string} deploymentId
+   * @param {{deploymentId: string, namespace: string}} parameters
    * @return {Proxy} proxy
    * @throws {Error} Throw error if Proxy class is not defined
    */
-  createProxyTaskService(deploymentId) {
-    return this.helper.createProxyTaskService(deploymentId);
+  createProxyTaskService({ deploymentId, namespace = '' } = {}) {
+    return this.helper.createProxyTaskService({ deploymentId, namespace });
   }
   /**
    * Create a generic proxified service

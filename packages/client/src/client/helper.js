@@ -373,12 +373,12 @@ export class ClientHelper {
   /**
    * Create a promise based task service
    * @experimental
-   * @param {{listener: Object, Type: class, deploymentId: string}} parameters
+   * @param {{deploymentId: string, namespace: string, Type: class}} parameters
    * @return {Object} service
    */
-  createAsyncTaskService({ Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID }) {
+  createAsyncTaskService({ deploymentId = Type.DEFAULT_DEPLOYMENT_ID, namespace = '', Type }) {
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
-    const $publish = this.getAsyncTaskPublisher(prefix);
+    const $publish = this.getAsyncTaskPublisher(prefix, namespace);
     // Create service by publisher
     return this.createServiceByPublisher({
       listener: {},
@@ -441,18 +441,18 @@ export class ClientHelper {
 
   /**
    * Create a generic proxified task service
-   * @param {string} deploymentId
+   * @param {{deploymentId: string, namespace: string}} parameters
    * @return {Proxy} proxy
    * @throws {Error} Throw error if Proxy class is not defined
    */
-  createProxyTaskService(deploymentId = Queue.DEFAULT_DEPLOYMENT_ID) {
+  createProxyTaskService({ deploymentId = Queue.DEFAULT_DEPLOYMENT_ID, namespace = '' } = {}) {
     if (typeof Proxy === 'undefined') {
       throw new Error('`Proxy` is not support in your environment');
     }
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     return new Proxy(Object.create(null), {
       get: (target, method) => {
-        return (parameters = null, namespace = '') => {
+        return (...parameters) => {
           const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
           const uniqRequestId = this.getUniqRequestId();
           const subscriptions = {};
@@ -665,10 +665,11 @@ export class ClientHelper {
    * Get a publisher for a task service that return a promise
    * @experimental
    * @param {() => string} prefix - Channel prefix
+   * @param {string} namespace - Namespace
    * @return {Function} publisher
    */
-  getAsyncTaskPublisher(prefix) {
-    return (name, parameters = null, namespace = '') => {
+  getAsyncTaskPublisher(prefix, namespace = '') {
+    return (name, ...parameters) => {
       const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
       const uniqRequestId = this.getUniqRequestId();
       const subscriptions = {};
