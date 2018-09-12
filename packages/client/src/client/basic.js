@@ -219,12 +219,12 @@ export class Client {
    * @example
    * const service = client.createProxyTaskService();
    * service.myMethod({ key: 'value' }).then((response) => console.log('myMethod', response))
-   * @param {{deploymentId: string, namespace: string}} parameters
+   * @param {{deploymentId: string, namespace: string, timeout: number}} parameters
    * @return {Proxy} proxy
    * @throws {Error} Throw error if Proxy class is not defined
    */
-  createProxyTaskService({ deploymentId, namespace = '' } = {}) {
-    return this.helper.createProxyTaskService({ deploymentId, namespace });
+  createProxyTaskService({ deploymentId, namespace = '', timeout } = {}) {
+    return this.helper.createProxyTaskService({ deploymentId, namespace, timeout });
   }
   /**
    * Create a generic proxified service
@@ -236,11 +236,11 @@ export class Client {
    * @example
    * const service = client.createProxyService('');
    * service.myMethod({ key: 'value' }).then((response) => console.log('myMethod', response))
-   * @param {{deploymentId: string, namespace: string, timeout: number}} parameters
+   * @param {{deploymentId: string, timeout: number}} parameters
    * @return {Proxy} proxy
    * @throws {Error} Throw error if Proxy class is not defined
    */
-  createProxyService({ deploymentId, namespace = '', timeout } = {}) {
+  createProxyService({ deploymentId, timeout } = {}) {
     return this.helper.createProxyService({ deploymentId, timeout });
   }
   /**
