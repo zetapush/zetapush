@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/common",
-  "version": "0.33.0",
+  "version": "0.33.1",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-common.js",
   "main": "lib/index.js",
@@ -25,7 +25,7 @@
     "prepublish": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@zetapush/core": "0.33.0",
+    "@zetapush/core": "0.33.1",
     "axios": "0.18.0",
     "core-js": "2.5.7",
     "esm": "3.0.72",

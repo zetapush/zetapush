@@ -3,15 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# [0.33.0](https://github.com/zetapush/zetapush/compare/v0.32.1...v0.33.0) (2018-09-12)
-
-
-### Features
-
-* **package-version-coherence:** update package version coherence ([504cc20](https://github.com/zetapush/zetapush/commit/504cc20))
+## [0.33.1](https://github.com/zetapush/zetapush/compare/v0.33.0...v0.33.1) (2018-09-12)
 
 
 
+
+**Note:** Version bump only for package @zetapush/create
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)
