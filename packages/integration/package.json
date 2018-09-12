@@ -10,7 +10,7 @@
     "toxy": "^0.3.15"
   },
   "devDependencies": {
-    "@zetapush/testing": "0.31.4",
+    "@zetapush/testing": "0.32.0",
     "jasmine": "3.1.0",
     "jasmine-reporters": "2.3.1"
   }

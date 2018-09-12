@@ -1,5 +1,6 @@
 export * from './accessor';
 export * from './context';
+export * from './error';
 export * from './env-variables-properties';
 export * from './environment-provider';
 export * from './http-context';

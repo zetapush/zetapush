@@ -85,12 +85,19 @@ interface Service {
 interface ServiceDeclaration<T> {
   deploymentId?: string;
   listener?: any;
+  timeout?: number;
   Type: Function;
 }
 
 interface TaskServiceDeclaration<T> {
   deploymentId?: string;
+  timeout?: number;
   Type: Function;
+}
+
+interface ProxyServiceParameters {
+  deploymentId?: string;
+  timeout?: number;
 }
 
 interface Token {
@@ -163,9 +170,9 @@ export class Client {
   createAsyncMacroService<T>(declaration: ServiceDeclaration<T>): T;
   createAsyncTaskService<T>(declaration: TaskServiceDeclaration<T>): T;
   createAsyncService<T>(declaration: ServiceDeclaration<T>): T;
-  createProxyMacroService(deploymentId?: string): ProxyService;
-  createProxyService(deploymentId: string): ProxyService;
-  createProxyTaskService(deploymentId?: string): ProxyService;
+  createProxyMacroService(parameters: ProxyServiceParameters): ProxyService;
+  createProxyService(parameters: ProxyServiceParameters): ProxyService;
+  createProxyTaskService(parameters: ProxyServiceParameters): ProxyService;
   disconnect(): Promise<void>;
   isConnected(): boolean;
   getAppName(): string;

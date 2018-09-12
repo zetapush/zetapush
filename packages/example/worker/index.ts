@@ -1,11 +1,12 @@
-import { Injectable, Context } from '@zetapush/core';
+import { Injectable, Context, Module } from '@zetapush/core';
 
 import { Calendar } from './calendar';
 import { Storage } from './storage';
 import { LoggerConfig } from './logger';
 
 @Injectable()
-export default class Api {
+export class Api {
+  requestContext!: Context;
   constructor(
     private storage: Storage,
     private calendar: Calendar,
@@ -17,11 +18,14 @@ export default class Api {
   list() {
     return this.storage.list();
   }
-  hello(_: void, context: Context) {
-    context.logger.debug('hello');
-    return `Hello World from TypeScript ${this.calendar.getNow()}`;
+  hello() {
+    this.requestContext.logger.debug('hello');
+    return `Hello ${this.requestContext.owner} from TypeScript ${this.calendar.getNow()}`;
   }
   reduce(list: number[]) {
     return list.reduce((cumulator, value) => cumulator + value, 0);
   }
 }
+
+@Module({ expose: Api })
+export default class ApiModule {}

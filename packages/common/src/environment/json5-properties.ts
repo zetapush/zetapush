@@ -1,6 +1,6 @@
 import * as json5 from 'json5';
 import { ConfigurationProperties, Reloadable, Loadable } from '@zetapush/core';
-import { ConfigurationReloadError, ConfigurationFileLoadError, ConfigurationStateError } from './properties';
+import { ConfigurationReloadError, ConfigurationFileLoadError, ConfigurationStateError } from './error';
 import { readFileSync, existsSync } from 'fs';
 import { PropertyAccessorWrapper } from './accessor';
 import { missingKeyError, valueOrDefault, normalizeDefaultValue, valueOrThrow } from './utils';

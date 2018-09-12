@@ -1,5 +1,14 @@
 import { timeoutify, WorkerDeclaration, WorkerDeclarationNormalizer } from '@zetapush/common';
-import { Injectable, Module, Provider, FactoryProvider, Expose, Configurer, ModuleToImport } from '@zetapush/core';
+import {
+  Injectable,
+  Context,
+  Module,
+  Provider,
+  FactoryProvider,
+  Expose,
+  Configurer,
+  ModuleToImport
+} from '@zetapush/core';
 import { inject, TaskDispatcherWorkerInstance, WorkerClientOptions, WorkerInstanceFactory } from '@zetapush/worker';
 
 import { runInWorkerLogger, configureWorkerLogger } from '../utils/logger';
@@ -85,11 +94,11 @@ export class TestWorkerInstance extends TaskDispatcherWorkerInstance {
       const context = {
         contextId: 'ZetaTest',
         owner: 'ZetaTest'
-      };
+      } as Context;
       // Api instance
       const tasker = this.worker[namespace];
       // Inject context in a proxified worker namespace
-      const injected = inject(tasker, context.contextId);
+      const injected = inject(tasker, context);
       // Delegate task to
       const result = await timeoutify(() => injected[name](parameters, context), this.timeout);
       runInWorkerLogger.debug('WorkerInstance::result', result);

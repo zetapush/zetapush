@@ -19,8 +19,7 @@ const config = {
     babel({
       exclude: 'node_modules/**',
     }),
-    json(),
-    sizeSnapshot(),
+    json()
   ],
   output: {
     format: 'umd',

@@ -1,40 +1,7 @@
-import { BaseError } from '../error';
 import { Json5ConfigurationProperties } from './json5-properties';
 import { EnvironmentVariablesConfigurationProperties } from './env-variables-properties';
 import { PriorizedConfigurationProperties } from './priorized-properties';
 import { ConfigurationProperties, Loadable } from '@zetapush/core';
-import { existsSync } from 'fs';
-import { missingKeyError } from './utils';
-import { loadavg } from 'os';
-
-export class ConfigurationError extends BaseError {
-  constructor(message: string, cause?: Error) {
-    super(message, cause);
-  }
-}
-
-export class ConfigurationStateError extends ConfigurationError {
-  constructor(message: string, cause?: Error) {
-    super(message, cause);
-  }
-}
-
-export class ConfigurationFileLoadError extends ConfigurationError {
-  constructor(message: string, public file: string, cause?: Error) {
-    super(message, cause);
-  }
-}
-
-export class ConfigurationReloadError extends ConfigurationError {
-  constructor(message: string, cause?: Error) {
-    super(message, cause);
-  }
-}
-export class MissingConfigurationProperty extends ConfigurationError {
-  constructor(message: string, public key: string, cause?: Error) {
-    super(message, cause);
-  }
-}
 
 // TODO: value can be variables ${other-key} => resolve recursively
 // TODO: reloadable

@@ -1,3 +1,4 @@
+export { timeoutify } from './async.js';
 export { API_URL, FORCE_HTTPS, getSecureUrl } from './http';
 export { getSandboxConfig } from './network.js';
 export { merge } from './object.js';

@@ -1,5 +1,4 @@
 import { ConfigurationProperties } from '@zetapush/core';
-import { MissingConfigurationProperty } from './properties';
 import { missingKeyError, valueOrDefault, normalizeDefaultValue, valueOrThrow } from './utils';
 
 export class EnvironmentVariablesConfigurationProperties implements ConfigurationProperties {

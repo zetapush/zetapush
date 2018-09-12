@@ -92,72 +92,35 @@ export class Client {
    */
   connect() {
     return new Promise((resolve, reject) => {
-      const handlers = [];
+      let handler = null;
       this.disconnect().then(() => {
-        const onConnectionEstablished = () => {
+        const onSucess = () => {
           // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
+          this.removeConnectionStatusListener(handler);
           // Resolve connection success
           resolve();
         };
-        const onConnectionToServerFail = (error) => {
+        const onError = (error) => {
           // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
+          this.removeConnectionStatusListener(handler);
           // Reject connection
-          reject(error);
-        };
-        const onFailedHandshake = (error) => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
+          reject({
+            code: 'CONNECTION_FAILED',
+            message: 'Unable to connect to platform',
+            cause: error
           });
-          // Reject connection
-          reject(error);
         };
-        const onConnectionBroken = (error) => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
-          // Reject connection
-          reject(error);
-        };
-        const onConnectionClosed = (error) => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
-          // Reject connection
-          reject(error);
-        };
-        const onNegotiationFailed = (error) => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
-          // Reject connection
-          reject(error);
-        };
-        const onConnectionWillClose = (error) => {
-          // Remove connection status listener
-          handlers.forEach((handler) => {
-            this.removeConnectionStatusListener(handler);
-          });
-          // Reject connection
-          reject(error);
-        };
-        // Handle connection success and fail
-        handlers.push(this.onConnectionEstablished(onConnectionEstablished));
-        handlers.push(this.onConnectionToServerFail(onConnectionToServerFail));
-        handlers.push(this.onFailedHandshake(onFailedHandshake));
-        handlers.push(this.onConnectionBroken(onConnectionBroken));
-        handlers.push(this.onConnectionClosed(onConnectionClosed));
-        handlers.push(this.onNegotiationFailed(onNegotiationFailed));
-        handlers.push(this.onConnectionWillClose(onConnectionWillClose));
+        // Register connection status listener
+        handler = this.addConnectionStatusListener({
+          onConnectionBroken: onError,
+          onConnectionClosed: onError,
+          onConnectionEstablished: onSucess,
+          onConnectionToServerFail: onError,
+          onConnectionWillClose: onError,
+          onFailedHandshake: onError,
+          onNegotiationFailed: () => onError(new Error('Negotiation Failed')),
+          onNoServerUrlAvailable: () => onError(new Error('No Server Url Available'))
+        });
         // Connect client to ZetaPush backend
         this.helper.connect();
       });
@@ -165,7 +128,7 @@ export class Client {
   }
   /**
    * Create a promise based service instance
-   * @param {{deploymentId: string, listener: Object, Type: class}} parameters
+   * @param {{deploymentId: string, listener: Object, timeout: number, Type: class}} parameters
    * @return {Object} service
    * @example
    * const stack = client.createAsyncService({
@@ -177,16 +140,17 @@ export class Client {
    *   console.log(result)
    * })
    */
-  createAsyncService({ deploymentId, listener, Type }) {
+  createAsyncService({ deploymentId, listener, timeout, Type }) {
     return this.helper.createAsyncService({
       deploymentId,
       listener,
+      timeout,
       Type
     });
   }
   /**
    * Create a promise based macro service instance
-   * @param {{deploymentId: string, listener: Object, Type: class}} parameters
+   * @param {{deploymentId: string, listener: Object, timeout: number, Type: class}} parameters
    * @return {Object} service
    * @example
    * const api = client.createAsyncMacroService({
@@ -198,16 +162,17 @@ export class Client {
    *   console.log(message)
    * })
    */
-  createAsyncMacroService({ deploymentId, listener, Type }) {
+  createAsyncMacroService({ deploymentId, listener, timeout, Type }) {
     return this.helper.createAsyncMacroService({
       deploymentId,
       listener,
+      timeout,
       Type
     });
   }
   /**
    * Create a promise based task service instance
-   * @param {{deploymentId: string, Type: class}} parameters
+   * @param {{deploymentId: string, namespace: string, timeout: number, Type: class}} parameters
    * @return {Object} service
    * @example
    * const api = client.createAsyncMacroService({
@@ -219,9 +184,11 @@ export class Client {
    *   console.log(message)
    * })
    */
-  createAsyncTaskService({ deploymentId, Type }) {
+  createAsyncTaskService({ deploymentId, namespace = '', timeout, Type }) {
     return this.helper.createAsyncTaskService({
       deploymentId,
+      namespace,
+      timeout,
       Type
     });
   }
@@ -235,12 +202,12 @@ export class Client {
    * @example
    * const service = client.createProxyMacroService();
    * service.myMethod({ key: 'value' }).then((response) => console.log('myMethod', response))
-   * @param {string} deploymentId
+   * @param {{deploymentId: string, timeout: number}} parameters
    * @return {Proxy} proxy
    * @throws {Error} Throw error if Proxy class is not defined
    */
-  createProxyMacroService(deploymentId) {
-    return this.helper.createProxyMacroService(deploymentId);
+  createProxyMacroService({ deploymentId, timeout } = {}) {
+    return this.helper.createProxyMacroService({ deploymentId, timeout });
   }
   /**
    * Create a generic proxified task service
@@ -252,12 +219,12 @@ export class Client {
    * @example
    * const service = client.createProxyTaskService();
    * service.myMethod({ key: 'value' }).then((response) => console.log('myMethod', response))
-   * @param {string} deploymentId
+   * @param {{deploymentId: string, namespace: string, timeout: number}} parameters
    * @return {Proxy} proxy
    * @throws {Error} Throw error if Proxy class is not defined
    */
-  createProxyTaskService(deploymentId) {
-    return this.helper.createProxyTaskService(deploymentId);
+  createProxyTaskService({ deploymentId, namespace = '', timeout } = {}) {
+    return this.helper.createProxyTaskService({ deploymentId, namespace, timeout });
   }
   /**
    * Create a generic proxified service
@@ -269,12 +236,12 @@ export class Client {
    * @example
    * const service = client.createProxyService('');
    * service.myMethod({ key: 'value' }).then((response) => console.log('myMethod', response))
-   * @param {string} deploymentId
+   * @param {{deploymentId: string, timeout: number}} parameters
    * @return {Proxy} proxy
    * @throws {Error} Throw error if Proxy class is not defined
    */
-  createProxyService(deploymentId) {
-    return this.helper.createProxyService(deploymentId);
+  createProxyService({ deploymentId, timeout } = {}) {
+    return this.helper.createProxyService({ deploymentId, timeout });
   }
   /**
    * Create a publish/subscribe for a service type
