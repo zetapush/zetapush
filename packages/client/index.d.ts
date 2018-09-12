@@ -100,6 +100,10 @@ interface ProxyServiceParameters {
   timeout?: number;
 }
 
+interface ProxyTaskServiceParameters extends ProxyServiceParameters {
+  namespace?: string;
+}
+
 interface Token {
   token: string;
 }
@@ -172,7 +176,7 @@ export class Client {
   createAsyncService<T>(declaration: ServiceDeclaration<T>): T;
   createProxyMacroService(parameters: ProxyServiceParameters): ProxyService;
   createProxyService(parameters: ProxyServiceParameters): ProxyService;
-  createProxyTaskService(parameters: ProxyServiceParameters): ProxyService;
+  createProxyTaskService(parameters: ProxyTaskServiceParameters): ProxyService;
   disconnect(): Promise<void>;
   isConnected(): boolean;
   getAppName(): string;
