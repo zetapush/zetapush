@@ -98,7 +98,7 @@ const createAsyncService = (client: ServerClient, Type: Service) => {
     return $publish(
       name,
       Object.assign(parameters, {
-        contextId: this.requestContext.contextId
+        contextId: this.requestContextId
       })
     );
   };
