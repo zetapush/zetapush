@@ -1,7 +1,7 @@
 import { CometD, Transports } from '@zetapush/cometd';
 import { Macro, Queue } from '@zetapush/platform-legacy';
 import { ConnectionStatusListener } from '../connection/connection-status.js';
-import { getSandboxConfig, isDerivedOf, merge, shuffle, uuid } from '../utils/index.js';
+import { getSandboxConfig, isDerivedOf, merge, shuffle, uuid, timeoutify } from '../utils/index.js';
 
 /**
  * CometD Messages enumeration
@@ -38,6 +38,12 @@ const DEFAULT_ERROR_CHANNEL = 'error';
 const DEFAULT_TASK_CHANNEL = 'call';
 
 /**
+ * Default timeout for requests calls
+ * @type {number}
+ */
+const DEFAULT_TIMEOUT = 10000;
+
+/**
  * Provide utilities and abstraction on CometD Transport layer
  * @access private
  */
@@ -45,14 +51,7 @@ export class ClientHelper {
   /**
    * Create a new ZetaPush client helper
    */
-  constructor({
-    platformUrl,
-    appName,
-    forceHttps = false,
-    authentication,
-    resource = null,
-    transports = Transports
-  } = {}) {
+  constructor({ platformUrl, appName, forceHttps = false, authentication, resource = null, transports = Transports }) {
     // Merge config with overloaded environment
     const options = merge(
       {
@@ -339,13 +338,12 @@ export class ClientHelper {
   }
   /**
    * Create a promise based service
-   * @experimental
    * @param {{listener: Object, Type: class, deploymentId: string}} parameters
    * @return {Object} service
    */
-  createAsyncService({ listener, Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID }) {
+  createAsyncService({ listener, Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID, timeout = DEFAULT_TIMEOUT }) {
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
-    const $publish = this.getAsyncServicePublisher(prefix);
+    const $publish = this.getAsyncServicePublisher(prefix, timeout);
     // Create service by publisher
     return this.createServiceByPublisher({
       listener,
@@ -359,9 +357,9 @@ export class ClientHelper {
    * @param {{listener: Object, Type: class, deploymentId: string}} parameters
    * @return {Object} service
    */
-  createAsyncMacroService({ listener, Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID }) {
+  createAsyncMacroService({ listener, Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID, timeout = DEFAULT_TIMEOUT }) {
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
-    const $publish = this.getAsyncMacroPublisher(prefix);
+    const $publish = this.getAsyncMacroPublisher(prefix, timeout);
     // Create service by publisher
     return this.createServiceByPublisher({
       listener,
@@ -372,13 +370,17 @@ export class ClientHelper {
   }
   /**
    * Create a promise based task service
-   * @experimental
-   * @param {{deploymentId: string, namespace: string, Type: class}} parameters
+   * @param {{deploymentId: string, namespace: string, timeout: number, Type: class}} parameters
    * @return {Object} service
    */
-  createAsyncTaskService({ deploymentId = Type.DEFAULT_DEPLOYMENT_ID, namespace = '', Type }) {
+  createAsyncTaskService({
+    Type,
+    deploymentId = Type.DEFAULT_DEPLOYMENT_ID,
+    namespace = '',
+    timeout = DEFAULT_TIMEOUT
+  }) {
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
-    const $publish = this.getAsyncTaskPublisher(prefix, namespace);
+    const $publish = this.getAsyncTaskPublisher(prefix, namespace, timeout);
     // Create service by publisher
     return this.createServiceByPublisher({
       listener: {},
@@ -390,18 +392,18 @@ export class ClientHelper {
 
   /**
    * Create a generic proxified macro service
-   * @param {string} deploymentId
+   * @param {{deploymentId: string, timeout: number}} parameters
    * @return {Proxy} proxy
    * @throws {Error} Throw error if Proxy class is not defined
    */
-  createProxyMacroService(deploymentId = Macro.DEFAULT_DEPLOYMENT_ID) {
+  createProxyMacroService({ deploymentId = Macro.DEFAULT_DEPLOYMENT_ID, timeout = DEFAULT_TIMEOUT }) {
     if (typeof Proxy === 'undefined') {
       throw new Error('`Proxy` is not support in your environment');
     }
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     return new Proxy(Object.create(null), {
       get: (target, method) => {
-        return (parameters) => {
+        return timeoutify((parameters) => {
           const channel = `${prefix()}/call`;
           const uniqRequestId = this.getUniqRequestId();
           const subscriptions = {};
@@ -434,25 +436,25 @@ export class ClientHelper {
               requestId: uniqRequestId
             });
           });
-        };
+        }, timeout);
       }
     });
   }
 
   /**
    * Create a generic proxified task service
-   * @param {{deploymentId: string, namespace: string}} parameters
+   * @param {{deploymentId: string, namespace: string, timeout: number}} parameters
    * @return {Proxy} proxy
    * @throws {Error} Throw error if Proxy class is not defined
    */
-  createProxyTaskService({ deploymentId = Queue.DEFAULT_DEPLOYMENT_ID, namespace = '' } = {}) {
+  createProxyTaskService({ deploymentId = Queue.DEFAULT_DEPLOYMENT_ID, namespace = '', timeout = DEFAULT_TIMEOUT }) {
     if (typeof Proxy === 'undefined') {
       throw new Error('`Proxy` is not support in your environment');
     }
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     return new Proxy(Object.create(null), {
       get: (target, method) => {
-        return (...parameters) => {
+        return timeoutify((...parameters) => {
           const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
           const uniqRequestId = this.getUniqRequestId();
           const subscriptions = {};
@@ -488,18 +490,18 @@ export class ClientHelper {
               requestId: uniqRequestId
             });
           });
-        };
+        }, timeout);
       }
     });
   }
 
   /**
    * Create a generic proxified service
-   * @param {string} deploymentId
+   * @param {{deploymentId: string, timeout: number}} parameters
    * @return {Proxy} proxy
    * @throws {Error} Throw error if Proxy class is not defined
    */
-  createProxyService(deploymentId) {
+  createProxyService({ deploymentId, timeout = DEFAULT_TIMEOUT }) {
     if (typeof Proxy === 'undefined') {
       throw new Error('`Proxy` is not support in your environment');
     }
@@ -508,7 +510,7 @@ export class ClientHelper {
       {},
       {
         get: (target, method) => {
-          return (parameters) => {
+          return timeoutify((parameters) => {
             const channel = `${prefix()}/${method}`;
             const uniqRequestId = this.getUniqRequestId();
             const subscriptions = {};
@@ -540,7 +542,7 @@ export class ClientHelper {
                 requestId: uniqRequestId
               });
             });
-          };
+          }, timeout);
         }
       }
     );
@@ -583,10 +585,11 @@ export class ClientHelper {
   /**
    * Get a publisher for a macro service that return a promise
    * @param {() => string} prefix - Channel prefix
+   * @param {number} timeout - Async timeout
    * @return {Function} publisher
    */
-  getAsyncMacroPublisher(prefix) {
-    return (name, parameters, hardFail = false, debug = 1) => {
+  getAsyncMacroPublisher(prefix, timeout = DEFAULT_TIMEOUT) {
+    return timeoutify((name, parameters, hardFail = false, debug = 1) => {
       const channel = `${prefix()}/call`;
       const uniqRequestId = this.getUniqRequestId();
       const subscriptions = {};
@@ -619,15 +622,16 @@ export class ClientHelper {
           requestId: uniqRequestId
         });
       });
-    };
+    }, timeout);
   }
   /**
    * Get a publisher for a service
    * @param {() => string} prefix - Channel prefix
+   * @param {number} timeout - Async timeout
    * @return {Function} publisher
    */
-  getAsyncServicePublisher(prefix) {
-    return (method, parameters) => {
+  getAsyncServicePublisher(prefix, timeout = DEFAULT_TIMEOUT) {
+    return timeoutify((method, parameters) => {
       const channel = `${prefix()}/${method}`;
       const uniqRequestId = this.getUniqRequestId();
       const subscriptions = {};
@@ -659,17 +663,17 @@ export class ClientHelper {
           requestId: uniqRequestId
         });
       });
-    };
+    }, timeout);
   }
   /**
    * Get a publisher for a task service that return a promise
-   * @experimental
    * @param {() => string} prefix - Channel prefix
    * @param {string} namespace - Namespace
+   * @param {number} timeout - Async timeout
    * @return {Function} publisher
    */
-  getAsyncTaskPublisher(prefix, namespace = '') {
-    return (name, ...parameters) => {
+  getAsyncTaskPublisher(prefix, namespace = '', timeout = DEFAULT_TIMEOUT) {
+    return timeoutify((name, ...parameters) => {
       const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
       const uniqRequestId = this.getUniqRequestId();
       const subscriptions = {};
@@ -705,7 +709,7 @@ export class ClientHelper {
           requestId: uniqRequestId
         });
       });
-    };
+    }, timeout);
   }
   /**
    * Get client id

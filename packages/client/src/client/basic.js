@@ -128,7 +128,7 @@ export class Client {
   }
   /**
    * Create a promise based service instance
-   * @param {{deploymentId: string, listener: Object, Type: class}} parameters
+   * @param {{deploymentId: string, listener: Object, timeout: number, Type: class}} parameters
    * @return {Object} service
    * @example
    * const stack = client.createAsyncService({
@@ -140,16 +140,17 @@ export class Client {
    *   console.log(result)
    * })
    */
-  createAsyncService({ deploymentId, listener, Type }) {
+  createAsyncService({ deploymentId, listener, timeout, Type }) {
     return this.helper.createAsyncService({
       deploymentId,
       listener,
+      timeout,
       Type
     });
   }
   /**
    * Create a promise based macro service instance
-   * @param {{deploymentId: string, listener: Object, Type: class}} parameters
+   * @param {{deploymentId: string, listener: Object, timeout: number, Type: class}} parameters
    * @return {Object} service
    * @example
    * const api = client.createAsyncMacroService({
@@ -161,16 +162,17 @@ export class Client {
    *   console.log(message)
    * })
    */
-  createAsyncMacroService({ deploymentId, listener, Type }) {
+  createAsyncMacroService({ deploymentId, listener, timeout, Type }) {
     return this.helper.createAsyncMacroService({
       deploymentId,
       listener,
+      timeout,
       Type
     });
   }
   /**
    * Create a promise based task service instance
-   * @param {{deploymentId: string, namespace: string, Type: class}} parameters
+   * @param {{deploymentId: string, namespace: string, timeout: number, Type: class}} parameters
    * @return {Object} service
    * @example
    * const api = client.createAsyncMacroService({
@@ -182,10 +184,11 @@ export class Client {
    *   console.log(message)
    * })
    */
-  createAsyncTaskService({ deploymentId, namespace = '', Type }) {
+  createAsyncTaskService({ deploymentId, namespace = '', timeout, Type }) {
     return this.helper.createAsyncTaskService({
       deploymentId,
       namespace,
+      timeout,
       Type
     });
   }
@@ -199,12 +202,12 @@ export class Client {
    * @example
    * const service = client.createProxyMacroService();
    * service.myMethod({ key: 'value' }).then((response) => console.log('myMethod', response))
-   * @param {string} deploymentId
+   * @param {{deploymentId: string, timeout: number}} parameters
    * @return {Proxy} proxy
    * @throws {Error} Throw error if Proxy class is not defined
    */
-  createProxyMacroService(deploymentId) {
-    return this.helper.createProxyMacroService(deploymentId);
+  createProxyMacroService({ deploymentId, timeout } = {}) {
+    return this.helper.createProxyMacroService({ deploymentId, timeout });
   }
   /**
    * Create a generic proxified task service
@@ -233,12 +236,12 @@ export class Client {
    * @example
    * const service = client.createProxyService('');
    * service.myMethod({ key: 'value' }).then((response) => console.log('myMethod', response))
-   * @param {string} deploymentId
+   * @param {{deploymentId: string, namespace: string, timeout: number}} parameters
    * @return {Proxy} proxy
    * @throws {Error} Throw error if Proxy class is not defined
    */
-  createProxyService(deploymentId) {
-    return this.helper.createProxyService(deploymentId);
+  createProxyService({ deploymentId, namespace = '', timeout } = {}) {
+    return this.helper.createProxyService({ deploymentId, timeout });
   }
   /**
    * Create a publish/subscribe for a service type
