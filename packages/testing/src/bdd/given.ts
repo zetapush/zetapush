@@ -1,4 +1,4 @@
-import { existsSync } from 'fs';
+import { existsSync, readFileSync, writeFileSync } from 'fs';
 
 import { Config } from '@zetapush/common';
 
@@ -22,6 +22,13 @@ import {
 import { TestContext, Dependencies } from '../utils/types';
 import { createApplication, DEFAULTS } from '@zetapush/common';
 import { InjectionToken, Module } from '@zetapush/core';
+const fp = require('find-free-port');
+const execa = require('execa');
+const fs = require('fs');
+const os = require('os');
+const { join } = require('path')
+const yaml = require('js-yaml')
+
 
 export const given = () => new Given();
 
@@ -30,6 +37,7 @@ class Given {
   private givenCredentials?: GivenCredentials;
   private givenApp?: GivenApp;
   private givenWorker?: GivenWorker;
+  private givenDependencies?: GivenDependencies;
 
   constructor() {
     this.sharedCredentials = {};
@@ -66,6 +74,16 @@ class Given {
   }
 
   /**
+   * Configure the behavior for the dependencies installation
+   * 
+   * We can specify to use the npm dependencies (default case) or to use the local dependencies
+   */
+  dependencies() {
+    this.givenDependencies = new GivenDependencies(this);
+    return this.givenDependencies;
+  }
+
+  /**
    * Once you have prepare the environment for your test, call this method to run the given treatments.
    *
    * @param objToFill Any object you want that will be updated with useful information that will later
@@ -85,10 +103,17 @@ class Given {
       if (this.givenApp) {
         projectDir = await this.givenApp.execute();
       }
+      let localNpmRegistry;
+      if (this.givenDependencies) {
+        const packagejsonFile = readFileSync(`${projectDir}/package.json`, { encoding: 'utf-8' });
+        const packageJsonContent = JSON.parse(packagejsonFile);
+        localNpmRegistry = await this.givenDependencies.execute(packageJsonContent.dependencies);
+      }
       let runnerAndDeps;
       if (this.givenWorker) {
-        runnerAndDeps = await this.givenWorker.execute(projectDir);
+        runnerAndDeps = await this.givenWorker.execute(projectDir, localNpmRegistry);
       }
+
       const zetarc = projectDir ? await readZetarc(projectDir) : this.sharedCredentials;
       const context = {
         zetarc,
@@ -118,6 +143,140 @@ class Parent<P> {
 
   and() {
     return this.parent;
+  }
+}
+
+class GivenDependencies extends Parent<Given> {
+  private localDependencies: string[] = [];
+  private useNpmDependencies: boolean = true;
+  
+
+  constructor(parent: Given) {
+    super(parent)
+  }
+
+  /**
+   * Use the npm proxy to download dependencies
+   */
+  npmProxy() {
+    this.localDependencies = [];
+    this.useNpmDependencies = true;
+    return this;
+  }
+  
+  /**
+   * Use the local dependencies
+   * 
+   * You can specifie the list of dependencies with different ways :
+   *  - Using the full path of the dependency (ex: /home/ubuntu/myDep)
+   *  - Using the full path of the parent directory to get all dependencies inside it (ex: /home/ubuntu/*)
+   *  - Use relative path (ex: ../myDep)
+   *  - Use relative path of the parent directory to get all dependencies inside it (ex: ../*)
+   * 
+   * @param dependencies list of dependencies we want to use from local proxy
+   */
+  localProxy(...dependencies: string[]) {
+
+    
+    // Iterate on each parameters to add all local dependencies
+    dependencies.forEach((dep) => {
+      // Get all dependencies of subdirectory
+      const pathAsArray = dep.split("/");
+      if (pathAsArray.pop() === "*") {
+        const realPath = fs.realpathSync(pathAsArray.slice(-1).join('/'));
+        const subdirectories = fs.readdirSync(realPath);
+        for (let elt of subdirectories) {
+          const pathWithPackageJson = join(realPath, elt, 'package.json');
+          if (fs.existsSync(pathWithPackageJson)) {
+            this.localDependencies.push(join(realPath, elt));
+          } 
+        }
+      } else {
+        const realPath = fs.realpathSync(dep);
+        if (fs.existsSync(realPath)) {
+          // Check if the dependency is a package
+          const pathWithPackageJson = join(realPath, 'package.json');
+          if (fs.existsSync(pathWithPackageJson)) {
+            this.localDependencies.push(realPath);
+          } 
+        }
+      }      
+    });
+    
+    this.useNpmDependencies = false;
+    return this;
+  }
+
+  async execute(dependencies: object): Promise<string> {
+    return new Promise<string>(async (resolve, reject) => {
+      if (!this.useNpmDependencies) {
+        // FIXME: WORKS ONLY ON 4873 PORT ! BUG WITH VERDACCIO
+        const freePort = (await fp(4873))[0];
+  
+        const configVerdaccio = {
+          storage: "./storage",
+          packages: {
+            '@*/*': {
+              access: '$all',
+              publish: '$all',
+              proxy: 'npmjs'
+            },
+            '**': {
+              access: '$all',
+              publish: '$all',
+              proxy: 'npmjs'
+            }
+          }
+        }
+  
+        const fileConfigVerdaccio = yaml.safeDump(configVerdaccio);
+        const pathConfigVerdaccio = join(os.tmpDir(), `config-verdaccio-${new Date().getTime()}.yaml`);
+        fs.writeFileSync(pathConfigVerdaccio, fileConfigVerdaccio);
+  
+        execa(`verdaccio`, ['--listen', freePort, '--config', pathConfigVerdaccio]);
+        givenLogger.debug(`>> Verdaccion launched on port : ${freePort}`);
+
+        // Publish concerned packages in the private repo
+        Object.keys(dependencies).forEach((dependencyNameToInstall) => {
+          givenLogger.debug(`>> Installing ${dependencyNameToInstall} from local repository`);
+  
+          this.localDependencies.forEach(async (localDep) => {
+            const packageJsonLocalDependency = JSON.parse(fs.readFileSync(join(localDep, 'package.json')));
+  
+            // If we found the correct dependency, we install it
+            if (packageJsonLocalDependency.name === dependencyNameToInstall) {
+  
+              // Update the version of the package to publish it on the private repository
+              const currentVersionPackage = packageJsonLocalDependency.version;
+  
+              packageJsonLocalDependency.version += '-' + new Date().getTime();
+  
+
+              
+              // Push the updated package in the private repository
+              try {
+                fs.writeFileSync(join(localDep, 'package.json'), JSON.stringify(packageJsonLocalDependency, null, 2));
+        
+                await execa('npm', ['publish', '--registry', `http://localhost:${freePort}`], {
+                  cwd: localDep
+                })
+              } finally {
+
+                
+                // Update the package version with the previous, once it was published
+                packageJsonLocalDependency.version = currentVersionPackage;
+                fs.writeFileSync(join(localDep, 'package.json'), JSON.stringify(packageJsonLocalDependency, null, 2));
+              }
+            }
+          })
+  
+          resolve(`http://localhost:${freePort}`)
+        });
+      } else {
+        reject();
+      }
+    });
+
   }
 }
 
@@ -510,7 +669,7 @@ class GivenWorker extends Parent<Given> {
     return this;
   }
 
-  async execute(currentDir?: string) {
+  async execute(currentDir?: string, localNpmRegistry?: string) {
     try {
       const deps = {
         moduleDeclaration: this.moduleDeclaration,
@@ -523,13 +682,13 @@ class GivenWorker extends Parent<Given> {
       }
       if (this.createRunner && currentDir) {
         return {
-          runner: new Runner(currentDir),
+          runner: localNpmRegistry ? new Runner(currentDir, 300000, localNpmRegistry) : new Runner(currentDir),
           ...deps
         };
       }
       if (this.workerUp && currentDir) {
         givenLogger.info(`>>> Given worker: run and wait for worker up ${currentDir}`);
-        const runner = new Runner(currentDir, this.timeout);
+        const runner = localNpmRegistry ? new Runner(currentDir, this.timeout, localNpmRegistry) : new Runner(currentDir, this.timeout);
         runner.run(this.isQuiet);
         await runner.waitForWorkerUp();
         return {

@@ -594,7 +594,7 @@ export class Runner {
   private cmd?: ExecaChildProcess;
   private runExitCode = 0;
 
-  constructor(private dir: string, private timeout = 300000) {}
+  constructor(private dir: string, private timeout = 300000, private localNpmRegistry: string = 'https://registry.npmjs.com') {}
 
   async waitForWorkerUp() {
     commandLogger.debug('Runner:waitForWorkerUp()');
@@ -663,8 +663,9 @@ export class Runner {
   }
 
   run(quiet = false) {
+    // Handle the case of we want to use private npm registry
     commandLogger.info(`Runner:run() -> [npm run start -- ${zpLogLevel()}]`);
-    this.cmd = execa.shell(`npm run start -- ${zpLogLevel()}`, {
+    this.cmd = execa.shell(`NPM_CONFIG__FOO_REGISTRY='${this.localNpmRegistry}' npm run start -- ${zpLogLevel()}`, {
       cwd: this.dir
     });
     if (this.cmd && !quiet) {

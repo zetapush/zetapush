@@ -33,7 +33,6 @@
     "@zetapush/worker": "0.34.2",
     "chalk": "2.4.1",
     "copy-dir": "0.3.0",
-    "execa": "0.10.0",
     "rimraf": "2.6.2",
     "tree-kill": "1.2.0",
     "winston": "3.0.0"
@@ -44,8 +43,11 @@
     "@types/node": "10.5.2",
     "@types/rimraf": "2.0.2",
     "cross-env": "5.2.0",
+    "execa": "^0.10.0",
+    "find-free-port": "^2.0.0",
     "jasmine": "3.1.0",
     "jasmine-reporters": "2.3.1",
+    "js-yaml": "^3.12.0",
     "rollup": "0.64.1",
     "rollup-plugin-commonjs": "9.1.3",
     "rollup-plugin-json": "3.0.0",
@@ -55,7 +57,8 @@
     "rollup-plugin-uglify": "4.0.0",
     "rollup-watch": "4.3.1",
     "typescript": "3.0.1",
-    "uglify-es": "3.3.9"
+    "uglify-es": "3.3.9",
+    "verdaccio": "^3.8.1"
   },
   "publishConfig": {
     "access": "public"

@@ -6,7 +6,6 @@
     "test:ci": "jasmine"
   },
   "dependencies": {
-    "find-free-port": "^1.2.0",
     "rimraf": "^2.6.2",
     "toxy": "^0.3.15"
   },
