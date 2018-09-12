@@ -3,18 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.32.1](https://github.com/zetapush/zetapush/compare/v0.32.0...v0.32.1) (2018-09-07)
+# [0.33.0](https://github.com/zetapush/zetapush/compare/v0.32.1...v0.33.0) (2018-09-12)
 
 
 ### Bug Fixes
 
-* **example:** remove unused examples ([60ea8b3](https://github.com/zetapush/zetapush/commit/60ea8b3))
-* **react-native:** fix typo ([e56240b](https://github.com/zetapush/zetapush/commit/e56240b))
+* **timeoutify:** fix timeoutify implementation ([00acad2](https://github.com/zetapush/zetapush/commit/00acad2))
+* **timeoutify-client-request:** add missing timeout property on createProxyTaskService method ([6a3ffb0](https://github.com/zetapush/zetapush/commit/6a3ffb0))
 
 
 ### Features
 
-* **react-native:** improve browser fetch support to handle react native context ([9a33e12](https://github.com/zetapush/zetapush/commit/9a33e12)), closes [#153](https://github.com/zetapush/zetapush/issues/153)
+* **clean-top-level-dependencies:** remove useless top level dependencies ([fc7a1f8](https://github.com/zetapush/zetapush/commit/fc7a1f8))
+* **common-circular-dependency:** remove circular dependencies on common package ([34fce29](https://github.com/zetapush/zetapush/commit/34fce29))
+* **connection-handlers:** add onNoServerUrlAvailable handler on connection ([69a8ca4](https://github.com/zetapush/zetapush/commit/69a8ca4))
+* **connection-handlers:** improve error feedback on connection error lifecycle ([248cf00](https://github.com/zetapush/zetapush/commit/248cf00))
+* **package-version-coherence:** update package version coherence ([504cc20](https://github.com/zetapush/zetapush/commit/504cc20))
+* **timeoutify-client-request:** add timeout parameter on all create<Async/Proxy>Service methods to ([82a5682](https://github.com/zetapush/zetapush/commit/82a5682)), closes [#161](https://github.com/zetapush/zetapush/issues/161)
+* **update-example-deps:** bump example to latest deps ([43e18bd](https://github.com/zetapush/zetapush/commit/43e18bd))
+* **worker-namespace:** update example to support requestContext member ([2215703](https://github.com/zetapush/zetapush/commit/2215703))
+* **worker-namespace:** update worker namespace implementation ([3deb6db](https://github.com/zetapush/zetapush/commit/3deb6db)), closes [#165](https://github.com/zetapush/zetapush/issues/165)
+
+
+### BREAKING CHANGES
+
+* **worker-namespace:** Namespace must be specified on TaskService creation
 
 
 
