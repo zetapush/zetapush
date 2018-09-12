@@ -1,6 +1,6 @@
-type ContextLoggerMethod = (...messages: any[]) => void;
+export type ContextLoggerMethod = (...messages: any[]) => void;
 
-interface ContextLogger {
+export interface ContextLogger {
   trace: ContextLoggerMethod;
   debug: ContextLoggerMethod;
   info: ContextLoggerMethod;
@@ -8,7 +8,7 @@ interface ContextLogger {
   error: ContextLoggerMethod;
 }
 
-interface MethodContext {
+export interface MethodContext {
   contextId?: string;
   owner: string;
   logger: Readonly<ContextLogger>;

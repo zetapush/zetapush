@@ -146,9 +146,9 @@ export class TaskDispatcherWorkerInstance implements WorkerInstance {
       // Api instance
       const tasker = this.worker[namespace];
       // Inject context in a proxified worker namespace
-      const injected = inject(tasker, context.contextId);
+      const injected = inject(tasker, context);
       // Delegate task to
-      const result = await timeoutify(() => injected[name](parameters, context), this.timeout);
+      const result = await timeoutify(() => injected[name](...parameters), this.timeout);
       return {
         result,
         success: true
