@@ -35,6 +35,6 @@ export class Logs extends Service {
    * @access public
    * */
   log(body: LogRequest) {
-    return this.$publish('log', body);
+    this.$publish('log', body);
   }
 }

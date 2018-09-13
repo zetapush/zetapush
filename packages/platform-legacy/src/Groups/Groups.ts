@@ -62,7 +62,7 @@ export class Groups extends Service {
    * @access public
    * */
   addListener(body: RemoteCommand) {
-    return this.$publish('addListener', body);
+    this.$publish('addListener', body);
   }
   /**
    * Response to 'getCapabilities'
@@ -70,7 +70,7 @@ export class Groups extends Service {
    * @access public
    * */
   capabilities(body: DeviceCapabilities) {
-    return this.$publish('capabilities', body);
+    this.$publish('capabilities', body);
   }
   /**
    * Executes a command
@@ -80,7 +80,7 @@ export class Groups extends Service {
    * @access public
    * */
   execute(body: RemoteCommand) {
-    return this.$publish('execute', body);
+    this.$publish('execute', body);
   }
   /**
    * Requests capabilities
@@ -90,7 +90,7 @@ export class Groups extends Service {
    * @access public
    * */
   getCapabilities() {
-    return this.$publish('getCapabilities');
+    this.$publish('getCapabilities');
   }
   /**
    * Notifies of some event
@@ -100,7 +100,7 @@ export class Groups extends Service {
    * @access public
    * */
   notify(body: RemoteCommand) {
-    return this.$publish('notify', body);
+    this.$publish('notify', body);
   }
   /**
    * Pings devices
@@ -109,7 +109,7 @@ export class Groups extends Service {
    * @access public
    * */
   ping(body: PingRequest) {
-    return this.$publish('ping', body);
+    this.$publish('ping', body);
   }
   /**
    * Response to ping
@@ -117,7 +117,7 @@ export class Groups extends Service {
    * @access public
    * */
   pong(body: DeviceAvailability) {
-    return this.$publish('pong', body);
+    this.$publish('pong', body);
   }
   /**
    * Removes a listener
@@ -126,7 +126,7 @@ export class Groups extends Service {
    * @access public
    * */
   removeListener(body: RemoteCommand) {
-    return this.$publish('removeListener', body);
+    this.$publish('removeListener', body);
   }
   /**
    * User API for groups and rights.
@@ -165,7 +165,7 @@ export class Groups extends Service {
    * @access public
    * */
   addUsers(body: GroupUsers) {
-    return this.$publish('addUsers', body);
+    this.$publish('addUsers', body);
   }
   /**
    * Lists my owned groups, with details
@@ -220,7 +220,7 @@ export class Groups extends Service {
    * @access public
    * */
   delUsers(body: GroupUsers) {
-    return this.$publish('delUsers', body);
+    this.$publish('delUsers', body);
   }
   /**
    * Tests for a group's existence

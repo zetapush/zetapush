@@ -50,7 +50,7 @@ export class Macro extends Service {
    * @access public
    * */
   breakpoint(body: MacroDebugBreakpointSet) {
-    return this.$publish('breakpoint', body);
+    this.$publish('breakpoint', body);
   }
   /**
    * Requests some information
@@ -58,7 +58,7 @@ export class Macro extends Service {
    * @access public
    * */
   info(body: MacroDebugInfoRequest) {
-    return this.$publish('info', body);
+    this.$publish('info', body);
   }
   /**
    * Debugs a previously recorded macro
@@ -68,7 +68,7 @@ export class Macro extends Service {
    * @access public
    * */
   livedebug(body: MacroDebugSession) {
-    return this.$publish('livedebug', body);
+    this.$publish('livedebug', body);
   }
   /**
    * Resumes a paused macro
@@ -76,7 +76,7 @@ export class Macro extends Service {
    * @access public
    * */
   resume(body: MacroDebugStep) {
-    return this.$publish('resume', body);
+    this.$publish('resume', body);
   }
   /**
    * Sets a variable value
@@ -84,7 +84,7 @@ export class Macro extends Service {
    * @access public
    * */
   variable(body: MacroDebugVariableChange) {
-    return this.$publish('variable', body);
+    this.$publish('variable', body);
   }
   /**
    * User API for macro execution
@@ -103,7 +103,7 @@ export class Macro extends Service {
    * @access public
    * */
   call(body: MacroPlay) {
-    return this.$publish('call', body);
+    this.$publish('call', body);
   }
   /**
    * Evaluates a function result.

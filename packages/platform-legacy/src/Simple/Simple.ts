@@ -90,7 +90,7 @@ export class Simple extends Service {
    * Creates an account
    *
    * Creates a new account in this 'simple' authentication realm.
-   * Returns a map of account fields, including a field named <i>zetapushKey</i> containing the global user key of the user (value of the <b>__userKey</b> pseudo-constant when this new account will be used)
+   * Returns the account fields, including a field named <i>zetapushKey</i> containing the global user key of the user (value of the <b>__userKey</b> pseudo-constant when this new account will be used)
    * @access public
    * */
   createAccount(body: SimpleAccountCreation): Promise<SimpleAccountInfo> {
