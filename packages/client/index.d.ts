@@ -174,9 +174,9 @@ export class Client {
   createAsyncMacroService<T>(declaration: ServiceDeclaration<T>): T;
   createAsyncTaskService<T>(declaration: TaskServiceDeclaration<T>): T;
   createAsyncService<T>(declaration: ServiceDeclaration<T>): T;
-  createProxyMacroService(parameters: ProxyServiceParameters): ProxyService;
-  createProxyService(parameters: ProxyServiceParameters): ProxyService;
-  createProxyTaskService(parameters: ProxyTaskServiceParameters): ProxyService;
+  createProxyMacroService(parameters?: ProxyServiceParameters): ProxyService;
+  createProxyService(parameters?: ProxyServiceParameters): ProxyService;
+  createProxyTaskService(parameters?: ProxyTaskServiceParameters): ProxyService;
   disconnect(): Promise<void>;
   isConnected(): boolean;
   getAppName(): string;
