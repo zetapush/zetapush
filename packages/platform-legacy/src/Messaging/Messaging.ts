@@ -35,6 +35,6 @@ export class Messaging extends Service {
    * @access public
    * */
   send(body: Message) {
-    return this.$publish('send', body);
+    this.$publish('send', body);
   }
 }

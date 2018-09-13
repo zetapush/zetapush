@@ -109,7 +109,7 @@ export interface SimpleAccountUpdate {
   /**User field for traceability of requests. Synchronous SDK APIs use this field for you.*/
   requestId?: string;
   /**account key in the realm. (configured 'unique key' used for authentication)*/
-  key?: string;
+  key: string;
 }
 export interface UserLoginchange {
   /**New account key within this realm. Must not be already in use.*/

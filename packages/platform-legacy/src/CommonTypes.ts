@@ -67,6 +67,12 @@ export interface CreatedFile {
   /**Optional User key. When calling the API, defaults to the current (calling) user's primary key. For impersonation purposes, the caller may use the key of another user, provided that the proper authorizations have been given by the impersonated user*/
   owner?: string;
 }
+export interface DeployedFragmentLiveInfo {
+  /**Deployer-specific details*/
+  details?: StringAnyMap;
+  /**Maps URLs symbolic names to actual URLs*/
+  urls?: StringAnyMap;
+}
 export interface FileMetaUpdate {
   /**File path*/
   path?: string;
@@ -304,6 +310,8 @@ export interface UploadedFile {
   url?: string;
 }
 export interface ZetaApiError {
+  /**Optional cause.*/
+  cause?: ZetaApiError;
   /**Symbolic error code*/
   code?: string;
   /**Human readable message. May vary depending on one or more of locale, input, developer code.*/
@@ -337,3 +345,7 @@ export interface ZpfsRequest {
   /**Optional User key. When calling the API, defaults to the current (calling) user's primary key. For impersonation purposes, the caller may use the key of another user, provided that the proper authorizations have been given by the impersonated user*/
   owner?: string;
 }
+
+export type StringDeployedFragmentLiveInfo_Map = {
+  [property: string]: DeployedFragmentLiveInfo;
+};

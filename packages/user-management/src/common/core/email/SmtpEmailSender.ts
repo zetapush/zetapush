@@ -67,7 +67,7 @@ export class SmtpEmailSender implements MessageSender {
       return null;
     }
     if (typeof address === 'string') {
-        return address;
+      return address;
     }
 
     return address.getEmailAddress();

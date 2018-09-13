@@ -1,8 +1,10 @@
 import {
   Base64EncodedBytes,
   ConfigurableHttpOutput,
+  DeployedFragmentLiveInfo,
   OwnerResource,
   StringAnyMap,
+  StringDeployedFragmentLiveInfo_Map,
   StringListStringMap,
   StringStringMap,
   ZetaApiError
@@ -10,6 +12,8 @@ import {
 
 export interface ConfigureCall {}
 export interface ConfigureTask {
+  /**for server use*/
+  earlyFail?: boolean;
   /**for server use*/
   done?: boolean;
   /**Use-case specific payload*/
@@ -101,6 +105,8 @@ export interface HttpRequestInfo {
 }
 export interface HttpRequestQueueTask {
   /**for server use*/
+  earlyFail?: boolean;
+  /**for server use*/
   done?: boolean;
   /**Use-case specific payload*/
   request?: HttpRequestCall;
@@ -123,6 +129,8 @@ export interface HttpRequestQueueTask {
 }
 export interface QueueTask {
   /**for server use*/
+  earlyFail?: boolean;
+  /**for server use*/
   done?: boolean;
   /**Use-case specific payload*/
   request?: TaskRequest;
@@ -144,6 +152,8 @@ export interface QueueTask {
   dispatched?: boolean;
 }
 export interface SlaveRPCQueueTask {
+  /**for server use*/
+  earlyFail?: boolean;
   /**for server use*/
   done?: boolean;
   /**Use-case specific payload*/
@@ -270,4 +280,10 @@ export interface WorkerAdminRequest {
   deploymentId?: string;
   /**Verb name inside the service*/
   verb?: string;
+}
+export interface WorkerStartupContext {
+  /**Workers, indexed by worker name*/
+  workers?: StringDeployedFragmentLiveInfo_Map;
+  /**Fronts, indexed by front name*/
+  fronts?: StringDeployedFragmentLiveInfo_Map;
 }

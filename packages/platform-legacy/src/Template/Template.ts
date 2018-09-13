@@ -63,7 +63,7 @@ export class Template extends Service {
    * @access public
    * */
   add(body: LocalizedTemplateCreation) {
-    return this.$publish('add', body);
+    this.$publish('add', body);
   }
   /**
    * Creates a template
@@ -72,7 +72,7 @@ export class Template extends Service {
    * @access public
    * */
   create(body: TemplateCreation) {
-    return this.$publish('create', body);
+    this.$publish('create', body);
   }
   /**
    * Removes a template
@@ -82,7 +82,7 @@ export class Template extends Service {
    * @access public
    * */
   delete(body: TemplateRemoval) {
-    return this.$publish('delete', body);
+    this.$publish('delete', body);
   }
   /**
    * Lists template information

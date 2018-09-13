@@ -36,6 +36,6 @@ export class Trigger extends Service {
    * @access public
    * */
   trigger(body: EventTrigger) {
-    return this.$publish('trigger', body);
+    this.$publish('trigger', body);
   }
 }

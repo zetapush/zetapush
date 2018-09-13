@@ -42,7 +42,7 @@ export class Notif extends Service {
    * @access public
    * */
   register(body: NotifiableDeviceRegistration) {
-    return this.$publish('register', body);
+    this.$publish('register', body);
   }
   /**
    * Sends a notification to the target
@@ -61,6 +61,6 @@ export class Notif extends Service {
    * @access public
    * */
   unregister() {
-    return this.$publish('unregister');
+    this.$publish('unregister');
   }
 }
