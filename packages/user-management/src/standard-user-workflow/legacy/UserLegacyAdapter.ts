@@ -93,7 +93,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
         },
         status: {
           data: accountStatus,
-          active: false
+          active: accountStatus === StandardAccountStatus.Active
         }
       });
 
