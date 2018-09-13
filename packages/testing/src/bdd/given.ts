@@ -78,7 +78,7 @@ class Given {
    * 
    * We can specify to use the npm dependencies (default case) or to use the local dependencies
    */
-  dependencies() {
+  npmDependencies() {
     this.givenDependencies = new GivenDependencies(this);
     return this.givenDependencies;
   }
@@ -95,19 +95,19 @@ class Given {
    */
   async apply(objToFill: any): Promise<TestContext> {
     try {
+      
+      let projectDir;
+      let localNpmRegistry;
+      if (this.givenDependencies) {
+        localNpmRegistry = await this.givenDependencies.execute();
+      }
+      
       givenLogger.debug(`>> Apply Given`);
       if (this.givenCredentials) {
         Object.assign(this.sharedCredentials, await this.givenCredentials.execute());
       }
-      let projectDir;
       if (this.givenApp) {
-        projectDir = await this.givenApp.execute();
-      }
-      let localNpmRegistry;
-      if (this.givenDependencies) {
-        const packagejsonFile = readFileSync(`${projectDir}/package.json`, { encoding: 'utf-8' });
-        const packageJsonContent = JSON.parse(packagejsonFile);
-        localNpmRegistry = await this.givenDependencies.execute(packageJsonContent.dependencies);
+        projectDir = await this.givenApp.execute(localNpmRegistry);
       }
       let runnerAndDeps;
       if (this.givenWorker) {
@@ -177,7 +177,6 @@ class GivenDependencies extends Parent<Given> {
    */
   localProxy(...dependencies: string[]) {
 
-    
     // Iterate on each parameters to add all local dependencies
     dependencies.forEach((dep) => {
       // Get all dependencies of subdirectory
@@ -207,7 +206,7 @@ class GivenDependencies extends Parent<Given> {
     return this;
   }
 
-  async execute(dependencies: object): Promise<string> {
+  async execute(): Promise<string> {
     return new Promise<string>(async (resolve, reject) => {
       if (!this.useNpmDependencies) {
         // FIXME: WORKS ONLY ON 4873 PORT ! BUG WITH VERDACCIO
@@ -226,54 +225,48 @@ class GivenDependencies extends Parent<Given> {
               publish: '$all',
               proxy: 'npmjs'
             }
+          },
+          uplinks: {
+            npmjs: {
+              url: 'https://registry.npmjs.org'
+            }
           }
         }
   
         const fileConfigVerdaccio = yaml.safeDump(configVerdaccio);
-        const pathConfigVerdaccio = join(os.tmpDir(), `config-verdaccio-${new Date().getTime()}.yaml`);
+        const pathConfigVerdaccio = join(os.tmpdir(), `config-verdaccio-${new Date().getTime()}.yaml`);
         fs.writeFileSync(pathConfigVerdaccio, fileConfigVerdaccio);
   
         execa(`verdaccio`, ['--listen', freePort, '--config', pathConfigVerdaccio]);
         givenLogger.debug(`>> Verdaccion launched on port : ${freePort}`);
-
-        // Publish concerned packages in the private repo
-        Object.keys(dependencies).forEach((dependencyNameToInstall) => {
-          givenLogger.debug(`>> Installing ${dependencyNameToInstall} from local repository`);
-  
-          this.localDependencies.forEach(async (localDep) => {
-            const packageJsonLocalDependency = JSON.parse(fs.readFileSync(join(localDep, 'package.json')));
-  
-            // If we found the correct dependency, we install it
-            if (packageJsonLocalDependency.name === dependencyNameToInstall) {
-  
-              // Update the version of the package to publish it on the private repository
-              const currentVersionPackage = packageJsonLocalDependency.version;
-  
-              packageJsonLocalDependency.version += '-' + new Date().getTime();
-  
-
-              
-              // Push the updated package in the private repository
-              try {
-                fs.writeFileSync(join(localDep, 'package.json'), JSON.stringify(packageJsonLocalDependency, null, 2));
         
-                await execa('npm', ['publish', '--registry', `http://localhost:${freePort}`], {
-                  cwd: localDep
-                })
-              } finally {
+        this.localDependencies.forEach(async (localDep) => {
 
-                
-                // Update the package version with the previous, once it was published
-                packageJsonLocalDependency.version = currentVersionPackage;
-                fs.writeFileSync(join(localDep, 'package.json'), JSON.stringify(packageJsonLocalDependency, null, 2));
-              }
-            }
-          })
+          const packageJsonLocalDependency = JSON.parse(fs.readFileSync(join(localDep, 'package.json')));
+            
+          if (packageJsonLocalDependency.version && !packageJsonLocalDependency.private === true) {
+            // Update the version of the package to publish it on the private repository
+            const currentVersionPackage = packageJsonLocalDependency.version;
   
-          resolve(`http://localhost:${freePort}`)
-        });
+            packageJsonLocalDependency.version += '-' + new Date().getTime();
+              
+            // Push the updated package in the private repository
+            try {
+              fs.writeFileSync(join(localDep, 'package.json'), JSON.stringify(packageJsonLocalDependency, null, 2));
+      
+              await execa('npm', ['publish', '--registry', `http://localhost:${freePort}`], {
+                cwd: localDep
+              })
+            } finally {
+              // Update the package version with the previous, once it was published
+              packageJsonLocalDependency.version = currentVersionPackage;
+              fs.writeFileSync(join(localDep, 'package.json'), JSON.stringify(packageJsonLocalDependency, null, 2));
+            }
+            resolve(`http://localhost:${freePort}`)
+          }
+        })
       } else {
-        reject();
+        reject(`Failed to deploy local npm dependencies on private registry`);
       }
     });
 
@@ -318,17 +311,17 @@ class GivenApp extends Parent<Given> {
     return this.givenTemplate;
   }
 
-  async execute(): Promise<string | undefined> {
+  async execute(localNpmRegistry?: string): Promise<string | undefined> {
     try {
       let projectDir;
       if (this.givenNewApp) {
-        projectDir = await this.givenNewApp.execute();
+        projectDir = await this.givenNewApp.execute(localNpmRegistry);
       }
       if (this.givenTestingApp) {
-        projectDir = await this.givenTestingApp.execute();
+        projectDir = await this.givenTestingApp.execute(localNpmRegistry);
       }
       if (this.givenTemplate) {
-        projectDir = await this.givenTemplate.execute();
+        projectDir = await this.givenTemplate.execute(localNpmRegistry);
       }
       return projectDir;
     } catch (e) {
@@ -405,6 +398,7 @@ class GivenNewApp extends Parent<GivenApp> {
   private dirName = 'new-project';
   private setNewAppName = false;
   private newAppName?: string;
+  private projectDir = `.generated-projects/${this.dirName}`;
 
   constructor(parent: GivenApp, private credentials: any) {
     super(parent);
@@ -421,33 +415,33 @@ class GivenNewApp extends Parent<GivenApp> {
     return this;
   }
 
-  async execute() {
+  async execute(localNpmRegistry?: string) {
     try {
-      givenLogger.info(`>>> Given new application: .generated-projects/${this.dirName}`);
+      givenLogger.info(`>>> Given new application: ${this.projectDir}`);
 
-      givenLogger.silly(`GivenNewApp:execute -> rm(.generated-projects/${this.dirName})`);
-      await rm(`.generated-projects/${this.dirName}`);
+      givenLogger.silly(`GivenNewApp:execute -> rm(${this.projectDir})`);
+      await rm(`${this.projectDir}`);
 
-      const projectDir = `.generated-projects/${this.dirName}`;
       givenLogger.silly(
         `GivenNewApp:execute -> npmInit(${this.credentials.developerLogin},
-          ${this.credentials.developerPassword}, .generated-projects/${this.dirName})`
+          ${this.credentials.developerPassword}, ${this.projectDir})`
       );
       await npmInit(
         this.credentials.developerLogin,
         this.credentials.developerPassword,
-        projectDir,
-        this.credentials.platformUrl
+        this.projectDir,
+        this.credentials.platformUrl,
+        localNpmRegistry
       );
       if (this.setNewAppName && this.newAppName) {
         givenLogger.silly(
-          `GivenNewApp:execute -> setAppNameToZetarc(.generated-projects/${this.dirName}, ${this.newAppName})`
+          `GivenNewApp:execute -> setAppNameToZetarc(${this.projectDir}, ${this.newAppName})`
         );
-        await setAppNameToZetarc(projectDir, this.newAppName);
+        await setAppNameToZetarc(this.projectDir, this.newAppName);
       }
-      return projectDir;
+      return this.projectDir;
     } catch (e) {
-      givenLogger.error(`>>> Given new application FAILED: .generated-projects/${this.dirName}`, e);
+      givenLogger.error(`>>> Given new application FAILED: ${this.projectDir}`, e);
       throw e;
     }
   }
@@ -456,6 +450,7 @@ class GivenNewApp extends Parent<GivenApp> {
 class GivenTestingApp extends Parent<GivenApp> {
   private projectDirName?: string;
   private installLatestDependencies = false;
+  private projectDir = `testing-projects/${this.projectDirName}`;
 
   constructor(parent: GivenApp, private credentials: any) {
     super(parent);
@@ -471,32 +466,32 @@ class GivenTestingApp extends Parent<GivenApp> {
     return this;
   }
 
-  async execute() {
+  async execute(localNpmRegistry?: string) {
     try {
-      givenLogger.info(`>>> Given testing application: testing-projects/${this.projectDirName}`);
+      givenLogger.info(`>>> Given testing application: ${this.projectDir}`);
 
       if (this.projectDirName && this.installLatestDependencies) {
         givenLogger.silly(
-          `GivenTestingApp:execute -> npmInstallLatestVersion(testing-projects/${this.projectDirName})`
+          `GivenTestingApp:execute -> npmInstallLatestVersion(${this.projectDir})`
         );
-        await npmInstallLatestVersion(`testing-projects/${this.projectDirName}`);
+        await npmInstallLatestVersion(this.projectDir, localNpmRegistry);
       }
       if (this.credentials) {
         givenLogger.silly(
-          `GivenTestingApp:execute -> setAccountToZetarc(testing-projects/${this.projectDirName}, ${JSON.stringify(
+          `GivenTestingApp:execute -> setAccountToZetarc(${this.projectDir}, ${JSON.stringify(
             this.credentials
           )})`
         );
         await setAccountToZetarc(
-          `testing-projects/${this.projectDirName}`,
+          this.projectDir,
           this.credentials.developerLogin,
           this.credentials.developerPassword
         );
-        await setPlatformUrlToZetarc(`testing-projects/${this.projectDirName}`, this.credentials.platformUrl);
+        await setPlatformUrlToZetarc(this.projectDir, this.credentials.platformUrl);
       }
-      return `testing-projects/${this.projectDirName}`;
+      return this.projectDir;
     } catch (e) {
-      givenLogger.error(`>>> Given testing application FAILED: testing-projects/${this.projectDirName}`, e);
+      givenLogger.error(`>>> Given testing application FAILED: ${this.projectDir}`, e);
       throw e;
     }
   }
@@ -504,6 +499,7 @@ class GivenTestingApp extends Parent<GivenApp> {
 
 class GivenTemplatedApp extends Parent<GivenApp> {
   private templateApp?: string;
+  private projectDir = `.generated-projects/${this.templateApp}`;
 
   constructor(parent: GivenApp, private credentials: any) {
     super(parent);
@@ -511,48 +507,47 @@ class GivenTemplatedApp extends Parent<GivenApp> {
 
   sourceDir(templateAppDir: string) {
     this.templateApp = templateAppDir;
+    this.projectDir = `.generated-projects/${this.templateApp}`;
     return this;
   }
 
-  async execute() {
+  async execute(localNpmRegistry?: string) {
     try {
       givenLogger.info(`>>> Given templated application: templates/${this.templateApp}`);
 
-      givenLogger.silly(`GivenTemplatedApp:execute -> rm(.generated-projects/${this.templateApp})`);
-      await rm(`.generated-projects/${this.templateApp}`);
+      givenLogger.silly(`GivenTemplatedApp:execute -> rm(${this.projectDir})`);
+      await rm(this.projectDir);
 
       givenLogger.silly(
-        `GivenTemplatedApp:execute -> copydir.sync(spec/templates/${this.templateApp}, .generated-projects/${
-          this.templateApp
-        })`
+        `GivenTemplatedApp:execute -> copydir.sync(spec/templates/${this.templateApp}, ${this.projectDir})`
       );
-      copydir.sync('spec/templates/' + this.templateApp, '.generated-projects/' + this.templateApp);
-      // await npmInstallLatestVersion(`.generated-projects/${this.templateApp}`);
-      await npmInstall(`.generated-projects/${this.templateApp}`, '*');
+      copydir.sync('spec/templates/' + this.templateApp, this.projectDir);
+      // await npmInstallLatestVersion(this.projectDir);
+      await npmInstall(this.projectDir, '*', localNpmRegistry);
 
       if (this.credentials) {
         givenLogger.silly(
           `GivenTemplatedApp:execute -> createZetarc(${this.credentials.developerLogin}, ${
             this.credentials.developerPassword
-          }, .generated-projects/${this.templateApp})`
+          }, ${this.projectDir})`
         );
-        if (existsSync('.generated-projects/' + this.templateApp)) {
+        if (existsSync(this.projectDir)) {
           await setAccountToZetarc(
-            `.generated-projects/${this.templateApp}`,
+            this.projectDir,
             this.credentials.developerLogin,
             this.credentials.developerPassword
           );
-          await setPlatformUrlToZetarc(`.generated-projects/${this.templateApp}`, this.credentials.platformUrl);
+          await setPlatformUrlToZetarc(this.projectDir, this.credentials.platformUrl);
         } else {
           createZetarc(
             this.credentials.developerLogin,
             this.credentials.developerPassword,
-            '.generated-projects/' + this.templateApp,
+            this.projectDir,
             this.credentials.platformUrl
           );
         }
       }
-      return '.generated-projects/' + this.templateApp;
+      return this.projectDir;
     } catch (e) {
       givenLogger.error(`>>> Given templated application FAILED: templates/${this.templateApp}`, e);
       throw e;
@@ -670,6 +665,7 @@ class GivenWorker extends Parent<Given> {
   }
 
   async execute(currentDir?: string, localNpmRegistry?: string) {
+
     try {
       const deps = {
         moduleDeclaration: this.moduleDeclaration,
@@ -682,13 +678,13 @@ class GivenWorker extends Parent<Given> {
       }
       if (this.createRunner && currentDir) {
         return {
-          runner: localNpmRegistry ? new Runner(currentDir, 300000, localNpmRegistry) : new Runner(currentDir),
+          runner: !!localNpmRegistry ? new Runner(currentDir, 300000, localNpmRegistry) : new Runner(currentDir),
           ...deps
         };
       }
       if (this.workerUp && currentDir) {
         givenLogger.info(`>>> Given worker: run and wait for worker up ${currentDir}`);
-        const runner = localNpmRegistry ? new Runner(currentDir, this.timeout, localNpmRegistry) : new Runner(currentDir, this.timeout);
+        const runner = !!localNpmRegistry ? new Runner(currentDir, this.timeout, localNpmRegistry) : new Runner(currentDir, this.timeout);
         runner.run(this.isQuiet);
         await runner.waitForWorkerUp();
         return {

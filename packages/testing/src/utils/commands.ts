@@ -60,7 +60,7 @@ export const getCurrentEnv = (dir: PathLike) => {
  * @param {string} developerPassword
  * @param {string} dir Name of the application folder
  */
-export const npmInit = (developerLogin: string, developerPassword: string, dir: PathLike, platformUrl?: string) => {
+export const npmInit = (developerLogin: string, developerPassword: string, dir: PathLike, platformUrl?: string, localNpmRegistry = 'https://registry.npmjs.org') => {
   commandLogger.info(`npmInit(${developerLogin}, ${developerPassword}, ${dir}, ${platformUrl})`);
   if (npmVersion().major < 5) {
     throw new Error('Minimum required npm version is 5.6.0');
@@ -409,7 +409,7 @@ export const npmVersion = () => {
  * @param {string} dir Full path of the application folder
  * @param {string} version Version of the ZetaPush dependency
  */
-export const npmInstall = async (dir: PathLike, version: string) => {
+export const npmInstall = async (dir: PathLike, version: string, localNpmRegistry = 'https://registry.npmjs.org') => {
   commandLogger.info(`npmInstall(${dir}, ${version})`);
 
   await rm(`${dir}/node_modules/`);
@@ -427,7 +427,7 @@ export const npmInstall = async (dir: PathLike, version: string) => {
 
   try {
     commandLogger.debug(`npmInstall(${dir}, ${version}) -> [npm install]`);
-    const res = execa.shellSync('npm install', { cwd: dir.toString() });
+    const res = execa.shellSync(`npm install --registry=${localNpmRegistry}`, { cwd: dir.toString() });
     commandLogger.silly(`npmInstall(${dir}, ${version}) -> [npm install] -> `, {
       exitCode: res.code
     });
@@ -447,7 +447,7 @@ export const npmInstall = async (dir: PathLike, version: string) => {
   }
 };
 
-export const npmInstallLatestVersion = async (dir: PathLike) => {
+export const npmInstallLatestVersion = async (dir: PathLike, localNpmRegistry = 'https://registry.npmjs.org') => {
   commandLogger.info(`npmInstallLatestVersion(${dir})`);
   await rm(`${dir}/node_modules/`);
   await rm(`${dir}/package-lock.json`);
@@ -455,7 +455,7 @@ export const npmInstallLatestVersion = async (dir: PathLike) => {
 
   try {
     commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save]');
-    const resCli = execa.shellSync('npm install @zetapush/cli@canary --save', {
+    const resCli = execa.shellSync(`npm install --registry ${localNpmRegistry} @zetapush/cli@canary --save`, {
       cwd: dir.toString()
     });
     commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save] -> ', {
@@ -464,7 +464,7 @@ export const npmInstallLatestVersion = async (dir: PathLike) => {
     subProcessLogger.silly('\n' + resCli.stdout);
     subProcessLogger.warn('\n' + resCli.stderr);
     commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/platform-legacy@canary --save]');
-    const restPf = execa.shellSync('npm install @zetapush/platform-legacy@canary --save', {
+    const restPf = execa.shellSync(`npm install --registry ${localNpmRegistry} @zetapush/platform-legacy@canary --save`, {
       cwd: dir.toString()
     });
     commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/platform-legacy@canary --save] -> ', {
@@ -594,7 +594,7 @@ export class Runner {
   private cmd?: ExecaChildProcess;
   private runExitCode = 0;
 
-  constructor(private dir: string, private timeout = 300000, private localNpmRegistry: string = 'https://registry.npmjs.com') {}
+  constructor(private dir: string, private timeout = 300000, private localNpmRegistry: string = 'https://registry.npmjs.org') {}
 
   async waitForWorkerUp() {
     commandLogger.debug('Runner:waitForWorkerUp()');
@@ -665,7 +665,7 @@ export class Runner {
   run(quiet = false) {
     // Handle the case of we want to use private npm registry
     commandLogger.info(`Runner:run() -> [npm run start -- ${zpLogLevel()}]`);
-    this.cmd = execa.shell(`NPM_CONFIG__FOO_REGISTRY='${this.localNpmRegistry}' npm run start -- ${zpLogLevel()}`, {
+    this.cmd = execa.shell(`npm run start -- ${zpLogLevel()}`, {
       cwd: this.dir
     });
     if (this.cmd && !quiet) {

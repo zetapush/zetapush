@@ -133,8 +133,10 @@
       "runtimeExecutable": "~/.nvm/versions/node/v10.11.0/bin/node",
       "cwd": "${workspaceFolder}/packages/integration",
       "runtimeArgs": [
+        "-r",
+        "ts-node/register",
         "--inspect-brk=9232",
-        "node_modules/jasmine/bin/jasmine.js"
+        "node_modules/jasmine/bin/jasmine.js",
       ],
       "args": [
       ],
@@ -146,7 +148,8 @@
         "ZETAPUSH_LOCAL_DEV": "true",
         "ZETAPUSH_LOG_LEVEL": "silly",
         "COMETD_LOG_LEVEL": "info",
-        "ZETAPUSH_COMMANDS_LOG_LEVEL": "-vvvv"
+        "ZETAPUSH_COMMANDS_LOG_LEVEL": "-vvvv",
+        "TS_NODE_SKIP_IGNORE": "true"
       }
     } 
   ]
