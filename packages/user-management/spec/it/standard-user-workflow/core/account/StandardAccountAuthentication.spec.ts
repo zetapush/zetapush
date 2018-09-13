@@ -63,7 +63,11 @@ describe(`StandardAccountAuthentication`, () => {
 
             const credentials = { login: 'odile.deray', password: 'password' };
 
-            await frontUserAction('Client connection', this, async (api, client) => {}, credentials);
+            await frontUserAction()
+              .name('Client connection')
+              .context(this)
+              .loggedAs(credentials)
+              .execute();
           },
           5 * 60 * 1000
         );
@@ -94,7 +98,12 @@ describe(`StandardAccountAuthentication`, () => {
             const credentials = { login: 'odile.deray', password: 'wrong_password' };
 
             try {
-              await frontUserAction('Client connection', this, async (api, client) => {}, credentials);
+              await frontUserAction()
+                .name('Client connection')
+                .context(this)
+                .loggedAs(credentials)
+                .execute();
+              fail('authentication should have failed');
             } catch (e) {
               expect(e).toEqual('403::Handshake denied');
             }
@@ -125,7 +134,12 @@ describe(`StandardAccountAuthentication`, () => {
             const credentials = { login: 'odile.deray', password: 'password' };
 
             try {
-              await frontUserAction('Client connection', this, async (api, client) => {}, credentials);
+              await frontUserAction()
+                .name('Client connection')
+                .context(this)
+                .loggedAs(credentials)
+                .execute();
+              fail('authentication should have failed');
             } catch (e) {
               // TODO: Handle the proper error
               expect(e).toEqual('403::Handshake denied');

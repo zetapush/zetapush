@@ -48,11 +48,14 @@ describe(`As developer with
       expect(zetarc.developerPassword).toBe(this.developerPassword);
 
       // 3) check using a client
-      await frontUserAction('3) call worker', { zetarc }, async (api) => {
-        const message = await api.hello();
-        expect(typeof message).toBe('string');
-        expect(PATTERN.test(message)).toBe(true);
-      });
+      await frontUserAction()
+        .name('3) call worker')
+        .context({ zetarc })
+        .execute(async (api) => {
+          const message = await api.hello();
+          expect(typeof message).toBe('string');
+          expect(PATTERN.test(message)).toBe(true);
+        });
     },
     20 * 60 * 1000
   );

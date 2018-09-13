@@ -1,4 +1,4 @@
-import { SmartClient } from '@zetapush/client';
+import { SmartClient, Client } from '@zetapush/client';
 import { ResolvedConfig, Service } from '@zetapush/common';
 import { FactoryProvider } from '@zetapush/core';
 import { WorkerRunner, WorkerRunnerEvents } from '@zetapush/worker';
@@ -33,45 +33,15 @@ export const consoleUserAction = async (name: string, func: () => any) => {
   return await userAction(name + ' from console', func);
 };
 
-export const frontUserAction = async (
-  name: string,
-  testOrContext: Context,
-  func: (api: any, client: SmartClient) => any,
-  credentials?: Credentials
-) => {
-  return await userAction(name + ' from front', async () => {
-    let api;
-    let client;
-    try {
-      const zetarc = new ContextWrapper(testOrContext).getContext().zetarc;
-      client = new SmartClient({
-        ...(<any>zetarc),
-        transports
-      });
-      frontUserActionLogger.debug('Connecting to worker...');
-      await client.disconnect();
-      if (credentials) {
-        await client.setCredentials(credentials);
-      }
-      const resu = await client.connect();
-      frontUserActionLogger.debug('Connected to worker');
-      api = (<any>client).createProxyTaskService();
-      frontUserActionLogger.debug('Api instance created');
-    } catch (e) {
-      frontUserActionLogger.error("Connection from client failed. Cloud service won't be called", e);
-      throw e;
-    }
-    try {
-      return await func(api, client);
-    } catch (e) {
-      frontUserActionLogger.error(
-        `>>> Front user action FAILED: ${name}`,
-        new ContextWrapper(testOrContext).getContext(),
-        e
-      );
-      throw e;
-    }
-  });
+export const frontUserAction = (name?: string, testOrContext?: Context) => {
+  const action = new UserAction();
+  if (name) {
+    action.name(name);
+  }
+  if (testOrContext) {
+    action.context(testOrContext);
+  }
+  return action;
 };
 
 export const runInWorker = (testOrContext: Context, workerDeclaration: (...instances: any[]) => void) => {
@@ -168,3 +138,108 @@ export const runInWorker = (testOrContext: Context, workerDeclaration: (...insta
     }
   });
 };
+
+class Parent<P> {
+  constructor(private parent: P) {}
+
+  and() {
+    return this.parent;
+  }
+}
+
+class UserAction {
+  private testOrContext?: Context;
+  private actionName: string = 'user action';
+  private actionNameSuffix: string = ' from front';
+  private credentials?: Credentials;
+  private apiBuilder?: Api;
+
+  constructor() {}
+
+  context(testOrContext: Context) {
+    this.testOrContext = testOrContext;
+    return this;
+  }
+
+  name(actionName: string, suffix = ' from front') {
+    this.actionName = actionName;
+    this.actionNameSuffix = suffix;
+    return this;
+  }
+
+  loggedAs(login: string, password: string): UserAction;
+  loggedAs(credentials: Credentials): UserAction;
+  loggedAs(loginOrCreds: any, password?: string): UserAction {
+    if (typeof loginOrCreds === 'string') {
+      this.credentials = { login: loginOrCreds, password: password || '' };
+      return this;
+    }
+    this.credentials = loginOrCreds;
+    return this;
+  }
+
+  api() {
+    this.apiBuilder = new Api(this);
+    return this.apiBuilder;
+  }
+
+  async execute(func?: (api: any, client: Client) => Promise<any>) {
+    return await userAction(this.actionName + this.actionNameSuffix, async () => {
+      let api;
+      let client;
+      try {
+        const zetarc = new ContextWrapper(this.testOrContext).getContext().zetarc;
+        client = new SmartClient({
+          ...(<any>zetarc),
+          transports
+        });
+        frontUserActionLogger.debug('Connecting to worker...');
+        await client.disconnect();
+        if (this.credentials) {
+          await client.setCredentials(this.credentials);
+        }
+        const resu = await client.connect();
+        frontUserActionLogger.debug('Connected to worker');
+        if (!this.apiBuilder) {
+          this.apiBuilder = new Api(this);
+        }
+        api = <any>this.apiBuilder.build(client);
+        frontUserActionLogger.debug('Api instance created');
+      } catch (e) {
+        frontUserActionLogger.error("Connection from client failed. Cloud service won't be called", e);
+        throw e;
+      }
+      try {
+        if (func) {
+          return await func(api, client);
+        }
+      } catch (e) {
+        frontUserActionLogger.error(
+          `>>> Front user action FAILED: ${this.actionName}`,
+          new ContextWrapper(this.testOrContext).getContext(),
+          e
+        );
+        throw e;
+      }
+    });
+  }
+}
+
+class Api extends Parent<UserAction> {
+  private apiNamespace?: string;
+  private apiCallTimeout?: number;
+
+  namespace(namespace: string) {
+    this.apiNamespace = namespace;
+    return this;
+  }
+
+  timeout(timeout: number) {
+    this.apiCallTimeout = timeout;
+    return this;
+  }
+
+  build(client: Client) {
+    return client.createProxyTaskService({ timeout: this.apiCallTimeout, namespace: this.apiNamespace });
+  }
+}

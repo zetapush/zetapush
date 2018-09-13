@@ -38,11 +38,14 @@ describe(`As developer with
       expect(zetarc.appName).toBeDefined();
       expect(zetarc.appName.length).toBeGreaterThan(0);
 
-      await frontUserAction('2) call hello', this, async (api) => {
-        const message = await api.hello();
-        expect(typeof message).toBe('string');
-        expect(PATTERN.test(message)).toBe(true);
-      });
+      await frontUserAction()
+        .name('2) call hello')
+        .context(this)
+        .execute(async (api) => {
+          const message = await api.hello();
+          expect(typeof message).toBe('string');
+          expect(PATTERN.test(message)).toBe(true);
+        });
     },
     15 * 60 * 1000
   );
