@@ -33,68 +33,6 @@ export class Game extends Service {
     return 'game_0';
   }
   /**
-   * Game Engine API
-   *
-   * The Game Engine API is for game engine clients, not end-users.
-   * @access public
-   * */
-  /**
-   * Notify the result for a join request
-   *
-   * A Game Engine notifies the STR of the result of a join request that it received on join_callback
-   * @access public
-   * */
-  join_result(body: GameJoinResponse) {
-    return this.$publish('join_result', body);
-  }
-  /**
-   * Notify the result for an organization request
-   *
-   * A Game Engine notifies the STR of the result of an organization request that it received on organize_callback
-   * @access public
-   * */
-  organize_result(body: GameOrganizationResponse) {
-    return this.$publish('organize_result', body);
-  }
-  /**
-   * Registers a game engine
-   *
-   * A client registers itself to the STR as a Game Engine.
-   * The STR may, from now on, dispatch game of the given game type to said client.
-   * Unregistration is done automatically on logoff.
-   * @access public
-   * */
-  register(body: GameRunnerRegistration) {
-    return this.$publish('register', body);
-  }
-  /**
-   * Notify the result for a start request
-   *
-   * A Game Engine notifies the STR of the result of a start request that it received on start_callback
-   * @access public
-   * */
-  start_result(body: GameStart) {
-    return this.$publish('start_result', body);
-  }
-  /**
-   * Notify a game event
-   *
-   * A Game Engine notifies the STR of some arbitrary game event.
-   * @access public
-   * */
-  state(body: GameState) {
-    return this.$publish('state', body);
-  }
-  /**
-   * Notify the result for an unjoin request
-   *
-   * A Game Engine notifies the STR of the result of an unjoin request that it received on unjoin_callback
-   * @access public
-   * */
-  unjoin_result(body: GameJoinResponse) {
-    return this.$publish('unjoin_result', body);
-  }
-  /**
    * User API for games
    *
    * Users can list, start, join games, and play.
@@ -115,7 +53,7 @@ export class Game extends Service {
    * @access public
    * */
   join(body: GameJoin) {
-    return this.$publish('join', body);
+    this.$publish('join', body);
   }
   /**
    * Organizes a game
@@ -123,7 +61,7 @@ export class Game extends Service {
    * @access public
    * */
   organize(body: GameOrganization) {
-    return this.$publish('organize', body);
+    this.$publish('organize', body);
   }
   /**
    * Gives some command to the game engine
@@ -131,7 +69,7 @@ export class Game extends Service {
    * @access public
    * */
   play(body: GamePlay) {
-    return this.$publish('play', body);
+    this.$publish('play', body);
   }
   /**
    * Starts a game
@@ -139,7 +77,7 @@ export class Game extends Service {
    * @access public
    * */
   start(body: GameStart) {
-    return this.$publish('start', body);
+    this.$publish('start', body);
   }
   /**
    * A user cancels joining a game
@@ -147,6 +85,68 @@ export class Game extends Service {
    * @access public
    * */
   unjoin(body: GameJoin) {
-    return this.$publish('unjoin', body);
+    this.$publish('unjoin', body);
+  }
+  /**
+   * Game Engine API
+   *
+   * The Game Engine API is for game engine clients, not end-users.
+   * @access public
+   * */
+  /**
+   * Notify the result for a join request
+   *
+   * A Game Engine notifies the STR of the result of a join request that it received on join_callback
+   * @access public
+   * */
+  join_result(body: GameJoinResponse) {
+    this.$publish('join_result', body);
+  }
+  /**
+   * Notify the result for an organization request
+   *
+   * A Game Engine notifies the STR of the result of an organization request that it received on organize_callback
+   * @access public
+   * */
+  organize_result(body: GameOrganizationResponse) {
+    this.$publish('organize_result', body);
+  }
+  /**
+   * Registers a game engine
+   *
+   * A client registers itself to the STR as a Game Engine.
+   * The STR may, from now on, dispatch game of the given game type to said client.
+   * Unregistration is done automatically on logoff.
+   * @access public
+   * */
+  register(body: GameRunnerRegistration) {
+    this.$publish('register', body);
+  }
+  /**
+   * Notify the result for a start request
+   *
+   * A Game Engine notifies the STR of the result of a start request that it received on start_callback
+   * @access public
+   * */
+  start_result(body: GameStart) {
+    this.$publish('start_result', body);
+  }
+  /**
+   * Notify a game event
+   *
+   * A Game Engine notifies the STR of some arbitrary game event.
+   * @access public
+   * */
+  state(body: GameState) {
+    this.$publish('state', body);
+  }
+  /**
+   * Notify the result for an unjoin request
+   *
+   * A Game Engine notifies the STR of the result of an unjoin request that it received on unjoin_callback
+   * @access public
+   * */
+  unjoin_result(body: GameJoinResponse) {
+    this.$publish('unjoin_result', body);
   }
 }

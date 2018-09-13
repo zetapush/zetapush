@@ -35,6 +35,6 @@ export class Sendmail extends Service {
    * @access public
    * */
   send(body: Email) {
-    return this.$publish('send', body);
+    this.$publish('send', body);
   }
 }

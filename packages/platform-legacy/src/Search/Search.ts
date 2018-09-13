@@ -37,7 +37,7 @@ export class Search extends Service {
    * @access public
    * */
   delete(body: SearchDocumentId) {
-    return this.$publish('delete', body);
+    this.$publish('delete', body);
   }
   /**
    * Gets data
@@ -55,7 +55,7 @@ export class Search extends Service {
    * @access public
    * */
   index(body: SearchData) {
-    return this.$publish('index', body);
+    this.$publish('index', body);
   }
   /**
    * Searches for data

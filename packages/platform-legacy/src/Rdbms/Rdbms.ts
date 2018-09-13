@@ -49,6 +49,6 @@ export class Rdbms extends Service {
    * @access public
    * */
   update(body: RdbmsQuery) {
-    return this.$publish('update', body);
+    this.$publish('update', body);
   }
 }

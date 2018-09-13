@@ -7,7 +7,8 @@ import {
   TaskRequest,
   WorkerAdminBulkRequest,
   WorkerAdminBulkResponse,
-  WorkerAdminBulkServiceCreation
+  WorkerAdminBulkServiceCreation,
+  WorkerStartupContext
 } from './QueueTypes';
 
 /**
@@ -62,7 +63,7 @@ export class Queue extends Service {
    * @access public
    * */
   done(body: TaskCompletion) {
-    return this.$publish('done', body);
+    this.$publish('done', body);
   }
   /**
    * Reports progress for a task
@@ -73,7 +74,7 @@ export class Queue extends Service {
    * @access public
    * */
   progress(body: TaskProgress) {
-    return this.$publish('progress', body);
+    this.$publish('progress', body);
   }
   /**
    * Registers a consumer
@@ -98,7 +99,7 @@ export class Queue extends Service {
    * @access public
    * */
   submit(body: TaskRequest) {
-    return this.$publish('submit', body);
+    this.$publish('submit', body);
   }
   /**
    * Unregisters a consumer
@@ -110,7 +111,7 @@ export class Queue extends Service {
    * @access public
    * */
   unregister() {
-    return this.$publish('unregister');
+    this.$publish('unregister');
   }
   /**
    * Admin API when the queue service is used to provide server-side workers
@@ -140,5 +141,13 @@ export class Queue extends Service {
    * */
   createServices(body: WorkerAdminBulkServiceCreation): Promise<WorkerAdminBulkResponse> {
     return this.$publish('createServices', body);
+  }
+  /**
+   * Returns information about currently deployed app fragments.
+   *
+   * @access public
+   * */
+  getContext(): Promise<WorkerStartupContext> {
+    return this.$publish('getContext');
   }
 }

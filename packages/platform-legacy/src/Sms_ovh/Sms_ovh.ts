@@ -36,6 +36,6 @@ export class Sms_ovh extends Service {
    * @access public
    * */
   send(body: SmsMessage) {
-    return this.$publish('send', body);
+    this.$publish('send', body);
   }
 }

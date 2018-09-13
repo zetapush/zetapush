@@ -41,6 +41,6 @@ export class Aggreg extends Service {
    * @access public
    * */
   push(body: AggregationPushes) {
-    return this.$publish('push', body);
+    this.$publish('push', body);
   }
 }
