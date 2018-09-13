@@ -30,8 +30,8 @@ npm run start
   ├── public
   │  ├── index.html
   │  └── index.js
-  ├── server
-  │  └── index.js (api implementation)
+  ├── worker
+  │  └── index.ts (api implementation)
   └── package.json
 ```
 
@@ -44,31 +44,25 @@ Your server api in a plain old class defining your interface.
 Example:
 
 ```js
-module.exports = class Api {
+export default class Api {
   hello() {
-    return `Hello World from JavaScript ${Date.now()}`;
+    return `Hello World from Worker ${Date.now()}`;
   }
 }
 ```
 
-This code expose an API called **hello** which returns a string "Hello World from JavaScript" concatened with server timestamp.
+This code expose an API called **hello** which returns a string "Hello World from Worker" concatened with server timestamp.
 
 You can use injected platform services with to following.
 
 > Dependency injection use [injection-js](https://github.com/mgechev/injection-js)
 
 ```js
-const { Inject, Stack } = require('@zetapush/platform');
+const { Injectable } = require('@zetapush/core');
+const { Stack } = require('@zetapush/platform-legacy');
 
-module.exports = class Api {
-  static get parameters() {
-    return [
-      new Inject(Stack)
-    ];
-  }
-  constructor(stack) {
-    this.stack = stack;
-  }
+export default class Api {
+  constructor(private stack: Stack) {}
   push(item) {
     return this.stack.push({ stack: 'list', data: item });
   }
