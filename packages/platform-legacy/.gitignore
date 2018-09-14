@@ -13,3 +13,5 @@
 /lerna-*.log
 /npm-*.log
 /yarn-*.log
+/.nyc_output/
+/coverage/

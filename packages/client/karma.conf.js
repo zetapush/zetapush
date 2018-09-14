@@ -9,16 +9,10 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: [
-      'jasmine'
-    ],
+    frameworks: ['jasmine'],
 
     // list of files / patterns to load in the browser
-    files: [
-      '../platform-legacy/dist/zetapush-platform-legacy.js',
-      'dist/zetapush-client.js',
-      'test/**/*.spec.js'
-    ],
+    files: ['../platform-legacy/dist/zetapush-platform-legacy.js', 'dist/zetapush-client.js', 'test/**/*.spec.js'],
 
     // list of files to exclude
     exclude: ['test/sandbox-alias.spec.js'],
@@ -30,19 +24,30 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: [
-      'progress',
-      'junit'
-    ],
+    reporters: ['progress', 'junit', 'coverage'],
     junitReporter: {
       outputDir: 'test/reports', // results will be saved as $outputDir/$browserName.xml
-      outputFile: `junit-${os.type()}-${os.release()}` // if included, results will be saved as $outputDir/$browserName/$outputFile
+      outputFile: `junit-${os.type()}-${os.release()}.xml` // if included, results will be saved as $outputDir/$browserName/$outputFile
       // suite: '', // suite will become the package name attribute in xml testsuite element
       // useBrowserName: true, // add browser name to report and classes names
       // nameFormatter: undefined, // function (browser, result) to customize the name attribute in xml testcase element
       // classNameFormatter: undefined, // function (browser, result) to customize the classname attribute in xml testcase element
       // properties: {} // key value pair of properties to add to the <properties> section of the report
       // xmlVersion: null // use '1' if reporting to be per SonarQube 6.2 XML format
+    },
+
+    coverageReporter: {
+      // specify a common output directory
+      dir: '.',
+      reporters: [
+        // reporters not supporting the `file` property
+        { type: 'html', subdir: 'coverage/report-html' },
+        { type: 'lcov', subdir: 'coverage/report-lcov' },
+        // reporters supporting the `file` property, use `subdir` to directly
+        // output them in the `dir` directory
+        { type: 'cobertura', subdir: 'coverage', file: 'cobertura-coverage.xml' },
+        { type: 'json', subdir: '.nyc_output', file: 'client.json' }
+      ]
     },
 
     // web server port
@@ -61,6 +66,9 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['ChromeHeadless'],
+    browserDisconnectTolerance: 5, // needed for Jenkins
+    browserDisconnectTimeout: 10000, // needed for Jenkins
+    browserSocketTimeout: 60000, // needed for Jenkins
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

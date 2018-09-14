@@ -10,7 +10,7 @@ describe(`As developer with
     await autoclean(this);
   });
 
-  it(
+  xit(
     "Should success with new appName for 'zeta push'",
     async () => {
       // Create the application

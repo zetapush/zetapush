@@ -24,7 +24,7 @@ describe(`As developer with
     }
   });
 
-  it(
+  xit(
     `should be able to
       - have a new hello-world project
       - push hello-world
