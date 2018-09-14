@@ -26,9 +26,10 @@ const fp = require('find-free-port');
 const execa = require('execa');
 const fs = require('fs');
 const os = require('os');
-const { join } = require('path')
-const yaml = require('js-yaml')
-
+const path = require('path');
+const yaml = require('js-yaml');
+const localtunnel = require('localtunnel');
+const spawn = require('child_process').spawn;
 
 export const given = () => new Given();
 
@@ -37,7 +38,7 @@ class Given {
   private givenCredentials?: GivenCredentials;
   private givenApp?: GivenApp;
   private givenWorker?: GivenWorker;
-  private givenDependencies?: GivenDependencies;
+  private givenNpm?: GivenNpm;
 
   constructor() {
     this.sharedCredentials = {};
@@ -74,13 +75,11 @@ class Given {
   }
 
   /**
-   * Configure the behavior for the dependencies installation
-   * 
-   * We can specify to use the npm dependencies (default case) or to use the local dependencies
+   * Configure the behavior for the npm dependencies installation
    */
-  npmDependencies() {
-    this.givenDependencies = new GivenDependencies(this);
-    return this.givenDependencies;
+  npm() {
+    this.givenNpm = new GivenNpm(this);
+    return this.givenNpm;
   }
 
   /**
@@ -95,20 +94,23 @@ class Given {
    */
   async apply(objToFill: any): Promise<TestContext> {
     try {
-      
-      let projectDir;
       let localNpmRegistry;
-      if (this.givenDependencies) {
-        localNpmRegistry = await this.givenDependencies.execute();
+      let processLocalRegistry;
+      if (this.givenNpm) {
+        const resultNpmDependencies = await this.givenNpm.execute();
+        localNpmRegistry = resultNpmDependencies.npmRegistry;
+        processLocalRegistry = resultNpmDependencies.processVerdaccio;
       }
-      
       givenLogger.debug(`>> Apply Given`);
       if (this.givenCredentials) {
         Object.assign(this.sharedCredentials, await this.givenCredentials.execute());
       }
+
+      let projectDir;
       if (this.givenApp) {
         projectDir = await this.givenApp.execute(localNpmRegistry);
       }
+
       let runnerAndDeps;
       if (this.givenWorker) {
         runnerAndDeps = await this.givenWorker.execute(projectDir, localNpmRegistry);
@@ -119,8 +121,11 @@ class Given {
         zetarc,
         projectDir,
         ...runnerAndDeps,
+        localNpmRegistry,
+        processLocalRegistry,
         logLevel: getLogLevelsFromEnv()
       };
+
       if (objToFill) {
         Object.assign(objToFill, {
           context
@@ -146,130 +151,225 @@ class Parent<P> {
   }
 }
 
-class GivenDependencies extends Parent<Given> {
-  private localDependencies: string[] = [];
-  private useNpmDependencies: boolean = true;
-  
+class GivenNpm extends Parent<Given> {
+  private givenNpmDependencies?: GivenNpmDependencies;
 
   constructor(parent: Given) {
-    super(parent)
+    super(parent);
   }
 
-  /**
-   * Use the npm proxy to download dependencies
-   */
-  npmProxy() {
-    this.localDependencies = [];
-    this.useNpmDependencies = true;
+  dependencies() {
+    this.givenNpmDependencies = new GivenNpmDependencies(this);
+    return this.givenNpmDependencies;
+  }
+
+  async execute(): Promise<any> {
+    if (this.givenNpmDependencies) {
+      return await this.givenNpmDependencies.execute();
+    } else {
+      return DEFAULTS.NPM_REGISTRY_URL;
+    }
+  }
+}
+
+export const modules = () => {
+  return new GivenMultipleNpmModules();
+};
+
+class GivenMultipleNpmModules {
+  private multipleModules: Array<GivenNpmModule> = [];
+  constructor() {}
+
+  module(moduleName: string) {
+    const newNpmModule = new GivenNpmModule(this, moduleName);
+    this.multipleModules.push(newNpmModule);
+    return newNpmModule;
+  }
+
+  apply() {
+    return this.multipleModules;
+  }
+}
+
+class GivenNpmDependencies extends Parent<GivenNpm> {
+  private givenNpmModules: Array<GivenNpmModule> = [];
+  private npmRegistry: string = DEFAULTS.NPM_REGISTRY_URL;
+
+  constructor(parent: GivenNpm) {
+    super(parent);
+  }
+
+  module(moduleName: string) {
+    const newNpmModule = new GivenNpmModule(this, moduleName);
+    this.givenNpmModules.push(newNpmModule);
+    return newNpmModule;
+  }
+
+  modules(multipleNpmModules: Array<GivenNpmModule>) {
+    for (const npmModule of multipleNpmModules) {
+      this.givenNpmModules.push(npmModule);
+    }
     return this;
   }
-  
-  /**
-   * Use the local dependencies
-   * 
-   * You can specifie the list of dependencies with different ways :
-   *  - Using the full path of the dependency (ex: /home/ubuntu/myDep)
-   *  - Using the full path of the parent directory to get all dependencies inside it (ex: /home/ubuntu/*)
-   *  - Use relative path (ex: ../myDep)
-   *  - Use relative path of the parent directory to get all dependencies inside it (ex: ../*)
-   * 
-   * @param dependencies list of dependencies we want to use from local proxy
-   */
-  localProxy(...dependencies: string[]) {
 
-    // Iterate on each parameters to add all local dependencies
-    dependencies.forEach((dep) => {
-      // Get all dependencies of subdirectory
-      const pathAsArray = dep.split("/");
-      if (pathAsArray.pop() === "*") {
-        const realPath = fs.realpathSync(pathAsArray.slice(-1).join('/'));
-        const subdirectories = fs.readdirSync(realPath);
-        for (let elt of subdirectories) {
-          const pathWithPackageJson = join(realPath, elt, 'package.json');
-          if (fs.existsSync(pathWithPackageJson)) {
-            this.localDependencies.push(join(realPath, elt));
-          } 
+  async execute(): Promise<any> {
+    let processVerdaccio;
+    if (this.givenNpmModules.length === 0) {
+      return DEFAULTS.NPM_REGISTRY_URL;
+    } else {
+      // If we have modules, we need to create a local npm registy and publish packages on it
+      try {
+        const resultCreateLocalRegistry = await this.createLocalNpmRegistry();
+        this.npmRegistry = resultCreateLocalRegistry.urlRegistry;
+        processVerdaccio = resultCreateLocalRegistry.pidProcessVerdaccio;
+        for (const npmModule of this.givenNpmModules) {
+          await npmModule.execute(resultCreateLocalRegistry.portRegistry);
         }
-      } else {
-        const realPath = fs.realpathSync(dep);
-        if (fs.existsSync(realPath)) {
-          // Check if the dependency is a package
-          const pathWithPackageJson = join(realPath, 'package.json');
-          if (fs.existsSync(pathWithPackageJson)) {
-            this.localDependencies.push(realPath);
-          } 
-        }
-      }      
-    });
-    
-    this.useNpmDependencies = false;
-    return this;
+      } catch (e) {
+        throw `Failed to start the local npm registry : ${e}`;
+      }
+
+      return {
+        npmRegistry: this.npmRegistry || DEFAULTS.NPM_REGISTRY_URL,
+        processVerdaccio
+      };
+    }
   }
 
-  async execute(): Promise<string> {
-    return new Promise<string>(async (resolve, reject) => {
-      if (!this.useNpmDependencies) {
-        // FIXME: WORKS ONLY ON 4873 PORT ! BUG WITH VERDACCIO
-        const freePort = (await fp(4873))[0];
-  
-        const configVerdaccio = {
-          storage: "./storage",
-          packages: {
-            '@*/*': {
-              access: '$all',
-              publish: '$all',
-              proxy: 'npmjs'
-            },
-            '**': {
-              access: '$all',
-              publish: '$all',
-              proxy: 'npmjs'
-            }
+  private async createLocalNpmRegistry(): Promise<any> {
+    return new Promise<any>(async (resolve, reject) => {
+      // FIXME: WORKS ONLY ON 4873 PORT ! BUG WITH VERDACCIO
+      let freePort: number = 4873;
+      try {
+        freePort = (await fp(4873))[0];
+      } catch (e) {
+        reject(e);
+      }
+
+      // Define the configuration of the local npm registry
+      const configVerdaccio = {
+        storage: './storage',
+        packages: {
+          '@*/*': {
+            access: '$anonymous',
+            publish: '$anonymous',
+            proxy: 'npmjs'
           },
-          uplinks: {
-            npmjs: {
-              url: 'https://registry.npmjs.org'
-            }
+          '**': {
+            access: '$anonymous',
+            publish: '$anonymous',
+            proxy: 'npmjs'
+          }
+        },
+        uplinks: {
+          npmjs: {
+            url: 'https://registry.npmjs.org'
           }
         }
-  
-        const fileConfigVerdaccio = yaml.safeDump(configVerdaccio);
-        const pathConfigVerdaccio = join(os.tmpdir(), `config-verdaccio-${new Date().getTime()}.yaml`);
-        fs.writeFileSync(pathConfigVerdaccio, fileConfigVerdaccio);
-  
-        execa(`verdaccio`, ['--listen', freePort, '--config', pathConfigVerdaccio]);
-        givenLogger.debug(`>> Verdaccion launched on port : ${freePort}`);
-        
-        this.localDependencies.forEach(async (localDep) => {
+      };
+      const fileConfigVerdaccio = yaml.safeDump(configVerdaccio);
+      const pathConfigVerdaccio = path.join(os.tmpdir(), `config-verdaccio-${new Date().getTime()}.yaml`);
+      fs.writeFileSync(pathConfigVerdaccio, fileConfigVerdaccio);
 
-          const packageJsonLocalDependency = JSON.parse(fs.readFileSync(join(localDep, 'package.json')));
-            
-          if (packageJsonLocalDependency.version && !packageJsonLocalDependency.private === true) {
-            // Update the version of the package to publish it on the private repository
-            const currentVersionPackage = packageJsonLocalDependency.version;
-  
-            packageJsonLocalDependency.version += '-' + new Date().getTime();
-              
-            // Push the updated package in the private repository
-            try {
-              fs.writeFileSync(join(localDep, 'package.json'), JSON.stringify(packageJsonLocalDependency, null, 2));
-      
-              await execa('npm', ['publish', '--registry', `http://localhost:${freePort}`], {
-                cwd: localDep
-              })
-            } finally {
-              // Update the package version with the previous, once it was published
-              packageJsonLocalDependency.version = currentVersionPackage;
-              fs.writeFileSync(join(localDep, 'package.json'), JSON.stringify(packageJsonLocalDependency, null, 2));
-            }
-            resolve(`http://localhost:${freePort}`)
-          }
-        })
-      } else {
-        reject(`Failed to deploy local npm dependencies on private registry`);
+      // Launch the local npm registry
+      let pidProcessVerdaccio: string;
+      try {
+        const { pid } = execa(`../testing/node_modules/.bin/verdaccio`, [
+          '--listen',
+          freePort,
+          '--config',
+          pathConfigVerdaccio
+        ]);
+        pidProcessVerdaccio = pid;
+      } catch (e) {
+        reject(e);
+      }
+
+      // Create a HTTP tunnel to access the npm registry from outside
+      try {
+        const localtunnel = spawn(`../testing/node_modules/.bin/lt`, [
+          '--port',
+          freePort,
+          '--host',
+          'http://localtunnel.test.zpush.io:666'
+        ]);
+
+        localtunnel.stdout.once('data', async (result: any) => {
+          const urlTunnel = result
+            .toString()
+            .split(' ')
+            .pop();
+
+          givenLogger.debug(`>> Verdaccio is on : ${urlTunnel}`);
+          resolve({ urlRegistry: urlTunnel, portRegistry: freePort, pidProcessVerdaccio });
+        });
+      } catch (e) {
+        reject(e);
       }
     });
+  }
+}
 
+class GivenNpmModule extends Parent<GivenNpmDependencies | GivenMultipleNpmModules> {
+  private givenModuleSources: GivenModuleSources;
+
+  constructor(parent: GivenNpmDependencies | GivenMultipleNpmModules, moduleName: string) {
+    super(parent);
+
+    // By default, the used sources are at the path : '../{nameModule}'
+    // Ex: for @zetapush/core we use : '../core'
+    const lastPartOfNameModule = moduleName.split('/').pop();
+    this.givenModuleSources = new GivenModuleSources(this, `../${lastPartOfNameModule}`);
+  }
+
+  useSources(sourcesPath: string) {
+    this.givenModuleSources = new GivenModuleSources(this, sourcesPath);
+    return this.givenModuleSources;
+  }
+
+  execute(portNpmLocalRegistry: number) {
+    if (this.givenModuleSources) {
+      return this.givenModuleSources.execute(portNpmLocalRegistry);
+    }
+  }
+}
+
+class GivenModuleSources extends Parent<GivenNpmModule> {
+  private sourcesPath: string;
+
+  constructor(parent: GivenNpmModule, sourcesPath: string) {
+    super(parent);
+    this.sourcesPath = path.resolve(process.cwd(), sourcesPath);
+  }
+
+  async execute(portLocalNpmRegistry: number) {
+    return new Promise<void>(async (resolve, reject) => {
+      // Publish the source code into the local npm registry
+      const packageJsonParsed = JSON.parse(fs.readFileSync(path.join(this.sourcesPath, 'package.json')));
+
+      if (packageJsonParsed.version && !packageJsonParsed.private === true) {
+        const currentPackageVersion = packageJsonParsed.version;
+
+        // Update the package version to deploy an unique version of the package
+        packageJsonParsed.version += `-${new Date().getTime()}`;
+        try {
+          fs.writeFileSync(path.join(this.sourcesPath, 'package.json'), JSON.stringify(packageJsonParsed, null, 2));
+
+          await execa('npm', ['publish', '--registry', `http://localhost:${portLocalNpmRegistry}`], {
+            cwd: this.sourcesPath
+          });
+        } catch (e) {
+          reject(e);
+        } finally {
+          // We reset the package version after we published it
+          packageJsonParsed.version = currentPackageVersion;
+          fs.writeFileSync(path.join(this.sourcesPath, 'package.json'), JSON.stringify(packageJsonParsed, null, 2));
+        }
+        resolve();
+      } else {
+        reject(`Can't publish this package`);
+      }
+    });
   }
 }
 
@@ -434,9 +534,7 @@ class GivenNewApp extends Parent<GivenApp> {
         localNpmRegistry
       );
       if (this.setNewAppName && this.newAppName) {
-        givenLogger.silly(
-          `GivenNewApp:execute -> setAppNameToZetarc(${this.projectDir}, ${this.newAppName})`
-        );
+        givenLogger.silly(`GivenNewApp:execute -> setAppNameToZetarc(${this.projectDir}, ${this.newAppName})`);
         await setAppNameToZetarc(this.projectDir, this.newAppName);
       }
       return this.projectDir;
@@ -471,22 +569,14 @@ class GivenTestingApp extends Parent<GivenApp> {
       givenLogger.info(`>>> Given testing application: ${this.projectDir}`);
 
       if (this.projectDirName && this.installLatestDependencies) {
-        givenLogger.silly(
-          `GivenTestingApp:execute -> npmInstallLatestVersion(${this.projectDir})`
-        );
+        givenLogger.silly(`GivenTestingApp:execute -> npmInstallLatestVersion(${this.projectDir})`);
         await npmInstallLatestVersion(this.projectDir, localNpmRegistry);
       }
       if (this.credentials) {
         givenLogger.silly(
-          `GivenTestingApp:execute -> setAccountToZetarc(${this.projectDir}, ${JSON.stringify(
-            this.credentials
-          )})`
+          `GivenTestingApp:execute -> setAccountToZetarc(${this.projectDir}, ${JSON.stringify(this.credentials)})`
         );
-        await setAccountToZetarc(
-          this.projectDir,
-          this.credentials.developerLogin,
-          this.credentials.developerPassword
-        );
+        await setAccountToZetarc(this.projectDir, this.credentials.developerLogin, this.credentials.developerPassword);
         await setPlatformUrlToZetarc(this.projectDir, this.credentials.platformUrl);
       }
       return this.projectDir;
@@ -665,7 +755,6 @@ class GivenWorker extends Parent<Given> {
   }
 
   async execute(currentDir?: string, localNpmRegistry?: string) {
-
     try {
       const deps = {
         moduleDeclaration: this.moduleDeclaration,
@@ -684,7 +773,9 @@ class GivenWorker extends Parent<Given> {
       }
       if (this.workerUp && currentDir) {
         givenLogger.info(`>>> Given worker: run and wait for worker up ${currentDir}`);
-        const runner = !!localNpmRegistry ? new Runner(currentDir, this.timeout, localNpmRegistry) : new Runner(currentDir, this.timeout);
+        const runner = !!localNpmRegistry
+          ? new Runner(currentDir, this.timeout, localNpmRegistry)
+          : new Runner(currentDir, this.timeout);
         runner.run(this.isQuiet);
         await runner.waitForWorkerUp();
         return {
@@ -694,7 +785,7 @@ class GivenWorker extends Parent<Given> {
       }
       if (this.workerPushed && currentDir) {
         givenLogger.info(`>>> Given worker: push and wait for worker up ${currentDir}`);
-        await zetaPush(currentDir);
+        await zetaPush(currentDir, localNpmRegistry);
         return {
           ...deps
         };

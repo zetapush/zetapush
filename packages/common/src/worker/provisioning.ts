@@ -50,7 +50,11 @@ export const getBootstrapProvision = (config: ResolvedConfig, services: Array<Se
         enabled: true
       }
     })),
-    calls: []
+    calls: [],
+    envVariables: {
+      NPM_REGISTRY: config.npmRegistry,
+      TS_NODE_SKIP_IGNORE: config.skipIgnore
+    }
   };
 };
 

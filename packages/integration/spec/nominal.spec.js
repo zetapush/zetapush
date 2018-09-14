@@ -1,6 +1,6 @@
 const { rm, npmInit, zetaPush, readZetarc, nukeProject } = require('@zetapush/testing');
 const { consoleAction, frontAction } = require('@zetapush/testing');
-const PATTERN = /Hello World from JavaScript (\d+)/;
+const PATTERN = /Hello World from Worker at (\d+)/;
 
 describe(`As developer with
       - valid account
@@ -24,7 +24,7 @@ describe(`As developer with
     }
   });
 
-  xit(
+  it(
     `should be able to
       - have a new hello-world project
       - push hello-world

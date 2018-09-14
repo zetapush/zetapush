@@ -60,7 +60,13 @@ export const getCurrentEnv = (dir: PathLike) => {
  * @param {string} developerPassword
  * @param {string} dir Name of the application folder
  */
-export const npmInit = (developerLogin: string, developerPassword: string, dir: PathLike, platformUrl?: string, localNpmRegistry = 'https://registry.npmjs.org') => {
+export const npmInit = (
+  developerLogin: string,
+  developerPassword: string,
+  dir: PathLike,
+  platformUrl?: string,
+  localNpmRegistry = 'https://registry.npmjs.org'
+) => {
   commandLogger.info(`npmInit(${developerLogin}, ${developerPassword}, ${dir}, ${platformUrl})`);
   if (npmVersion().major < 5) {
     throw new Error('Minimum required npm version is 5.6.0');
@@ -188,13 +194,15 @@ const getZetapushModuleDirectoryPath = (module: string, file?: string) => {
 /**
  * Run 'zeta push' command
  * @param {string} dir Full path of the application folder
+ * @param {string} localNpmRegistry Full url for a npm registry url
  */
-export const zetaPush = (dir: PathLike) => {
+export const zetaPush = (dir: PathLike, localNpmRegistry = 'https://registry.npmjs.org') => {
   return new Promise((resolve, reject) => {
-    commandLogger.info(`zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}]`);
+    commandLogger.info(`zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()} --registry ${localNpmRegistry}]`);
     const stdout: Array<string | Buffer> = [];
     const stderr: Array<string | Buffer> = [];
-    const cmd = execa.shell(`npm run deploy -- ${zpLogLevel()}`, {
+
+    const cmd = execa.shell(`npm run deploy -- ${zpLogLevel()} --registry ${localNpmRegistry}`, {
       cwd: dir.toString()
     });
     const out = new PassThrough();
@@ -211,10 +219,13 @@ export const zetaPush = (dir: PathLike) => {
         stdout: stdout.join('\n'),
         stderr: stderr.join('\n')
       };
-      subProcessLogger.silly(`zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}] -> `, {
-        code,
-        signal
-      });
+      subProcessLogger.silly(
+        `zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}] --registry ${localNpmRegistry} -> `,
+        {
+          code,
+          signal
+        }
+      );
       resolve(res);
     });
   });
@@ -427,7 +438,7 @@ export const npmInstall = async (dir: PathLike, version: string, localNpmRegistr
 
   try {
     commandLogger.debug(`npmInstall(${dir}, ${version}) -> [npm install]`);
-    const res = execa.shellSync(`npm install --registry=${localNpmRegistry}`, { cwd: dir.toString() });
+    const res = execa.shellSync(`npm install --registry ${localNpmRegistry}`, { cwd: dir.toString() });
     commandLogger.silly(`npmInstall(${dir}, ${version}) -> [npm install] -> `, {
       exitCode: res.code
     });
@@ -438,11 +449,13 @@ export const npmInstall = async (dir: PathLike, version: string, localNpmRegistr
     if (useSymlinkedDependencies()) {
       await symlinkLocalDependencies(dir);
     }
+
     return 0;
   } catch (err) {
     subProcessLogger.error('\n' + err.stdout);
     subProcessLogger.error('\n' + err.stderr);
     commandLogger.error(`npmInstall(${dir}, ${version})`, err);
+
     return err.code;
   }
 };
@@ -455,7 +468,7 @@ export const npmInstallLatestVersion = async (dir: PathLike, localNpmRegistry = 
 
   try {
     commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save]');
-    const resCli = execa.shellSync(`npm install --registry ${localNpmRegistry} @zetapush/cli@canary --save`, {
+    const resCli = execa.shellSync('npm install @zetapush/cli@canary --save', {
       cwd: dir.toString()
     });
     commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/cli@canary --save] -> ', {
@@ -464,7 +477,7 @@ export const npmInstallLatestVersion = async (dir: PathLike, localNpmRegistry = 
     subProcessLogger.silly('\n' + resCli.stdout);
     subProcessLogger.warn('\n' + resCli.stderr);
     commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/platform-legacy@canary --save]');
-    const restPf = execa.shellSync(`npm install --registry ${localNpmRegistry} @zetapush/platform-legacy@canary --save`, {
+    const restPf = execa.shellSync('npm install @zetapush/platform-legacy@canary --save', {
       cwd: dir.toString()
     });
     commandLogger.silly('npmInstallLatestVersion() -> [npm install @zetapush/platform-legacy@canary --save] -> ', {
@@ -594,7 +607,11 @@ export class Runner {
   private cmd?: ExecaChildProcess;
   private runExitCode = 0;
 
-  constructor(private dir: string, private timeout = 300000, private localNpmRegistry: string = 'https://registry.npmjs.org') {}
+  constructor(
+    private dir: string,
+    private timeout = 300000,
+    private localNpmRegistry: string = 'https://registry.npmjs.org'
+  ) {}
 
   async waitForWorkerUp() {
     commandLogger.debug('Runner:waitForWorkerUp()');

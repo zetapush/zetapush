@@ -1,4 +1,4 @@
-import { sayHello } from 'false-cloud-service';
+import { sayHello } from 'fake-npm-lib';
 
 export default class Api {
   hello() {

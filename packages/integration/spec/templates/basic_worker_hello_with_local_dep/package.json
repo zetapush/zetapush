@@ -1,5 +1,5 @@
 {
-  "name": "basic-worker-case",
+  "name": "basic-worker-case-with-local-dep",
   "version": "0.1.0",
   "main": "worker/index.ts",
   "private": true,
@@ -9,8 +9,9 @@
     "troubleshoot": "zeta troubleshoot"
   },
   "dependencies": {
-    "@zetapush/cli":  "0.32.0",
-    "@zetapush/core":  "0.32.0",
-    "false-cloud-service": "*"
+    "@zetapush/cli": "*",
+    "@zetapush/core": "*",
+    "fake-npm-lib": "*",
+    "typescript": "*"
   }
 }

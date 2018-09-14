@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/integration",
-  "version": "0.33.1",
+  "version": "0.34.2",
   "private": true,
   "scripts": {
     "test": "jasmine",
@@ -11,8 +11,8 @@
     "toxy": "^0.3.15"
   },
   "devDependencies": {
-    "@zetapush/testing": "0.34.0",
-    "@zetapush/client": "0.34.0",
+    "@zetapush/client": "0.34.2",
+    "@zetapush/testing": "0.34.2",
     "jasmine": "3.1.0",
     "jasmine-reporters": "2.3.1",
     "jasmine-ts": "^0.2.1"

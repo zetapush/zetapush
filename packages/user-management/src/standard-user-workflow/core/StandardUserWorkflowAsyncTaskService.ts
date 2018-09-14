@@ -3,37 +3,36 @@ import { PendingAccountConfirmation, Redirection, Account, AccountCreationDetail
 
 /**
  * StandardUserWorflow client side implementation
- * 
+ *
  * This class is use to create a AsyncTaskService on the client side.
  * So with this class you can directly call the StandardUserWorkflow methods
  * from the client side. (for signup, confirm, login, logout)
- * 
+ *
  * @example
  * import { StandardUserWorkflowAsyncTaskService } from '@zetapush/user-management';
  * import { WeakClient } from '@zetapush/client';
- * 
+ *
  * const client = new WeakClient();
  * const api = client.createAsyncTaskService({
  *  Type: StandardUserWorkflowAsyncTaskService
- * });  
+ * });
  */
 export class StandardUserWorkflowAsyncTaskService extends Service {
-
   /**
    * signup method
-   * 
+   *
    * Create a user account on the application from AccountCreationDetails.
-   * You can also use a Redirection parameter to change the confirmation account redirection 
-   * 
+   * You can also use a Redirection parameter to change the confirmation account redirection
+   *
    * @example
    * import { StandardUserWorkflowAsyncTaskService } from '@zetapush/user-management';
    * import { WeakClient } from '@zetapush/client';
-   * 
+   *
    * const client = new WeakClient();
    * const api = client.createAsyncTaskService({
    *  Type: StandardUserWorkflowAsyncTaskService
    * });
-   * 
+   *
    * const pendingAccountConfirmation = api.signup(
    *  {
    *    credentials: {
@@ -48,28 +47,31 @@ export class StandardUserWorkflowAsyncTaskService extends Service {
    *  }
    * );
    * @access public
-   * @param accountDetails 
-   * @param confirmationRedirection 
+   * @param accountDetails
+   * @param confirmationRedirection
    */
-  signup(accountDetails: AccountCreationDetails, confirmationRedirection?: Redirection): Promise<PendingAccountConfirmation> {
+  signup(
+    accountDetails: AccountCreationDetails,
+    confirmationRedirection?: Redirection
+  ): Promise<PendingAccountConfirmation> {
     return this.$publish('signup', accountDetails, confirmationRedirection);
   }
 
   /**
    * confirm method
-   * 
+   *
    * Confirm a created account if necessary.
    * Change the status of the user account and enable the login of the user
-   * 
+   *
    * @example
    * import { StandardUserWorkflowAsyncTaskService } from '@zetapush/user-management';
    * import { WeakClient } from '@zetapush/client';
-   * 
+   *
    * const client = new WeakClient();
    * const api = client.createAsyncTaskService({
    *  Type: StandardUserWorkflowAsyncTaskService
    * });
-   * 
+   *
    * const redirection = api.confirm(
    *  {
    *    createdAccount: {
@@ -79,16 +81,16 @@ export class StandardUserWorkflowAsyncTaskService extends Service {
    *        email: 'firstname.lastname@my-company.com',
    *        firstname: 'Firstname',
    *        lastname: 'Lastname'
-   *      } 
+   *      }
    *    },
    *    token: {
    *      value: 'my-token'
    *    }
    *  }
-   * );  
-   * 
+   * );
+   *
    * @access public
-   * @param confirmation 
+   * @param confirmation
    */
   confirm(confirmation: PendingAccountConfirmation): Promise<Redirection> {
     return this.$publish('confirm', confirmation);
@@ -96,13 +98,13 @@ export class StandardUserWorkflowAsyncTaskService extends Service {
 
   /**
    * login method
-   * 
+   *
    * NOT IMPLEMENTED
-   * 
+   *
    * Login the user on the application
-   * 
+   *
    * @access public
-   * @param credentials 
+   * @param credentials
    */
   login(credentials: Credentials): Promise<Account> {
     return this.$publish('login', credentials);
@@ -110,11 +112,11 @@ export class StandardUserWorkflowAsyncTaskService extends Service {
 
   /**
    * logout method
-   * 
+   *
    * NOT IMPLEMENTED
-   * 
+   *
    * Logout the user from the application
-   * 
+   *
    * @access public
    */
   logout(): Promise<void> {

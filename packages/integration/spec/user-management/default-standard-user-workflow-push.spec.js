@@ -1,6 +1,8 @@
-const { given, autoclean, frontUserAction } = require('@zetapush/testing');
+const { given, autoclean, frontAction } = require('@zetapush/testing');
 
 describe(`default StandardUserWorkflow published on cloud`, () => {
+  const appDir = 'default-standard-user-workflow';
+
   afterEach(async () => {
     await autoclean(this);
   });
@@ -20,7 +22,7 @@ describe(`default StandardUserWorkflow published on cloud`, () => {
           /*  */ .and()
           /**/ .project()
           /*  */ .template()
-          /*    */ .sourceDir('default-standard-user-workflow')
+          /*    */ .sourceDir(appDir)
           /*    */ .and()
           /*  */ .and()
           /**/ .worker()
@@ -29,10 +31,10 @@ describe(`default StandardUserWorkflow published on cloud`, () => {
           /**/ .apply(this);
       });
 
-      fit(
+      it(
         `allows connection of the user`,
         async () => {
-          await frontUserAction(`Create the user account on the application`, this, async (api) => {
+          await frontAction(`Create the user account on the application`, this, async (api) => {
             const userAccount = {
               login: 'login',
               password: 'password',
@@ -68,7 +70,7 @@ describe(`default StandardUserWorkflow published on cloud`, () => {
             expect(pendingConfirmation.token.expires).toBeGreaterThan(Date().now());
           });
 
-          await frontUserAction(`Confirm the user account`, this, async (api) => {
+          await frontAction(`Confirm the user account`, this, async (api) => {
             try {
               await api.confirm(pendingConfirmation, 'user');
             } catch (e) {
@@ -77,7 +79,7 @@ describe(`default StandardUserWorkflow published on cloud`, () => {
           });
 
           try {
-            await frontUserAction(`The user connects himself on the application`, this, async (api, client) => {}, {
+            await frontAction(`The user connects himself on the application`, this, async (api, client) => {}, {
               login: 'login',
               password: 'password'
             });
@@ -108,7 +110,7 @@ describe(`default StandardUserWorkflow published on cloud`, () => {
             /*  */ .and()
             /**/ .apply(this);
 
-          await frontUserAction(`Create the user account on the application`, this, async (api) => {
+          await frontAction(`Create the user account on the application`, this, async (api) => {
             const userAccount = {
               login: 'login',
               password: 'password',
@@ -143,7 +145,7 @@ describe(`default StandardUserWorkflow published on cloud`, () => {
           });
 
           try {
-            await frontUserAction(`Connection of the user on the application`, this, async (api, client) => {}, {
+            await frontAction(`Connection of the user on the application`, this, async (api, client) => {}, {
               login: 'login',
               password: 'password'
             });
@@ -174,7 +176,7 @@ describe(`default StandardUserWorkflow published on cloud`, () => {
             /*  */ .and()
             /**/ .apply(this);
 
-          await frontUserAction(`Create the user account on the application`, this, async (api) => {
+          await frontAction(`Create the user account on the application`, this, async (api) => {
             const userAccount = {
               login: 'login',
               password: 'password',
@@ -208,12 +210,12 @@ describe(`default StandardUserWorkflow published on cloud`, () => {
             expect(resultOfSignUp.token.original.value).toBeDefined();
           });
 
-          await frontUserAction(`Validate the user account`, this, async (api) => {
+          await frontAction(`Validate the user account`, this, async (api) => {
             resultOfConfirm = await api.confirm(resultOfSignUp, 'user');
           });
 
           try {
-            await frontUserAction(`Connection of the user on the application`, this, async (api, client) => {}, {
+            await frontAction(`Connection of the user on the application`, this, async (api, client) => {}, {
               login: 'login',
               password: 'wrong-password'
             });

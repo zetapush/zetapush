@@ -186,7 +186,7 @@ class UserAction {
         if (this.credentials) {
           await client.setCredentials(this.credentials);
         }
-        const resu = await client.connect();
+        await client.connect();
         frontActionLogger.debug('Connected to worker');
         if (!this.apiBuilder) {
           this.apiBuilder = new Api(this);
