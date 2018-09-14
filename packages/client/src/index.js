@@ -6,6 +6,8 @@ export { SmartClient } from './client/smart.js';
 export { WeakClient } from './client/weak.js';
 
 export { uuid } from './utils/random.js';
+export * from './utils/error-handler.js';
+
 /**
  * SDK Version
  * @type {string}

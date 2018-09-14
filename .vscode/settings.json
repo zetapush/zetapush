@@ -6,6 +6,9 @@
     "common [prepublish]": [
       "packages/common/src/**"
     ],
+    "client [prepublish]": [
+      "packages/client/src/**"
+    ],
     "core [prepublish]": [
       "packages/core/src/**"
     ],

@@ -117,6 +117,27 @@
       }
     },
     {
+      "label": "client [prepublish]",
+      "type": "npm",
+      "script": "prepublish",
+      "path": "packages/client/",
+      "problemMatcher": [
+        "$tsc"
+      ],
+      "isBackground": true,
+      "options": {
+
+      },
+      "group": "build",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+      }
+    },
+    {
       "label": "testing [prepublish]",
       "type": "npm",
       "script": "prepublish",
