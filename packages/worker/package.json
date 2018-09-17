@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/worker",
-  "version": "0.33.2",
+  "version": "0.33.3",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-worker.js",
   "main": "lib/index.js",
@@ -26,13 +26,14 @@
     "test:ci+coverage": "rimraf coverage .nyc_output && nyc node_modules/.bin/ts-node src/index.ts"
   },
   "dependencies": {
-    "@zetapush/client": "0.33.2",
-    "@zetapush/common": "0.33.2",
-    "@zetapush/core": "0.33.2",
-    "@zetapush/platform-legacy": "0.33.2"
+    "@zetapush/client": "0.33.3",
+    "@zetapush/common": "0.33.3",
+    "@zetapush/core": "0.33.3",
+    "@zetapush/platform-legacy": "0.33.3"
   },
   "devDependencies": {
     "cross-env": "5.2.0",
+    "nyc": "12.0.2",
     "rimraf": "2.6.2",
     "rollup": "0.64.1",
     "rollup-plugin-bundle-size": "1.0.1",
@@ -43,10 +44,9 @@
     "rollup-plugin-typescript": "0.8.1",
     "rollup-plugin-uglify": "4.0.0",
     "rollup-watch": "4.3.1",
+    "ts-node": "7.0.1",
     "typescript": "3.0.1",
-    "uglify-es": "3.3.9",
-    "nyc": "12.0.2",
-    "ts-node": "7.0.1"
+    "uglify-es": "3.3.9"
   },
   "publishConfig": {
     "access": "public"

@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.33.3](https://github.com/zetapush/zetapush/compare/v0.33.2...v0.33.3) (2018-09-17)
+
+
+### Bug Fixes
+
+* **namespace:** test client handles new namespace format ([5f21487](https://github.com/zetapush/zetapush/commit/5f21487))
+
+
+### Code Refactoring
+
+* **testing:** rename and make usage clearer ([d097da8](https://github.com/zetapush/zetapush/commit/d097da8))
+
+
+### BREAKING CHANGES
+
+* **testing:** 
+* **namespace:** frontUserAction test utility method signature has changed to be more understandable
+
+
+
+
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 ## [0.33.2](https://github.com/zetapush/zetapush/compare/v0.33.1...v0.33.2) (2018-09-13)
 
 

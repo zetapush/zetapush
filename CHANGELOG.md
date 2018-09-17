@@ -3,12 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.33.2](https://github.com/zetapush/zetapush/compare/v0.33.1...v0.33.2) (2018-09-13)
+## [0.33.3](https://github.com/zetapush/zetapush/compare/v0.33.2...v0.33.3) (2018-09-17)
+
+
+### Bug Fixes
+
+* **http-server:** transform only html files ([5dbcb4d](https://github.com/zetapush/zetapush/commit/5dbcb4d))
+* **namespace:** test client handles new namespace format ([5f21487](https://github.com/zetapush/zetapush/commit/5f21487))
+
+
+### Code Refactoring
+
+* **testing:** rename and make usage clearer ([d097da8](https://github.com/zetapush/zetapush/commit/d097da8))
 
 
 ### Features
 
-* **update-platform-legacy:** update generated platform legacy classes ([aa3f495](https://github.com/zetapush/zetapush/commit/aa3f495))
+* **create:** improve created hello world app ([ea86a60](https://github.com/zetapush/zetapush/commit/ea86a60))
+* **create:** remove onApplicationBootstrap method ([2c13312](https://github.com/zetapush/zetapush/commit/2c13312))
+* **optionnal-proxy-parameters:** update typings to make createProxy* parameters optionnal ([34a6bf1](https://github.com/zetapush/zetapush/commit/34a6bf1))
+* **update-promisify-implementation:** update Timeou.wrap implementation to correctly handle this co ([dba7d62](https://github.com/zetapush/zetapush/commit/dba7d62))
+
+
+### BREAKING CHANGES
+
+* **testing:** 
+* **namespace:** frontUserAction test utility method signature has changed to be more understandable
 
 
 
