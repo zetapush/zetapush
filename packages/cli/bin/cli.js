@@ -66,6 +66,7 @@ program
   .option('-f, --front <front>', 'Push front on cloud platform', identity, DEFAULTS.FRONT_FOLDER_PATH)
   .option('-w, --worker <worker>', 'Push worker on cloud platform', identity, DEFAULTS.WORKER_FOLDER_PATH)
   .option('-s, --skip-provisioning', 'Skip provisioning steps', () => true, false)
+  .option('--grab-all-traffic', 'Grab all traffic (requests) to local worker', () => true, false)
   .option('--serve-front', 'Run local http server to serve your front code', () => true, false)
   .option('--skip-bootstrap', 'Discard all onApplicationBootstrap methods on run', () => true, false)
   .description('Run your code')

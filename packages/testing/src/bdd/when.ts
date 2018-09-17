@@ -62,6 +62,7 @@ export const runInWorker = (testOrContext: Context, workerDeclaration: (...insta
       const runner = new WorkerRunner(
         false,
         false,
+        true, // Test must grab all traffic
         <ResolvedConfig>zetarc,
         transports,
         new LocalDevEnvironmentProvider(<ResolvedConfig>zetarc, 'test', projectDir || ''), // TODO: provide environment provider that suits to tests (one that can be constructed through given())
