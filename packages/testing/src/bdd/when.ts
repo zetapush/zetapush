@@ -3,7 +3,7 @@ import { ResolvedConfig, Service } from '@zetapush/common';
 import { FactoryProvider } from '@zetapush/core';
 import { WorkerRunner, WorkerRunnerEvents } from '@zetapush/worker';
 
-import { userActionLogger, frontUserActionLogger, runInWorkerLogger } from '../utils/logger';
+import { userActionLogger, frontActionLogger, runInWorkerLogger } from '../utils/logger';
 import { Context, ContextWrapper } from '../utils/types';
 import {
   Wrapper,
@@ -12,7 +12,7 @@ import {
   TestWorker,
   getTestNormalizer
 } from '../worker/test-instance';
-import { LocalDevEnvironmentProvider } from '@zetapush/common/lib/environment/environment-provider';
+import { LocalDevEnvironmentProvider } from '@zetapush/common';
 import { Credentials } from '@zetapush/client';
 
 const transports = require('@zetapush/cometd/lib/node/Transports');
@@ -29,19 +29,12 @@ export const userAction = async (name: string, func: () => any) => {
   }
 };
 
-export const consoleUserAction = async (name: string, func: () => any) => {
+export const consoleAction = async (name: string, func: () => any) => {
   return await userAction(name + ' from console', func);
 };
 
-export const frontUserAction = (name?: string, testOrContext?: Context) => {
-  const action = new UserAction();
-  if (name) {
-    action.name(name);
-  }
-  if (testOrContext) {
-    action.context(testOrContext);
-  }
-  return action;
+export const frontAction = (testOrContext: Context) => {
+  return new UserAction(testOrContext);
 };
 
 export const runInWorker = (testOrContext: Context, workerDeclaration: (...instances: any[]) => void) => {
@@ -148,18 +141,12 @@ class Parent<P> {
 }
 
 class UserAction {
-  private testOrContext?: Context;
   private actionName: string = 'user action';
   private actionNameSuffix: string = ' from front';
   private credentials?: Credentials;
   private apiBuilder?: Api;
 
-  constructor() {}
-
-  context(testOrContext: Context) {
-    this.testOrContext = testOrContext;
-    return this;
-  }
+  constructor(private testOrContext: Context) {}
 
   name(actionName: string, suffix = ' from front') {
     this.actionName = actionName;
@@ -193,20 +180,20 @@ class UserAction {
           ...(<any>zetarc),
           transports
         });
-        frontUserActionLogger.debug('Connecting to worker...');
+        frontActionLogger.debug('Connecting to worker...');
         await client.disconnect();
         if (this.credentials) {
           await client.setCredentials(this.credentials);
         }
         const resu = await client.connect();
-        frontUserActionLogger.debug('Connected to worker');
+        frontActionLogger.debug('Connected to worker');
         if (!this.apiBuilder) {
           this.apiBuilder = new Api(this);
         }
         api = <any>this.apiBuilder.build(client);
-        frontUserActionLogger.debug('Api instance created');
+        frontActionLogger.debug('Api instance created');
       } catch (e) {
-        frontUserActionLogger.error("Connection from client failed. Cloud service won't be called", e);
+        frontActionLogger.error("Connection from client failed. Cloud service won't be called", e);
         throw e;
       }
       try {
@@ -214,7 +201,7 @@ class UserAction {
           return await func(api, client);
         }
       } catch (e) {
-        frontUserActionLogger.error(
+        frontActionLogger.error(
           `>>> Front user action FAILED: ${this.actionName}`,
           new ContextWrapper(this.testOrContext).getContext(),
           e

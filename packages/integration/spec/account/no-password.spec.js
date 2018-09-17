@@ -1,5 +1,5 @@
 const { zetaPush, zetaRun } = require('@zetapush/testing');
-const { given, consoleUserAction } = require('@zetapush/testing');
+const { given, consoleAction } = require('@zetapush/testing');
 
 describe(`As developer with
         - no developerPassword
@@ -23,7 +23,7 @@ describe(`As developer with
   it(
     "Should fail with errorCode 'ACCOUNT-02' (52) for 'zeta push'",
     async () => {
-      await consoleUserAction('zeta push', async () => {
+      await consoleAction('zeta push', async () => {
         const { code } = await zetaPush(this.context.projectDir);
         expect(code).toBe(errorCode);
       });
@@ -34,7 +34,7 @@ describe(`As developer with
   it(
     "Should fail with errorCode 'ACCOUNT-02' (52) for 'zeta run'",
     async () => {
-      await consoleUserAction('zeta run', async () => {
+      await consoleAction('zeta run', async () => {
         const { code } = await zetaRun(this.context.projectDir);
         expect(code).toBe(errorCode);
       });

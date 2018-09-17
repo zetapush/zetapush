@@ -1,5 +1,5 @@
 const { rm, npmInit, zetaPush, readZetarc, nukeProject } = require('@zetapush/testing');
-const { consoleUserAction, frontUserAction } = require('@zetapush/testing');
+const { consoleAction, frontAction } = require('@zetapush/testing');
 const PATTERN = /Hello World from JavaScript (\d+)/;
 
 describe(`As developer with
@@ -31,12 +31,12 @@ describe(`As developer with
       - use published hello-world custom cloud services`,
     async () => {
       // 1) npm init
-      await consoleUserAction('1) npm init', async () => {
+      await consoleAction('1) npm init', async () => {
         await npmInit(this.developerLogin, this.developerPassword, fullPathProject, this.platformUrl);
       });
 
       // 2) zeta push
-      await consoleUserAction('2) zeta push', async () => {
+      await consoleAction('2) zeta push', async () => {
         await zetaPush(fullPathProject);
       });
 
@@ -48,9 +48,8 @@ describe(`As developer with
       expect(zetarc.developerPassword).toBe(this.developerPassword);
 
       // 3) check using a client
-      await frontUserAction()
+      await frontAction({ zetarc })
         .name('3) call worker')
-        .context({ zetarc })
         .execute(async (api) => {
           const message = await api.hello();
           expect(typeof message).toBe('string');

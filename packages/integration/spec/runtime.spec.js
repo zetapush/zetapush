@@ -1,4 +1,4 @@
-const { given, frontUserAction, autoclean } = require('@zetapush/testing');
+const { given, frontAction, autoclean } = require('@zetapush/testing');
 
 const sleep = (millis) => {
   return new Promise((resolve) => setTimeout(resolve, millis));
@@ -33,9 +33,8 @@ describe(`As developer with
         /*   */ .and()
         /**/ .apply(this);
 
-      await frontUserAction()
+      await frontAction(this)
         .name('call hello')
-        .context(this)
         .execute(async (api) => {
           let failure = false;
           try {
@@ -71,9 +70,8 @@ describe(`As developer with
         /*   */ .and()
         /**/ .apply(this);
 
-      await frontUserAction()
+      await frontAction(this)
         .name('call hello')
-        .context(this)
         .execute(async (api) => {
           let failure = false;
           try {
@@ -142,9 +140,8 @@ describe(`As developer with
         /*   */ .and()
         /**/ .apply(this);
 
-      await frontUserAction()
+      await frontAction(this)
         .name('call hello')
-        .context(this)
         .execute(async (api) => {
           let helloReceived = false;
           const sendHello = async () => {

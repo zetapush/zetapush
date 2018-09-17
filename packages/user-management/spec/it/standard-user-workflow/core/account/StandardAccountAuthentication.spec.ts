@@ -1,5 +1,5 @@
 import 'jasmine';
-import { given, runInWorker, autoclean, frontUserAction } from '@zetapush/testing';
+import { given, runInWorker, autoclean, frontAction } from '@zetapush/testing';
 import { LegacyAdapterUserRepository } from '../../../../../src/standard-user-workflow/legacy';
 import { AccountCreationManager, StandardAccountStatus } from '../../../../../src';
 import { AccountCreationManagerInjectable } from '../../../../../src/';
@@ -63,9 +63,8 @@ describe(`StandardAccountAuthentication`, () => {
 
             const credentials = { login: 'odile.deray', password: 'password' };
 
-            await frontUserAction()
+            await frontAction(this)
               .name('Client connection')
-              .context(this)
               .loggedAs(credentials)
               .execute();
           },
@@ -98,9 +97,8 @@ describe(`StandardAccountAuthentication`, () => {
             const credentials = { login: 'odile.deray', password: 'wrong_password' };
 
             try {
-              await frontUserAction()
+              await frontAction(this)
                 .name('Client connection')
-                .context(this)
                 .loggedAs(credentials)
                 .execute();
               fail('authentication should have failed');
@@ -134,9 +132,8 @@ describe(`StandardAccountAuthentication`, () => {
             const credentials = { login: 'odile.deray', password: 'password' };
 
             try {
-              await frontUserAction()
+              await frontAction(this)
                 .name('Client connection')
-                .context(this)
                 .loggedAs(credentials)
                 .execute();
               fail('authentication should have failed');

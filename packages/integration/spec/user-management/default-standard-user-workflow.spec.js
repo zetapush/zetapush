@@ -1,4 +1,4 @@
-const { given, autoclean, frontUserAction } = require('@zetapush/testing');
+const { given, autoclean, frontAction } = require('@zetapush/testing');
 
 describe(`As developer with
   - valid account
@@ -35,9 +35,8 @@ describe(`As developer with
           /*  */ .and()
           /**/ .apply(this);
 
-        await frontUserAction()
+        await frontAction(this)
           .name(`Create the user account on the application`)
-          .context(this)
           .api()
           /**/ .namespace('user')
           /**/ .and()
@@ -72,9 +71,8 @@ describe(`As developer with
             expect(resultOfSignUp.token.original.value).toBeDefined();
           });
 
-        await frontUserAction()
+        await frontAction(this)
           .name(`Validate the user account`)
-          .context(this)
           .api()
           /**/ .namespace('user')
           /**/ .and()
@@ -82,9 +80,8 @@ describe(`As developer with
             resultOfConfirm = await api.confirm(resultOfSignUp);
           });
 
-        await frontUserAction()
+        await frontAction(this)
           .name(`Connection of the user on the application`)
-          .context(this)
           .loggedAs('login', 'password')
           .execute();
       },
@@ -111,9 +108,8 @@ describe(`As developer with
           /*  */ .and()
           /**/ .apply(this);
 
-        await frontUserAction()
+        await frontAction(this)
           .name(`Create the user account on the application`)
-          .context(this)
           .api()
           /**/ .namespace('user')
           /**/ .and()
@@ -149,9 +145,8 @@ describe(`As developer with
           });
 
         try {
-          await frontUserAction()
+          await frontAction(this)
             .name(`Connection of the user on the application`)
-            .context(this)
             .loggedAs('login', 'password')
             .execute();
         } catch (e) {
@@ -181,8 +176,7 @@ describe(`As developer with
           /*  */ .and()
           /**/ .apply(this);
 
-        await frontUserAction()
-          .context(this)
+        await frontAction(this)
           .name(`Create the user account on the application`)
           .api()
           /**/ .namespace('user')
@@ -218,8 +212,7 @@ describe(`As developer with
             expect(resultOfSignUp.token.original.value).toBeDefined();
           });
 
-        await frontUserAction()
-          .context(this)
+        await frontAction(this)
           .name(`Validate the user account`)
           .api()
           /**/ .namespace('user')
@@ -229,8 +222,7 @@ describe(`As developer with
           });
 
         try {
-          await frontUserAction()
-            .context(this)
+          await frontAction(this)
             .name(`Connection of the user on the application`)
             .loggedAs('login', 'wrong-password')
             .api()
