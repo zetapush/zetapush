@@ -3,6 +3,23 @@ import { Macro, Queue } from '@zetapush/platform-legacy';
 import { ConnectionStatusListener } from '../connection/connection-status.js';
 import { getSandboxConfig, isDerivedOf, merge, shuffle, uuid, timeoutify } from '../utils/index.js';
 
+class Timeout {
+  static wrap(instance, timeout) {
+    for (let method in instance) {
+      if (typeof instance[method] === 'function' && (method !== '$publish' || method !== 'constructor')) {
+        const wrapper = function wrapper(wrapped, context) {
+          return function anonymous(...parameters) {
+            const task = () => wrapped.apply(context, parameters);
+            return task();
+          };
+        };
+        instance[method] = wrapper(instance[method], instance, timeout);
+      }
+    }
+    return instance;
+  }
+}
+
 /**
  * CometD Messages enumeration
  * @type {Object}
@@ -343,14 +360,18 @@ export class ClientHelper {
    */
   createAsyncService({ listener, Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID, timeout = DEFAULT_TIMEOUT }) {
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
-    const $publish = this.getAsyncServicePublisher(prefix, timeout);
+    // TODO Manage Timeout
+    const $publish = this.getAsyncServicePublisher(prefix);
     // Create service by publisher
-    return this.createServiceByPublisher({
+    const service = this.createServiceByPublisher({
       listener,
       prefix,
       Type,
       $publish
     });
+    const wrapped = Timeout.wrap(service, timeout);
+    // Return wrapped service instance
+    return wrapped;
   }
   /**
    * Create a promise based macro service
@@ -359,14 +380,18 @@ export class ClientHelper {
    */
   createAsyncMacroService({ listener, Type, deploymentId = Type.DEFAULT_DEPLOYMENT_ID, timeout = DEFAULT_TIMEOUT }) {
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
-    const $publish = this.getAsyncMacroPublisher(prefix, timeout);
+    // TODO Manage Timeout
+    const $publish = this.getAsyncMacroPublisher(prefix);
     // Create service by publisher
-    return this.createServiceByPublisher({
+    const service = this.createServiceByPublisher({
       listener,
       prefix,
       Type,
       $publish
     });
+    const wrapped = Timeout.wrap(service, timeout);
+    // Return wrapped service instance
+    return wrapped;
   }
   /**
    * Create a promise based task service
@@ -380,14 +405,18 @@ export class ClientHelper {
     timeout = DEFAULT_TIMEOUT
   }) {
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
-    const $publish = this.getAsyncTaskPublisher(prefix, namespace, timeout);
+    // TODO Manage Timeout
+    const $publish = this.getAsyncTaskPublisher(prefix, namespace);
     // Create service by publisher
-    return this.createServiceByPublisher({
+    const service = this.createServiceByPublisher({
       listener: {},
       prefix,
       Type,
       $publish
     });
+    const wrapped = Timeout.wrap(service, timeout);
+    // Return wrapped service instance
+    return wrapped;
   }
 
   /**
@@ -506,46 +535,43 @@ export class ClientHelper {
       throw new Error('`Proxy` is not support in your environment');
     }
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
-    return new Proxy(
-      {},
-      {
-        get: (target, method) => {
-          return timeoutify((parameters) => {
-            const channel = `${prefix()}/${method}`;
-            const uniqRequestId = this.getUniqRequestId();
-            const subscriptions = {};
-            return new Promise((resolve, reject) => {
-              const onError = ({ data = {} }) => {
-                const { requestId, code, message } = data;
-                if (requestId === uniqRequestId) {
-                  reject({ message, code });
-                  this.unsubscribe(subscriptions);
-                }
-              };
-              const onSuccess = ({ data = {} }) => {
-                const { requestId, ...result } = data;
-                if (requestId === uniqRequestId) {
-                  resolve(result);
-                  this.unsubscribe(subscriptions);
-                }
-              };
-              // Create dynamic listener method
-              const listener = {
-                [method]: onSuccess,
-                [DEFAULT_ERROR_CHANNEL]: onError
-              };
-              // Ad-Hoc subscription
-              this.subscribe(prefix, listener, subscriptions);
-              // Publish message on channel
-              this.publish(channel, {
-                ...parameters,
-                requestId: uniqRequestId
-              });
+    return new Proxy(Object.create(null), {
+      get: (target, method) => {
+        return timeoutify((parameters) => {
+          const channel = `${prefix()}/${method}`;
+          const uniqRequestId = this.getUniqRequestId();
+          const subscriptions = {};
+          return new Promise((resolve, reject) => {
+            const onError = ({ data = {} }) => {
+              const { requestId, code, message } = data;
+              if (requestId === uniqRequestId) {
+                reject({ message, code });
+                this.unsubscribe(subscriptions);
+              }
+            };
+            const onSuccess = ({ data = {} }) => {
+              const { requestId, ...result } = data;
+              if (requestId === uniqRequestId) {
+                resolve(result);
+                this.unsubscribe(subscriptions);
+              }
+            };
+            // Create dynamic listener method
+            const listener = {
+              [method]: onSuccess,
+              [DEFAULT_ERROR_CHANNEL]: onError
+            };
+            // Ad-Hoc subscription
+            this.subscribe(prefix, listener, subscriptions);
+            // Publish message on channel
+            this.publish(channel, {
+              ...parameters,
+              requestId: uniqRequestId
             });
-          }, timeout);
-        }
+          });
+        }, timeout);
       }
-    );
+    });
   }
   /**
    * Create a publish/subscribe service
@@ -585,11 +611,10 @@ export class ClientHelper {
   /**
    * Get a publisher for a macro service that return a promise
    * @param {() => string} prefix - Channel prefix
-   * @param {number} timeout - Async timeout
    * @return {Function} publisher
    */
-  getAsyncMacroPublisher(prefix, timeout = DEFAULT_TIMEOUT) {
-    return timeoutify((name, parameters, hardFail = false, debug = 1) => {
+  getAsyncMacroPublisher(prefix) {
+    return (name, parameters, hardFail = false, debug = 1) => {
       const channel = `${prefix()}/call`;
       const uniqRequestId = this.getUniqRequestId();
       const subscriptions = {};
@@ -622,16 +647,15 @@ export class ClientHelper {
           requestId: uniqRequestId
         });
       });
-    }, timeout);
+    };
   }
   /**
    * Get a publisher for a service
    * @param {() => string} prefix - Channel prefix
-   * @param {number} timeout - Async timeout
    * @return {Function} publisher
    */
-  getAsyncServicePublisher(prefix, timeout = DEFAULT_TIMEOUT) {
-    return timeoutify((method, parameters) => {
+  getAsyncServicePublisher(prefix) {
+    return (method, parameters) => {
       const channel = `${prefix()}/${method}`;
       const uniqRequestId = this.getUniqRequestId();
       const subscriptions = {};
@@ -663,17 +687,16 @@ export class ClientHelper {
           requestId: uniqRequestId
         });
       });
-    }, timeout);
+    };
   }
   /**
    * Get a publisher for a task service that return a promise
    * @param {() => string} prefix - Channel prefix
    * @param {string} namespace - Namespace
-   * @param {number} timeout - Async timeout
    * @return {Function} publisher
    */
-  getAsyncTaskPublisher(prefix, namespace = '', timeout = DEFAULT_TIMEOUT) {
-    return timeoutify((name, ...parameters) => {
+  getAsyncTaskPublisher(prefix, namespace = '') {
+    return (name, ...parameters) => {
       const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
       const uniqRequestId = this.getUniqRequestId();
       const subscriptions = {};
@@ -709,7 +732,7 @@ export class ClientHelper {
           requestId: uniqRequestId
         });
       });
-    }, timeout);
+    };
   }
   /**
    * Get client id
