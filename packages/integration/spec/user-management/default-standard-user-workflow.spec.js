@@ -1,4 +1,4 @@
-const { given, autoclean, frontUserAction } = require('@zetapush/testing');
+const { given, autoclean, frontAction } = require('@zetapush/testing');
 
 describe(`As developer with
   - valid account
@@ -35,17 +35,21 @@ describe(`As developer with
           /*  */ .and()
           /**/ .apply(this);
 
-        await frontUserAction(`Create the user account on the application`, this, async (api) => {
-          const userAccount = {
-            login: 'login',
-            password: 'password',
-            firstname: 'Firstname',
-            lastname: 'Lastname',
-            email: 'firstname.lastname@yopmail.com'
-          };
+        await frontAction(this)
+          .name(`Create the user account on the application`)
+          .api()
+          /**/ .namespace('user')
+          /**/ .and()
+          .execute(async (api) => {
+            const userAccount = {
+              login: 'login',
+              password: 'password',
+              firstname: 'Firstname',
+              lastname: 'Lastname',
+              email: 'firstname.lastname@yopmail.com'
+            };
 
-          resultOfSignUp = await api.signup(
-            {
+            resultOfSignUp = await api.signup({
               credentials: {
                 login: userAccount.login,
                 password: userAccount.password
@@ -55,28 +59,31 @@ describe(`As developer with
                 lastname: userAccount.lastname,
                 email: userAccount.email
               }
-            },
-            'user'
-          );
+            });
 
-          expect(resultOfSignUp.createdAccount.accountId).toBeDefined();
-          expect(resultOfSignUp.createdAccount.accountStatus).toEqual('WAITING_FOR_CONFIRMATION');
-          expect(resultOfSignUp.createdAccount.profile).toEqual({
-            firstname: 'Firstname',
-            lastname: 'Lastname',
-            email: 'firstname.lastname@yopmail.com'
+            expect(resultOfSignUp.createdAccount.accountId).toBeDefined();
+            expect(resultOfSignUp.createdAccount.accountStatus).toEqual('WAITING_FOR_CONFIRMATION');
+            expect(resultOfSignUp.createdAccount.profile).toEqual({
+              firstname: 'Firstname',
+              lastname: 'Lastname',
+              email: 'firstname.lastname@yopmail.com'
+            });
+            expect(resultOfSignUp.token.original.value).toBeDefined();
           });
-          expect(resultOfSignUp.token.original.value).toBeDefined();
-        });
 
-        await frontUserAction(`Validate the user account`, this, async (api) => {
-          resultOfConfirm = await api.confirm(resultOfSignUp, 'user');
-        });
+        await frontAction(this)
+          .name(`Validate the user account`)
+          .api()
+          /**/ .namespace('user')
+          /**/ .and()
+          .execute(async (api) => {
+            resultOfConfirm = await api.confirm(resultOfSignUp);
+          });
 
-        await frontUserAction(`Connection of the user on the application`, this, async (api, client) => {}, {
-          login: 'login',
-          password: 'password'
-        });
+        await frontAction(this)
+          .name(`Connection of the user on the application`)
+          .loggedAs('login', 'password')
+          .execute();
       },
       60 * 1000 * 10
     );
@@ -101,17 +108,21 @@ describe(`As developer with
           /*  */ .and()
           /**/ .apply(this);
 
-        await frontUserAction(`Create the user account on the application`, this, async (api) => {
-          const userAccount = {
-            login: 'login',
-            password: 'password',
-            firstname: 'Firstname',
-            lastname: 'Lastname',
-            email: 'firstname.lastname@yopmail.com'
-          };
+        await frontAction(this)
+          .name(`Create the user account on the application`)
+          .api()
+          /**/ .namespace('user')
+          /**/ .and()
+          .execute(async (api) => {
+            const userAccount = {
+              login: 'login',
+              password: 'password',
+              firstname: 'Firstname',
+              lastname: 'Lastname',
+              email: 'firstname.lastname@yopmail.com'
+            };
 
-          resultOfSignUp = await api.signup(
-            {
+            resultOfSignUp = await api.signup({
               credentials: {
                 login: userAccount.login,
                 password: userAccount.password
@@ -121,25 +132,23 @@ describe(`As developer with
                 lastname: userAccount.lastname,
                 email: userAccount.email
               }
-            },
-            'user'
-          );
+            });
 
-          expect(resultOfSignUp.createdAccount.accountId).toBeDefined();
-          expect(resultOfSignUp.createdAccount.accountStatus).toEqual('WAITING_FOR_CONFIRMATION');
-          expect(resultOfSignUp.createdAccount.profile).toEqual({
-            firstname: 'Firstname',
-            lastname: 'Lastname',
-            email: 'firstname.lastname@yopmail.com'
+            expect(resultOfSignUp.createdAccount.accountId).toBeDefined();
+            expect(resultOfSignUp.createdAccount.accountStatus).toEqual('WAITING_FOR_CONFIRMATION');
+            expect(resultOfSignUp.createdAccount.profile).toEqual({
+              firstname: 'Firstname',
+              lastname: 'Lastname',
+              email: 'firstname.lastname@yopmail.com'
+            });
+            expect(resultOfSignUp.token.original.value).toBeDefined();
           });
-          expect(resultOfSignUp.token.original.value).toBeDefined();
-        });
 
         try {
-          await frontUserAction(`Connection of the user on the application`, this, async (api, client) => {}, {
-            login: 'login',
-            password: 'password'
-          });
+          await frontAction(this)
+            .name(`Connection of the user on the application`)
+            .loggedAs('login', 'password')
+            .execute();
         } catch (e) {
           expect(e).toEqual('403::Handshake denied');
         }
@@ -167,17 +176,21 @@ describe(`As developer with
           /*  */ .and()
           /**/ .apply(this);
 
-        await frontUserAction(`Create the user account on the application`, this, async (api) => {
-          const userAccount = {
-            login: 'login',
-            password: 'password',
-            firstname: 'Firstname',
-            lastname: 'Lastname',
-            email: 'firstname.lastname@yopmail.com'
-          };
+        await frontAction(this)
+          .name(`Create the user account on the application`)
+          .api()
+          /**/ .namespace('user')
+          /**/ .and()
+          .execute(async (api) => {
+            const userAccount = {
+              login: 'login',
+              password: 'password',
+              firstname: 'Firstname',
+              lastname: 'Lastname',
+              email: 'firstname.lastname@yopmail.com'
+            };
 
-          resultOfSignUp = await api.signup(
-            {
+            resultOfSignUp = await api.signup({
               credentials: {
                 login: userAccount.login,
                 password: userAccount.password
@@ -187,29 +200,35 @@ describe(`As developer with
                 lastname: userAccount.lastname,
                 email: userAccount.email
               }
-            },
-            'user'
-          );
+            });
 
-          expect(resultOfSignUp.createdAccount.accountId).toBeDefined();
-          expect(resultOfSignUp.createdAccount.accountStatus).toEqual('WAITING_FOR_CONFIRMATION');
-          expect(resultOfSignUp.createdAccount.profile).toEqual({
-            firstname: 'Firstname',
-            lastname: 'Lastname',
-            email: 'firstname.lastname@yopmail.com'
+            expect(resultOfSignUp.createdAccount.accountId).toBeDefined();
+            expect(resultOfSignUp.createdAccount.accountStatus).toEqual('WAITING_FOR_CONFIRMATION');
+            expect(resultOfSignUp.createdAccount.profile).toEqual({
+              firstname: 'Firstname',
+              lastname: 'Lastname',
+              email: 'firstname.lastname@yopmail.com'
+            });
+            expect(resultOfSignUp.token.original.value).toBeDefined();
           });
-          expect(resultOfSignUp.token.original.value).toBeDefined();
-        });
 
-        await frontUserAction(`Validate the user account`, this, async (api) => {
-          resultOfConfirm = await api.confirm(resultOfSignUp, 'user');
-        });
+        await frontAction(this)
+          .name(`Validate the user account`)
+          .api()
+          /**/ .namespace('user')
+          /**/ .and()
+          .execute(async (api) => {
+            resultOfConfirm = await api.confirm(resultOfSignUp);
+          });
 
         try {
-          await frontUserAction(`Connection of the user on the application`, this, async (api, client) => {}, {
-            login: 'login',
-            password: 'wrong-password'
-          });
+          await frontAction(this)
+            .name(`Connection of the user on the application`)
+            .loggedAs('login', 'wrong-password')
+            .api()
+            /**/ .namespace('user')
+            /**/ .and()
+            .execute();
         } catch (e) {
           expect(e).toEqual('403::Handshake denied');
         }

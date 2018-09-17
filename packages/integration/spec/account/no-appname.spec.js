@@ -1,6 +1,6 @@
 const { zetaPush, readZetarc } = require('@zetapush/testing');
 const PATTERN = /Hello World from JavaScript (\d+)/;
-const { given, consoleUserAction, frontUserAction, autoclean } = require('@zetapush/testing');
+const { given, consoleAction, frontAction, autoclean } = require('@zetapush/testing');
 
 describe(`As developer with
         - account exists
@@ -27,7 +27,7 @@ describe(`As developer with
         /**/ .apply(this);
 
       // zeta push
-      await consoleUserAction('1) zeta push', async () => {
+      await consoleAction('1) zeta push', async () => {
         await zetaPush(this.context.projectDir);
       });
 
@@ -38,11 +38,13 @@ describe(`As developer with
       expect(zetarc.appName).toBeDefined();
       expect(zetarc.appName.length).toBeGreaterThan(0);
 
-      await frontUserAction('2) call hello', this, async (api) => {
-        const message = await api.hello();
-        expect(typeof message).toBe('string');
-        expect(PATTERN.test(message)).toBe(true);
-      });
+      await frontAction(this)
+        .name('2) call hello')
+        .execute(async (api) => {
+          const message = await api.hello();
+          expect(typeof message).toBe('string');
+          expect(PATTERN.test(message)).toBe(true);
+        });
     },
     15 * 60 * 1000
   );
