@@ -37,21 +37,25 @@ const createServer = (command, config) => {
           ),
         createReadStream(filepath) {
           const stream = fs.createReadStream(filepath);
-          const template = new Transform({
-            transform(chunk, encoding, callback) {
-              const HTML_PATTERN = /<[hH][tT][mM][lL]([ \w\-\=\"\']*)>/gi;
-              let content = chunk.toString();
-              if (filepath.endsWith('.html') && HTML_PATTERN.test(content)) {
-                content = content.replace(
-                  HTML_PATTERN,
-                  (markup, attributes, position, html) => `<html${attributes}${injected}>`
-                );
+          // Transform only html files to inject ZetaPush context in html data attributes
+          if (filepath.endsWith('.html')) {
+            const template = new Transform({
+              transform(chunk, encoding, callback) {
+                const HTML_PATTERN = /<[hH][tT][mM][lL]([ \w\-\=\"\']*)>/gi;
+                let content = chunk.toString();
+                if (HTML_PATTERN.test(content)) {
+                  content = content.replace(
+                    HTML_PATTERN,
+                    (markup, attributes, position, html) => `<html${attributes}${injected}>`
+                  );
+                }
+                this.push(content);
+                callback();
               }
-              this.push(content);
-              callback();
-            }
-          });
-          return stream.pipe(template);
+            });
+            return stream.pipe(template);
+          }
+          return stream;
         }
       }
     );
