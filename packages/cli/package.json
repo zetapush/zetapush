@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/cli",
-  "version": "0.33.3",
+  "version": "0.33.4",
   "description": "Zeta Push Next",
   "main": "./src/index.js",
   "files": [
@@ -15,11 +15,11 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "@zetapush/cometd": "0.33.3",
-    "@zetapush/common": "0.33.3",
-    "@zetapush/platform-legacy": "0.33.3",
-    "@zetapush/troubleshooting": "0.33.3",
-    "@zetapush/worker": "0.33.3",
+    "@zetapush/cometd": "0.33.4",
+    "@zetapush/common": "0.33.4",
+    "@zetapush/platform-legacy": "0.33.4",
+    "@zetapush/troubleshooting": "0.33.4",
+    "@zetapush/worker": "0.33.4",
     "chalk": "2.4.1",
     "commander": "2.16.0",
     "cosmiconfig": "5.0.5",

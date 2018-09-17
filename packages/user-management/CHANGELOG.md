@@ -3,26 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.33.3](https://github.com/zetapush/zetapush/compare/v0.33.2...v0.33.3) (2018-09-17)
-
-
-### Bug Fixes
-
-* **namespace:** test client handles new namespace format ([5f21487](https://github.com/zetapush/zetapush/commit/5f21487))
-
-
-### Code Refactoring
-
-* **testing:** rename and make usage clearer ([d097da8](https://github.com/zetapush/zetapush/commit/d097da8))
-
-
-### BREAKING CHANGES
-
-* **testing:** 
-* **namespace:** frontUserAction test utility method signature has changed to be more understandable
+## [0.33.4](https://github.com/zetapush/zetapush/compare/v0.33.3...v0.33.4) (2018-09-17)
 
 
 
+
+**Note:** Version bump only for package @zetapush/user-management
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

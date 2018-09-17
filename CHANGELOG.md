@@ -3,35 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.33.3](https://github.com/zetapush/zetapush/compare/v0.33.2...v0.33.3) (2018-09-17)
-
-
-### Bug Fixes
-
-* **http-server:** transform only html files ([5dbcb4d](https://github.com/zetapush/zetapush/commit/5dbcb4d))
-* **namespace:** test client handles new namespace format ([5f21487](https://github.com/zetapush/zetapush/commit/5f21487))
-
-
-### Code Refactoring
-
-* **testing:** rename and make usage clearer ([d097da8](https://github.com/zetapush/zetapush/commit/d097da8))
-
-
-### Features
-
-* **create:** improve created hello world app ([ea86a60](https://github.com/zetapush/zetapush/commit/ea86a60))
-* **create:** remove onApplicationBootstrap method ([2c13312](https://github.com/zetapush/zetapush/commit/2c13312))
-* **optionnal-proxy-parameters:** update typings to make createProxy* parameters optionnal ([34a6bf1](https://github.com/zetapush/zetapush/commit/34a6bf1))
-* **update-promisify-implementation:** update Timeou.wrap implementation to correctly handle this co ([dba7d62](https://github.com/zetapush/zetapush/commit/dba7d62))
-
-
-### BREAKING CHANGES
-
-* **testing:** 
-* **namespace:** frontUserAction test utility method signature has changed to be more understandable
+## [0.33.4](https://github.com/zetapush/zetapush/compare/v0.33.3...v0.33.4) (2018-09-17)
 
 
 
+
+**Note:** Version bump only for package zetapush
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

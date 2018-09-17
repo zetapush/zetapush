@@ -3,16 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.33.3](https://github.com/zetapush/zetapush/compare/v0.33.2...v0.33.3) (2018-09-17)
-
-
-### Features
-
-* **optionnal-proxy-parameters:** update typings to make createProxy* parameters optionnal ([34a6bf1](https://github.com/zetapush/zetapush/commit/34a6bf1))
-* **update-promisify-implementation:** update Timeou.wrap implementation to correctly handle this co ([dba7d62](https://github.com/zetapush/zetapush/commit/dba7d62))
+## [0.33.4](https://github.com/zetapush/zetapush/compare/v0.33.3...v0.33.4) (2018-09-17)
 
 
 
+
+**Note:** Version bump only for package @zetapush/client
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

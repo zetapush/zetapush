@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/troubleshooting",
-  "version": "0.33.3",
+  "version": "0.33.4",
   "description": "Zeta Push Next",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -21,7 +21,7 @@
     "test:ci+coverage": "rimraf coverage .nyc_output && nyc node_modules/.bin/ts-node src/index.ts"
   },
   "dependencies": {
-    "@zetapush/common": "0.33.3",
+    "@zetapush/common": "0.33.4",
     "axios": "0.18.0",
     "default-gateway": "2.7.2",
     "execa": "0.10.0",
