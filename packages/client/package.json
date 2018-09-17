@@ -17,13 +17,15 @@
   "author": "ci@zetapush.com",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib dist es .deploy .esdoc",
+    "clean": "rimraf lib dist es .deploy .esdoc coverage .nyc_output",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
     "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
     "build:umd": "cross-env BABEL_ENV=umd NODE_ENV=development rollup -c -i src/index.js -o dist/zetapush-client.js",
     "build:umd:min": "cross-env BABEL_ENV=umd NODE_ENV=production rollup -c -i src/index.js -o dist/zetapush-client.min.js",
+    "build:umd+coverage": "cross-env BABEL_ENV=test NODE_ENV=development rollup -c -i src/index.js -o dist/zetapush-client.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "prepublish": "npm run clean && npm run build",
+    "test:ci+coverage": "rimraf coverage .nyc_output && npm run build:umd+coverage && karma start karma.conf.js",
     "test:ci": "karma start karma.conf.js"
   },
   "dependencies": {
@@ -35,13 +37,15 @@
     "@babel/core": "7.0.0",
     "@babel/plugin-transform-modules-commonjs": "7.0.0",
     "@babel/preset-env": "7.0.0",
+    "babel-plugin-istanbul": "5.0.1",
     "cross-env": "5.2.0",
     "jasmine-core": "3.1.0",
-    "karma": "2.0.4",
+    "karma": "3.0.0",
     "karma-chrome-launcher": "2.2.0",
     "karma-cli": "1.0.1",
     "karma-jasmine": "1.1.2",
     "karma-junit-reporter": "1.2.0",
+    "karma-coverage": "1.1.2",
     "rimraf": "2.6.2",
     "rollup": "0.64.1",
     "rollup-plugin-babel": "4.0.3",
@@ -56,5 +60,23 @@
   },
   "publishConfig": {
     "access": "public"
+  },
+  "nyc": {
+    "extension": [
+      ".js"
+    ],
+    "include": [
+      "src/**/*.js"
+    ],
+    "exclude": [
+      "**/*.d.ts"
+    ],
+    "reporter": [
+      "lcov",
+      "html",
+      "cobertura",
+      "text"
+    ],
+    "all": true
   }
 }

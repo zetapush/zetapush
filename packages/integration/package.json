@@ -1,8 +1,10 @@
 {
   "name": "@zetapush/integration",
+  "version": "0.33.1",
   "private": true,
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "test:ci": "jasmine"
   },
   "dependencies": {
     "find-free-port": "^1.2.0",
@@ -10,7 +12,7 @@
     "toxy": "^0.3.15"
   },
   "devDependencies": {
-    "@zetapush/testing": "0.32.0",
+    "@zetapush/testing": "0.33.1",
     "jasmine": "3.1.0",
     "jasmine-reporters": "2.3.1"
   }

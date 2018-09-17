@@ -3,7 +3,7 @@ pipeline {
 
   options {
       timestamps()
-      timeout(time: 60, unit: 'MINUTES')
+      timeout(time: 120, unit: 'MINUTES')
   }
 
   environment {
@@ -87,10 +87,13 @@ pipeline {
         sh "npm --registry ${env.NPM_REGISTRY} i"
         sh 'npm run lerna:clean -- --yes'
         sh "chown -R ${env.JENKINS_UID}:${env.JENKINS_GID} ."
+        dir('node_modules') {
+          deleteDir()
+        }
       }
     }
 
-    stage('Integration Tests') {
+    stage('Multi-platform') {
       parallel {
         stage('Ubuntu 16.04 - NodeJS 8.11') {
           agent { 
@@ -98,116 +101,323 @@ pipeline {
               label 'ubuntu-16.04'
             }
           }
-          steps {
-            retry(3) {
-              sh "npm --registry ${env.NPM_REGISTRY} i"
-              sh 'npm run lerna:clean -- --yes'
-              sh "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+          stages {
+            stage('Build') {
+              steps {
+                retry(3) {
+                  sh "npm --registry ${env.NPM_REGISTRY} i"
+                  sh 'npm run lerna:clean -- --yes'
+                  sh "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+                }
+              }
             }
-            dir('packages/integration') {
-              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' node node_modules/jasmine/bin/jasmine.js"
+            stage('client tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/client') {
+                      sh "npm run test:ci+coverage"
+                    }
+                  }
+                }
+              }
             }
-            dir('packages/user-management') {
-              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js"
+            stage('common tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/common') {
+                      sh "npm run test:ci+coverage"
+                    }
+                  }
+                }
+              }
             }
-            dir('packages/client') {
-              sh "npm run test:ci"
+            stage('user-management tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/user-management') {
+                      sh "npm run test:ci+coverage"
+                    }
+                  }
+                }
+              }
+            }
+            stage('e2e tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/integration') {
+                      sh "npm run test:ci"
+                    }
+                  }
+                }
+              }
             }
           }
           post {
             always {
-              junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
-              // deleteDir()
+              retry(3) {
+                junit(allowEmptyResults: true, testResults: 'packages/*/test/reports/*/junit-*.xml,packages/*/spec/helpers/junit-*.xml')
+              }
+            }
+            success {
+              retry(3) {
+                // Add projects that are uncovered with 0 coverage to have more useful results
+                dir('packages/core') {
+                  sh 'npm run test:ci+coverage'
+                }
+                dir('packages/platform-legacy') {
+                  sh 'npm run test:ci+coverage'
+                }
+                dir('packages/troubleshooting') {
+                  sh 'npm run test:ci+coverage'
+                }
+                dir('packages/worker') {
+                  sh 'npm run test:ci+coverage'
+                }
+                sh "npm run coverage:merge"
+                sh "npm run coverage:report"
+                cobertura(coberturaReportFile: 'coverage/cobertura-coverage.xml')
+                publishHTML(reportName: 'NYC Coverage', reportDir: 'coverage', reportFiles: 'index.html', reportTitles: 'Coverage', allowMissing: true, keepAll: true, alwaysLinkToLastBuild: true)
+              }
             }
           }
         }
 
+        // matrix({
+        //   axes: platforms(
+        //     platform(stageName: 'Win 7 Pro - NodeJS 8.11', nodeLabel: 'windows-7-pro'), 
+        //     platform(stageName: 'Win 10 Pro - NodeJS 10.4', nodeLabel: 'windows-10-pro'), 
+        //     platform(stageName: 'Mac High Sierra - NodeJS 8.11', nodeLabel: 'mac-high-sierra')
+        //   )
+        // }) {
         stage('Win 7 Pro - NodeJS 8.11') {
+          when {
+            anyOf {
+              branch 'master'
+              branch 'develop'
+            }
+          }
           agent { 
             node { 
               label 'windows-7-pro'
             }
           }
-          steps {
-            retry(3) {
-              bat "npm --registry ${env.NPM_REGISTRY} i"
-              bat 'npm run lerna:clean -- --yes'
-              bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+          stages {
+            stage('Build') {
+              steps {
+                retry(3) {
+                  bat "npm --registry ${env.NPM_REGISTRY} i"
+                  bat 'npm run lerna:clean -- --yes'
+                  bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+                }
+              }
             }
-            dir('packages/integration') {
-              bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& node node_modules\\jasmine\\bin\\jasmine.js"
+            stage('client tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/client') {
+                      bat "npm run test:ci"
+                    }
+                  }
+                }
+              }
             }
-            dir('packages/user-management') {
-              bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set  ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& set TS_NODE_PROJECT=tsconfig.test.json node -r ts-node\\register node_modules\\jasmine\\bin\\jasmine.js"
+            stage('common tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/common') {
+                      bat "npm run test:ci"
+                    }
+                  }
+                }
+              }
             }
-            dir('packages/client') {
-              bat "npm run test:ci"
+            stage('user-management tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/user-management') {
+                      bat "npm run test:ci"
+                    }
+                  }
+                }
+              }
+            }
+            stage('e2e tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/integration') {
+                      bat "npm run test:ci"
+                    }
+                  }
+                }
+              }
             }
           }
           post {
             always {
-              junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
-              // deleteDir()
+              retry(3) {
+                junit(allowEmptyResults: true, testResults: 'packages/*/test/reports/*/junit-*.xml,packages/*/spec/helpers/junit-*.xml')
+              }
             }
           }
         }
 
         stage('Win 10 Pro - NodeJS 10.4') {
+          when {
+            anyOf {
+              branch 'master'
+              branch 'develop'
+            }
+          }
           agent { 
             node { 
               label 'windows-10-pro'
             }
           }
-          steps {
-            retry(3) {
-              bat "npm --registry ${env.NPM_REGISTRY} i"
-              bat 'npm run lerna:clean -- --yes'
-              bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+          stages {
+            stage('Build') {
+              steps {
+                retry(3) {
+                  bat "npm --registry ${env.NPM_REGISTRY} i"
+                  bat 'npm run lerna:clean -- --yes'
+                  bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+                }
+              }
             }
-            dir('packages/integration') {
-              bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& node node_modules\\jasmine\\bin\\jasmine.js"
+            stage('client tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/client') {
+                      bat "npm run test:ci"
+                    }
+                  }
+                }
+              }
             }
-            dir('packages/user-management') {
-              bat "set ZETAPUSH_DEVELOPER_LOGIN=${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}&& set  ZETAPUSH_DEVELOPER_PASSWORD=${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}&& set TS_NODE_PROJECT=tsconfig.test.json node -r ts-node\\register node_modules\\jasmine\\bin\\jasmine.js"
+            stage('common tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/common') {
+                      bat "npm run test:ci"
+                    }
+                  }
+                }
+              }
             }
-            dir('packages/client') {
-              bat "npm run test:ci"
+            stage('user-management tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/user-management') {
+                      bat "npm run test:ci"
+                    }
+                  }
+                }
+              }
+            }
+            stage('e2e tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/integration') {
+                      bat "npm run test:ci"
+                    }
+                  }
+                }
+              }
             }
           }
           post {
             always {
-              junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
-              // deleteDir()
+              retry(3) {
+                junit(allowEmptyResults: true, testResults: 'packages/*/test/reports/*/junit-*.xml,packages/*/spec/helpers/junit-*.xml')
+              }
             }
           }
         }
 
+
         stage('Mac High Sierra - NodeJS 8.11') {
+          when {
+            anyOf {
+              branch 'master'
+              branch 'develop'
+            }
+          }
           agent { 
             node { 
               label 'mac-high-sierra'
             }
           }
-          steps {
-            retry(3) {
-              sh "npm --registry ${env.NPM_REGISTRY} i"
-              sh 'npm run lerna:clean -- --yes'
-              sh "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+          stages {
+            stage('Build') {
+              steps {
+                retry(3) {
+                  bat "npm --registry ${env.NPM_REGISTRY} i"
+                  bat 'npm run lerna:clean -- --yes'
+                  bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+                }
+              }
             }
-            dir('packages/integration') {
-              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' node node_modules/jasmine/bin/jasmine.js"
+            stage('client tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/client') {
+                      bat "npm run test:ci"
+                    }
+                  }
+                }
+              }
             }
-            dir('packages/user-management') {
-              sh "ZETAPUSH_DEVELOPER_LOGIN='${env.ZETAPUSH_DEVELOPER_ACCOUNT_USR}' ZETAPUSH_DEVELOPER_PASSWORD='${env.ZETAPUSH_DEVELOPER_ACCOUNT_PSW}' TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js"
+            stage('common tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/common') {
+                      bat "npm run test:ci"
+                    }
+                  }
+                }
+              }
             }
-            dir('packages/client') {
-              sh "npm run test:ci"
+            stage('user-management tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/user-management') {
+                      bat "npm run test:ci"
+                    }
+                  }
+                }
+              }
+            }
+            stage('e2e tests') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
+                  ignoreFailures(failureStatus: 'UNSTABLE') {
+                    dir('packages/integration') {
+                      bat "npm run test:ci"
+                    }
+                  }
+                }
+              }
             }
           }
           post {
             always {
-              junit(allowEmptyResults: true, testResults: '**/junit-*.xml')
-              // deleteDir()
+              retry(3) {
+                junit(allowEmptyResults: true, testResults: 'packages/*/test/reports/*/junit-*.xml,packages/*/spec/helpers/junit-*.xml')
+              }
             }
           }
         }

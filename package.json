@@ -18,7 +18,10 @@
     "husky": "^0.14.3",
     "lerna": "^2.11.0",
     "lint-staged": "^7.2.0",
-    "prettier": "^1.13.5"
+    "prettier": "^1.13.5",
+    "cross-env": "5.2.0",
+    "nyc": "12.0.2",
+    "istanbul-merge": "1.1.1"
   },
   "scripts": {
     "precommit": "lint-staged",
@@ -31,7 +34,10 @@
     "lerna:build": "lerna run build",
     "lerna:publish": "lerna publish --conventional-commits --changelog-preset angular --force-publish=* --exact",
     "lerna:publish:canary": "lerna publish --canary --conventional-commits --changelog-preset angular --force-publish=* --exact",
-    "lerna:test": "lerna run test:ci"
+    "lerna:test": "cross-env NODE_ENV=test lerna run --no-bail --stream test:ci",
+    "lerna:test+coverage": "cross-env NODE_ENV=test lerna run --no-bail --stream test:ci+coverage ; npm run coverage:merge ; npm run coverage:report",
+    "coverage:merge": "istanbul-merge --out .nyc_output/merged.json packages/*/.nyc_output/*.json",
+    "coverage:report": "nyc report"
   },
   "lint-staged": {
     "packages/*/{bin,spec,src}/**/*.{js,ts}": [
@@ -43,5 +49,29 @@
     "commitizen": {
       "path": "./node_modules/cz-lerna-changelog"
     }
+  },
+  "nyc": {
+    "extension": [
+      ".js",
+      ".ts"
+    ],
+    "include": [
+      "packages/**/src/**/*.js"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "coverage/**", 
+      "test/**", 
+      "test{,-*}.js", 
+      "**/*.test.js", 
+      "**/__tests__/**", 
+      "**/node_modules/**"
+    ],
+    "reporter": [
+      "html",
+      "cobertura",
+      "text"
+    ],
+    "all": true
   }
 }

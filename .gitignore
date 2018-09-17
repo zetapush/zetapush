@@ -10,3 +10,5 @@
 /yarn-*.log
 # Editors
 # /.vscode/
+.nyc_output/
+/coverage/

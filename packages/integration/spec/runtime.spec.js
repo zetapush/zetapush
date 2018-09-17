@@ -1,4 +1,4 @@
-const { given, frontUserAction, autoclean } = require('@zetapush/testing');
+const { given, frontAction, autoclean } = require('@zetapush/testing');
 
 const sleep = (millis) => {
   return new Promise((resolve) => setTimeout(resolve, millis));
@@ -33,16 +33,18 @@ describe(`As developer with
         /*   */ .and()
         /**/ .apply(this);
 
-      await frontUserAction('call hello', this, async (api) => {
-        let failure = false;
-        try {
-          await api.hello();
-        } catch (error) {
-          failure = true;
-        }
-        await this.context.runner.stop();
-        expect(failure).toBe(false);
-      });
+      await frontAction(this)
+        .name('call hello')
+        .execute(async (api) => {
+          let failure = false;
+          try {
+            await api.hello();
+          } catch (error) {
+            failure = true;
+          }
+          await this.context.runner.stop();
+          expect(failure).toBe(false);
+        });
     },
     60 * 1000 * 10
   );
@@ -68,16 +70,18 @@ describe(`As developer with
         /*   */ .and()
         /**/ .apply(this);
 
-      await frontUserAction('call hello', this, async (api) => {
-        let failure = false;
-        try {
-          await api.hello();
-        } catch (error) {
-          failure = true;
-        }
-        await this.context.runner.stop();
-        expect(failure).toBe(true);
-      });
+      await frontAction(this)
+        .name('call hello')
+        .execute(async (api) => {
+          let failure = false;
+          try {
+            await api.hello();
+          } catch (error) {
+            failure = true;
+          }
+          await this.context.runner.stop();
+          expect(failure).toBe(true);
+        });
     },
     60 * 1000 * 2
   );
@@ -136,19 +140,21 @@ describe(`As developer with
         /*   */ .and()
         /**/ .apply(this);
 
-      await frontUserAction('call hello', this, async (api) => {
-        let helloReceived = false;
-        const sendHello = async () => {
-          // hello function in worker exits the worker => no answer will be received so promise won't be resolved
-          await api.hello();
-          console.log('RECEIVED');
-          helloReceived = true;
-        };
-        sendHello();
-        await sleep(5000);
-        await this.context.runner.stop();
-        expect(helloReceived).toBe(false);
-      });
+      await frontAction(this)
+        .name('call hello')
+        .execute(async (api) => {
+          let helloReceived = false;
+          const sendHello = async () => {
+            // hello function in worker exits the worker => no answer will be received so promise won't be resolved
+            await api.hello();
+            console.log('RECEIVED');
+            helloReceived = true;
+          };
+          sendHello();
+          await sleep(5000);
+          await this.context.runner.stop();
+          expect(helloReceived).toBe(false);
+        });
     },
     60 * 1000 * 10
   );

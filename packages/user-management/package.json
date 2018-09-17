@@ -16,7 +16,7 @@
   "author": "ci@zetapush.com",
   "license": "MIT",
   "scripts": {
-    "clean": "rimraf lib dist es .deploy .esdoc",
+    "clean": "rimraf lib dist es .deploy .esdoc coverage .nyc_output",
     "build:commonjs": "tsc --outDir lib",
     "build:commonjs:test": "tsc --outDir lib",
     "build:es": "tsc --module ES2015 --moduleResolution Node --outDir es",
@@ -24,6 +24,8 @@
     "build:umd:min": "cross-env NODE_ENV=production rollup -c -i src/index.ts -o dist/zetapush-user-management.min.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
     "test": "npm run clean && npm run build:commonjs:test && node_modules/.bin/nyc ts-node -r source-map-support/register node_modules/.bin/jasmine",
+    "test:ci+coverage": "rimraf coverage .nyc_output && cross-env TS_NODE_PROJECT=tsconfig.test.json nyc node_modules/.bin/ts-node node_modules/.bin/jasmine",
+    "test:ci": "cross-env TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js",
     "prepublish": "npm run clean && npm run build",
     "build:api-doc": "typedoc --out ./docs ./src/index.ts"
   },
@@ -79,6 +81,7 @@
   "publishConfig": {
     "access": "public"
   },
+  
   "nyc": {
     "extension": [
       ".ts"
@@ -93,7 +96,7 @@
       "lcov",
       "html",
       "cobertura",
-      "lcovonly"
+      "text"
     ],
     "all": true
   }
