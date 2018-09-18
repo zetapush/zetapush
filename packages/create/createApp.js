@@ -46,8 +46,8 @@ const program = new commander.Command(pkg.name)
   .usage(`${chalk.green('<project-directory>')} [options]`)
   .action((name, command) => {
     const version = getCurrentVersion(command);
-    const config = validateOptions(command);
-    createAccount(config)
+    validateOptions(command)
+      .then((config) => createAccount(config))
       .then((zetarc) => {
         createApp(name, zetarc, version, command);
       })
@@ -67,13 +67,13 @@ function getCurrentVersion(command) {
   return version;
 }
 
-function validateOptions({ appName, developerLogin, developerPassword, platformUrl }) {
+async function validateOptions({ appName, developerLogin, developerPassword, platformUrl }) {
   // Prompt mandatory values
   if (!developerLogin) {
-    developerLogin = getDeveloperLogin();
+    developerLogin = await getDeveloperLogin();
   }
   if (!developerPassword) {
-    developerPassword = getDeveloperPassword();
+    developerPassword = await getDeveloperPassword();
   }
   const missing = [];
   if (!developerLogin) {
