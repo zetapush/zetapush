@@ -200,7 +200,7 @@ export class ClientHelper {
         const { authentication = null } = ext;
         this.initialized(authentication);
       } else {
-        this.handshakeFailure(error);
+        this.handshakeFailure(error, ext);
       }
     });
 
@@ -217,9 +217,9 @@ export class ClientHelper {
           return;
         }
         if (Message.RECONNECT_NONE_VALUE === advice.reconnect) {
-          this.authenticationFailed(error);
+          this.authenticationFailed(error, ext);
         } else if (Message.RECONNECT_HANDSHAKE_VALUE === advice.reconnect) {
-          this.negotiationFailed(error);
+          this.negotiationFailed(error, ext);
         }
       }
     });
@@ -281,11 +281,11 @@ export class ClientHelper {
   /**
    * Notify listeners when handshake step succeed
    */
-  authenticationFailed(error) {
+  authenticationFailed(error, ext) {
     this.userId = null;
     this.userInfo = null;
     this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
-      listener.onFailedHandshake(error);
+      listener.onFailedHandshake(error, ext);
     });
   }
   /**
@@ -870,10 +870,10 @@ export class ClientHelper {
    * Negociate authentication
    * @param {error} error
    */
-  negotiationFailed(error) {
-    this.cometd._debug('ClientHelper::negotiationFailed', error);
+  negotiationFailed(error, ext) {
+    this.cometd._debug('ClientHelper::negotiationFailed', error, ext);
     this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
-      listener.onNegotiationFailed(error);
+      listener.onNegotiationFailed(error, ext);
     });
   }
   /**

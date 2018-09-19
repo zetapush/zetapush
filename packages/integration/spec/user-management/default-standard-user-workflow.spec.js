@@ -1,4 +1,5 @@
 const { given, autoclean, frontAction } = require('@zetapush/testing');
+const { AccountNotConfirmedError, BadCredentialsError } = require('@zetapush/client');
 
 describe(`As developer with
   - valid account
@@ -90,7 +91,7 @@ describe(`As developer with
   });
 
   describe(`Nominal case with no activated account`, () => {
-    it(
+    fit(
       `The user can't connect with handshake failed`,
       async () => {
         let resultOfSignUp = null;
@@ -150,7 +151,9 @@ describe(`As developer with
             .loggedAs('login', 'password')
             .execute();
         } catch (e) {
-          expect(e).toEqual('403::Handshake denied');
+          expect(() => {
+            throw e;
+          }).toThrowError(AccountNotConfirmedError);
         }
       },
       60 * 1000 * 10
@@ -230,7 +233,9 @@ describe(`As developer with
             /**/ .and()
             .execute();
         } catch (e) {
-          expect(e).toEqual('403::Handshake denied');
+          expect(() => {
+            throw e;
+          }).toThrowError(BadCredentialsError);
         }
       },
       60 * 1000 * 10
