@@ -29,6 +29,7 @@ const run = (command, config, declaration) => {
   const runner = new WorkerRunner(
     command.skipProvisioning,
     command.skipBootstrap,
+    command.grabAllTraffic,
     config,
     transports,
     new LocalDevEnvironmentProvider(config, 'dev', command.worker),

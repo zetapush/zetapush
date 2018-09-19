@@ -21,6 +21,7 @@ export interface WorkerClientOptions {
   resource: string;
   timeout: number;
   capacity: number;
+  grabAllTraffic: boolean;
 }
 
 export class Worker extends Queue {
@@ -48,6 +49,9 @@ export class WorkerClient extends Client {
    * A factory used to instantiate a WorkerInstance
    */
   private workerInstanceFactory?: WorkerInstanceFactory;
+  /**
+   * Options given to the worker client
+   */
   private options: WorkerClientOptions;
   /**
    * WorkerClient constructor
@@ -62,15 +66,11 @@ export class WorkerClient extends Client {
       developerPassword,
       resource = `node_js_worker_${uuid()}`,
       timeout = 60 * 1000,
-      capacity = 100
+      capacity = 100,
+      grabAllTraffic = false
     }: WorkerClientOptions,
     workerInstanceFactory?: WorkerInstanceFactory
   ) {
-    const authentication = () =>
-      Authentication.developer({
-        login: developerLogin,
-        password: developerPassword
-      });
     /**
      * Call Client constructor with specific parameters
      */
@@ -78,7 +78,11 @@ export class WorkerClient extends Client {
       platformUrl,
       appName,
       forceHttps,
-      authentication,
+      authentication: () =>
+        Authentication.developer({
+          login: developerLogin,
+          password: developerPassword
+        }),
       resource,
       transports
     });
@@ -106,18 +110,19 @@ export class WorkerClient extends Client {
       developerPassword,
       resource,
       timeout,
-      capacity
+      capacity,
+      grabAllTraffic
     };
   }
   /**
    * Subscribe a task worker
    */
-  subscribeTaskWorker(worker: any, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
+  async subscribeTaskWorker(worker: any, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
     const instance = this.newWorkerInstance(worker, deploymentId);
     const logs = this.createService<Logs>({
       Type: Logs
     });
-    const queue = this.createService<Worker>({
+    const queue = this.createAsyncService<Worker>({
       deploymentId,
       listener: {
         dispatch: async ({ data: task }: ListenerMessage<QueueTask>) => {
@@ -149,9 +154,21 @@ export class WorkerClient extends Client {
       },
       Type: Worker
     });
-    queue.register({
-      capacity: this.capacity
-    });
+    try {
+      queue.register({
+        capacity: this.capacity,
+        routing: {
+          exclusive: this.options.grabAllTraffic
+        }
+      });
+    } catch (ex) {
+      const exception = {
+        code: 'WORKER_INSTANCE_REGISTER_FAILED',
+        message: 'Unable to correctly register worker instance',
+        cause: ex
+      };
+      throw exception;
+    }
     return instance;
   }
   private getRequestContext(request: TaskRequest, logs: Logs, deploymentId: string): Context {

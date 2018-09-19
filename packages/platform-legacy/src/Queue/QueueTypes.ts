@@ -222,6 +222,12 @@ export interface TaskConsumerConfiguration {
 export interface TaskConsumerRegistration {
   /**Task consumer maximum capacity at a given time. The server will not exceed that capacity when dispatching new tasks. Special tasks (provisioning) are not affected by this restriction.*/
   capacity?: number;
+  /**Routing information.*/
+  routing?: TaskConsumerRouting;
+}
+export interface TaskConsumerRouting {
+  /**The newly registered consumer demands that all traffic be routed to it.*/
+  exclusive?: boolean;
 }
 export interface TaskProgress {
   /**Optional context ID for logs. This value MUST have been previously given by the server to this connected client.*/

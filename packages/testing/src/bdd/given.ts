@@ -20,9 +20,7 @@ import {
 } from '../utils/commands';
 import { TestContext, Dependencies } from '../utils/types';
 import { createApplication, DEFAULTS } from '@zetapush/common';
-import { Provider, InjectionToken, Module } from '@zetapush/core';
-import { WorkerRunner } from '@zetapush/worker/lib';
-import { Wrapper } from '../worker/test-instance';
+import { InjectionToken, Module } from '@zetapush/core';
 
 export const given = () => new Given();
 
