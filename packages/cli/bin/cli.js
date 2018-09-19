@@ -20,7 +20,8 @@ const {
   AccessDeniedIssueAnalyzer,
   InjectionIssueAnalyzer,
   CustomCloudServiceStartErrorAnalyzer,
-  OnApplicationBoostrapErrorAnalyser
+  OnApplicationBoostrapErrorAnalyser,
+  WorkerRegisterErrorAnalyser
 } = require('@zetapush/troubleshooting');
 
 const { helpMessageRun, helpMessagePush } = require('../src/utils/helper-messages');
@@ -40,6 +41,7 @@ ErrorAnalyzer.register(new InjectionIssueAnalyzer());
 ErrorAnalyzer.register(new MissingNpmDependencyErrorAnalyzer());
 ErrorAnalyzer.register(new CustomCloudServiceStartErrorAnalyzer());
 ErrorAnalyzer.register(new OnApplicationBoostrapErrorAnalyser());
+ErrorAnalyzer.register(new WorkerRegisterErrorAnalyser());
 
 function increaseVerbosity(v, total) {
   setVerbosity(total);

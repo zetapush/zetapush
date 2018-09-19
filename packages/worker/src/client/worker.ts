@@ -117,12 +117,12 @@ export class WorkerClient extends Client {
   /**
    * Subscribe a task worker
    */
-  subscribeTaskWorker(worker: any, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
+  async subscribeTaskWorker(worker: any, deploymentId = Worker.DEFAULT_DEPLOYMENT_ID) {
     const instance = this.newWorkerInstance(worker, deploymentId);
     const logs = this.createService<Logs>({
       Type: Logs
     });
-    const queue = this.createService<Worker>({
+    const queue = this.createAsyncService<Worker>({
       deploymentId,
       listener: {
         dispatch: async ({ data: task }: ListenerMessage<QueueTask>) => {
@@ -154,13 +154,21 @@ export class WorkerClient extends Client {
       },
       Type: Worker
     });
-    // TODO catch error if a worker is already registered with routing.exclusive mode
-    queue.register({
-      capacity: this.capacity,
-      routing: {
-        exclusive: this.options.grabAllTraffic
-      }
-    });
+    try {
+      queue.register({
+        capacity: this.capacity,
+        routing: {
+          exclusive: this.options.grabAllTraffic
+        }
+      });
+    } catch (ex) {
+      const exception = {
+        code: 'WORKER_INSTANCE_REGISTER_FAILED',
+        message: 'Unable to correctly register worker instance',
+        cause: ex
+      };
+      throw exception;
+    }
     return instance;
   }
   private getRequestContext(request: TaskRequest, logs: Logs, deploymentId: string): Context {

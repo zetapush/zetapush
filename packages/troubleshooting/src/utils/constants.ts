@@ -25,7 +25,8 @@ export enum ExitCode {
   INJECTION_01 = 'INJECTION-01',
   SERVICE_04 = 'SERVICE-04',
   SERVICE_05 = 'SERVICE-05',
-  BOOTSTRAP_01 = 'BOOTSTRAP-01'
+  BOOTSTRAP_01 = 'BOOTSTRAP-01',
+  WORKER_REGISTER_01 = 'WORKER-REGISTER-01'
 }
 
 type ExitCodes = { [code in ExitCode]: number };
@@ -48,5 +49,6 @@ export const EXIT_CODES: ExitCodes = {
   'INJECTION-01': 71,
   'SERVICE-04': 94,
   'SERVICE-05': 95,
-  'BOOTSTRAP-01': 110
+  'BOOTSTRAP-01': 110,
+  'WORKER-REGISTER-01': 210
 };
