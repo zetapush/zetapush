@@ -95,7 +95,7 @@ export class WorkerRunner extends EventEmitter {
   constructor(
     private skipProvisioning: boolean,
     private skipBootstrap: boolean,
-    private grapAllTraffic: boolean,
+    private grabAllTraffic: boolean,
     private config: ResolvedConfig,
     private transports: any[],
     private envProvider: EnvironmentProvider,
@@ -157,7 +157,7 @@ export class WorkerRunner extends EventEmitter {
         {
           ...clientConfig,
           transports: this.transports,
-          grapAllTraffic: this.grapAllTraffic
+          grabAllTraffic: this.grabAllTraffic
         },
         this.workerInstanceFactory
       );

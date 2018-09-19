@@ -21,7 +21,7 @@ export interface WorkerClientOptions {
   resource: string;
   timeout: number;
   capacity: number;
-  grapAllTraffic: boolean;
+  grabAllTraffic: boolean;
 }
 
 export class Worker extends Queue {
@@ -67,7 +67,7 @@ export class WorkerClient extends Client {
       resource = `node_js_worker_${uuid()}`,
       timeout = 60 * 1000,
       capacity = 100,
-      grapAllTraffic = false
+      grabAllTraffic = false
     }: WorkerClientOptions,
     workerInstanceFactory?: WorkerInstanceFactory
   ) {
@@ -111,7 +111,7 @@ export class WorkerClient extends Client {
       resource,
       timeout,
       capacity,
-      grapAllTraffic
+      grabAllTraffic
     };
   }
   /**
@@ -154,10 +154,11 @@ export class WorkerClient extends Client {
       },
       Type: Worker
     });
+    // TODO catch error if a worker is already registered with routing.exclusive mode
     queue.register({
       capacity: this.capacity,
       routing: {
-        exclusive: this.options.grapAllTraffic
+        exclusive: this.options.grabAllTraffic
       }
     });
     return instance;
