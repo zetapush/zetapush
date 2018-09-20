@@ -10,7 +10,8 @@
     "dist",
     "lib",
     "es",
-    "index.d.ts"
+    "index.d.ts",
+    "LICENSE"
   ],
   "repository": "https://github.com/zetapush/zetapush",
   "author": "ci@zetapush.com",
@@ -22,7 +23,7 @@
     "build:umd": "cross-env NODE_ENV=development rollup -c -i src/index.ts -o dist/zetapush-worker.js",
     "build:umd:min": "cross-env NODE_ENV=production rollup -c -i src/index.ts -o dist/zetapush-worker.min.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
-    "prepublish": "npm run clean && npm run build",
+    "prepare": "npm run clean && npm run build",
     "test:ci+coverage": "rimraf coverage .nyc_output && nyc node_modules/.bin/ts-node src/index.ts"
   },
   "dependencies": {

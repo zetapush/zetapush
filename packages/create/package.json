@@ -5,7 +5,8 @@
   "files": [
     "index.js",
     "createApp.js",
-    "template"
+    "template",
+    "LICENSE"
   ],
   "bin": "./index.js",
   "repository": "https://github.com/zetapush/zetapush",
