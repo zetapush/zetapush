@@ -32,17 +32,22 @@ export const getLiveStatus = (config: Config) =>
     pathname: `orga/business/live/${config.appName}`,
     debugName: 'getLiveStatus'
   }).then((response) => {
+    log(`getLiveStatus`, response);
     const nodes = Object.values(response.nodes);
-    return nodes.reduce((reduced, node: any) => {
-      const contexts = node.liveData['jetty.local.static.files.contexts'] || [];
-      return {
-        ...reduced,
-        ...contexts.reduce((acc: any, context: any) => {
-          acc[context.name] = context.urls;
-          return acc;
-        }, {})
-      };
-    }, {});
+    return nodes.reduce(
+      (reduced, node: any) => {
+        const fronts = node.liveData['static.files.hosting'] || {};
+        const workers = node.liveData['worker.deployer'] || {};
+        return {
+          fronts,
+          workers
+        };
+      },
+      {
+        fronts: {},
+        workers: {}
+      }
+    );
   });
 
 export interface ProgressionInfo {
@@ -166,9 +171,9 @@ export const getDeploymentProgression = (
         events.removeAllListeners();
       } else {
         getLiveStatus(config)
-          .then((fronts) => {
+          .then((status) => {
             events.emit(ProgressEvents.SUCCESS, {
-              fronts,
+              ...status,
               progressDetail,
               config,
               recipeId
