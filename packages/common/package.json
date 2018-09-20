@@ -10,7 +10,8 @@
     "dist",
     "lib",
     "es",
-    "index.d.ts"
+    "index.d.ts",
+    "LICENSE"
   ],
   "repository": "https://github.com/zetapush/zetapush",
   "author": "ci@zetapush.com",
