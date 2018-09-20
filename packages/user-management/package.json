@@ -27,7 +27,7 @@
     "test": "npm run clean && npm run build:commonjs:test && node_modules/.bin/nyc ts-node -r source-map-support/register node_modules/.bin/jasmine",
     "test:ci+coverage": "rimraf coverage .nyc_output && cross-env TS_NODE_PROJECT=tsconfig.test.json nyc node_modules/.bin/ts-node node_modules/.bin/jasmine",
     "test:ci": "cross-env TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js",
-    "prepublish": "npm run clean && npm run build",
+    "prepare": "npm run clean && npm run build",
     "build:api-doc": "typedoc --out ./docs ./src/index.ts"
   },
   "dependencies": {

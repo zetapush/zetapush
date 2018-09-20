@@ -23,7 +23,7 @@
     "build:umd": "cross-env NODE_ENV=development rollup -c -i src/index.ts -o dist/zetapush-testing.js",
     "build:umd:min": "cross-env NODE_ENV=production rollup -c -i src/index.ts -o dist/zetapush-testing.min.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
-    "prepublish": "npm run clean && npm run build"
+    "prepare": "npm run clean && npm run build"
   },
   "dependencies": {
     "@zetapush/client": "0.33.4",
