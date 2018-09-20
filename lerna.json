@@ -3,7 +3,7 @@
   "version": "0.33.4",
   "command": {
     "publish": {
-      "ignoreChanges": ["@zetapush/example", "@zetapush/integration", "*.md", "test/**", "*/package-lock.json"],
+      "ignoreChanges": ["@zetapush/example", "@zetapush/integration", "*.md", "test/**"],
       "conventionalCommits": true,
       "message": "chore(release): publish %s"
     }
