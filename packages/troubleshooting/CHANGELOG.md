@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.34.0"></a>
+# [0.34.0](https://github.com/zetapush/zetapush/compare/v0.33.4...v0.34.0) (2018-09-21)
+
+
+### Features
+
+* **add-grab-all-traffic-cli-option:** add troubleshooting information on worker register fail ([5969aec](https://github.com/zetapush/zetapush/commit/5969aec))
+
+
+
+
+# Change Log
+
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
 ## [0.33.4](https://github.com/zetapush/zetapush/compare/v0.33.3...v0.33.4) (2018-09-17)
 
 

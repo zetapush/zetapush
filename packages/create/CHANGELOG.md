@@ -3,12 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.33.4](https://github.com/zetapush/zetapush/compare/v0.33.3...v0.33.4) (2018-09-17)
+<a name="0.34.0"></a>
+# [0.34.0](https://github.com/zetapush/zetapush/compare/v0.33.4...v0.34.0) (2018-09-21)
+
+
+### Features
+
+* **update-prompt-implementation:** replace prompt-sync by prompts ([a275e0a](https://github.com/zetapush/zetapush/commit/a275e0a)), closes [#100](https://github.com/zetapush/zetapush/issues/100)
 
 
 
-
-**Note:** Version bump only for package @zetapush/create
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

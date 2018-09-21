@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/worker",
-  "version": "0.33.4",
+  "version": "0.34.0",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-worker.js",
   "main": "lib/index.js",
@@ -27,10 +27,10 @@
     "test:ci+coverage": "rimraf coverage .nyc_output && nyc node_modules/.bin/ts-node src/index.ts"
   },
   "dependencies": {
-    "@zetapush/client": "0.33.4",
-    "@zetapush/common": "0.33.4",
-    "@zetapush/core": "0.33.4",
-    "@zetapush/platform-legacy": "0.33.4"
+    "@zetapush/client": "0.34.0",
+    "@zetapush/common": "0.34.0",
+    "@zetapush/core": "0.34.0",
+    "@zetapush/platform-legacy": "0.34.0"
   },
   "devDependencies": {
     "cross-env": "5.2.0",

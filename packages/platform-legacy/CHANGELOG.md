@@ -3,12 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [0.33.4](https://github.com/zetapush/zetapush/compare/v0.33.3...v0.33.4) (2018-09-17)
+<a name="0.34.0"></a>
+# [0.34.0](https://github.com/zetapush/zetapush/compare/v0.33.4...v0.34.0) (2018-09-21)
+
+
+### Features
+
+* **add-grab-all-traffic-cli-option:** support grabAllTraffic option ([cfe2a19](https://github.com/zetapush/zetapush/commit/cfe2a19))
 
 
 
-
-**Note:** Version bump only for package @zetapush/platform-legacy
 
 <a name="0.24.1"></a>
 ## [0.24.1](https://github.com/zetapush/zetapush/compare/v0.24.0...v0.24.1) (2018-06-18)

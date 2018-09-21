@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/http-server",
-  "version": "0.33.4",
+  "version": "0.34.0",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-http-server.js",
   "main": "lib/index.js",
@@ -30,14 +30,14 @@
     "build:api-doc": "typedoc --out ./docs ./src/index.ts"
   },
   "dependencies": {
-    "@zetapush/common": "0.33.4",
-    "@zetapush/core": "0.33.4",
+    "@zetapush/common": "0.34.0",
+    "@zetapush/core": "0.34.0",
     "express": "4.16.3"
   },
   "devDependencies": {
     "@types/express": "4.16.0",
     "@types/jasmine": "2.8.8",
-    "@zetapush/testing": "0.33.4",
+    "@zetapush/testing": "0.34.0",
     "cross-env": "5.2.0",
     "jasmine": "3.1.0",
     "jasmine-reporters": "2.3.1",
