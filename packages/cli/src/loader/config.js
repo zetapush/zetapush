@@ -107,8 +107,11 @@ const load = async (command, required = true) => {
   try {
     config = merge(await fromCli(command), await fromEnv(), await fromFile(command), await fromDefault());
     trace('merged config', config);
+    if (!config.developerLogin) {
+      config.developerLogin = await getDeveloperLogin();
+    }
     if (!config.developerPassword) {
-      config.developerPassword = getDeveloperPassword();
+      config.developerPassword = await getDeveloperPassword();
     }
     if (isValid(config)) {
       trace('config is valid', config);

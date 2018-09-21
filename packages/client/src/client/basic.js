@@ -1,5 +1,6 @@
 import { ClientHelper } from './helper.js';
 import { API_URL, FORCE_HTTPS } from '../utils/http.js';
+import { analyze } from '../utils/error-handler.js';
 import { ConnectionStatusListener } from '../connection/connection-status.js';
 
 /**
@@ -100,15 +101,11 @@ export class Client {
           // Resolve connection success
           resolve();
         };
-        const onError = (error) => {
+        const onError = (error, ext) => {
           // Remove connection status listener
           this.removeConnectionStatusListener(handler);
-          // Reject connection
-          reject({
-            code: 'CONNECTION_FAILED',
-            message: 'Unable to connect to platform',
-            cause: error
-          });
+          // Reject connection (analyze raw error before)
+          analyze(error, 'CONNECTION_FAILED', ext).then(reject);
         };
         // Register connection status listener
         handler = this.addConnectionStatusListener({

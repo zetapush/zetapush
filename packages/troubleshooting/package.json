@@ -7,7 +7,8 @@
   "jsnext:main": "es/index.js",
   "files": [
     "lib",
-    "es"
+    "es",
+    "LICENSE"
   ],
   "repository": "https://github.com/zetapush/zetapush",
   "author": "ci@zetapush.com",
@@ -17,7 +18,7 @@
     "build:commonjs": "tsc --outDir lib",
     "build:es": "tsc --module ES2015 --moduleResolution Node --outDir es",
     "build": "npm run build:commonjs && npm run build:es",
-    "prepublish": "npm run clean && npm run build",
+    "prepare": "npm run clean && npm run build",
     "test:ci+coverage": "rimraf coverage .nyc_output && nyc node_modules/.bin/ts-node src/index.ts"
   },
   "dependencies": {

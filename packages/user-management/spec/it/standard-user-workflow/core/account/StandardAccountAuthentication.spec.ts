@@ -5,6 +5,7 @@ import { AccountCreationManager, StandardAccountStatus } from '../../../../../sr
 import { AccountCreationManagerInjectable } from '../../../../../src/';
 import { AccountCreationManagerConfigurerImpl } from '../../../../../src/standard-user-workflow/configurer/account';
 import { TimestampBasedUuidGenerator } from '../../../../../src/common/core';
+import { AccountNotConfirmedError, BadCredentialsError } from '@zetapush/client/lib';
 
 describe(`StandardAccountAuthentication`, () => {
   const registrationConfigurer = jasmine.createSpyObj('registrationConfigurer', ['account', 'welcome', 'confirmation']);
@@ -103,7 +104,9 @@ describe(`StandardAccountAuthentication`, () => {
                 .execute();
               fail('authentication should have failed');
             } catch (e) {
-              expect(e).toEqual('403::Handshake denied');
+              expect(() => {
+                throw e;
+              }).toThrowError(BadCredentialsError);
             }
           },
           5 * 60 * 1000
@@ -138,8 +141,9 @@ describe(`StandardAccountAuthentication`, () => {
                 .execute();
               fail('authentication should have failed');
             } catch (e) {
-              // TODO: Handle the proper error
-              expect(e).toEqual('403::Handshake denied');
+              expect(() => {
+                throw e;
+              }).toThrowError(AccountNotConfirmedError);
             }
           },
           5 * 60 * 1000

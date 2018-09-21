@@ -51,11 +51,17 @@ const getProgression = (config, recipeId) => {
     const { steps } = progressDetail;
     displayProgress(progress, steps);
   });
-  events.on(ProgressEvents.SUCCESS, async ({ fronts }) => {
+  events.on(ProgressEvents.SUCCESS, async ({ fronts, workers }) => {
     log(`Application status`);
-    Object.entries(fronts).forEach(([name, urls]) => {
-      info(`Your frontend application ${name} is available at ${urls[urls.length - 1]}`);
+    Object.entries(fronts).forEach(([name, deployed]) => {
+      const url = deployed.urls['USER_FRIENDLY'];
+      info(`Web application ${name} is available at ${url}`);
     });
+    Object.entries(workers).forEach(([name, deployed]) => {
+      const url = deployed.urls['USER_FRIENDLY'];
+      info(`Worker application ${name} is available at ${url}`);
+    });
+    info(`Worker applications works only if you listen process.env.HTTP_PORT`);
   });
   events.on(ProgressEvents.FAILED, async ({ progressDetail, config, cause, failure }) => {
     if (cause === ProgressFailureCauses.PROGRESSION_RETRYING) {

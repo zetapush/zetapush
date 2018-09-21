@@ -1,21 +1,24 @@
 {
   "triggerTaskOnSave.tasks": {
-    "testing [prepublish]": [
+    "testing [prepare]": [
       "packages/testing/src/**"
     ],
-    "common [prepublish]": [
+    "common [prepare]": [
       "packages/common/src/**"
     ],
-    "core [prepublish]": [
+    "client [prepare]": [
+      "packages/client/src/**"
+    ],
+    "core [prepare]": [
       "packages/core/src/**"
     ],
-    "worker [prepublish]": [
+    "worker [prepare]": [
       "packages/worker/src/**"
     ],
-    "http-server [prepublish]": [
+    "http-server [prepare]": [
       "packages/http-server/src/**"
     ],
-    "user-management [prepublish]": [
+    "user-management [prepare]": [
       "packages/user-management/src/**"
     ],
     "lerna [clean+bootstrap]": [
