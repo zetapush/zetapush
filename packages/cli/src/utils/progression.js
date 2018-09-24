@@ -22,12 +22,27 @@ const getProgressionColor = (step) => {
 };
 
 const displayProgress = (steps) => {
+  /*
+
+*/
+
+  const getColor = (step) => {
+    if (step.hasUnrecoverableErrors) return 'red';
+    if (step.hasErrors) return 'yellow';
+    if (step.finished) return 'green';
+    return 'blue';
+  };
+
   const round = (value, opposite = false) => Math.round(opposite ? 20 - (value * 20) / 100 : (value * 20) / 100);
-  const empty = chalk`{green ░}`;
-  const full = chalk`{green ▇}`;
-  const log = chalk`[{cyan.bold INFO}] `;
-  const progressbar = ({ name, progress }) =>
-    `${log}${full.repeat(round(progress))}${empty.repeat(round(progress, true))} ${name}`;
+  const empty = (step) => chalk`{${getColor(step)} ░}`;
+  const full = (step) => chalk`{${getColor(step)} ▇}`;
+  const isStepInError = (step) => step.hasUnrecoverableErrors || step.hasErrors;
+  const log = (step) =>
+    chalk`[{${isStepInError(step) ? 'red' : 'cyan'}.bold ${isStepInError(step) ? 'ERROR' : 'INFO'}}] `;
+  const progressbar = (step) =>
+    `${log(step)}${full(step).repeat(round(step.progress))}${empty(step).repeat(round(step.progress, true))} ${
+      step.name
+    }`;
   const output = steps.map(progressbar).join(EOL);
   update(output);
 };
