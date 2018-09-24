@@ -1,4 +1,6 @@
-const ProgressBar = require('node-progress-bars');
+const { EOL } = require('os');
+const update = require('log-update');
+const chalk = require('chalk');
 
 const {
   log,
@@ -19,37 +21,37 @@ const getProgressionColor = (step) => {
   return 'blue';
 };
 
-const displayProgress = (progress, steps) => {
-  try {
-    steps.forEach((step) => {
-      if (!progress[step.id]) {
-        progress[step.id] = new ProgressBar({
-          total: 100,
-          width: 20,
-          schema: `:bar.${getProgressionColor(step)} ${step.name}`,
-          blank: '░'
-        });
-      }
-      progress[step.id].setSchema(`:bar.${getProgressionColor(step)} ${step.name}`);
-      progress[step.id].update(step.progress / 100);
-    });
-  } catch (e) {
-    trace("can't display progress => fallback", e);
-    console.log(''.padEnd(60, '-'));
-    steps.forEach((step) => {
-      const progressChars = Math.floor((step.progress * 20) / 100);
-      const blankChars = 20 - progressChars;
-      console.log(`${''.padEnd(progressChars, '▇')}${''.padEnd(blankChars, '░')} ${step.name}`);
-    });
-  }
+const displayProgress = (steps) => {
+  /*
+
+*/
+
+  const getColor = (step) => {
+    if (step.hasUnrecoverableErrors) return 'red';
+    if (step.hasErrors) return 'yellow';
+    if (step.finished) return 'green';
+    return 'blue';
+  };
+
+  const round = (value, opposite = false) => Math.round(opposite ? 20 - (value * 20) / 100 : (value * 20) / 100);
+  const empty = (step) => chalk`{${getColor(step)} ░}`;
+  const full = (step) => chalk`{${getColor(step)} ▇}`;
+  const isStepInError = (step) => step.hasUnrecoverableErrors || step.hasErrors;
+  const log = (step) =>
+    chalk`[{${isStepInError(step) ? 'red' : 'cyan'}.bold ${isStepInError(step) ? 'ERROR' : 'INFO'}}] `;
+  const progressbar = (step) =>
+    `${log(step)}${full(step).repeat(round(step.progress))}${empty(step).repeat(round(step.progress, true))} ${
+      step.name
+    }`;
+  const output = steps.map(progressbar).join(EOL);
+  update(output);
 };
 
 const getProgression = (config, recipeId) => {
-  const progress = {};
   const events = getDeploymentProgression(config, recipeId);
   events.on(ProgressEvents.PROGRESSION, async ({ progressDetail }) => {
     const { steps } = progressDetail;
-    displayProgress(progress, steps);
+    displayProgress(steps);
   });
   events.on(ProgressEvents.SUCCESS, async ({ fronts, workers }) => {
     log(`Application status`);
