@@ -27,7 +27,7 @@
     "execa": "0.10.0",
     "find-free-port": "2.0.0",
     "hot-module-replacement": "3.0.1",
-    "node-progress-bars": "1.0.8",
+    "log-update": "2.3.0",
     "ora": "2.1.0",
     "prompts": "1.1.0",
     "reflect-metadata": "0.1.12",
