@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.34.1"></a>
+## [0.34.1](https://github.com/zetapush/zetapush/compare/v0.34.0...v0.34.1) (2018-09-24)
+
+
+### Features
+
+* **replace-progression-implementation:** add log to give a feedback on bundling phase ([f329928](https://github.com/zetapush/zetapush/commit/f329928))
+* **replace-progression-implementation:** replace node-progress-bars by log-update ([e578fea](https://github.com/zetapush/zetapush/commit/e578fea))
+* **ush-progress-color:** update push progress color to support errors ([a8ff07a](https://github.com/zetapush/zetapush/commit/a8ff07a))
+
+
+
+
 <a name="0.34.0"></a>
 # [0.34.0](https://github.com/zetapush/zetapush/compare/v0.33.4...v0.34.0) (2018-09-21)
 
