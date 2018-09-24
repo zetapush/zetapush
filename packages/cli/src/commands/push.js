@@ -2,7 +2,7 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 
-const { upload, filter, BLACKLIST, log, error, mkdir, trace } = require('@zetapush/common');
+const { upload, filter, BLACKLIST, log, error, mkdir, trace, info } = require('@zetapush/common');
 const { Queue } = require('@zetapush/platform-legacy');
 const { displayHelp } = require('@zetapush/troubleshooting');
 
@@ -45,6 +45,7 @@ const archive = (command, config, declaration) => {
  */
 const push = (command, config, declaration) => {
   log(`Execute command <push> ${command.worker}`);
+  info(`Bundle your application components`);
   archive(command, config, declaration)
     .then((rootArchive) => upload(fs.createReadStream(rootArchive), config))
     .then((recipe) => {
