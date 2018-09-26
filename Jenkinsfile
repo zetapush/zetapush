@@ -25,7 +25,7 @@ pipeline {
         }
       }
       steps {
-        sh "npm --registry ${env.NPM_REGISTRY} i"
+        sh "npm --registry ${env.NPM_REGISTRY} ci"
         sh 'npm run lerna:clean -- --yes'
       }
     }
@@ -39,7 +39,7 @@ pipeline {
         }
       }
       steps {
-        sh "npm --registry ${env.NPM_REGISTRY} i"
+        sh "npm --registry ${env.NPM_REGISTRY} ci"
         sh 'npm run lerna:bootstrap'
       }
     }
@@ -84,7 +84,7 @@ pipeline {
         }
       }
       steps {
-        sh "npm --registry ${env.NPM_REGISTRY} i"
+        sh "npm --registry ${env.NPM_REGISTRY} ci"
         sh 'npm run lerna:clean -- --yes'
         sh "chown -R ${env.JENKINS_UID}:${env.JENKINS_GID} ."
         dir('node_modules') {
@@ -105,7 +105,7 @@ pipeline {
             stage('Build') {
               steps {
                 retry(3) {
-                  sh "npm --registry ${env.NPM_REGISTRY} i"
+                  sh "npm --registry ${env.NPM_REGISTRY} ci"
                   sh 'npm run lerna:clean -- --yes'
                   sh "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
                 }
@@ -209,7 +209,7 @@ pipeline {
             stage('Build') {
               steps {
                 retry(3) {
-                  bat "npm --registry ${env.NPM_REGISTRY} i"
+                  bat "npm --registry ${env.NPM_REGISTRY} ci"
                   bat 'npm run lerna:clean -- --yes'
                   bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
                 }
@@ -285,7 +285,7 @@ pipeline {
             stage('Build') {
               steps {
                 retry(3) {
-                  bat "npm --registry ${env.NPM_REGISTRY} i"
+                  bat "npm --registry ${env.NPM_REGISTRY} ci"
                   bat 'npm run lerna:clean -- --yes'
                   bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
                 }
@@ -362,7 +362,7 @@ pipeline {
             stage('Build') {
               steps {
                 retry(3) {
-                  bat "npm --registry ${env.NPM_REGISTRY} i"
+                  bat "npm --registry ${env.NPM_REGISTRY} ci"
                   bat 'npm run lerna:clean -- --yes'
                   bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
                 }
