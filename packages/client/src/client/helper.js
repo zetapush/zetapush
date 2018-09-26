@@ -438,7 +438,7 @@ export class ClientHelper {
           const subscriptions = {};
           return new Promise((resolve, reject) => {
             const handler = ({ data = {} }) => {
-              const { result = {}, errors = [], requestId } = data;
+              const { result, errors = [], requestId } = data;
               if (requestId === uniqRequestId) {
                 // Handle errors
                 if (errors.length > 0) {
@@ -496,7 +496,7 @@ export class ClientHelper {
               }
             };
             const onSuccess = ({ data = {} }) => {
-              const { result = {}, requestId } = data;
+              const { result, requestId } = data;
               if (requestId === uniqRequestId) {
                 resolve(result);
                 this.unsubscribe(subscriptions);
@@ -620,7 +620,7 @@ export class ClientHelper {
       const subscriptions = {};
       return new Promise((resolve, reject) => {
         const handler = ({ data = {} }) => {
-          const { result = {}, errors = [], requestId } = data;
+          const { result, errors = [], requestId } = data;
           if (requestId === uniqRequestId) {
             // Handle errors
             if (errors.length > 0) {
@@ -709,7 +709,7 @@ export class ClientHelper {
           }
         };
         const onSuccess = ({ data = {} }) => {
-          const { result = {}, requestId } = data;
+          const { result, requestId } = data;
           if (requestId === uniqRequestId) {
             resolve(result);
             this.unsubscribe(subscriptions);
