@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/core",
-  "version": "0.33.4",
+  "version": "0.34.2",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-core.js",
   "main": "lib/index.js",
@@ -10,7 +10,8 @@
     "dist",
     "lib",
     "es",
-    "index.d.ts"
+    "index.d.ts",
+    "LICENSE"
   ],
   "repository": "https://github.com/zetapush/zetapush",
   "author": "ci@zetapush.com",
@@ -20,7 +21,7 @@
     "build:commonjs": "tsc --outDir lib",
     "build:es": "tsc --module ES2015 --moduleResolution Node --outDir es",
     "build": "npm run build:commonjs && npm run build:es",
-    "prepublish": "npm run clean && npm run build",
+    "prepare": "npm run clean && npm run build",
     "test:ci+coverage": "rimraf coverage .nyc_output && nyc node_modules/.bin/ts-node src/index.ts"
   },
   "dependencies": {

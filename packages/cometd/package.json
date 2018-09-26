@@ -1,11 +1,12 @@
 {
   "name": "@zetapush/cometd",
-  "version": "0.33.4",
+  "version": "0.34.2",
   "description": "Zeta Push Next",
   "main": "index.js",
   "files": [
     "lib/",
-    "index.js"
+    "index.js",
+    "LICENSE"
   ],
   "repository": "https://github.com/zetapush/zetapush",
   "author": "ci@zetapush.com",

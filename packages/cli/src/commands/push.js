@@ -2,7 +2,8 @@ const path = require('path');
 const os = require('os');
 const fs = require('fs');
 
-const { upload, filter, BLACKLIST, log, error, mkdir, trace } = require('@zetapush/common');
+const { upload, filter, BLACKLIST, log, error, mkdir, trace, info } = require('@zetapush/common');
+const { Queue } = require('@zetapush/platform-legacy');
 const { displayHelp } = require('@zetapush/troubleshooting');
 
 const { compress } = require('../utils/compress-folder');
@@ -20,7 +21,7 @@ const archive = (command, config, declaration) => {
   const root = path.join(os.tmpdir(), String(ts));
   const app = path.join(root, 'app');
   const rootArchive = `${root}.zip`;
-  const workerArchive = path.join(root, `worker.zip`);
+  const workerArchive = path.join(root, `${Queue.DEFAULT_DEPLOYMENT_ID}.zip`);
   const frontArchive = path.join(root, `front.zip`);
   trace(`zipping worker (${workerArchive}) and front (${frontArchive}) into ${rootArchive}...`);
 
@@ -44,6 +45,7 @@ const archive = (command, config, declaration) => {
  */
 const push = (command, config, declaration) => {
   log(`Execute command <push> ${command.worker}`);
+  info(`Bundle your application components`);
   archive(command, config, declaration)
     .then((rootArchive) => upload(fs.createReadStream(rootArchive), config))
     .then((recipe) => {

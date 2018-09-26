@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/client",
-  "version": "0.33.4",
+  "version": "0.34.2",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-client.js",
   "main": "lib/index.js",
@@ -11,7 +11,8 @@
     "dist",
     "lib",
     "es",
-    "index.d.ts"
+    "index.d.ts",
+    "LICENSE"
   ],
   "repository": "https://github.com/zetapush/zetapush",
   "author": "ci@zetapush.com",
@@ -24,13 +25,13 @@
     "build:umd:min": "cross-env BABEL_ENV=umd NODE_ENV=production rollup -c -i src/index.js -o dist/zetapush-client.min.js",
     "build:umd+coverage": "cross-env BABEL_ENV=test NODE_ENV=development rollup -c -i src/index.js -o dist/zetapush-client.js",
     "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
-    "prepublish": "npm run clean && npm run build",
+    "prepare": "npm run clean && npm run build",
     "test:ci+coverage": "rimraf coverage .nyc_output && npm run build:umd+coverage && karma start karma.conf.js",
     "test:ci": "karma start karma.conf.js"
   },
   "dependencies": {
-    "@zetapush/cometd": "0.33.4",
-    "@zetapush/platform-legacy": "0.33.4"
+    "@zetapush/cometd": "0.34.2",
+    "@zetapush/platform-legacy": "0.34.2"
   },
   "devDependencies": {
     "@babel/cli": "7.0.0",

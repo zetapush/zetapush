@@ -1,13 +1,14 @@
 {
   "name": "@zetapush/troubleshooting",
-  "version": "0.33.4",
+  "version": "0.34.2",
   "description": "Zeta Push Next",
   "main": "lib/index.js",
   "module": "es/index.js",
   "jsnext:main": "es/index.js",
   "files": [
     "lib",
-    "es"
+    "es",
+    "LICENSE"
   ],
   "repository": "https://github.com/zetapush/zetapush",
   "author": "ci@zetapush.com",
@@ -17,11 +18,11 @@
     "build:commonjs": "tsc --outDir lib",
     "build:es": "tsc --module ES2015 --moduleResolution Node --outDir es",
     "build": "npm run build:commonjs && npm run build:es",
-    "prepublish": "npm run clean && npm run build",
+    "prepare": "npm run clean && npm run build",
     "test:ci+coverage": "rimraf coverage .nyc_output && nyc node_modules/.bin/ts-node src/index.ts"
   },
   "dependencies": {
-    "@zetapush/common": "0.33.4",
+    "@zetapush/common": "0.34.2",
     "axios": "0.18.0",
     "default-gateway": "2.7.2",
     "execa": "0.10.0",

@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/user-management",
-  "version": "0.33.4",
+  "version": "0.34.2",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-user-management.js",
   "main": "lib/index.js",
@@ -10,7 +10,8 @@
     "dist",
     "lib",
     "es",
-    "index.d.ts"
+    "index.d.ts",
+    "LICENSE"
   ],
   "repository": "https://github.com/zetapush/zetapush",
   "author": "ci@zetapush.com",
@@ -26,15 +27,15 @@
     "test": "npm run clean && npm run build:commonjs:test && node_modules/.bin/nyc ts-node -r source-map-support/register node_modules/.bin/jasmine",
     "test:ci+coverage": "rimraf coverage .nyc_output && cross-env TS_NODE_PROJECT=tsconfig.test.json nyc node_modules/.bin/ts-node node_modules/.bin/jasmine",
     "test:ci": "cross-env TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js",
-    "prepublish": "npm run clean && npm run build",
+    "prepare": "npm run clean && npm run build",
     "build:api-doc": "typedoc --out ./docs ./src/index.ts"
   },
   "dependencies": {
-    "@zetapush/client": "0.33.4",
-    "@zetapush/common": "0.33.4",
-    "@zetapush/core": "0.33.4",
-    "@zetapush/http-server": "0.33.4",
-    "@zetapush/platform-legacy": "0.33.4",
+    "@zetapush/client": "0.34.2",
+    "@zetapush/common": "0.34.2",
+    "@zetapush/core": "0.34.2",
+    "@zetapush/http-server": "0.34.2",
+    "@zetapush/platform-legacy": "0.34.2",
     "axios": "0.19.0-beta.1",
     "class-validator": "0.8.5",
     "nodemailer": "4.6.8"
@@ -42,8 +43,8 @@
   "devDependencies": {
     "@types/jasmine": "2.8.8",
     "@types/nodemailer": "4.6.2",
-    "@zetapush/testing": "0.33.4",
-    "@zetapush/worker": "0.33.4",
+    "@zetapush/testing": "0.34.2",
+    "@zetapush/worker": "0.34.2",
     "axios-mock-adapter": "1.15.0",
     "catharsis": "0.8.9",
     "cross-env": "5.2.0",
