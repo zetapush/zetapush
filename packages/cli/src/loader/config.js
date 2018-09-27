@@ -6,7 +6,40 @@ const cosmiconfig = require('cosmiconfig');
 // Local
 const { DEFAULTS, log, error, warn, trace } = require('@zetapush/common');
 const { getDeveloperPassword } = require('../utils/security');
+const { Crypto } = require('../utils/crypto');
 const explorer = cosmiconfig('zeta');
+
+const decrypt = (config) => {
+  const { developerLogin, developerPassword, developerSecretToken, ...rest } = config;
+  let decryted;
+  if (developerPassword) {
+    decryted = developerPassword;
+  } else {
+    if (developerLogin && developerSecretToken) {
+      const crypto = new Crypto(developerLogin);
+      decryted = crypto.decrypt(developerSecretToken);
+    }
+  }
+  return {
+    ...rest,
+    developerLogin,
+    developerPassword: decryted
+  };
+};
+
+const encrypt = (config) => {
+  const { developerLogin, developerPassword, ...rest } = config;
+  let encryted;
+  if (developerPassword && developerLogin) {
+    const crypto = new Crypto(developerLogin);
+    encryted = crypto.encrypt(developerPassword);
+  }
+  return {
+    ...rest,
+    developerLogin,
+    developerSecretToken: encryted
+  };
+};
 
 /**
  * Check if ZetaPush config is valid
@@ -23,8 +56,10 @@ const isValid = (config = {}) => config.platformUrl && config.developerLogin && 
 const save = (command, content) =>
   new Promise((resolve, reject) => {
     const filepath = path.join(command.worker, '.zetarc');
+    // Encrypt content before
+    const encryted = encrypt(content);
     log('Save config file', filepath);
-    fs.writeFile(filepath, JSON.stringify(content, null, 2), (failure) => {
+    fs.writeFile(filepath, JSON.stringify(encryted, null, 2), (failure) => {
       if (failure) {
         return reject(failure);
       }
@@ -86,6 +121,7 @@ const fromFile = async (command) => {
       trace('Configuration loaded from file', command.worker, result);
       return (result && result.config) || {};
     })
+    .then((config) => decrypt(config))
     .catch((e) => {
       warn('Failed to load conf from filesystem', command.worker);
       return {};
@@ -115,7 +151,7 @@ const load = async (command, required = true) => {
     }
     if (isValid(config)) {
       trace('config is valid', config);
-      return config;
+      return save(command, config);
     }
   } catch (e) {
     error('Error while loading and merging configuration', e);
