@@ -21,6 +21,7 @@
     "@zetapush/platform-legacy": "0.34.2",
     "@zetapush/troubleshooting": "0.34.2",
     "@zetapush/worker": "0.34.2",
+    "aes-js": "3.1.1",
     "chalk": "2.4.1",
     "commander": "2.16.0",
     "cosmiconfig": "5.0.5",
