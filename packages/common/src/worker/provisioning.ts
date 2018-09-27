@@ -81,7 +81,7 @@ export const getRuntimeProvision = (
         deploymentId: `${Service.DEPLOYMENT_TYPE}_0`,
         description: `${Service.DEPLOYMENT_TYPE}`,
         options: Service.DEPLOYMENT_OPTIONS || {},
-        forbiddenVerbs: [],
+        forbiddenVerbs: ['__all'],
         enabled: true
       }
     })),
