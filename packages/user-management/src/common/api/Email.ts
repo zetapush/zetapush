@@ -26,7 +26,3 @@ export interface Email extends Message {
   subject?: EmailSubject;
   body: EmailContent;
 }
-
-export abstract class EmailSenderInjectable implements MessageSender {
-  abstract send(message: Message): Promise<SentMessage>;
-}
