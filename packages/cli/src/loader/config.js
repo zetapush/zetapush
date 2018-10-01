@@ -5,7 +5,7 @@ const path = require('path');
 const cosmiconfig = require('cosmiconfig');
 // Local
 const { DEFAULTS, log, error, warn, trace } = require('@zetapush/common');
-const { getDeveloperPassword } = require('../utils/security');
+const { getDeveloperLogin, getDeveloperPassword } = require('../utils/security');
 const { Crypto } = require('../utils/crypto');
 const explorer = cosmiconfig('zeta');
 
@@ -16,15 +16,18 @@ const decrypt = (config) => {
     decryted = developerPassword;
   } else {
     if (developerLogin && developerSecretToken) {
+      trace('new Crypto', developerLogin);
       const crypto = new Crypto(developerLogin);
       decryted = crypto.decrypt(developerSecretToken);
     }
   }
-  return {
+  const _config = {
     ...rest,
     developerLogin,
     developerPassword: decryted
   };
+  trace('_config', _config);
+  return _config;
 };
 
 const encrypt = (config) => {
@@ -34,11 +37,13 @@ const encrypt = (config) => {
     const crypto = new Crypto(developerLogin);
     encryted = crypto.encrypt(developerPassword);
   }
-  return {
+  const _config = {
     ...rest,
     developerLogin,
     developerSecretToken: encryted
   };
+  trace('_config', _config);
+  return _config;
 };
 
 /**
@@ -123,7 +128,7 @@ const fromFile = async (command) => {
     })
     .then((config) => decrypt(config))
     .catch((e) => {
-      warn('Failed to load conf from filesystem', command.worker);
+      warn('Failed to load conf from filesystem', command.worker, e);
       return {};
     });
 };
