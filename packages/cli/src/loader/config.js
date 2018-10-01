@@ -16,18 +16,15 @@ const decrypt = (config) => {
     decryted = developerPassword;
   } else {
     if (developerLogin && developerSecretToken) {
-      trace('new Crypto', developerLogin);
       const crypto = new Crypto(developerLogin);
       decryted = crypto.decrypt(developerSecretToken);
     }
   }
-  const _config = {
+  return {
     ...rest,
     developerLogin,
     developerPassword: decryted
   };
-  trace('_config', _config);
-  return _config;
 };
 
 const encrypt = (config) => {
@@ -37,13 +34,11 @@ const encrypt = (config) => {
     const crypto = new Crypto(developerLogin);
     encryted = crypto.encrypt(developerPassword);
   }
-  const _config = {
+  return {
     ...rest,
     developerLogin,
     developerSecretToken: encryted
   };
-  trace('_config', _config);
-  return _config;
 };
 
 /**
@@ -128,7 +123,7 @@ const fromFile = async (command) => {
     })
     .then((config) => decrypt(config))
     .catch((e) => {
-      warn('Failed to load conf from filesystem', command.worker, e);
+      warn('Failed to load conf from filesystem', command.worker);
       return {};
     });
 };
