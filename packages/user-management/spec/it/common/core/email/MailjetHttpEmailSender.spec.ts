@@ -1,5 +1,5 @@
 import { given, autoclean, runInWorker } from '@zetapush/testing';
-import { MailjetEmailConfigurerImpl, MessageSender, EmailSenderInjectable } from '../../../../../src';
+import { MailjetEmailConfigurerImpl, MessageSender, MessageSenderInjectable } from '../../../../../src';
 import { mock, anything, verify } from 'ts-mockito';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -36,7 +36,7 @@ describe(`MailjetHttpEmailSender`, () => {
               providers: await configurer.getProviders()
             };
           })
-          /**/ .dependencies(EmailSenderInjectable)
+          /**/ .dependencies(MessageSenderInjectable)
           /**/ .and()
           .apply(this);
       });

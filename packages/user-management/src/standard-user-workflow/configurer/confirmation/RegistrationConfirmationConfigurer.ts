@@ -34,7 +34,7 @@ import {
   TokenManagerInjectable,
   TemplateManager,
   TemplateManagerInjectable,
-  EmailSenderInjectable
+  MessageSenderInjectable
 } from '../../../common/api';
 import { TemplatedEmailAccountConfirmationManager } from '../../core/account/confirmation/TemplatedEmailAccountConfirmationManager';
 import { NamedLocation } from '../../../common/core/resource/Named';
@@ -102,7 +102,7 @@ export class RegistrationConfirmationConfigurerImpl extends AbstractParent<Regis
   async getProviders(): Promise<Provider[]> {
     const providerRegistry = new SimpleProviderRegistry();
     providerRegistry.required(
-      EmailSenderInjectable,
+      MessageSenderInjectable,
       new MissingMandatoryConfigurationError(
         `Confirmation is enabled but neither email nor sms is enabled to send confirmation message`
       )
@@ -131,7 +131,7 @@ export class RegistrationConfirmationConfigurerImpl extends AbstractParent<Regis
         [
           UserRepositoryInjectable,
           TokenManagerInjectable,
-          EmailSenderInjectable,
+          MessageSenderInjectable,
           ConfirmationUrlProviderInjectable,
           scopedDependency('confirmation-email.html', TemplateManagerInjectable),
           scopedDependency('confirmation-email.text', TemplateManagerInjectable)
