@@ -7,6 +7,7 @@ export interface Config {
   appName?: string;
   developerLogin?: string;
   developerPassword?: string;
+  developerSecretToken?: string;
   platformUrl?: string;
 }
 export interface NormalizedWorkerDeclaration {

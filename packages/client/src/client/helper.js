@@ -447,23 +447,24 @@ export class ClientHelper {
                   } else {
                     resolve(result);
                   }
+                  this.unsubscribe(subscriptions);
                 }
-                // Create dynamic listener method
-                const listener = {
-                  [method]: handler,
-                  [DEFAULT_MACRO_CHANNEL]: handler
-                };
-                // Ad-Hoc subscription
-                this.subscribe(prefix, listener, subscriptions);
-                // Publish message on channel
-                this.publish(channel, {
-                  debug: 1,
-                  hardFail: false,
-                  name: method,
-                  parameters,
-                  requestId: uniqRequestId
-                });
               };
+              // Create dynamic listener method
+              const listener = {
+                [method]: handler,
+                [DEFAULT_MACRO_CHANNEL]: handler
+              };
+              // Ad-Hoc subscription
+              this.subscribe(prefix, listener, subscriptions);
+              // Publish message on channel
+              this.publish(channel, {
+                debug: 1,
+                hardFail: false,
+                name: method,
+                parameters,
+                requestId: uniqRequestId
+              });
             });
           },
           timeout,

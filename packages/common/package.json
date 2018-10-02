@@ -29,6 +29,7 @@
   },
   "dependencies": {
     "@zetapush/core": "0.34.2",
+    "aes-js": "3.1.1",
     "axios": "0.18.0",
     "core-js": "2.5.7",
     "esm": "3.0.72",

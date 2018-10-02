@@ -5,7 +5,7 @@ import { PathLike, readFileSync, writeFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import * as process from 'process';
 const rimraf = require('rimraf');
-import { fetch, ResolvedConfig } from '@zetapush/common';
+import { fetch, ResolvedConfig, decrypt } from '@zetapush/common';
 const kill = require('tree-kill');
 import { commandLogger, SubProcessLoggerStream, subProcessLogger } from './logger';
 import { PassThrough } from 'stream';
@@ -271,14 +271,15 @@ export const zetaRun = async (dir: PathLike) => {
  * Read the .zetarc file of an application
  * @param {string} dir Full path of the application folder
  */
-export const readZetarc = async (dir: PathLike) => {
+export const readZetarc = async (dir: PathLike): Promise<ResolvedConfig> => {
   try {
     commandLogger.debug(`readZetarc(${dir})`);
     const content = readFileSync(`${dir}/.zetarc`, {
       encoding: 'utf-8'
     });
-    commandLogger.debug(`readZetarc(${dir}) -> `, { content });
-    return JSON.parse(content);
+    const parsed = decrypt(JSON.parse(content)) as ResolvedConfig;
+    commandLogger.debug(`readZetarc(${dir}) -> `, { content, parsed });
+    return parsed;
   } catch (e) {
     commandLogger.error(`readZetarc(${dir}) FAILED`, e);
     throw e;
@@ -297,6 +298,7 @@ export const deleteAccountFromZetarc = async (dir: PathLike) => {
 
     delete jsonContent.developerLogin;
     delete jsonContent.developerPassword;
+    delete jsonContent.developerSecretToken;
   } else {
     jsonContent = {};
   }
@@ -361,6 +363,7 @@ export const setAccountToZetarc = async (dir: PathLike, login: string, password:
   } else {
     delete jsonContent.developerPassword;
   }
+  delete jsonContent.developerSecretToken;
 
   writeFileSync(`${dir}/.zetarc`, JSON.stringify(jsonContent), {
     encoding: 'utf-8'

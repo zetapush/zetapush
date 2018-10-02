@@ -7,6 +7,7 @@ export * from './progression';
 export * from './worker/di';
 export * from './worker/provisioning';
 export * from './utils/async';
+export * from './utils/crypto';
 export * from './utils/files';
 export * from './utils/helpers';
 export * from './utils/log';
