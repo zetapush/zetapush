@@ -29,7 +29,7 @@ export class TokenWithState implements Token {
  * Generate or validate tokens
  */
 export class TokenManagerImpl implements TokenManager {
-  constructor(private tokenGenerator: TokenGenerator, private tokenStorage: TokenRepository) {}
+  constructor(protected tokenGenerator: TokenGenerator, protected tokenStorage: TokenRepository) {}
 
   /**
    * Validate the token in the specified storage

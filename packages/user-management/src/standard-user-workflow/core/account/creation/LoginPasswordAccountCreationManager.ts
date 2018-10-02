@@ -51,10 +51,10 @@ export class DefaultLoginPasswordAccountDetails implements LoginPasswordAccountD
  */
 export class LoginPasswordAccountCreationManager implements AccountCreationManager {
   constructor(
-    private userRepository: UserRepository,
-    private uuidGenerator: UuidGenerator,
-    private accountStatusProvider: AccountStatusProvider,
-    private additionalAccountDetailsProvider?: AccountDetailsProvider
+    protected userRepository: UserRepository,
+    protected uuidGenerator: UuidGenerator,
+    protected accountStatusProvider: AccountStatusProvider,
+    protected additionalAccountDetailsProvider?: AccountDetailsProvider
   ) {}
 
   async createAccount(accountCreationDetails: AccountCreationDetails): Promise<Account | null> {

@@ -11,7 +11,7 @@ import { UuidGenerator, IllegalArgumentError, Uuid } from '../../api';
  * The '0.' characters are removed.
  */
 export class TimestampBasedUuidGenerator implements UuidGenerator {
-  constructor(private length: number = 20) {
+  constructor(protected length: number = 20) {
     if (length <= 0) {
       throw new IllegalArgumentError('Uuid size must contain at least one character', 'length');
     }

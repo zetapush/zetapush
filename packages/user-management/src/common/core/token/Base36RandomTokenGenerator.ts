@@ -2,7 +2,7 @@ import { TokenGenerator, Token } from '../../api/Token';
 import { IllegalArgumentError } from '../../api/exception';
 
 export class Base36RandomTokenGenerator implements TokenGenerator {
-  constructor(private length = 20) {
+  constructor(protected length = 20) {
     if (this.length <= 0) {
       throw new IllegalArgumentError('Token size must contain at least one character', 'length');
     }

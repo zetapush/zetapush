@@ -6,7 +6,7 @@ import { ValidationErrorContext, ConstraintValidationError, ValidationError } fr
  * ValidationManager implementation with "class-validator" library
  */
 export class ClassValidatorManager implements ValidationManager {
-  constructor(private validationSchema: ClassValidator.ValidationSchema) {}
+  constructor(protected validationSchema: ClassValidator.ValidationSchema) {}
 
   async validate(object: Object) {
     const errors = await ClassValidator.validate(this.validationSchema.name, object);
@@ -41,7 +41,7 @@ export class ClassValidatorManager implements ValidationManager {
  * ValidationManager implementation without any validation
  */
 export class NoOpValidationManager implements ValidationManager {
-  constructor(private validationSchema?: ClassValidator.ValidationSchema) {}
+  constructor(protected validationSchema?: ClassValidator.ValidationSchema) {}
 
   async validate(object?: Object) {
     // Do nothing because all is valid in this case

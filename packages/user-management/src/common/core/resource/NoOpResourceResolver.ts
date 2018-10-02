@@ -9,7 +9,7 @@ export class EmptyResource implements Resource {
 }
 
 export class NoOpResourceResolver implements ResourceResolver {
-  constructor(private resource: Resource = new EmptyResource()) {}
+  constructor(protected resource: Resource = new EmptyResource()) {}
 
   async resolve(location: Location): Promise<Resource> {
     return this.resource;

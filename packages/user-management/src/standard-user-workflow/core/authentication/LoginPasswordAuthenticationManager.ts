@@ -6,7 +6,7 @@ import { Simple } from '@zetapush/platform-legacy';
 import { RequiredAccountIdError } from '../exceptions/AccountAuthenticationError';
 
 export class LoginPasswordAuthenticationManager implements AuthenticationManager {
-  constructor(private authService: Simple) {}
+  constructor(protected authService: Simple) {}
 
   async login(credentials: LoginPasswordCredentials): Promise<Account> {
     // try {

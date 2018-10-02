@@ -1,7 +1,7 @@
 import { Location, ResourceResolver, Resource } from '../../api';
 
 export class NamedLocation implements Location {
-  constructor(private name: string) {}
+  constructor(protected name: string) {}
 }
 
 export class NamedResourceResolver implements ResourceResolver {
