@@ -2,9 +2,20 @@ import { TestContext, Test, ContextWrapper, Context } from '../utils/types';
 import { cleanLogger } from '../utils/logger';
 import { nukeApp, nukeProject } from '../utils/commands';
 import { ResolvedConfig } from '@zetapush/common';
+const execa = require('execa');
+const kill = require('tree-kill');
 
-export const autoclean = async (testOrContext: Context) => {
+export const autoclean = async (testOrContext: Context, disableResetNpmRegistry = false) => {
   const context = new ContextWrapper(testOrContext).getContext();
+
+  // Reset the npm registry to 'https://registry.npmjs.org' (can be changed during testing, reset to default)
+  await execa.shell('npm config set registry https://registry.npmjs.org');
+
+  // Kill subprocess for local npm registry
+  if (context.processLocalRegistry) {
+    kill(context.processLocalRegistry, 'SIGTERM');
+  }
+
   if (context && context.workerRunner) {
     try {
       cleanLogger.warn('destroying worker...');

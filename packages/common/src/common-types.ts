@@ -18,6 +18,8 @@ export interface ResolvedConfig extends Config {
   developerPassword: string;
   platformUrl: string;
   workerServiceId?: string;
+  npmRegistry?: string;
+  skipIgnore?: string;
 }
 export type ServerClient = any;
 
