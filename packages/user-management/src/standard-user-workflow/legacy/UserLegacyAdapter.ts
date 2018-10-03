@@ -139,6 +139,28 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
     }
   }
 
+  /**
+   * Get the userKey of a user from his accountId
+   * @param accountId
+   */
+  async getUserKey(accountId: string): Promise<string> {
+    let columns;
+
+    try {
+      const { result } = await this.gda.get({
+        table: USER_LEGACY_ADAPTER_TABLE_SIMPLE_ASSOCIATIONS,
+        key: accountId
+      });
+      columns = result;
+    } catch (e) {
+      throw new AccountIdAssociationLoadError(`Failed to retrieve userKey from accountId`, accountId, e);
+    }
+    if (!columns) {
+      throw new AccountIdAssociationLoadError(`Empty response while retrieving userKey from accountId`, accountId);
+    }
+    return columns[USER_LEGACY_ADAPTER_COLUMN_DATA].userKey;
+  }
+
   async getProfile(accountId: string): Promise<UserProfile> {
     let columns;
 
