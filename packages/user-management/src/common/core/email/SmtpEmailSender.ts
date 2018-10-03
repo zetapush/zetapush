@@ -7,12 +7,12 @@ export class SmtpError extends EmailError {}
 
 export class SmtpEmailSender implements MessageSender {
   constructor(
-    private smtpConf: SmtpConfiguration,
-    private defaults: Partial<Email>,
-    private mailer: ConfigureSmtpTransport
+    protected smtpConf: SmtpConfiguration,
+    protected defaults: Partial<Email>,
+    protected mailer: ConfigureSmtpTransport
   ) {}
 
-  private transporter: Transporter;
+  protected transporter: Transporter;
 
   async send(email: Email): Promise<SentMessage> {
     try {

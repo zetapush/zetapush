@@ -15,9 +15,9 @@ import { UserRepository } from '../../../../common/api/User';
 
 export class TokenCheckerAccountConfirmationManager implements AccountConfirmationManager {
   constructor(
-    private tokenManager: TokenManager,
-    private userRepository: UserRepository,
-    private validatedStatusProvider: AccountStatusProvider
+    protected tokenManager: TokenManager,
+    protected userRepository: UserRepository,
+    protected validatedStatusProvider: AccountStatusProvider
   ) {}
 
   async askConfirmation(accountToConfirm: Account): Promise<PendingAccountConfirmation> {

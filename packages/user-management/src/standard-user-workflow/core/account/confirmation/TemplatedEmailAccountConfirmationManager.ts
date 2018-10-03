@@ -12,7 +12,7 @@ import { AccountConfirmationError, SendTokenError } from '../../exceptions/Accou
 import { ConfirmationUrlProvider, AccountConfirmationContext } from '../../../api/Confirmation';
 
 class EmailAccountConfirmationTemplateVariables implements AccountConfirmationTemplateVariables {
-  constructor(private delegate: AccountConfirmationContext, public confirmationUrl: string) {}
+  constructor(protected delegate: AccountConfirmationContext, public confirmationUrl: string) {}
 
   get account() {
     return this.delegate.account;
@@ -33,13 +33,13 @@ class EmailAccountConfirmationTemplateVariables implements AccountConfirmationTe
 
 export class TemplatedEmailAccountConfirmationManager implements AccountConfirmationManager {
   constructor(
-    private delegate: AccountConfirmationManager,
-    private emailAddressProvider: EmailAddressProvider,
-    private sender: MessageSender,
-    private urlProvider: ConfirmationUrlProvider,
-    private variablesProvider: VariablesProvider<AccountConfirmationContext>,
-    private htmlTemplateHelper: FixedLocationTemplateManagerHelper,
-    private textTemplateHelper: FixedLocationTemplateManagerHelper
+    protected delegate: AccountConfirmationManager,
+    protected emailAddressProvider: EmailAddressProvider,
+    protected sender: MessageSender,
+    protected urlProvider: ConfirmationUrlProvider,
+    protected variablesProvider: VariablesProvider<AccountConfirmationContext>,
+    protected htmlTemplateHelper: FixedLocationTemplateManagerHelper,
+    protected textTemplateHelper: FixedLocationTemplateManagerHelper
   ) {}
 
   async askConfirmation(accountToConfirm: Account): Promise<PendingAccountConfirmation> {

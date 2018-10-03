@@ -1,7 +1,7 @@
 import { AccountStatusProvider, AccountStatus } from '../../api';
 
 export class StaticAccountStatusProvider implements AccountStatusProvider {
-  constructor(private accountStatus: AccountStatus) {}
+  constructor(protected accountStatus: AccountStatus) {}
 
   async getStatus(): Promise<AccountStatus> {
     return this.accountStatus;

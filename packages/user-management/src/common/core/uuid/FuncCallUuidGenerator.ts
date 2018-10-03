@@ -18,7 +18,7 @@ export class FuncCallUuidGenerator implements UuidGenerator {
    * @param {Function} func the function used to generate a Uuid.
    * The function takes no parameter and returns a Uuid instance.
    */
-  constructor(private func: () => Promise<Uuid>) {
+  constructor(protected func: () => Promise<Uuid>) {
     if (!func) {
       throw new IllegalArgumentError('Generator function is required', 'func');
     }

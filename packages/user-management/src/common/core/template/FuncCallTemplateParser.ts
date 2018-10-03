@@ -3,7 +3,7 @@ import { ParsedTemplateString } from './ParsedTemplateString';
 import { TemplateEvaluationError } from '../../api/exception/TemplateError';
 
 export class FuncCallTemplateParser implements TemplateParser {
-  constructor(private func: (variables: Variables) => string) {}
+  constructor(protected func: (variables: Variables) => string) {}
 
   async parse(template: Template, variables: Variables): Promise<ParsedTemplate> {
     try {

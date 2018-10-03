@@ -3,8 +3,8 @@ import { EmailAddress, EmailWithFallbackContent, EmailContent, Content } from '.
 const EMAIL_WITH_PERSONAL_PATTERN = /^(.+)[ ]+<(.+)>$/;
 
 export class EmailAddressWrapper implements EmailAddress {
-  private address: string;
-  private personal?: string;
+  protected address: string;
+  protected personal?: string;
 
   constructor(address: EmailAddress | { address: string; personal?: string } | string) {
     if (typeof address === 'string') {

@@ -27,10 +27,10 @@ export class TokenFactory {
 
 @Injectable()
 export class GdaTokenRepository implements TokenRepository {
-  private STORAGE_TOKEN_NAME_TABLE = 'storagetokennametable';
-  private STORAGE_TOKEN_NAME_COLUMN = 'storagetokennamecolumn';
+  protected STORAGE_TOKEN_NAME_TABLE = 'storagetokennametable';
+  protected STORAGE_TOKEN_NAME_COLUMN = 'storagetokennamecolumn';
 
-  constructor(private gdaStorage: Gda, private gdaConfigurer: GdaConfigurer, private factory: TokenFactory) {}
+  constructor(protected gdaStorage: Gda, protected gdaConfigurer: GdaConfigurer, protected factory: TokenFactory) {}
 
   async onApplicationBootstrap() {
     try {

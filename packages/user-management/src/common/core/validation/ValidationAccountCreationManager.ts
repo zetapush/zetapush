@@ -9,7 +9,7 @@ import * as ClassValidator from 'class-validator';
 import { ValidationError } from '../../api';
 
 export class ValidationAccountCreationManager implements AccountCreationManager {
-  constructor(private validator: ValidationManager, private delegate: AccountCreationManager) {}
+  constructor(protected validator: ValidationManager, protected delegate: AccountCreationManager) {}
 
   createAccount(accountCreationDetails: AccountCreationDetails): Promise<Account | null> {
     return new Promise<Account | null>((resolve, reject) => {

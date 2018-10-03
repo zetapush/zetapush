@@ -14,7 +14,7 @@ export class ExpirableToken implements Token {
 }
 
 export class ExpirableTokenGenerator implements TokenGenerator {
-  constructor(private delegate: TokenGenerator, private validityDuration: number) {}
+  constructor(protected delegate: TokenGenerator, protected validityDuration: number) {}
 
   async generate(): Promise<ExpirableToken> {
     const token = await this.delegate.generate();

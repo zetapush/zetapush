@@ -38,7 +38,7 @@ export class LegacyAdapterUserRepositoryBootstrapError extends BootstrapError {}
 
 @Injectable()
 export class LegacyAdapterUserRepository implements Bootstrappable, UserRepository {
-  constructor(private simple: Simple, private gda: Gda, private gdaConfigurer: GdaConfigurer) {}
+  constructor(protected simple: Simple, protected gda: Gda, protected gdaConfigurer: GdaConfigurer) {}
 
   async onApplicationBootstrap() {
     try {

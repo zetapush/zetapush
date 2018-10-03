@@ -7,7 +7,7 @@ export interface VariablesWithContext extends Variables {
 }
 
 export class VariablesWithContextProvider<T extends VariablesWithContext> implements VariablesProvider<T> {
-  constructor(private properties: ConfigurationProperties, private zetapushContext: ZetaPushContext) {}
+  constructor(protected properties: ConfigurationProperties, protected zetapushContext: ZetaPushContext) {}
 
   async getVariables(variables?: Variables): Promise<T> {
     return {

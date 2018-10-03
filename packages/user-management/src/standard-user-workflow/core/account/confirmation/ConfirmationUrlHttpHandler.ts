@@ -20,7 +20,7 @@ import { HttpServer, Request, Response } from '@zetapush/http-server';
 // }
 
 export class ConfirmationUrlHttpHandler {
-  constructor(private standardUserWorkflow: StandardUserWorkflow, app: HttpServer) {
+  constructor(protected standardUserWorkflow: StandardUserWorkflow, app: HttpServer) {
     app.get('/users/:accountId/confirm/:token', this.confirm.bind(this));
   }
 

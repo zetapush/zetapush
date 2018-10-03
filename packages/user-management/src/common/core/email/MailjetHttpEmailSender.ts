@@ -12,10 +12,10 @@ export class MailjetHttpError extends EmailError {}
 // TODO: handle mailjet template
 export class MailjetHttpEmailSender implements MessageSender {
   constructor(
-    private mailjetUrl: string,
-    private mailjetAuth: MailjetAuth,
-    private defaults: Partial<Email>,
-    private axios: AxiosInstance
+    protected mailjetUrl: string,
+    protected mailjetAuth: MailjetAuth,
+    protected defaults: Partial<Email>,
+    protected axios: AxiosInstance
   ) {}
 
   async send(email: Email): Promise<SentMessage> {

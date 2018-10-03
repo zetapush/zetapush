@@ -14,10 +14,10 @@ import { debugObject } from '@zetapush/common';
 
 export class StandardUserWorkflow {
   constructor(
-    private accountCreationManager: AccountCreationManager,
-    private accountConfirmationManager: AccountConfirmationManager,
-    private success: RedirectionProvider<ConfirmedAccount>,
-    private failure: RedirectionProvider<Error>
+    protected accountCreationManager: AccountCreationManager,
+    protected accountConfirmationManager: AccountConfirmationManager,
+    protected success: RedirectionProvider<ConfirmedAccount>,
+    protected failure: RedirectionProvider<Error>
   ) {}
 
   async signup(accountDetails: AccountCreationDetails, confirmationRedirection?: Redirection) {

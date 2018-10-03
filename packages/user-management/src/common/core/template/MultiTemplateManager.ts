@@ -1,7 +1,7 @@
 import { TemplateManager, Location, Variables, ParsedTemplate } from '../../api';
 
 export class MultiParsedTemplate implements ParsedTemplate {
-  constructor(private results: { name: string; result: ParsedTemplate }[]) {}
+  constructor(protected results: { name: string; result: ParsedTemplate }[]) {}
 
   getResult(name: string) {
     const matching = this.results.find((r) => r.name == name);
@@ -10,7 +10,7 @@ export class MultiParsedTemplate implements ParsedTemplate {
 }
 
 export class MultiTemplateManager implements TemplateManager {
-  constructor(private delegates: { name: string; manager: TemplateManager }[]) {}
+  constructor(protected delegates: { name: string; manager: TemplateManager }[]) {}
 
   async loadAndParse(location: Location, variables: Variables): Promise<ParsedTemplate> {
     const parsed = [];
