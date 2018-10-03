@@ -120,4 +120,29 @@ describe(`LegacyAdapterUserRepository`, () => {
       }
     });
   });
+  describe(`getUserKey()`, () => {
+    beforeEach(() => {
+      this.simple = jasmine.createSpyObj('Simple', ['checkAccount', 'setStatus', 'createAccount']);
+      this.gda = jasmine.createSpyObj('Gda', ['get', 'put']);
+      this.gdaConfigurer = jasmine.createSpyObj('GdaConfigurer', ['createTable']);
+      this.userRepository = new LegacyAdapterUserRepository(this.simple, this.gda, this.gdaConfigurer);
+    });
+
+    it(`on valid account should return userKey`, async () => {
+      // GIVEN
+      this.gda.get.and.returnValue({
+        result: {
+          data: { userKey: 'abc', login: 'odile.deray' }
+        }
+      });
+
+      // WHEN
+      const userKey = await this.userRepository.getUserKey('42');
+
+      // THEN
+      expect(userKey).toBeDefined();
+      expect(userKey).not.toBeNull();
+      expect(userKey).toBe('abc');
+    });
+  });
 });
