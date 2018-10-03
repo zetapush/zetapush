@@ -19,7 +19,7 @@ export class LegacyUpdateAccountStatus extends LegacySimpleError {
   }
 }
 
-export class LoginAlreadyUsedError extends LegacySimpleError {
+export class LegacyLoginAlreadyUsedError extends LegacySimpleError {
   constructor(message: string, public login: string) {
     super(message);
   }
@@ -120,7 +120,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
           
           This is a ZetaPush issue, please report this error on Github: https://github.com/zetapush/zetapush/issues/new`);
       } else if (e.code === 'ACCOUNT_EXISTS') {
-        throw new LoginAlreadyUsedError(`Login "${credentials.login}" is already used`, credentials.login);
+        throw new LegacyLoginAlreadyUsedError(`Login "${credentials.login}" is already used`, credentials.login);
       } else if (e.code === 'KEY_BADCHAR') {
         // TODO: add validation to prevent this error sooner ?
         throw new LegacySimpleError(
