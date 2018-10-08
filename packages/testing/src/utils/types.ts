@@ -38,3 +38,8 @@ export class ContextWrapper {
 }
 
 export type Context = TestContext | Test | any;
+
+export interface FrontOptions {
+  serveFront: boolean;
+  pushFront: boolean;
+}

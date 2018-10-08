@@ -4,42 +4,9 @@ const path = require('path');
 // Packages
 const cosmiconfig = require('cosmiconfig');
 // Local
-const { DEFAULTS, log, error, warn, trace } = require('@zetapush/common');
-const { Crypto } = require('../utils/crypto');
-const { getDeveloperLogin, getDeveloperPassword } = require('../utils/security');
+const { DEFAULTS, log, error, warn, trace, encrypt, decrypt } = require('@zetapush/common');
+const { getDeveloperPassword, getDeveloperLogin } = require('../utils/security');
 const explorer = cosmiconfig('zeta');
-
-const decrypt = (config) => {
-  const { developerLogin, developerPassword, developerSecretToken, ...rest } = config;
-  let decryted;
-  if (developerPassword) {
-    decryted = developerPassword;
-  } else {
-    if (developerLogin && developerSecretToken) {
-      const crypto = new Crypto(developerLogin);
-      decryted = crypto.decrypt(developerSecretToken);
-    }
-  }
-  return {
-    ...rest,
-    developerLogin,
-    developerPassword: decryted
-  };
-};
-
-const encrypt = (config) => {
-  const { developerLogin, developerPassword, ...rest } = config;
-  let encryted;
-  if (developerPassword && developerLogin) {
-    const crypto = new Crypto(developerLogin);
-    encryted = crypto.encrypt(developerPassword);
-  }
-  return {
-    ...rest,
-    developerLogin,
-    developerSecretToken: encryted
-  };
-};
 
 /**
  * Check if ZetaPush config is valid

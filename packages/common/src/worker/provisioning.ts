@@ -1,8 +1,6 @@
-import { Provider } from '@zetapush/core';
-
 import { log, error } from '../utils/log';
-import { analyze, DependencyInjectionAnalysis } from './di';
-import { Service, Config, WorkerDeclaration, ResolvedConfig } from '../common-types';
+import { DependencyInjectionAnalysis } from './di';
+import { Service, ResolvedConfig } from '../common-types';
 import { writeFile } from 'fs';
 import { isNode } from '../utils/environment';
 

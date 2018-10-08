@@ -39,7 +39,9 @@ describe(`As developer with
           /*     */ .module('@zetapush/user-management')
           /*       */ .and()
           /*     */ .module('@zetapush/core')
-          /*     */ .and()
+          /*       */ .and()
+          /*     */ .module('@zetapush/cli')
+          /*       */ .and()
           /*     */ .and()
           /*   */ .and()
           /**/ .apply(this);
@@ -120,7 +122,9 @@ describe(`As developer with
           /*     */ .module('@zetapush/user-management')
           /*       */ .and()
           /*     */ .module('@zetapush/core')
-          /*     */ .and()
+          /*       */ .and()
+          /*     */ .module('@zetapush/cli')
+          /*       */ .and()
           /*     */ .and()
           /*   */ .and()
           /**/ .apply(this);
@@ -198,7 +202,9 @@ describe(`As developer with
           /*     */ .module('@zetapush/user-management')
           /*       */ .and()
           /*     */ .module('@zetapush/core')
-          /*     */ .and()
+          /*       */ .and()
+          /*     */ .module('@zetapush/cli')
+          /*       */ .and()
           /*     */ .and()
           /*   */ .and()
           /**/ .apply(this);

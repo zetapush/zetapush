@@ -25,12 +25,12 @@ const getProgress = (config: Config, recipeId: string) =>
  * Get Application live status
  * @param {Object} config
  */
-export const getLiveStatus = (config: Config) =>
+export const getLiveStatus = (config: Config, debugName = 'getLiveStatus') =>
   fetch({
     config,
     method: 'GET',
     pathname: `orga/business/live/${config.appName}`,
-    debugName: 'getLiveStatus'
+    debugName
   }).then((response) => {
     log(`getLiveStatus`, response);
     const nodes = Object.values(response.nodes);
@@ -162,13 +162,14 @@ export const getDeploymentProgression = (
       if (!finished && !hasUnrecoverableErrors) {
         setTimeout(check, pollDelay);
       } else if (hasUnrecoverableErrors) {
+        debugObject('unrecoverable-errors', { progressDetail, config, recipeId });
         events.emit(ProgressEvents.FAILED, {
           cause: ProgressFailureCauses.UNRECOVERABLE_ERRORS,
           progressDetail,
           config,
           recipeId
         });
-        events.removeAllListeners();
+        // events.removeAllListeners();
       } else {
         getLiveStatus(config)
           .then((status) => {
@@ -187,11 +188,11 @@ export const getDeploymentProgression = (
               config,
               recipeId
             });
-            events.removeAllListeners();
+            // events.removeAllListeners();
           });
       }
     } catch (ex) {
-      debugObject('progression check', { ex });
+      debugObject('progression-check', { ex });
       if (!isFatalServerError(ex) && remainingRetries-- > 0) {
         currentDelay = retryBackoff(currentDelay, remainingRetries, maxRetries);
         events.emit(ProgressEvents.FAILED, {
@@ -213,7 +214,7 @@ export const getDeploymentProgression = (
           config,
           recipeId
         });
-        events.removeAllListeners();
+        // events.removeAllListeners();
       }
     }
   })();

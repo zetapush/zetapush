@@ -432,40 +432,44 @@ export class ClientHelper {
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     return new Proxy(Object.create(null), {
       get: (target, method) => {
-        return timeoutify((parameters) => {
-          const channel = `${prefix()}/call`;
-          const uniqRequestId = this.getUniqRequestId();
-          const subscriptions = {};
-          return new Promise((resolve, reject) => {
-            const handler = ({ data = {} }) => {
-              const { result, errors = [], requestId } = data;
-              if (requestId === uniqRequestId) {
-                // Handle errors
-                if (errors.length > 0) {
-                  reject(errors);
-                } else {
-                  resolve(result);
+        return timeoutify(
+          (parameters) => {
+            const channel = `${prefix()}/call`;
+            const uniqRequestId = this.getUniqRequestId();
+            const subscriptions = {};
+            return new Promise((resolve, reject) => {
+              const handler = ({ data = {} }) => {
+                const { result, errors = [], requestId } = data;
+                if (requestId === uniqRequestId) {
+                  // Handle errors
+                  if (errors.length > 0) {
+                    reject(errors);
+                  } else {
+                    resolve(result);
+                  }
+                  this.unsubscribe(subscriptions);
                 }
-                this.unsubscribe(subscriptions);
-              }
-            };
-            // Create dynamic listener method
-            const listener = {
-              [method]: handler,
-              [DEFAULT_MACRO_CHANNEL]: handler
-            };
-            // Ad-Hoc subscription
-            this.subscribe(prefix, listener, subscriptions);
-            // Publish message on channel
-            this.publish(channel, {
-              debug: 1,
-              hardFail: false,
-              name: method,
-              parameters,
-              requestId: uniqRequestId
+              };
+              // Create dynamic listener method
+              const listener = {
+                [method]: handler,
+                [DEFAULT_MACRO_CHANNEL]: handler
+              };
+              // Ad-Hoc subscription
+              this.subscribe(prefix, listener, subscriptions);
+              // Publish message on channel
+              this.publish(channel, {
+                debug: 1,
+                hardFail: false,
+                name: method,
+                parameters,
+                requestId: uniqRequestId
+              });
             });
-          });
-        }, timeout);
+          },
+          timeout,
+          `while requesting ${prefix()}/call .${method}()`
+        );
       }
     });
   }
@@ -483,43 +487,47 @@ export class ClientHelper {
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     return new Proxy(Object.create(null), {
       get: (target, method) => {
-        return timeoutify((...parameters) => {
-          const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
-          const uniqRequestId = this.getUniqRequestId();
-          const subscriptions = {};
-          return new Promise((resolve, reject) => {
-            const onError = ({ data = {} }) => {
-              const { requestId, code, message } = data;
-              if (requestId === uniqRequestId) {
-                reject({ message, code });
-                this.unsubscribe(subscriptions);
-              }
-            };
-            const onSuccess = ({ data = {} }) => {
-              const { result, requestId } = data;
-              if (requestId === uniqRequestId) {
-                resolve(result);
-                this.unsubscribe(subscriptions);
-              }
-            };
-            // Create dynamic listener method
-            const listener = {
-              [DEFAULT_TASK_CHANNEL]: onSuccess,
-              [DEFAULT_ERROR_CHANNEL]: onError
-            };
-            // Ad-Hoc subscription
-            this.subscribe(prefix, listener, subscriptions);
-            // Publish message on channel
-            this.publish(channel, {
-              data: {
-                name: method,
-                namespace,
-                parameters
-              },
-              requestId: uniqRequestId
+        return timeoutify(
+          (...parameters) => {
+            const channel = `${prefix()}/${DEFAULT_TASK_CHANNEL}`;
+            const uniqRequestId = this.getUniqRequestId();
+            const subscriptions = {};
+            return new Promise((resolve, reject) => {
+              const onError = ({ data = {} }) => {
+                const { requestId, code, message } = data;
+                if (requestId === uniqRequestId) {
+                  reject({ message, code });
+                  this.unsubscribe(subscriptions);
+                }
+              };
+              const onSuccess = ({ data = {} }) => {
+                const { result, requestId } = data;
+                if (requestId === uniqRequestId) {
+                  resolve(result);
+                  this.unsubscribe(subscriptions);
+                }
+              };
+              // Create dynamic listener method
+              const listener = {
+                [DEFAULT_TASK_CHANNEL]: onSuccess,
+                [DEFAULT_ERROR_CHANNEL]: onError
+              };
+              // Ad-Hoc subscription
+              this.subscribe(prefix, listener, subscriptions);
+              // Publish message on channel
+              this.publish(channel, {
+                data: {
+                  name: method,
+                  namespace,
+                  parameters
+                },
+                requestId: uniqRequestId
+              });
             });
-          });
-        }, timeout);
+          },
+          timeout,
+          `while requesting ${prefix()}/${DEFAULT_TASK_CHANNEL} ${namespace}.${method}()`
+        );
       }
     });
   }
@@ -537,39 +545,43 @@ export class ClientHelper {
     const prefix = () => `/service/${this.getAppName()}/${deploymentId}`;
     return new Proxy(Object.create(null), {
       get: (target, method) => {
-        return timeoutify((parameters) => {
-          const channel = `${prefix()}/${method}`;
-          const uniqRequestId = this.getUniqRequestId();
-          const subscriptions = {};
-          return new Promise((resolve, reject) => {
-            const onError = ({ data = {} }) => {
-              const { requestId, code, message } = data;
-              if (requestId === uniqRequestId) {
-                reject({ message, code });
-                this.unsubscribe(subscriptions);
-              }
-            };
-            const onSuccess = ({ data = {} }) => {
-              const { requestId, ...result } = data;
-              if (requestId === uniqRequestId) {
-                resolve(result);
-                this.unsubscribe(subscriptions);
-              }
-            };
-            // Create dynamic listener method
-            const listener = {
-              [method]: onSuccess,
-              [DEFAULT_ERROR_CHANNEL]: onError
-            };
-            // Ad-Hoc subscription
-            this.subscribe(prefix, listener, subscriptions);
-            // Publish message on channel
-            this.publish(channel, {
-              ...parameters,
-              requestId: uniqRequestId
+        return timeoutify(
+          (parameters) => {
+            const channel = `${prefix()}/${method}`;
+            const uniqRequestId = this.getUniqRequestId();
+            const subscriptions = {};
+            return new Promise((resolve, reject) => {
+              const onError = ({ data = {} }) => {
+                const { requestId, code, message } = data;
+                if (requestId === uniqRequestId) {
+                  reject({ message, code });
+                  this.unsubscribe(subscriptions);
+                }
+              };
+              const onSuccess = ({ data = {} }) => {
+                const { requestId, ...result } = data;
+                if (requestId === uniqRequestId) {
+                  resolve(result);
+                  this.unsubscribe(subscriptions);
+                }
+              };
+              // Create dynamic listener method
+              const listener = {
+                [method]: onSuccess,
+                [DEFAULT_ERROR_CHANNEL]: onError
+              };
+              // Ad-Hoc subscription
+              this.subscribe(prefix, listener, subscriptions);
+              // Publish message on channel
+              this.publish(channel, {
+                ...parameters,
+                requestId: uniqRequestId
+              });
             });
-          });
-        }, timeout);
+          },
+          timeout,
+          `while requesting ${prefix()}/${method}`
+        );
       }
     });
   }

@@ -23,7 +23,6 @@ import {
   WorkerDeclarationNormalizer
 } from '../common-types';
 import { CloudServiceInstance } from './CloudServiceInstance';
-import { EnvironmentProvider } from '../environment/environment-provider';
 
 /**
  * Test if the value parameter in a function
@@ -357,10 +356,9 @@ export interface DependencyInjectionAnalysis {
 export const analyze = async (
   client: ServerClient,
   declaration: WorkerDeclaration,
-  environmentProvider: EnvironmentProvider,
+  env: Environment,
   customNormalizer: WorkerDeclarationNormalizer = normalize
 ): Promise<DependencyInjectionAnalysis> => {
-  const env = await environmentProvider.get();
   const envProviders = makeEnvironmentInjectable(env);
   // Normalize worker declaration
   const normalized = await customNormalizer(declaration);
@@ -384,10 +382,10 @@ export const analyze = async (
   const providers = resolvedProviders.providers;
   // Priorize providers
   const priorized = filterProviders([
-    ...envProviders, // Providers for the environment
     ...resolved, // Providers via scan of exposed DI Graph
     ...imported, // Providers via imports module list
     ...configured, // Providers via configurer
+    ...envProviders, // Providers for the environment
     ...providers // Providers via module provider
   ]);
   const platformServices = getPlatformServices(priorized);
@@ -452,6 +450,7 @@ export const getPlatformServices = (providers: Provider[]): Service[] => {
 };
 
 export const makeEnvironmentInjectable = (env: Environment): Provider[] => {
+  trace('env', env.context);
   return [
     {
       provide: Environment,

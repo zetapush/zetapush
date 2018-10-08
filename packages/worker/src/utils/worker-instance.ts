@@ -148,12 +148,18 @@ export class TaskDispatcherWorkerInstance implements WorkerInstance {
       // Inject context in a proxified worker namespace
       const injected = inject(tasker, context);
       // Delegate task to
-      const result = await timeoutify(() => injected[name](...parameters), this.timeout);
+      const result = await timeoutify(
+        () => injected[name](...parameters),
+        this.timeout,
+        `while dispatching request to worker method ${name}`
+      );
       return {
         result,
         success: true
       };
-    } catch ({ code = DEFAULT_ERROR_CODE, message }) {
+    } catch (e) {
+      const { code = DEFAULT_ERROR_CODE, message } = e;
+      trace(`Failed to dispatch request`, e);
       return {
         result: { code, message },
         success: false

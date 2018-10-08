@@ -19,17 +19,18 @@ import {
   npmInstall,
   zetaPush
 } from '../utils/commands';
-import { TestContext, Dependencies } from '../utils/types';
+import { TestContext, Dependencies, FrontOptions } from '../utils/types';
 import { createApplication, DEFAULTS } from '@zetapush/common';
 import { InjectionToken, Module } from '@zetapush/core';
-const fp = require('find-free-port');
+const findFreePort = require('find-free-port');
 const execa = require('execa');
-const fs = require('fs');
-const os = require('os');
-const path = require('path');
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 const yaml = require('js-yaml');
 const localtunnel = require('localtunnel');
 const spawn = require('child_process').spawn;
+const rimraf = require('rimraf');
 
 export const given = () => new Given();
 
@@ -39,6 +40,7 @@ class Given {
   private givenApp?: GivenApp;
   private givenWorker?: GivenWorker;
   private givenNpm?: GivenNpm;
+  private givenFront?: GivenFront;
 
   constructor() {
     this.sharedCredentials = {};
@@ -82,6 +84,14 @@ class Given {
     return this.givenNpm;
   }
 
+  /*
+   * Configure the behavior of the front.
+   */
+  front() {
+    this.givenFront = new GivenFront(this);
+    return this.givenFront;
+  }
+
   /**
    * Once you have prepare the environment for your test, call this method to run the given treatments.
    *
@@ -110,10 +120,13 @@ class Given {
       if (this.givenApp) {
         projectDir = await this.givenApp.execute(localNpmRegistry);
       }
-
+      let frontOptions;
+      if (this.givenFront) {
+        frontOptions = await this.givenFront.execute();
+      }
       let runnerAndDeps;
       if (this.givenWorker) {
-        runnerAndDeps = await this.givenWorker.execute(projectDir, localNpmRegistry);
+        runnerAndDeps = await this.givenWorker.execute(projectDir, localNpmRegistry, frontOptions);
       }
 
       const zetarc = projectDir ? await readZetarc(projectDir) : this.sharedCredentials;
@@ -241,14 +254,16 @@ class GivenNpmDependencies extends Parent<GivenNpm> {
       // FIXME: WORKS ONLY ON 4873 PORT ! BUG WITH VERDACCIO
       let freePort: number = 4873;
       try {
-        freePort = (await fp(4873))[0];
+        freePort = await findFreePort(4873);
       } catch (e) {
         reject(e);
       }
 
+      rimraf.sync(os.tmpdir() + './verdaccio-storage');
+
       // Define the configuration of the local npm registry
       const configVerdaccio = {
-        storage: './storage',
+        storage: os.tmpdir() + '/verdaccio-storage',
         packages: {
           '@*/*': {
             access: '$anonymous',
@@ -268,8 +283,13 @@ class GivenNpmDependencies extends Parent<GivenNpm> {
         }
       };
       const fileConfigVerdaccio = yaml.safeDump(configVerdaccio);
-      const pathConfigVerdaccio = path.join(os.tmpdir(), `config-verdaccio-${new Date().getTime()}.yaml`);
+      const pathConfigVerdaccio = path.join(os.tmpdir(), `config-verdaccio.yaml`);
       fs.writeFileSync(pathConfigVerdaccio, fileConfigVerdaccio);
+      givenLogger.silly(`GivenNpmDependencies:createLocalNpmRegistry -> verdaccio conf`, fileConfigVerdaccio);
+      givenLogger.silly(
+        `GivenNpmDependencies:createLocalNpmRegistry -> verdaccio local url`,
+        `http://localhost:${freePort}`
+      );
 
       // Launch the local npm registry
       let pidProcessVerdaccio: string;
@@ -345,31 +365,84 @@ class GivenModuleSources extends Parent<GivenNpmModule> {
   async execute(portLocalNpmRegistry: number) {
     return new Promise<void>(async (resolve, reject) => {
       // Publish the source code into the local npm registry
-      const packageJsonParsed = JSON.parse(fs.readFileSync(path.join(this.sourcesPath, 'package.json')));
+      const packageJsonParsed = JSON.parse(fs.readFileSync(path.join(this.sourcesPath, 'package.json')).toString());
 
       if (packageJsonParsed.version && !packageJsonParsed.private === true) {
         const currentPackageVersion = packageJsonParsed.version;
+        givenLogger.silly(
+          `GivenModuleSources:execute -> publishing sources...`,
+          this.sourcesPath,
+          currentPackageVersion
+        );
 
-        // Update the package version to deploy an unique version of the package
-        packageJsonParsed.version += `-${new Date().getTime()}`;
         try {
+          fs.copyFileSync(
+            path.join(this.sourcesPath, 'package.json'),
+            path.join(this.sourcesPath, 'package.json.backup')
+          );
+          // Update the package version to deploy an unique version of the package
+          packageJsonParsed.version += `-${new Date().getTime()}`;
           fs.writeFileSync(path.join(this.sourcesPath, 'package.json'), JSON.stringify(packageJsonParsed, null, 2));
 
-          await execa('npm', ['publish', '--registry', `http://localhost:${portLocalNpmRegistry}`], {
-            cwd: this.sourcesPath
-          });
+          this.npmLogin(portLocalNpmRegistry);
+          givenLogger.silly(
+            `GivenModuleSources:execute -> npm publish --registry http://localhost:${portLocalNpmRegistry} --tag testing`,
+            this.sourcesPath
+          );
+          await execa(
+            'npm',
+            ['publish', '--registry', `http://localhost:${portLocalNpmRegistry}`, `--tag`, `testing`],
+            {
+              cwd: this.sourcesPath
+            }
+          );
+          this.npmLogout(portLocalNpmRegistry);
+          givenLogger.silly(
+            `GivenModuleSources:execute -> publishing sources SUCCESS`,
+            this.sourcesPath,
+            currentPackageVersion
+          );
         } catch (e) {
+          givenLogger.silly(`GivenModuleSources:execute -> publishing sources FAILED`, this.sourcesPath);
           reject(e);
         } finally {
           // We reset the package version after we published it
-          packageJsonParsed.version = currentPackageVersion;
-          fs.writeFileSync(path.join(this.sourcesPath, 'package.json'), JSON.stringify(packageJsonParsed, null, 2));
+          fs.copyFileSync(
+            path.join(this.sourcesPath, 'package.json.backup'),
+            path.join(this.sourcesPath, 'package.json')
+          );
         }
         resolve();
       } else {
         reject(`Can't publish this package`);
       }
     });
+  }
+
+  private npmLogin(port: number) {
+    try {
+      const npmrcPath = path.join(os.homedir(), '.npmrc');
+      const content = fs.existsSync(npmrcPath) ? fs.readFileSync(npmrcPath).toString() : '';
+      if (!content.includes(`//localhost:${port}/:_authToken=`)) {
+        const withRegistryAuth = content + this.getNpmLoginLine(port);
+        fs.writeFileSync(npmrcPath, withRegistryAuth);
+      }
+    } catch (e) {
+      throw new Error('Failed to `npm login` for Verdaccio registry');
+    }
+  }
+  private npmLogout(port: number) {
+    try {
+      const npmrcPath = path.join(os.homedir(), '.npmrc');
+      const content = fs.existsSync(npmrcPath) ? fs.readFileSync(npmrcPath).toString() : '';
+      const withoutRegistryAuth = content.replace(this.getNpmLoginLine(port), '');
+      fs.writeFileSync(npmrcPath, withoutRegistryAuth);
+    } catch (e) {
+      throw new Error('Failed to `npm logout` for Verdaccio registry');
+    }
+  }
+  private getNpmLoginLine(port: number) {
+    return `\n//localhost:${port}/:_authToken="fooBar"\n`;
   }
 }
 
@@ -612,6 +685,7 @@ class GivenTemplatedApp extends Parent<GivenApp> {
         `GivenTemplatedApp:execute -> copydir.sync(spec/templates/${this.templateApp}, ${this.projectDir})`
       );
       copydir.sync('spec/templates/' + this.templateApp, this.projectDir);
+
       // await npmInstallLatestVersion(this.projectDir);
       await npmInstall(this.projectDir, '*', localNpmRegistry);
 
@@ -754,7 +828,7 @@ class GivenWorker extends Parent<Given> {
     return this;
   }
 
-  async execute(currentDir?: string, localNpmRegistry?: string) {
+  async execute(currentDir?: string, localNpmRegistry?: string, frontOptions?: FrontOptions) {
     try {
       const deps = {
         moduleDeclaration: this.moduleDeclaration,
@@ -767,15 +841,13 @@ class GivenWorker extends Parent<Given> {
       }
       if (this.createRunner && currentDir) {
         return {
-          runner: !!localNpmRegistry ? new Runner(currentDir, 300000, localNpmRegistry) : new Runner(currentDir),
+          runner: new Runner(currentDir, this.timeout, localNpmRegistry, frontOptions),
           ...deps
         };
       }
       if (this.workerUp && currentDir) {
         givenLogger.info(`>>> Given worker: run and wait for worker up ${currentDir}`);
-        const runner = !!localNpmRegistry
-          ? new Runner(currentDir, this.timeout, localNpmRegistry)
-          : new Runner(currentDir, this.timeout);
+        const runner = new Runner(currentDir, this.timeout, localNpmRegistry, frontOptions);
         runner.run(this.isQuiet);
         await runner.waitForWorkerUp();
         return {
@@ -798,5 +870,37 @@ class GivenWorker extends Parent<Given> {
       givenLogger.error(`>>> Given worker: FAILED ${currentDir}`, e);
       throw e;
     }
+  }
+}
+
+class GivenFront extends Parent<Given> {
+  private serveFront = false;
+  private pushFront = false;
+
+  constructor(parent: Given) {
+    super(parent);
+  }
+
+  /**
+   * Start a local server for serving front static resources
+   */
+  serve() {
+    this.serveFront = true;
+    return this;
+  }
+
+  /**
+   * Start a local server for serving front static resources
+   */
+  pushed() {
+    this.pushFront = true;
+    return this;
+  }
+
+  async execute(): Promise<FrontOptions> {
+    return {
+      serveFront: this.serveFront,
+      pushFront: this.pushFront
+    };
   }
 }

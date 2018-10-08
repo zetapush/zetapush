@@ -1,0 +1,17 @@
+{
+  "name": "environment-provider",
+  "version": "0.1.0",
+  "main": "worker/index.ts",
+  "private": true,
+  "scripts": {
+    "deploy": "zeta push",
+    "start": "zeta run",
+    "troubleshoot": "zeta troubleshoot"
+  },
+  "dependencies": {
+    "@zetapush/cli":  "testing",
+    "@zetapush/core":  "testing",
+    "@zetapush/user-management":  "testing",
+    "@types/node": "*"
+  }
+}

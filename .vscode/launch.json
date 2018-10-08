@@ -8,7 +8,7 @@
       "type": "node",
       "request": "launch",
       "name": "client [tests][debug]",
-      "runtimeExecutable": "~/.nvm/versions/node/v10.11.0/bin/node",
+      "runtimeExecutable": "~/.nvm/versions/node/v10.8.0/bin/node",
       "cwd": "${workspaceFolder}/packages/client",
       "runtimeArgs": [
         "--inspect-brk=9230",
@@ -26,7 +26,7 @@
       "request": "launch",
       "name": "common [tests][debug]",
       // When using nvm, you can use nvm instance instead of default node version
-      "runtimeExecutable": "~/.nvm/versions/node/v10.11.0/bin/node",
+      "runtimeExecutable": "~/.nvm/versions/node/v10.8.0/bin/node",
       "cwd": "${workspaceFolder}/packages/common",
       "runtimeArgs": [
         "-r",
@@ -54,7 +54,7 @@
       "request": "launch",
       "name": "common [tests][coverage]",
       // When using nvm, you can use nvm instance instead of default node version
-      "runtimeExecutable": "~/.nvm/versions/node/v10.11.0/bin/node",
+      "runtimeExecutable": "~/.nvm/versions/node/v10.8.0/bin/node",
       "cwd": "${workspaceFolder}/packages/common",
       "runtimeArgs": [
       ],
@@ -78,7 +78,7 @@
       "request": "launch",
       "name": "user-management [tests][debug]",
       // When using nvm, you can use nvm instance instead of default node version
-      "runtimeExecutable": "~/.nvm/versions/node/v10.11.0/bin/node",
+      "runtimeExecutable": "~/.nvm/versions/node/v10.8.0/bin/node",
       "cwd": "${workspaceFolder}/packages/user-management",
       "runtimeArgs": [
         "-r",
@@ -106,7 +106,7 @@
       "request": "launch",
       "name": "user-management [tests][coverage]",
       // When using nvm, you can use nvm instance instead of default node version
-      "runtimeExecutable": "~/.nvm/versions/node/v10.11.0/bin/node",
+      "runtimeExecutable": "~/.nvm/versions/node/v10.8.0/bin/node",
       "cwd": "${workspaceFolder}/packages/user-management",
       "runtimeArgs": [
       ],
@@ -130,7 +130,7 @@
       "request": "launch",
       "name": "integration [tests][debug]",
       // When using nvm, you can use nvm instance instead of default node version
-      "runtimeExecutable": "~/.nvm/versions/node/v10.11.0/bin/node",
+      "runtimeExecutable": "~/.nvm/versions/node/v10.8.0/bin/node",
       "cwd": "${workspaceFolder}/packages/integration",
       "runtimeArgs": [
         "-r",
@@ -147,6 +147,7 @@
         "ZETAPUSH_PLATFORM_URL": "http://hq.zpush.io:9080/zbo/pub/business/",
         "ZETAPUSH_LOCAL_DEV": "true",
         "ZETAPUSH_LOG_LEVEL": "silly",
+        //"ZETAPUSH_LOG_LEVEL_COMMAND": "info",
         "COMETD_LOG_LEVEL": "info",
         "ZETAPUSH_COMMANDS_LOG_LEVEL": "-vvvv",
         "TS_NODE_SKIP_IGNORE": "true"

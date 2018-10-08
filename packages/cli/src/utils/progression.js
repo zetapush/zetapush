@@ -8,6 +8,7 @@ const {
   info,
   warn,
   trace,
+  debugObject,
   getDeploymentProgression,
   ProgressEvents,
   ProgressFailureCauses
@@ -66,6 +67,7 @@ const getProgression = (config, recipeId) => {
     info(`Worker applications works only if you listen process.env.HTTP_PORT`);
   });
   events.on(ProgressEvents.FAILED, async ({ progressDetail, config, cause, failure }) => {
+    debugObject('progression-failed', { progressDetail, config, cause, failure });
     if (cause === ProgressFailureCauses.PROGRESSION_RETRYING) {
       warn('Failed to get progression. Retrying...', failure);
     } else if (cause === ProgressFailureCauses.LIVE_STATUS_FAILED) {
