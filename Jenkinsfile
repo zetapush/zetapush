@@ -362,9 +362,9 @@ pipeline {
             stage('Build') {
               steps {
                 retry(3) {
-                  bat "npm --registry ${env.NPM_REGISTRY} i"
-                  bat 'npm run lerna:clean -- --yes'
-                  bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
+                  sh "npm --registry ${env.NPM_REGISTRY} i"
+                  sh 'npm run lerna:clean -- --yes'
+                  sh "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
                 }
               }
             }
@@ -373,7 +373,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
                   ignoreFailures(failureStatus: 'UNSTABLE') {
                     dir('packages/client') {
-                      bat "npm run test:ci"
+                      sh "npm run test:ci"
                     }
                   }
                 }
@@ -384,7 +384,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
                   ignoreFailures(failureStatus: 'UNSTABLE') {
                     dir('packages/common') {
-                      bat "npm run test:ci"
+                      sh "npm run test:ci"
                     }
                   }
                 }
@@ -395,7 +395,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
                   ignoreFailures(failureStatus: 'UNSTABLE') {
                     dir('packages/user-management') {
-                      bat "npm run test:ci"
+                      sh "npm run test:ci"
                     }
                   }
                 }
@@ -406,7 +406,7 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'jenkins-zp-account', usernameVariable: 'ZETAPUSH_DEVELOPER_LOGIN', passwordVariable: 'ZETAPUSH_DEVELOPER_PASSWORD')]) {
                   ignoreFailures(failureStatus: 'UNSTABLE') {
                     dir('packages/integration') {
-                      bat "npm run test:ci"
+                      sh "npm run test:ci"
                     }
                   }
                 }
