@@ -49,7 +49,7 @@ const run = async (command, config, declaration) => {
   runner.on(WorkerRunnerEvents.UPLOADED, ({ recipe }) => log('Uploaded', recipe.recipeId));
   runner.on(WorkerRunnerEvents.QUEUE_SERVICE_DEPLOYING, () => log('Waiting Queue service deploying...'));
   runner.on(WorkerRunnerEvents.QUEUE_SERVICE_READY, ({ recipe }) => log(`Queue service ready on ${recipe.recipeId}`));
-  // runner.on(WorkerRunnerEvents.CONNECTING);
+  runner.on(WorkerRunnerEvents.CONNECTING, () => trace(`Connecting worker to ZetaPush platform`));
   runner.on(WorkerRunnerEvents.CONNECTED, () => log(`Connected`));
   runner.on(WorkerRunnerEvents.CREATED_SERVICES, ({ services }) => info(`Create services`, services));
   runner.on(WorkerRunnerEvents.PLATFORM_SERVICES_READY, () => log(`Platform services created`));
@@ -94,6 +94,7 @@ const run = async (command, config, declaration) => {
 
   runner.run(declaration);
   if (command.serveFront) {
+    const frontPort = serverRegistry.getServerInfo(ServerType.defaultName(ServerType.FRONT)).port;
     return createServer(command, config, frontPort);
   }
 };

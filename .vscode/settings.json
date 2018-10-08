@@ -23,7 +23,7 @@
       "packages/user-management/src/**"
     ],
     "lerna [clean+bootstrap]": [
-      "packages/**/package.json"
+      "packages/*/package.json"
     ]
   },
   "coverage-gutters.showGutterCoverage": false,

@@ -65,7 +65,7 @@ describe(`Injected environment`, () => {
             const frontUrl = await api.getFrontUrl();
             // FIXME: API returns null so front should also receive null (see #182)
             // expect(frontUrl).toBeNull();
-            expect(Object.values(frontUrl).length).toBe(0);
+            expect(frontUrl).toBeUndefined();
 
             const workerUrl = await api.getWorkerUrl();
             expect(workerUrl).toBeDefined();
@@ -89,6 +89,22 @@ describe(`Injected environment`, () => {
         /**/ .worker()
         /*  */ .pushed()
         /*  */ .and()
+        /**/ .npm()
+        /*   */ .dependencies()
+        /*     */ .module('@zetapush/core')
+        /*       */ .and()
+        /*     */ .module('@zetapush/common')
+        /*       */ .and()
+        /*     */ .module('@zetapush/worker')
+        /*       */ .and()
+        /*     */ .module('@zetapush/client')
+        /*       */ .and()
+        /*     */ .module('@zetapush/cometd')
+        /*       */ .and()
+        /*     */ .module('@zetapush/cli')
+        /*       */ .and()
+        /*     */ .and()
+        /*   */ .and()
         /**/ .front()
         /*  */ .pushed()
         /*  */ .and()

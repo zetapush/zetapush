@@ -38,7 +38,8 @@ const myFormat = (fmt?: string | null) => {
   return winston.format.printf((info: any) => {
     const label = fmt ? chalk`{${fmt} ${fixedSize(info.label, 18)}}` : fixedSize(info.label, 18);
     const message = fmt ? chalk`{${fmt} ${info.message}}` : info.message;
-    return `${fixedSizeLevel(upper(info.level), 7)} ${info.timestamp} - ${label} | ${message} ${stringifiedRest(info)}`;
+    const objs = fmt ? chalk`{${fmt} ${stringifiedRest(info)}}` : stringifiedRest(info);
+    return `${fixedSizeLevel(upper(info.level), 7)} ${info.timestamp} - ${label} | ${message} ${objs}`;
   });
 };
 
@@ -51,7 +52,7 @@ export const addCategorizedLogger = (name: string, label: string, fmt?: string) 
       winston.format.splat(),
       myFormat(fmt)
     ),
-    level: process.env.ZETAPUSH_LOG_LEVEL || 'info',
+    level: process.env[`ZETAPUSH_LOG_LEVEL_${name.toUpperCase()}`] || process.env.ZETAPUSH_LOG_LEVEL || 'info',
     transports: [
       new winston.transports.Console(),
       new winston.transports.File({
@@ -94,7 +95,7 @@ export const frontActionLogger = addCategorizedLogger('frontAction', 'FRONT USER
 export const configureWorkerLogger = addCategorizedLogger('configureWorkerLogger', 'CONFIGURE WORKER', 'grey');
 export const runInWorkerLogger = addCategorizedLogger('runInWorker', 'RUN IN WORKER', 'grey');
 export const cleanLogger = addCategorizedLogger('clean', 'CLEAN', 'grey');
-export const commandLogger = addCategorizedLogger('command', 'COMMAND', '');
+export const commandLogger = addCategorizedLogger('command', 'COMMAND', 'grey');
 export const envLogger = addCategorizedLogger('env', 'ENV', 'grey');
 export const subProcessLogger = addCategorizedLogger('subProcess', 'PROCESS STDOUT/STDERR', '');
 
@@ -104,18 +105,22 @@ export class SubProcessLoggerStream extends Writable {
   }
 
   _write(chunk: any, encoding: string, callback: (err?: Error) => void): void {
-    subProcessLogger.log(
-      this.level,
-      chunk
-        .toString()
-        // remove last new line as it will be added by winston
-        .replace(/\r?\n$/g, '')
-        // indent each line
-        .replace(/^/gm, ' '.repeat(54) + '| ')
-        // do not indent first line
-        .replace(/^ {54}[|] /, '')
-    );
-    callback();
+    try {
+      subProcessLogger.log(
+        this.level,
+        chunk
+          .toString()
+          // remove last new line as it will be added by winston
+          .replace(/\r?\n$/g, '')
+          // indent each line
+          .replace(/^/gm, ' '.repeat(54) + '| ')
+          // do not indent first line
+          .replace(/^ {54}[|] /, '')
+      );
+      callback();
+    } catch (e) {
+      callback(e);
+    }
   }
 }
 
