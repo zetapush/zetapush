@@ -105,7 +105,7 @@ pipeline {
             stage('Build') {
               steps {
                 retry(3) {
-                  sh "npm --registry ${env.NPM_REGISTRY} ci"
+                  sh "npm --registry ${env.NPM_REGISTRY} i"
                   sh 'npm run lerna:clean -- --yes'
                   sh "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
                 }
@@ -209,7 +209,7 @@ pipeline {
             stage('Build') {
               steps {
                 retry(3) {
-                  bat "npm --registry ${env.NPM_REGISTRY} ci"
+                  bat "npm --registry ${env.NPM_REGISTRY} i"
                   bat 'npm run lerna:clean -- --yes'
                   bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
                 }
@@ -362,7 +362,7 @@ pipeline {
             stage('Build') {
               steps {
                 retry(3) {
-                  bat "npm --registry ${env.NPM_REGISTRY} ci"
+                  bat "npm --registry ${env.NPM_REGISTRY} i"
                   bat 'npm run lerna:clean -- --yes'
                   bat "npm run lerna:bootstrap -- --registry ${env.NPM_REGISTRY}"
                 }
