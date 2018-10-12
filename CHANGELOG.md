@@ -3,7 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-**Note:** Version bump only for package zetapush
+<a name="0.35.0"></a>
+# [0.35.0](https://github.com/zetapush/zetapush/compare/v0.34.2...v0.35.0) (2018-10-12)
+
+
+### Bug Fixes
+
+* **api:** Do not transform API return values ([4d5d49b](https://github.com/zetapush/zetapush/commit/4d5d49b))
+* **ci:** npm ci can't be used with node 8 / npm 5 ([76ba834](https://github.com/zetapush/zetapush/commit/76ba834))
+* **ci:** Use npm ci on Jenkins so we must restore package-lock.json ([b17d550](https://github.com/zetapush/zetapush/commit/b17d550))
+* **loader-config:** add missing getDeveloperLogin import ([fd04bbb](https://github.com/zetapush/zetapush/commit/fd04bbb))
+* **smart-client-persistence:** update appName on persistence data level ([d78fef3](https://github.com/zetapush/zetapush/commit/d78fef3)), closes [#199](https://github.com/zetapush/zetapush/issues/199)
+* **tests:** fix developer password in tests since use of secret token ([1ab8644](https://github.com/zetapush/zetapush/commit/1ab8644))
+
+
+### Features
+
+* **example:** update created example ([cd3d499](https://github.com/zetapush/zetapush/commit/cd3d499))
+* **forbidden-verbs-all:** forbidden all verbs for platforme service ([4cd36fe](https://github.com/zetapush/zetapush/commit/4cd36fe))
+* **lerna:** update lerna config ([3bc4b30](https://github.com/zetapush/zetapush/commit/3bc4b30))
+* **security:** no longer display developer password in zetarc file ([f576249](https://github.com/zetapush/zetapush/commit/f576249))
+
+
+### BREAKING CHANGES
+
+* **api:** A client that calls an API method returning null or undefined value will no longer
+receive an empty object
+
+182
+
+
+
 
 <a name="0.34.2"></a>
 ## [0.34.2](https://github.com/zetapush/zetapush/compare/v0.34.1...v0.34.2) (2018-09-25)
