@@ -31,9 +31,10 @@ export const DEFAULT_CONFIRMATION_URL = async ({
   account,
   token
 }: AccountConfirmationContext) => {
-  const url = `${properties.get(RegistrationConfirmationPropertyKeys.BaseUrl, zetapushContext.getWorkerUrl())}/users/${
-    account.accountId
-  }/confirm/${token.value}`;
+  const url = `${properties.get(
+    RegistrationConfirmationPropertyKeys.BaseUrl,
+    zetapushContext.getWorkerUrl()
+  )}/@zetapush/users/${account.accountId}/confirm/${token.value}`;
   trace('confirmation url', url);
   return url;
 };
