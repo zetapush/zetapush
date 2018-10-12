@@ -1,4 +1,4 @@
-import { Provider } from '@zetapush/core';
+import { Provider, InjectionToken } from '@zetapush/core';
 import { IncomingMessage, ServerResponse } from 'http';
 // FIXME: do not use express types directly
 import { Request as ExpressRequest, Response as ExpressResponse } from 'express';

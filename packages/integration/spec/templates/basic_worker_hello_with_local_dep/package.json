@@ -1,0 +1,17 @@
+{
+  "name": "basic-worker-case-with-local-dep",
+  "version": "0.1.0",
+  "main": "worker/index.ts",
+  "private": true,
+  "scripts": {
+    "deploy": "zeta push",
+    "start": "zeta run",
+    "troubleshoot": "zeta troubleshoot"
+  },
+  "dependencies": {
+    "@zetapush/cli": "*",
+    "@zetapush/core": "*",
+    "fake-npm-lib": "*",
+    "typescript": "*"
+  }
+}

@@ -19,7 +19,7 @@ export class LegacyUpdateAccountStatus extends LegacySimpleError {
   }
 }
 
-export class LoginAlreadyUsedError extends LegacySimpleError {
+export class LegacyLoginAlreadyUsedError extends LegacySimpleError {
   constructor(message: string, public login: string) {
     super(message);
   }
@@ -120,7 +120,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
           
           This is a ZetaPush issue, please report this error on Github: https://github.com/zetapush/zetapush/issues/new`);
       } else if (e.code === 'ACCOUNT_EXISTS') {
-        throw new LoginAlreadyUsedError(`Login "${credentials.login}" is already used`, credentials.login);
+        throw new LegacyLoginAlreadyUsedError(`Login "${credentials.login}" is already used`, credentials.login);
       } else if (e.code === 'KEY_BADCHAR') {
         // TODO: add validation to prevent this error sooner ?
         throw new LegacySimpleError(
@@ -137,6 +137,28 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
       }
       throw new LegacySimpleError(`Account creation for '${credentials.login}' has failed`, e);
     }
+  }
+
+  /**
+   * Get the userKey of a user from his accountId
+   * @param accountId
+   */
+  async getUserKey(accountId: string): Promise<string> {
+    let columns;
+
+    try {
+      const { result } = await this.gda.get({
+        table: USER_LEGACY_ADAPTER_TABLE_SIMPLE_ASSOCIATIONS,
+        key: accountId
+      });
+      columns = result;
+    } catch (e) {
+      throw new AccountIdAssociationLoadError(`Failed to retrieve userKey from accountId`, accountId, e);
+    }
+    if (!columns) {
+      throw new AccountIdAssociationLoadError(`Empty response while retrieving userKey from accountId`, accountId);
+    }
+    return columns[USER_LEGACY_ADAPTER_COLUMN_DATA].userKey;
   }
 
   async getProfile(accountId: string): Promise<UserProfile> {

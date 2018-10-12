@@ -10,7 +10,7 @@ import {
   MessageSender,
   TemplateManager,
   TemplateManagerInjectable,
-  EmailSenderInjectable
+  MessageSenderInjectable
 } from '../../../../src';
 import { mock, anyString, anything, when, verify } from 'ts-mockito';
 import { AxiosInstance, AxiosResponse } from 'axios';
@@ -58,7 +58,7 @@ describe(`TemplatedEmail`, () => {
               };
             })
             /**/ .dependenciesWithScope(() => [
-              EmailSenderInjectable,
+              MessageSenderInjectable,
               scopedDependency('foo.html', TemplateManagerInjectable),
               scopedDependency('foo.text', TemplateManagerInjectable)
             ])

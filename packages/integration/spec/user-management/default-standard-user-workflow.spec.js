@@ -34,6 +34,16 @@ describe(`As developer with
           /**/ .worker()
           /*  */ .up()
           /*  */ .and()
+          /**/ .npm()
+          /*   */ .dependencies()
+          /*     */ .module('@zetapush/user-management')
+          /*       */ .and()
+          /*     */ .module('@zetapush/core')
+          /*       */ .and()
+          /*     */ .module('@zetapush/cli')
+          /*       */ .and()
+          /*     */ .and()
+          /*   */ .and()
           /**/ .apply(this);
 
         await frontAction(this)
@@ -91,7 +101,7 @@ describe(`As developer with
   });
 
   describe(`Nominal case with no activated account`, () => {
-    fit(
+    it(
       `The user can't connect with handshake failed`,
       async () => {
         let resultOfSignUp = null;
@@ -107,6 +117,16 @@ describe(`As developer with
           /**/ .worker()
           /*  */ .up()
           /*  */ .and()
+          /**/ .npm()
+          /*   */ .dependencies()
+          /*     */ .module('@zetapush/user-management')
+          /*       */ .and()
+          /*     */ .module('@zetapush/core')
+          /*       */ .and()
+          /*     */ .module('@zetapush/cli')
+          /*       */ .and()
+          /*     */ .and()
+          /*   */ .and()
           /**/ .apply(this);
 
         await frontAction(this)
@@ -177,6 +197,16 @@ describe(`As developer with
           /**/ .worker()
           /*  */ .up()
           /*  */ .and()
+          /**/ .npm()
+          /*   */ .dependencies()
+          /*     */ .module('@zetapush/user-management')
+          /*       */ .and()
+          /*     */ .module('@zetapush/core')
+          /*       */ .and()
+          /*     */ .module('@zetapush/cli')
+          /*       */ .and()
+          /*     */ .and()
+          /*   */ .and()
           /**/ .apply(this);
 
         await frontAction(this)

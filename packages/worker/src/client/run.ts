@@ -1,5 +1,5 @@
 import { WorkerClient, Worker, WorkerInstanceFactory } from './worker';
-import { Provider, Module } from '@zetapush/core';
+import { Provider, Module, Environment } from '@zetapush/core';
 import { Weak, Queue } from '@zetapush/platform-legacy';
 import {
   instantiate,
@@ -168,7 +168,9 @@ export class WorkerRunner extends EventEmitter {
       this.currentDeclaration = declaration;
 
       // analyze dependencies and modules
-      analyze(client, declaration, this.envProvider, this.customNormalizer)
+      this.envProvider
+        .get(client, this.getQueueApi(client))
+        .then((env: Environment) => analyze(client, declaration, env, this.customNormalizer))
         .then((analysis: DependencyInjectionAnalysis) => (this.currentAnalysis = analysis))
         .then(() =>
           this.emit(WorkerRunnerEvents.BOOTSTRAPING, {
@@ -287,7 +289,8 @@ export class WorkerRunner extends EventEmitter {
       config: this.config,
       declaration: reloaded
     });
-    const newAnalysis = await analyze(this.client, reloaded, this.envProvider, this.customNormalizer);
+    const env = await this.envProvider.get(this.client, this.getQueueApi(this.client));
+    const newAnalysis = await analyze(this.client, reloaded, env, this.customNormalizer);
     this.currentAnalysis = newAnalysis;
     let next = getDeploymentIdList(newAnalysis, [Queue]);
     const deploymentListHasChange = !equals(previous, next);
@@ -411,15 +414,19 @@ export class WorkerRunner extends EventEmitter {
     });
   }
 
+  private getQueueApi(client: WorkerClient) {
+    return client.createAsyncService({
+      Type: Queue
+    });
+  }
+
   private async createServices(
     client: WorkerClient,
     config: ResolvedConfig,
     declaration: WorkerDeclaration,
     analysis: DependencyInjectionAnalysis
   ) {
-    const api = client.createAsyncService({
-      Type: Queue
-    });
+    const api = this.getQueueApi(client);
 
     const { items } = getRuntimeProvision(config, analysis, [Queue]);
     const services = items.map(({ item }) => item);

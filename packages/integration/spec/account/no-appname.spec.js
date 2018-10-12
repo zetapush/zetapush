@@ -1,5 +1,5 @@
 const { zetaPush, readZetarc } = require('@zetapush/testing');
-const PATTERN = /Hello World from JavaScript (\d+)/;
+const PATTERN = /Hello World from Worker at (\d+)/;
 const { given, consoleAction, frontAction, autoclean } = require('@zetapush/testing');
 
 describe(`As developer with
@@ -10,7 +10,7 @@ describe(`As developer with
     await autoclean(this);
   });
 
-  xit(
+  it(
     "Should success with new appName for 'zeta push'",
     async () => {
       // Create the application
@@ -24,12 +24,10 @@ describe(`As developer with
         /*     */ .setAppName('')
         /*     */ .and()
         /*   */ .and()
+        /* */ .worker()
+        /*   */ .pushed()
+        /* */ .and()
         /**/ .apply(this);
-
-      // zeta push
-      await consoleAction('1) zeta push', async () => {
-        await zetaPush(this.context.projectDir);
-      });
 
       // Check the .zetarc file
       let zetarc = await readZetarc(this.context.projectDir);
@@ -39,7 +37,7 @@ describe(`As developer with
       expect(zetarc.appName.length).toBeGreaterThan(0);
 
       await frontAction(this)
-        .name('2) call hello')
+        .name('call hello')
         .execute(async (api) => {
           const message = await api.hello();
           expect(typeof message).toBe('string');

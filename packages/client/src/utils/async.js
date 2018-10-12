@@ -1,17 +1,19 @@
 import { getType } from './types';
 
+export class TimeoutError extends Error {}
+
 /**
  * Wrap async function execution in timeout
  * @param {() => Promise<any>} task
  * @param {number} timeout
  */
-export function timeoutify(task, timeout = 1000) {
+export function timeoutify(task, timeout = 1000, details = '') {
   return function(...parameters) {
     return new Promise(function(resolve, reject) {
       const timer = setTimeout(
         () =>
           reject(
-            Object.assign(new Error(`Timeout reached after ${timeout}ms`), {
+            Object.assign(new TimeoutError(`Timeout reached after ${timeout}ms ${details}`), {
               code: 'TIMEOUT'
             })
           ),

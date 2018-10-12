@@ -5,63 +5,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII=" rel="icon" type="image/x-icon" />
+  <link href="./index.css" rel="stylesheet" />
   <title>Getting started with ZetaPush</title>
-  <style>
-    body {
-      font-family: Arial, Helvetica, sans-serif;
-    }
-    body::before {
-      display: block;
-      content: "Open Your Console";
-      background: #000;
-      color: #FFF;
-      position: fixed;
-      transform: rotate(45deg) translate(60px, 0px);
-      right: 0;
-      top: 0;
-      height: 25px;
-      padding: 5px 30px;
-      line-height: 25px;
-      font-family: Calibri, Helvetica, Arial;
-      font-weight: bold;
-    }
-    main, nav {
-      display: flex;
-      flex-direction: column;
-    }
-    button,
-    label {
-      margin: 0.5rem 1rem;
-      height: 3rem;
-      font-size: calc(3rem/2);
-      background: linear-gradient(rgb(216, 216, 216), rgb(186, 186, 186));
-      border-color: rgb(117, 117, 117) rgb(107, 107, 107) rgb(97, 97, 97);
-      border-style: solid;
-      border-width: 1px;
-      padding: 1px 7px 2px;
-      text-align: center;
-      cursor: pointer;
-      box-sizing: border-box;
-      align-items: flex-start;
-    }
-    body:not(.connected) button,
-    body:not(.connected) label {
-      opacity: 0.9;
-      pointer-events: none;
-      cursor: not-allowed;
-      color: graytext;
-    }
-  </style>
 </head>
 
 <body>
-  <nav>
-    <button class="js-Hello">hello</button>
-    <button class="js-Add">add</button>
-    <button class="js-List">list</button>
-  </nav>
+  <header>
+    <img class="ui-Logo" src="./logo.png" alt="Logo"/>
+    <h1>Welcome to ZetaPush</h1>
+  </header>
+  <main>
+    <h2>To get started, edit worker/index.ts and save to reload.</h2>
+    <nav>
+      <button class="js-Hello">call hello()</button>
+      <button class="js-Add">call add()</button>
+      <button class="js-List">call list()</button>
+    </nav>
+  </main>
   <script src="https://unpkg.com/@zetapush/client"></script>
-  <script src="https://unpkg.com/@zetapush/platform"></script>
   <script src="./index.js"></script>
 </body>
 

@@ -13,23 +13,23 @@ const config = {
     resolve({
       jsnext: true,
       main: true,
-      browser: true,
+      browser: true
     }),
     commonjs({
       include: ['node_modules/**', '../core/**'],
-      exclude: ['node_modules/isomorphic-form-data'],
+      exclude: ['node_modules/isomorphic-form-data']
     }),
     ts({
-      typescript,
+      typescript
     }),
     json(),
-    sizeSnapshot(),
+    sizeSnapshot()
   ],
   output: {
     name: 'ZetaPushCommon',
     format: 'umd',
-    sourcemap: true,
-  },
+    sourcemap: true
+  }
 };
 
 if (env === 'production') {
@@ -40,11 +40,11 @@ if (env === 'production') {
           pure_getters: true,
           unsafe: true,
           unsafe_comps: true,
-          warnings: false,
-        },
+          warnings: false
+        }
       },
-      minifier,
-    ),
+      minifier
+    )
   );
 }
 

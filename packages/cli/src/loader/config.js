@@ -4,8 +4,8 @@ const path = require('path');
 // Packages
 const cosmiconfig = require('cosmiconfig');
 // Local
-const { DEFAULTS, log, error, warn, trace } = require('@zetapush/common');
-const { getDeveloperPassword } = require('../utils/security');
+const { DEFAULTS, log, error, warn, trace, encrypt, decrypt } = require('@zetapush/common');
+const { getDeveloperPassword, getDeveloperLogin } = require('../utils/security');
 const explorer = cosmiconfig('zeta');
 
 /**
@@ -23,8 +23,10 @@ const isValid = (config = {}) => config.platformUrl && config.developerLogin && 
 const save = (command, content) =>
   new Promise((resolve, reject) => {
     const filepath = path.join(command.worker, '.zetarc');
+    // Encrypt content before
+    const encryted = encrypt(content);
     log('Save config file', filepath);
-    fs.writeFile(filepath, JSON.stringify(content, null, 2), (failure) => {
+    fs.writeFile(filepath, JSON.stringify(encryted, null, 2), (failure) => {
       if (failure) {
         return reject(failure);
       }
@@ -43,7 +45,9 @@ const fromEnv = async () => {
     appName: process.env.ZP_SANDBOX_ID,
     developerLogin: process.env.ZP_USERNAME,
     developerPassword: process.env.ZP_PASSWORD,
-    workerServiceId: process.env.ZP_WORKER_SERVICE_ID
+    workerServiceId: process.env.ZP_WORKER_SERVICE_ID,
+    npmRegistry: process.env.NPM_REGISTRY,
+    TS_NODE_SKIP_IGNORE: process.env.TS_NODE_SKIP_IGNORE
   });
 };
 
@@ -58,7 +62,9 @@ const fromCli = async (command) => {
     appName: command.parent.appName,
     developerLogin: command.parent.developerLogin,
     developerPassword: command.parent.developerPassword,
-    workerServiceId: command.parent.ZP_WORKER_SERVICE_ID
+    workerServiceId: command.parent.ZP_WORKER_SERVICE_ID,
+    npmRegistry: command.registry,
+    TS_NODE_SKIP_IGNORE: command.skipIgnore
   });
 };
 
@@ -69,7 +75,9 @@ const fromCli = async (command) => {
 const fromDefault = async () => {
   trace('Using default values');
   return Promise.resolve({
-    platformUrl: DEFAULTS.PLATFORM_URL
+    platformUrl: DEFAULTS.PLATFORM_URL,
+    npmRegistry: DEFAULTS.NPM_REGISTRY_URL,
+    TS_NODE_SKIP_IGNORE: DEFAULTS.TS_NODE_SKIP_IGNORE
   });
 };
 
@@ -86,6 +94,7 @@ const fromFile = async (command) => {
       trace('Configuration loaded from file', command.worker, result);
       return (result && result.config) || {};
     })
+    .then((config) => decrypt(config))
     .catch((e) => {
       warn('Failed to load conf from filesystem', command.worker);
       return {};
@@ -115,7 +124,7 @@ const load = async (command, required = true) => {
     }
     if (isValid(config)) {
       trace('config is valid', config);
-      return config;
+      return save(command, config);
     }
   } catch (e) {
     error('Error while loading and merging configuration', e);

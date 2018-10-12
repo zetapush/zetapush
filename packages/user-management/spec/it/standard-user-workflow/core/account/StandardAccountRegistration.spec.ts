@@ -21,14 +21,13 @@ import { ConfirmationUrlHttpHandler } from '../../../../../src/standard-user-wor
 import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 import { Simple } from '@zetapush/platform-legacy';
 import { getLocal } from 'mockttp';
+import { MockedConfigurationProperties, MockedZetaPushContext } from '@zetapush/testing';
 
 describe(`StandardAccountRegistration`, () => {
   const axiosInstance = axios.create({});
   const mockAxios = new MockAdapter(axiosInstance);
   const tokenGenerator: TokenGenerator = mock(Base36RandomTokenGenerator);
   const uuidGenerator: UuidGenerator = mock(TimestampBasedUuidGenerator);
-  const properties = mock<ConfigurationProperties>(<any>{});
-  const zetapushContext = mock<ZetaPushContext>(<any>{});
   const confirmationUrl = async ({ account, token }: { account: Account; token: Token }) =>
     `https://zetapush.com/${account.accountId}/${token.value}`;
   const htmlTemplate = ({ account, confirmationUrl }: { account: Account; confirmationUrl: string }) =>
@@ -48,6 +47,12 @@ describe(`StandardAccountRegistration`, () => {
         await this.mockServer.get('/confirmation-failed').thenReply(200, 'Error !');
         this.successUrl = this.mockServer.urlFor('/home');
         this.failureUrl = this.mockServer.urlFor('/confirmation-failed');
+        this.properties = mock(MockedConfigurationProperties);
+        this.zetapushContext = mock(MockedZetaPushContext);
+        when(this.zetapushContext.getLocalZetaPushHttpPort()).thenReturn(2999);
+        mockAxios.onPost('mailjet-url').reply(200, {});
+        when(tokenGenerator.generate()).thenResolve({ value: '123456' });
+        when(uuidGenerator.generate()).thenResolve({ value: '42' });
         await given()
           .credentials()
           /**/ .fromEnv()
@@ -55,12 +60,11 @@ describe(`StandardAccountRegistration`, () => {
           /**/ .and()
           .worker()
           /**/ .testModule(async () => {
-            mockAxios.onPost('mailjet-url').reply(200, {});
-            when(tokenGenerator.generate()).thenResolve({ value: '123456' });
-            when(uuidGenerator.generate()).thenResolve({ value: '42' });
-
             // create configurer
-            const configurer = new StandardUserWorkflowConfigurerImpl(properties, zetapushContext);
+            const configurer = new StandardUserWorkflowConfigurerImpl(
+              instance(this.properties),
+              instance(this.zetapushContext)
+            );
             configurer
               .registration()
               /**/ .account()
@@ -105,7 +109,11 @@ describe(`StandardAccountRegistration`, () => {
               /*    */ .successUrl(this.successUrl)
               /*    */ .failureUrl(this.failureUrl);
             return {
-              providers: await configurer.getProviders()
+              providers: [
+                ...(await configurer.getProviders()),
+                { provide: ConfigurationProperties, useValue: instance(this.properties) },
+                { provide: ZetaPushContext, useValue: instance(this.zetapushContext) }
+              ]
             };
           })
           /**/ .dependencies(StandardUserWorkflow, Simple, ConfirmationUrlHttpHandler)

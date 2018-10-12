@@ -133,9 +133,10 @@ class ConnectionErrorAnalyzer {
 
 export class PlatformError extends BaseError {
   constructor(rawError) {
+    const cause = rawError.cause ? new PlatformError(rawError.cause) : null;
+    super(rawError, cause);
     this.message = rawError.message;
     this.code = rawError.code;
-    this.cause = new PlatformError(rawError.cause);
   }
 }
 

@@ -100,7 +100,11 @@ export class TestWorkerInstance extends TaskDispatcherWorkerInstance {
       // Inject context in a proxified worker namespace
       const injected = inject(tasker, context);
       // Delegate task to
-      const result = await timeoutify(() => injected[name](parameters, context), this.timeout);
+      const result = await timeoutify(
+        () => injected[name](parameters, context),
+        this.timeout,
+        `while calling worker method ${name} from tests`
+      );
       runInWorkerLogger.debug('WorkerInstance::result', result);
       return {
         result,

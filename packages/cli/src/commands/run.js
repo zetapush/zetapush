@@ -1,23 +1,26 @@
 const process = require('process');
 const ora = require('ora');
 
-const { log, error, warn, info, trace, getVerbosity, LocalDevEnvironmentProvider } = require('@zetapush/common');
+const {
+  log,
+  error,
+  warn,
+  info,
+  trace,
+  defaultEnvironmentProvider,
+  LocalServerRegistry,
+  ServerType,
+  ZETAPUSH_HTTP_SERVER
+} = require('@zetapush/common');
 const { displayHelp } = require('@zetapush/troubleshooting');
 const { WorkerRunner, WorkerRunnerEvents } = require('@zetapush/worker');
 
 const WorkerLoader = require('../loader/worker');
+const util = require('util');
+const findFreePort = util.promisify(require('find-free-port'));
 const { createServer } = require('../utils/http-server');
 const transports = require('@zetapush/cometd/lib/node/Transports');
-
-const cliVerbosityToCometdLogLevel = (verbosity) => {
-  if (verbosity > 3) {
-    return 'debug';
-  }
-  if (verbosity > 2) {
-    return 'info';
-  }
-  return 'warn';
-};
+const { getCometdLogLevel } = require('../utils/log');
 
 /**
  * Run Worker instance
@@ -25,16 +28,17 @@ const cliVerbosityToCometdLogLevel = (verbosity) => {
  * @param {Object} config
  * @param {WorkerDeclaration} declaration
  */
-const run = (command, config, declaration) => {
+const run = async (command, config, declaration) => {
+  const serverRegistry = await findAndRegisterLocalPorts(command);
   const runner = new WorkerRunner(
     command.skipProvisioning,
     command.skipBootstrap,
     command.grabAllTraffic,
     config,
     transports,
-    new LocalDevEnvironmentProvider(config, 'dev', command.worker),
+    defaultEnvironmentProvider(config, 'dev', command.worker, serverRegistry),
     undefined,
-    cliVerbosityToCometdLogLevel(getVerbosity())
+    getCometdLogLevel()
   );
   const spinner = ora('Starting worker... \n');
 
@@ -45,7 +49,7 @@ const run = (command, config, declaration) => {
   runner.on(WorkerRunnerEvents.UPLOADED, ({ recipe }) => log('Uploaded', recipe.recipeId));
   runner.on(WorkerRunnerEvents.QUEUE_SERVICE_DEPLOYING, () => log('Waiting Queue service deploying...'));
   runner.on(WorkerRunnerEvents.QUEUE_SERVICE_READY, ({ recipe }) => log(`Queue service ready on ${recipe.recipeId}`));
-  // runner.on(WorkerRunnerEvents.CONNECTING);
+  runner.on(WorkerRunnerEvents.CONNECTING, () => trace(`Connecting worker to ZetaPush platform`));
   runner.on(WorkerRunnerEvents.CONNECTED, () => log(`Connected`));
   runner.on(WorkerRunnerEvents.CREATED_SERVICES, ({ services }) => info(`Create services`, services));
   runner.on(WorkerRunnerEvents.PLATFORM_SERVICES_READY, () => log(`Platform services created`));
@@ -90,7 +94,8 @@ const run = (command, config, declaration) => {
 
   runner.run(declaration);
   if (command.serveFront) {
-    return createServer(command, config);
+    const frontPort = serverRegistry.getServerInfo(ServerType.defaultName(ServerType.FRONT)).port;
+    return createServer(command, config, frontPort);
   }
 };
 
@@ -120,6 +125,28 @@ const listenTerminalSignals = (client, runner) => {
   });
 
   process.on('beforeExit', () => clean());
+};
+
+const findAndRegisterLocalPorts = async (command) => {
+  const serverRegistry = new LocalServerRegistry();
+  const frontPort = command.serveFront ? await findFreePort(3000) : null;
+  const workerZetaPushHttpPort = process.env.ZETAPUSH_HTTP_PORT
+    ? parseInt(process.env.ZETAPUSH_HTTP_PORT)
+    : await findFreePort(2999);
+  // TODO: handle different fronts and use names here
+  if (frontPort) {
+    serverRegistry.register(ServerType.defaultName(ServerType.FRONT), {
+      port: frontPort,
+      type: ServerType.FRONT
+    });
+  }
+  serverRegistry.register(ServerType.defaultName(ServerType.WORKER), {
+    port: workerZetaPushHttpPort,
+    type: ServerType.WORKER
+  });
+  // this is required to explicitly force port used by ZetaPush HTTP server
+  serverRegistry.register(ZETAPUSH_HTTP_SERVER, { port: workerZetaPushHttpPort, type: ServerType.WORKER });
+  return serverRegistry;
 };
 
 module.exports = run;

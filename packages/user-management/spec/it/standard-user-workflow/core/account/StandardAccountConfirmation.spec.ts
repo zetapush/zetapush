@@ -24,14 +24,13 @@ import { getLocal } from 'mockttp';
 import { HttpUrlRedirection } from '../../../../../src/standard-user-workflow/api';
 import { MissingConfigurationProperty } from '@zetapush/common';
 import { ConfigurationValidationError } from '../../../../../src/common/configurer/ConfigurerError';
+import { MockedConfigurationProperties, MockedZetaPushContext } from '@zetapush/testing';
 
 describe(`StandardAccountConfirmation`, () => {
   const axiosInstance = axios.create({});
   const mockAxios = new MockAdapter(axiosInstance);
   const tokenGenerator: TokenGenerator = mock(Base36RandomTokenGenerator);
   const uuidGenerator: UuidGenerator = mock(TimestampBasedUuidGenerator);
-  const properties = mock<ConfigurationProperties>(<any>{});
-  const zetapushContext = mock<ZetaPushContext>(<any>{});
   const confirmationUrl = async ({ account, token }: { account: Account; token: Token }) =>
     `https://zetapush.com/${account.accountId}/${token.value}`;
   const htmlTemplate = ({ account, confirmationUrl }: { account: Account; confirmationUrl: string }) =>
@@ -51,6 +50,9 @@ describe(`StandardAccountConfirmation`, () => {
         await this.mockServer.get('/confirmation-failed').thenReply(200, 'Error !');
         this.successUrl = this.mockServer.urlFor('/home');
         this.failureUrl = this.mockServer.urlFor('/confirmation-failed');
+        this.properties = mock(MockedConfigurationProperties);
+        this.zetapushContext = mock(MockedZetaPushContext);
+        when(this.zetapushContext.getLocalZetaPushHttpPort()).thenReturn(2999);
         await given()
           .credentials()
           /**/ .fromEnv()
@@ -63,7 +65,10 @@ describe(`StandardAccountConfirmation`, () => {
             when(uuidGenerator.generate()).thenResolve({ value: '42' });
 
             // create configurer
-            const configurer = new StandardUserWorkflowConfigurerImpl(properties, zetapushContext);
+            const configurer = new StandardUserWorkflowConfigurerImpl(
+              instance(this.properties),
+              instance(this.zetapushContext)
+            );
             configurer
               .registration()
               /**/ .account()
@@ -108,7 +113,11 @@ describe(`StandardAccountConfirmation`, () => {
               /*    */ .successUrl(this.successUrl)
               /*    */ .failureUrl(this.failureUrl);
             return {
-              providers: await configurer.getProviders()
+              providers: [
+                ...(await configurer.getProviders()),
+                { provide: ConfigurationProperties, useValue: instance(this.properties) },
+                { provide: ZetaPushContext, useValue: instance(this.zetapushContext) }
+              ]
             };
           })
           /**/ .dependencies(StandardUserWorkflow, Simple, ConfirmationUrlHttpHandler)
@@ -160,6 +169,9 @@ describe(`StandardAccountConfirmation`, () => {
   describe(`initialization`, () => {
     describe(`without email or sms sender`, () => {
       beforeEach(async () => {
+        this.properties = mock(MockedConfigurationProperties);
+        this.zetapushContext = mock(MockedZetaPushContext);
+        when(this.zetapushContext.getLocalZetaPushHttpPort()).thenReturn(2999);
         await given()
           .credentials()
           /**/ .fromEnv()
@@ -168,7 +180,10 @@ describe(`StandardAccountConfirmation`, () => {
           .worker()
           /**/ .testModule(async () => {
             // create configurer
-            const configurer = new StandardUserWorkflowConfigurerImpl(properties, zetapushContext);
+            const configurer = new StandardUserWorkflowConfigurerImpl(
+              instance(this.properties),
+              instance(this.zetapushContext)
+            );
             configurer
               .registration()
               /**/ .account()
@@ -201,7 +216,11 @@ describe(`StandardAccountConfirmation`, () => {
               /*    */ .successUrl('dontcare')
               /*    */ .failureUrl('dontcare');
             return {
-              providers: await configurer.getProviders()
+              providers: [
+                ...(await configurer.getProviders()),
+                { provide: ConfigurationProperties, useValue: instance(this.properties) },
+                { provide: ZetaPushContext, useValue: instance(this.zetapushContext) }
+              ]
             };
           })
           /**/ .dependencies(StandardUserWorkflow, Simple, ConfirmationUrlHttpHandler)

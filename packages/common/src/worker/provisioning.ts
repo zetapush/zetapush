@@ -1,8 +1,6 @@
-import { Provider } from '@zetapush/core';
-
 import { log, error } from '../utils/log';
-import { analyze, DependencyInjectionAnalysis } from './di';
-import { Service, Config, WorkerDeclaration, ResolvedConfig } from '../common-types';
+import { DependencyInjectionAnalysis } from './di';
+import { Service, ResolvedConfig } from '../common-types';
 import { writeFile } from 'fs';
 import { isNode } from '../utils/environment';
 
@@ -50,7 +48,11 @@ export const getBootstrapProvision = (config: ResolvedConfig, services: Array<Se
         enabled: true
       }
     })),
-    calls: []
+    calls: [],
+    envVariables: {
+      NPM_REGISTRY: config.npmRegistry,
+      TS_NODE_SKIP_IGNORE: config.skipIgnore
+    }
   };
 };
 
@@ -81,7 +83,7 @@ export const getRuntimeProvision = (
         deploymentId: `${Service.DEPLOYMENT_TYPE}_0`,
         description: `${Service.DEPLOYMENT_TYPE}`,
         options: Service.DEPLOYMENT_OPTIONS || {},
-        forbiddenVerbs: [],
+        forbiddenVerbs: ['__all'],
         enabled: true
       }
     })),

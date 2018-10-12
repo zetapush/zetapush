@@ -5,6 +5,10 @@ const process = require('process');
 const { error } = require('@zetapush/common');
 
 const getDeveloperLogin = async () => {
+  if (!process.stdout.isTTY || !process.stdin.setRawMode) {
+    error("Process is not run in a terminal (no TTY available). Can't prompt for developer login");
+    return '';
+  }
   try {
     const { value } = await prompts({
       name: 'value',
@@ -13,15 +17,15 @@ const getDeveloperLogin = async () => {
     });
     return value;
   } catch (e) {
-    if (!process.stdout.isTTY || !process.stdin.setRawMode) {
-      error("Process is not run in a terminal (no TTY available). Can't prompt for developer login", e);
-      return '';
-    }
     throw e;
   }
 };
 
 const getDeveloperPassword = async () => {
+  if (!process.stdout.isTTY || !process.stdin.setRawMode) {
+    error("Process is not run in a terminal (no TTY available). Can't prompt for developer password");
+    return '';
+  }
   try {
     const { value } = await prompts({
       name: 'value',
@@ -30,10 +34,6 @@ const getDeveloperPassword = async () => {
     });
     return value;
   } catch (e) {
-    if (!process.stdout.isTTY || !process.stdin.setRawMode) {
-      error("Process is not run in a terminal (no TTY available). Can't prompt for developer password", e);
-      return '';
-    }
     throw e;
   }
 };

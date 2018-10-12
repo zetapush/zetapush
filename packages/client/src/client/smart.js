@@ -41,6 +41,8 @@ export class SmartClient extends Client {
      * @return {AbstractHandshakeManager}
      */
     const authentication = () => {
+      // Ensure application name is the current one
+      persistence.setAppName(this.getAppName());
       const session = persistence.get();
       const { token } = session;
 
