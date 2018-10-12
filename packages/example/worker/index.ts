@@ -11,7 +11,7 @@ export class Api {
     private storage: Storage,
     private calendar: Calendar,
     config: LoggerConfig
-  ) {}
+    ) {}
   add(item: any) {
     return this.storage.push(item);
   }

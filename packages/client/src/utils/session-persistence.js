@@ -16,14 +16,22 @@ export class SessionPersistenceStrategy {
   constructor({ appName, storage = platformStorage } = {}) {
     /**
      * @access private
-     * @type {string}
-     */
-    this.key = `${ZETAPUSH_SESSION_KEY}.${appName}`;
-    /**
-     * @access private
      * @type {DOMStorage}
      */
     this.storage = storage;
+    // Set application name
+    this.setAppName(appName);
+  }
+  /**
+   * Set application name
+   * @param {string} appName
+   */
+  setAppName(appName) {
+    /**
+     * @access private
+     * @type {string}
+     */
+    this.key = `${ZETAPUSH_SESSION_KEY}.${appName}`;
   }
   /**
    * @return {string} session The stored session

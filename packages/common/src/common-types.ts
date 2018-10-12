@@ -7,6 +7,7 @@ export interface Config {
   appName?: string;
   developerLogin?: string;
   developerPassword?: string;
+  developerSecretToken?: string;
   platformUrl?: string;
 }
 export interface NormalizedWorkerDeclaration {
@@ -18,6 +19,8 @@ export interface ResolvedConfig extends Config {
   developerPassword: string;
   platformUrl: string;
   workerServiceId?: string;
+  npmRegistry?: string;
+  skipIgnore?: string;
 }
 export type ServerClient = any;
 

@@ -1,4 +1,5 @@
 import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
+import { trace } from '@zetapush/common';
 import {
   RegistrationConfirmationPropertyKeys,
   EmailPropertyKeys,
@@ -29,11 +30,14 @@ export const DEFAULT_CONFIRMATION_URL = async ({
   zetapushContext,
   account,
   token
-}: AccountConfirmationContext) =>
-  `${properties.get(
+}: AccountConfirmationContext) => {
+  const url = `${properties.get(
     RegistrationConfirmationPropertyKeys.BaseUrl,
-    `http://queuea0-${zetapushContext.getAppName()}.zetapush.app/@zetapush` /*TODO: zetapushContext.getWorkerUrl()*/
-  )}/users/${account.accountId}/confirm/${token.value}`;
+    zetapushContext.getWorkerUrl()
+  )}/@zetapush/users/${account.accountId}/confirm/${token.value}`;
+  trace('confirmation url', url);
+  return url;
+};
 
 export const DEFAULT_CONFIRMATION_HTML_TEMPLATE = ({
   account,
@@ -85,7 +89,7 @@ export const DEFAULT_CONFIRMATION_SUCCESS_REDIRECTION = (
 ): string =>
   properties.get(
     RegistrationConfirmationPropertyKeys.AccountConfirmedRedirectionUrl,
-    '' //TODO: `${zetapushContext.getFrontUrl()}#account-confirmed`
+    `${zetapushContext.getFrontUrl()}#account-confirmed`
   );
 
 export const DEFAULT_CONFIRMATION_FAILURE_REDIRECTION = (
@@ -94,7 +98,7 @@ export const DEFAULT_CONFIRMATION_FAILURE_REDIRECTION = (
 ): string =>
   properties.get(
     RegistrationConfirmationPropertyKeys.AccountConfirmationFailedRedirectionUrl,
-    '' //TODO: `${zetapushContext.getFrontUrl()}#account-confirmation-error`
+    `${zetapushContext.getFrontUrl()}#account-confirmation-error`
   );
 
 export const DEFAULT_SMTP_ENABLE = (properties: ConfigurationProperties) =>

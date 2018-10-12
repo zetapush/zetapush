@@ -7,7 +7,8 @@
       "packages/common/src/**"
     ],
     "client [prepare]": [
-      "packages/client/src/**"
+      "packages/client/src/**",
+      "packages/client/bin/**"
     ],
     "core [prepare]": [
       "packages/core/src/**"
@@ -22,7 +23,7 @@
       "packages/user-management/src/**"
     ],
     "lerna [clean+bootstrap]": [
-      "packages/**/package.json"
+      "packages/*/package.json"
     ]
   },
   "coverage-gutters.showGutterCoverage": false,

@@ -2,7 +2,7 @@ import { AbstractParent } from '../AbstractParent';
 import { MailjetEmailConfigurer } from '../grammar';
 import axios, { AxiosInstance } from 'axios';
 import { Configurer, SimpleProviderRegistry } from '../Configurer';
-import { Email, EmailSenderInjectable } from '../../api';
+import { Email, MessageSenderInjectable } from '../../api';
 import { MissingMandatoryConfigurationError } from '../ConfigurerError';
 import { MailjetHttpEmailSender, MailjetAuth } from '../../core';
 import { Provider } from '@zetapush/core';
@@ -48,7 +48,7 @@ export class MailjetEmailConfigurerImpl<P> extends AbstractParent<P> implements 
   async getProviders(): Promise<Provider[]> {
     const providerRegistry = new SimpleProviderRegistry();
     if (await this.alternativeHelper.isEnabled()) {
-      providerRegistry.registerFactory(EmailSenderInjectable, [], () => {
+      providerRegistry.registerFactory(MessageSenderInjectable, [], () => {
         const url = this.mailjetUrl || DEFAULT_MAILJET_URL;
         if (!this.mailjetApiKeyPublic || !this.mailjetApiKeyPrivate) {
           throw new MissingMandatoryConfigurationError('Missing apiKeyPublic or apiKeyPrivate for Mailjet');

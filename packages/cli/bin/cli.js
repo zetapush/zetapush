@@ -92,6 +92,8 @@ program
   .usage('[options]')
   .option('-f, --front <front>', 'Push front on cloud platform', identity, DEFAULTS.FRONT_FOLDER_PATH)
   .option('-w, --worker <worker>', 'Push worker on cloud platform', identity, DEFAULTS.WORKER_FOLDER_PATH)
+  .option('-r, --registry <registry>', 'Specify a npm registry url', identity, DEFAULTS.NPM_REGISTRY_URL)
+  .option('-si --ts-node-skip-ignore', 'Skip ignore for ts-node transpilation', identity, DEFAULTS.TS_NODE_SKIP_IGNORE)
   .description('Push your application on ZetaPush platform')
   .action((command) =>
     createApp(command)

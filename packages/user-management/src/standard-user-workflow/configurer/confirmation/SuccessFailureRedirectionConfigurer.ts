@@ -29,6 +29,7 @@ export class SuccessFailureRedirectionConfigurerImpl<P> extends AbstractParent<P
   }
 
   async getProviders(): Promise<Provider[]> {
+    console.log('confirmation redirection urls', this.successRedirectUrl, this.failureRedirectUrl);
     const providerRegistry = new SimpleProviderRegistry();
     // TODO: allow more customization
     providerRegistry.registerFactory(

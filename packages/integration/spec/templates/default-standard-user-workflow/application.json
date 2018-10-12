@@ -3,7 +3,7 @@
     "name": "ZetaPush"
   },
   "email": {
-    "from": "immersive@zetapush.fr"
+    "from": "celtia@zetapush.com"
   },
   "registration": {
     "confirmation": {
@@ -16,7 +16,7 @@
     }
   },
   "mailjet": {
-    "apikey-public": "f81f5b1d64a395a528e5f5c44aeba1af",
-    "apikey-private": "445647e5cf8517969b95e3363c3db7d2"
+    "apikey-public": "abb13e7529f0bb01e9768a8068017556",
+    "apikey-private": "b84b601427442843f67a8a91b2c183bd"
   }
 }

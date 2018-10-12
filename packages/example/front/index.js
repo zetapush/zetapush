@@ -8,7 +8,7 @@ document.querySelector('.js-Hello').addEventListener('click', async () => {
 });
 document.querySelector('.js-Add').addEventListener('click', async () => {
   console.log(await api.add({
-    name: prompt('Name?')
+    name: prompt('Name?', JSON.stringify({ key: 'value' }))
   }));
 });
 document.querySelector('.js-List').addEventListener('click', async () => {

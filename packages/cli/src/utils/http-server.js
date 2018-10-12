@@ -6,7 +6,6 @@ const { Transform } = require('stream');
 const http = require('http');
 // Packages
 const handler = require('serve-handler');
-const findFreePort = util.promisify(require('find-free-port'));
 // Other
 const { info } = require('@zetapush/common');
 
@@ -14,8 +13,9 @@ const { info } = require('@zetapush/common');
  * Create and run http server
  * @param {Object} command
  * @param {Object} config
+ * @param {number} port
  */
-const createServer = (command, config) => {
+const createServer = (command, config, port) => {
   const injected = ` data-zp-sandboxid="${config.appName}" data-zp-platform-url="${config.platformUrl}"`;
   info('Create HTTP Server');
   const server = http.createServer((request, response) => {
@@ -60,19 +60,16 @@ const createServer = (command, config) => {
       }
     );
   });
-  return findFreePort(3000).then(
-    (port) =>
-      new Promise((resolve, reject) => {
-        try {
-          server.listen(port, () => {
-            info(`Running at http://localhost:${port}`);
-            resolve();
-          });
-        } catch (failure) {
-          reject(failure);
-        }
-      })
-  );
+  return new Promise((resolve, reject) => {
+    try {
+      server.listen(port, () => {
+        info(`Running at http://localhost:${port}`);
+        resolve(port);
+      });
+    } catch (failure) {
+      reject(failure);
+    }
+  });
 };
 
 module.exports = { createServer };

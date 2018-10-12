@@ -1,8 +1,5 @@
 const { given, frontAction, autoclean } = require('@zetapush/testing');
-
-const sleep = (millis) => {
-  return new Promise((resolve) => setTimeout(resolve, millis));
-};
+const { TimeoutError } = require('@zetapush/client');
 
 describe(`As developer with 
       - valid account
@@ -143,17 +140,19 @@ describe(`As developer with
       await frontAction(this)
         .name('call hello')
         .execute(async (api) => {
-          let helloReceived = false;
-          const sendHello = async () => {
-            // hello function in worker exits the worker => no answer will be received so promise won't be resolved
-            await api.hello();
-            console.log('RECEIVED');
-            helloReceived = true;
-          };
-          sendHello();
-          await sleep(5000);
-          await this.context.runner.stop();
-          expect(helloReceived).toBe(false);
+          try {
+            const sendHello = async () => {
+              // hello function in worker exits the worker => no answer will be received so promise won't be resolved
+              await api.hello();
+              fail('Should not have received the request as the worker has exited');
+            };
+            await sendHello();
+            fail('Should have failed with timeout');
+          } catch (e) {
+            expect(() => {
+              throw e;
+            }).toThrowError(TimeoutError);
+          }
         });
     },
     60 * 1000 * 10

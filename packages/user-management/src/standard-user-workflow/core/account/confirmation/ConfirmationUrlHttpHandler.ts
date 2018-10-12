@@ -21,7 +21,7 @@ import { HttpServer, Request, Response } from '@zetapush/http-server';
 
 export class ConfirmationUrlHttpHandler {
   constructor(private standardUserWorkflow: StandardUserWorkflow, app: HttpServer) {
-    app.get('/users/:accountId/confirm/:token', this.confirm.bind(this));
+    app.get('/@zetapush/users/:accountId/confirm/:token', this.confirm.bind(this));
   }
 
   async confirm(req: Request, res: Response) {

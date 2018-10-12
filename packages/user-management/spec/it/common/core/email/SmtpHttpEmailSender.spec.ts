@@ -1,5 +1,5 @@
 import { given, autoclean, runInWorker } from '@zetapush/testing';
-import { SmtpEmailConfigurerImpl, MessageSender, EmailSenderInjectable } from '../../../../../src';
+import { SmtpEmailConfigurerImpl, MessageSender, MessageSenderInjectable } from '../../../../../src';
 import { mock } from 'ts-mockito';
 import nodemailerMock from 'nodemailer-mock';
 
@@ -38,7 +38,7 @@ describe(`SmtpHttpEmailSender`, () => {
               providers: await configurer.getProviders()
             };
           })
-          /**/ .dependencies(EmailSenderInjectable)
+          /**/ .dependencies(MessageSenderInjectable)
           /**/ .and()
           .apply(this);
       });

@@ -1,5 +1,11 @@
 import { SmartClient, Client } from '@zetapush/client';
-import { ResolvedConfig, Service } from '@zetapush/common';
+import {
+  ResolvedConfig,
+  LocalServerRegistry,
+  defaultEnvironmentProvider,
+  ServerType,
+  ZETAPUSH_HTTP_SERVER
+} from '@zetapush/common';
 import { FactoryProvider } from '@zetapush/core';
 import { WorkerRunner, WorkerRunnerEvents } from '@zetapush/worker';
 
@@ -12,10 +18,11 @@ import {
   TestWorker,
   getTestNormalizer
 } from '../worker/test-instance';
-import { LocalDevEnvironmentProvider } from '@zetapush/common';
 import { Credentials } from '@zetapush/client';
 
 const transports = require('@zetapush/cometd/lib/node/Transports');
+import { promisify } from 'util';
+const findFreePort = promisify(require('find-free-port'));
 
 export const userAction = async (name: string, func: () => any) => {
   try {
@@ -59,13 +66,14 @@ export const runInWorker = (testOrContext: Context, workerDeclaration: (...insta
         deps: resolvedDependencies || []
       };
 
+      const serverRegistry = await findAndRegisterLocalPorts(); // TODO: handle serve front ?
       const runner = new WorkerRunner(
         false,
         false,
         true, // Test must grab all traffic
         <ResolvedConfig>zetarc,
         transports,
-        new LocalDevEnvironmentProvider(<ResolvedConfig>zetarc, 'test', projectDir || ''), // TODO: provide environment provider that suits to tests (one that can be constructed through given())
+        defaultEnvironmentProvider(<ResolvedConfig>zetarc, 'test', projectDir || '', serverRegistry), // TODO: provide environment provider that suits to tests (one that can be constructed through given())
         new TestWorkerInstanceFactory(),
         logLevel.cometd,
         await getTestNormalizer(factoryProvider, moduleDeclaration)
@@ -133,6 +141,28 @@ export const runInWorker = (testOrContext: Context, workerDeclaration: (...insta
   });
 };
 
+const findAndRegisterLocalPorts = async () => {
+  const serverRegistry = new LocalServerRegistry();
+  // const frontPort = command.serveFront ? await findFreePort(3000) : null;
+  const workerZetaPushHttpPort = process.env.ZETAPUSH_HTTP_PORT
+    ? parseInt(process.env.ZETAPUSH_HTTP_PORT)
+    : await findFreePort(2999);
+  // TODO: handle different fronts and use names here
+  // if (frontPort) {
+  //   serverRegistry.register(ServerType.defaultName(ServerType.FRONT), {
+  //     port: frontPort,
+  //     type: ServerType.FRONT
+  //   });
+  // }
+  serverRegistry.register(ServerType.defaultName(ServerType.WORKER), {
+    port: workerZetaPushHttpPort,
+    type: ServerType.WORKER
+  });
+  // this is required to explicitly force port used by ZetaPush HTTP server
+  serverRegistry.register(ZETAPUSH_HTTP_SERVER, { port: workerZetaPushHttpPort, type: ServerType.WORKER });
+  return serverRegistry;
+};
+
 class Parent<P> {
   constructor(private parent: P) {}
 
@@ -186,7 +216,7 @@ class UserAction {
         if (this.credentials) {
           await client.setCredentials(this.credentials);
         }
-        const resu = await client.connect();
+        await client.connect();
         frontActionLogger.debug('Connected to worker');
         if (!this.apiBuilder) {
           this.apiBuilder = new Api(this);

@@ -8,6 +8,7 @@ export type Dependencies = Array<Function | InjectionToken<any>> | (() => Array<
 export interface TestContext {
   zetarc: Config;
   projectDir?: string;
+  processLocalRegistry?: string;
   runner?: Runner;
   workerRunner?: WorkerRunner;
   moduleDeclaration?: () => Promise<Module>;
@@ -37,3 +38,8 @@ export class ContextWrapper {
 }
 
 export type Context = TestContext | Test | any;
+
+export interface FrontOptions {
+  serveFront: boolean;
+  pushFront: boolean;
+}
