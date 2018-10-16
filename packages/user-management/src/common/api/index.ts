@@ -6,3 +6,4 @@ export * from './Message';
 export * from './Email';
 export * from './Uuid';
 export * from './Validation';
+export * from './User';
