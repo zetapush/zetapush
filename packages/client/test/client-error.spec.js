@@ -27,15 +27,4 @@ describe('Client', () => {
       client.connect()
     })
   })
-
-  describe('Connection failure', () => {
-    it('Should handle no server available', (done) => {
-      const client = this.client
-      client.onNoServerUrlAvailable(() => {
-        expect(client.isConnected()).toBeFalsy()
-        done()
-      })
-      client.connect()
-    })
-  })
 })

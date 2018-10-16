@@ -70,15 +70,21 @@ export class ClientHelper {
    */
   constructor({ platformUrl, appName, forceHttps = false, authentication, resource = null, transports = Transports }) {
     // Merge config with overloaded environment
-    const options = merge(
+    /**
+     * @access private
+     * @type {Object}
+     */
+    this.options = merge(
       {
+        forceHttps,
         platformUrl,
-        appName
+        appName,
+        transports
       },
       transports.getOverloadedConfigFromEnvironment()
     );
     // Validate mandatory parameters
-    const mandatory = ['appName', 'platformUrl'].filter((property) => !options[property]);
+    const mandatory = ['appName', 'platformUrl'].filter((property) => !this.options[property]);
     if (mandatory.length) {
       throw new Error(`Missing mandatory parameter(s) ${mandatory.join(', ')}`);
     }
@@ -86,7 +92,7 @@ export class ClientHelper {
      * @access private
      * @type {string}
      */
-    this.appName = options.appName;
+    this.appName = this.options.appName;
     /**
      * @access private
      * @type {function():AbstractHandshake}
@@ -121,19 +127,7 @@ export class ClientHelper {
      * @access private
      * @type {Promise}
      */
-    this.config = getSandboxConfig({
-      ...options,
-      forceHttps,
-      transports
-    }).catch((error) => {
-      // Notify error in connection to server step
-      this.connectionToServerFail(error);
-      // Return empty config
-      return {
-        appName,
-        servers: []
-      };
-    });
+    this.config = null;
     /**
      * @access private
      * @type {Array<Object>}
@@ -169,12 +163,6 @@ export class ClientHelper {
      * @type {CometD}
      */
     this.cometd = new CometD();
-
-    // Resolve sandbox alias from server-side config
-    this.config.then((config) => {
-      // Resolve
-      this.appName = config.appName;
-    });
 
     // Register transports layers
     transports.ALL.forEach(({ type, Transport, parameters }) => {
@@ -288,28 +276,51 @@ export class ClientHelper {
       listener.onFailedHandshake(error, ext);
     });
   }
+
+  /**
+   * Get one server from the list of available servers and do handshake
+   */
+  getServerAndDoHandshake() {
+    const servers = this.getServers();
+    if (servers.length > 0) {
+      // Get a random server url
+      this.serverUrl = shuffle(servers);
+      // Configure CometD
+      this.cometd.configure({
+        url: `${this.serverUrl}/strd`,
+        backoffIncrement: 1000,
+        maxBackoff: 60000,
+        appendMessageTypeToURL: false
+      });
+      // Send handshake fields
+      this.cometd.handshake(this.getHandshakeFields());
+    } else {
+      // No servers available
+      this.config = null;
+      this.noServerUrlAvailable();
+    }
+  }
+
   /**
    * Connect client using CometD Transport
    */
   connect() {
-    this.getServers().then((servers) => {
-      if (servers.length > 0) {
-        // Get a random server url
-        this.serverUrl = shuffle(servers);
-        // Configure CometD
-        this.cometd.configure({
-          url: `${this.serverUrl}/strd`,
-          backoffIncrement: 1000,
-          maxBackoff: 60000,
-          appendMessageTypeToURL: false
+    if (!this.config) {
+      getSandboxConfig({
+        ...this.options
+      })
+        .then((config) => {
+          this.config = config;
+          this.appName = this.config.appName;
+          this.getServerAndDoHandshake();
+        })
+        .catch((error) => {
+          this.config = null;
+          this.connectionToServerFail(error);
         });
-        // Send handshake fields
-        this.cometd.handshake(this.getHandshakeFields());
-      } else {
-        // No servers available
-        this.noServerUrlAvailable();
-      }
-    });
+    } else {
+      this.getServerAndDoHandshake();
+    }
   }
   /**
    * Notify listeners when connection is broken
@@ -806,10 +817,14 @@ export class ClientHelper {
   }
   /**
    * Get server urls list
-   * @return {Promise} servers
+   * @return {Array<string>} servers
    */
   getServers() {
-    return this.config.then(({ servers }) => servers);
+    if (this.config) {
+      return this.config.servers;
+    } else {
+      return [];
+    }
   }
   /**
    * Get a publisher for a service
@@ -969,24 +984,23 @@ export class ClientHelper {
    * Remove current server url from the server list and shuffle for another one
    */
   updateServerUrl() {
-    this.getServers().then((servers) => {
-      const index = servers.indexOf(this.serverUrl);
-      if (index > -1) {
-        servers.splice(index, 1);
-      }
-      if (servers.length === 0) {
-        // No more server available
-        this.noServerUrlAvailable();
-      } else {
-        this.serverUrl = shuffle(servers);
-        this.cometd.configure({
-          url: `${this.serverUrl}/strd`
-        });
-        setTimeout(() => {
-          this.cometd.handshake(this.getHandshakeFields());
-        }, UPDATE_SERVER_URL_DELAY);
-      }
-    });
+    const servers = this.getServers();
+    const index = servers.indexOf(this.serverUrl);
+    if (index > -1) {
+      servers.splice(index, 1);
+    }
+    if (servers.length === 0) {
+      // No more server available
+      this.noServerUrlAvailable();
+    } else {
+      this.serverUrl = shuffle(servers);
+      this.cometd.configure({
+        url: `${this.serverUrl}/strd`
+      });
+      setTimeout(() => {
+        this.cometd.handshake(this.getHandshakeFields());
+      }, UPDATE_SERVER_URL_DELAY);
+    }
   }
   /**
    * Remove all subscriptions
