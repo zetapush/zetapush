@@ -1,8 +1,8 @@
 export class BaseError extends Error {
-  constructor(message, cause) {
+  constructor(name, message, cause) {
     super(message);
     this.cause = cause;
-    this.name = this.constructor.name;
+    this.name = name;
   }
 
   toString() {
@@ -65,9 +65,14 @@ class AccountStatusAnalyzer {
       return null;
     }
     if (this.isAccountNotConfirmed(ext)) {
-      return new AccountNotConfirmedError(`Your account has been created but you haven't confirmed it yet`, error, ext);
+      return new AccountNotConfirmedError(
+        `AccountNotConfirmedError`,
+        `Your account has been created but you haven't confirmed it yet`,
+        error,
+        ext
+      );
     } else {
-      return new AccountDisabledError(`Your account has been disabled`, error, ext);
+      return new AccountDisabledError(`AccountDisabledError`, `Your account has been disabled`, error, ext);
     }
   }
 
@@ -94,10 +99,15 @@ class AuthenticationErrorAnalyzer {
       return null;
     }
     if (this.isBadCredentials(ext)) {
-      return new BadCredentialsError(`The login and/or password are incorrect`, error, ext);
+      return new BadCredentialsError(`BadCredentialsError`, `The login and/or password are incorrect`, error, ext);
     }
     if (this.isAuthenticationTokenNotFound(ext)) {
-      return new AuthenticationTokenNotFoundError(`The authentication token doesn't exist`, error, ext);
+      return new AuthenticationTokenNotFoundError(
+        `AuthenticationTokenNotFoundError`,
+        `The authentication token doesn't exist`,
+        error,
+        ext
+      );
     }
     return null;
   }
@@ -121,9 +131,17 @@ class ConnectionErrorAnalyzer {
     }
     if (this.isNetworkError(error)) {
       // TODO: add more useful information
-      return new ConnectionEstablishmentFailed(`Unable to establish connection to the platform`, error);
+      return new ConnectionEstablishmentFailed(
+        `ConnectionEstablishmentFailed`,
+        `Unable to establish connection to the platform`,
+        error
+      );
     }
-    return new ConnectionError(`Failed to connect to the platform`, new PlatformError(error));
+    return new ConnectionError(
+      `ConnectionError`,
+      `Failed to connect to the platform`,
+      new PlatformError(`PlatformError`, error)
+    );
   }
 
   isNetworkError(error) {
@@ -132,17 +150,17 @@ class ConnectionErrorAnalyzer {
 }
 
 export class PlatformError extends BaseError {
-  constructor(rawError) {
+  constructor(name, rawError) {
     const cause = rawError.cause ? new PlatformError(rawError.cause) : null;
-    super(rawError, cause);
+    super(name, rawError, cause);
     this.message = rawError.message;
     this.code = rawError.code;
   }
 }
 
 export class ConnectionError extends BaseError {
-  constructor(message, cause, ext) {
-    super(message, cause);
+  constructor(name, message, cause, ext) {
+    super(name, message, cause);
     this.ext = ext;
   }
 }
