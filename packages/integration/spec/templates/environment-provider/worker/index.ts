@@ -1,5 +1,5 @@
 import { ZetaPushContext, Inject } from '@zetapush/core';
-import * as fs from 'fs';
+const fs = require('fs');
 
 export default class Api {
   // FIXME: find a way to inject ZetaPushContext without explicit @Inject

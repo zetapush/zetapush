@@ -58,7 +58,7 @@ describe(`As developer with
       );
     });
     describe(`In a zeta push case`, () => {
-      xit(
+      it(
         `Should be able to launch a local worker and call hello CCS`,
         async () => {
           await given()
@@ -157,7 +157,7 @@ describe(`As developer with
     });
 
     describe(`In a zeta push case`, () => {
-      xit(
+      it(
         `Should be able to launch a local worker and call hello CCS`,
         async () => {
           await given()
@@ -241,7 +241,7 @@ describe(`As developer with
       );
     });
     describe(`In a zeta push case`, () => {
-      xit(
+      it(
         `Should be able to launch a local worker and call hello CCS`,
         async () => {
           await given()

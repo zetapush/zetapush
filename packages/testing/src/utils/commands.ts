@@ -5,6 +5,7 @@ import { PathLike, readFileSync, writeFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import * as process from 'process';
 const rimraf = require('rimraf');
+const url = require('url');
 import { fetch, ResolvedConfig, decrypt, getLiveStatus } from '@zetapush/common';
 const kill = require('tree-kill');
 import { commandLogger, SubProcessLoggerStream, subProcessLogger } from './logger';
@@ -63,13 +64,7 @@ export const getCurrentEnv = (dir: PathLike) => {
  * @param {string} developerPassword
  * @param {string} dir Name of the application folder
  */
-export const npmInit = (
-  developerLogin: string,
-  developerPassword: string,
-  dir: PathLike,
-  platformUrl?: string,
-  localNpmRegistry = 'https://registry.npmjs.org'
-) => {
+export const npmInit = (developerLogin: string, developerPassword: string, dir: PathLike, platformUrl?: string) => {
   commandLogger.info(`npmInit(${developerLogin}, ${developerPassword}, ${dir}, ${platformUrl})`);
   if (npmVersion().major < 5) {
     throw new Error('Minimum required npm version is 5.6.0');
@@ -199,13 +194,13 @@ const getZetapushModuleDirectoryPath = (module: string, file?: string) => {
  * @param {string} dir Full path of the application folder
  * @param {string} localNpmRegistry Full url for a npm registry url
  */
-export const zetaPush = (dir: PathLike, localNpmRegistry = 'https://registry.npmjs.org') => {
+export const zetaPush = (dir: PathLike) => {
   return new Promise((resolve, reject) => {
-    commandLogger.info(`zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()} --registry ${localNpmRegistry}]`);
+    commandLogger.info(`zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}]`);
     const stdout: Array<string | Buffer> = [];
     const stderr: Array<string | Buffer> = [];
 
-    const cmd = execa.shell(`npm run deploy -- ${zpLogLevel()} --registry ${localNpmRegistry}`, {
+    const cmd = execa.shell(`npm run deploy -- ${zpLogLevel()}`, {
       cwd: dir.toString()
     });
     const out = new PassThrough();
@@ -222,13 +217,10 @@ export const zetaPush = (dir: PathLike, localNpmRegistry = 'https://registry.npm
         stdout: stdout.join('\n'),
         stderr: stderr.join('\n')
       };
-      subProcessLogger.silly(
-        `zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}] --registry ${localNpmRegistry} -> `,
-        {
-          code,
-          signal
-        }
-      );
+      subProcessLogger.silly(`zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}]} -> `, {
+        code,
+        signal
+      });
       resolve(res);
     });
   });
@@ -426,7 +418,7 @@ export const npmVersion = () => {
  * @param {string} dir Full path of the application folder
  * @param {string} version Version of the ZetaPush dependency
  */
-export const npmInstall = async (dir: PathLike, version: string, localNpmRegistry = 'https://registry.npmjs.org') => {
+export const npmInstall = async (dir: PathLike, version: string) => {
   commandLogger.info(`npmInstall(${dir}, ${version})`);
 
   await rm(`${dir}/node_modules/`);
@@ -444,10 +436,10 @@ export const npmInstall = async (dir: PathLike, version: string, localNpmRegistr
   });
 
   try {
-    commandLogger.debug(`npmInstall(${dir}, ${version}) -> [npm install --registry ${localNpmRegistry}]`);
+    commandLogger.debug(`npmInstall(${dir}, ${version}) -> [npm install]`);
     debugObject('npm-install-execute', { dir });
 
-    await runShellCommand(`npm install --registry ${localNpmRegistry}`, { cwd: dir.toString() });
+    await runShellCommand(`npm install`, { cwd: dir.toString() });
     debugObject('npm-install-executed', { dir });
 
     // replace dependencies in node_modules with symlink to local dependencies
@@ -462,6 +454,39 @@ export const npmInstall = async (dir: PathLike, version: string, localNpmRegistr
     subProcessLogger.error('\n' + err.stdout);
     subProcessLogger.error('\n' + err.stderr);
     commandLogger.error(`npmInstall(${dir}, ${version})`, err);
+
+    return err.code;
+  }
+};
+
+export const npmInstallFromLocal = async (dir: PathLike, npmInstallConfiguration: OrderedInstallConfiguration) => {
+  commandLogger.info(`npmInstallFromLocal(${dir})`);
+
+  await rm(`${dir}/node_modules/`);
+  await rm(`${dir}/package-lock.json`);
+
+  try {
+    commandLogger.debug(`npmInstallFromLocal(${dir}) -> [npm install]`);
+    debugObject('npm-install-execute', { dir });
+
+    for (let i = 0; i < npmInstallConfiguration.modules.length; i++) {
+      await runShellCommand(
+        `npm install ${url.resolve(npmInstallConfiguration.url, npmInstallConfiguration.modules[i].name)}`,
+        {
+          cwd: dir.toString()
+        }
+      );
+      debugObject('npm-install-executed', { dir });
+    }
+
+    // The rest of dependencies
+    await runShellCommand(`npm install`, { cwd: dir.toString() });
+  } catch (err) {
+    debugObject('npm-install-err', { err });
+
+    subProcessLogger.error('\n' + err.stdout);
+    subProcessLogger.error('\n' + err.stderr);
+    commandLogger.error(`npmInstall(${dir})`, err);
 
     return err.code;
   }
@@ -512,7 +537,7 @@ const runShellCommand = (command: string, options: any, validExitCodes = [0]) =>
   });
 };
 
-export const npmInstallLatestVersion = async (dir: PathLike, localNpmRegistry = 'https://registry.npmjs.org') => {
+export const npmInstallLatestVersion = async (dir: PathLike) => {
   commandLogger.info(`npmInstallLatestVersion(${dir})`);
   await rm(`${dir}/node_modules/`);
   await rm(`${dir}/package-lock.json`);
@@ -660,12 +685,7 @@ export class Runner {
   private cmd?: ExecaChildProcess;
   private runExitCode = 0;
 
-  constructor(
-    private dir: string,
-    private timeout = 300000,
-    private localNpmRegistry: string = 'https://registry.npmjs.org',
-    private frontOptions?: FrontOptions
-  ) {}
+  constructor(private dir: string, private timeout = 300000, private frontOptions?: FrontOptions) {}
 
   async waitForWorkerUp() {
     commandLogger.debug('Runner:waitForWorkerUp()');
@@ -760,3 +780,13 @@ export class Runner {
 export const zpLogLevel = () => {
   return process.env.ZETAPUSH_COMMANDS_LOG_LEVEL || '-vvv';
 };
+
+export interface ExposedModule {
+  name: string; // Name in the exposed directory
+  path: string; // Path of the real directory
+}
+
+export interface OrderedInstallConfiguration {
+  modules: Array<ExposedModule>;
+  url: string;
+}

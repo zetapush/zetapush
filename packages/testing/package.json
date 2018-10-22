@@ -31,6 +31,7 @@
     "@zetapush/common": "0.34.2",
     "@zetapush/core": "0.34.2",
     "@zetapush/worker": "0.34.2",
+    "archiver": "^3.0.0",
     "chalk": "2.4.1",
     "copy-dir": "0.3.0",
     "execa": "0.10.0",
