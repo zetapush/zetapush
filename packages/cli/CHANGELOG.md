@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.35.2"></a>
+## [0.35.2](https://github.com/zetapush/zetapush/compare/v0.35.1...v0.35.2) (2018-10-17)
+
+
+
+
+**Note:** Version bump only for package @zetapush/cli
+
+<a name="0.35.1"></a>
+## [0.35.1](https://github.com/zetapush/zetapush/compare/v0.35.0...v0.35.1) (2018-10-16)
+
+
+
+
+**Note:** Version bump only for package @zetapush/cli
+
+<a name="0.35.0"></a>
+# [0.35.0](https://github.com/zetapush/zetapush/compare/v0.34.2...v0.35.0) (2018-10-12)
+
+
+### Bug Fixes
+
+* **ci:** Use npm ci on Jenkins so we must restore package-lock.json ([b17d550](https://github.com/zetapush/zetapush/commit/b17d550))
+* **loader-config:** add missing getDeveloperLogin import ([fd04bbb](https://github.com/zetapush/zetapush/commit/fd04bbb))
+* **tests:** fix developer password in tests since use of secret token ([1ab8644](https://github.com/zetapush/zetapush/commit/1ab8644))
+
+
+### Features
+
+* **example:** update created example ([cd3d499](https://github.com/zetapush/zetapush/commit/cd3d499))
+* **security:** no longer display developer password in zetarc file ([f576249](https://github.com/zetapush/zetapush/commit/f576249))
+
+
+
+
 <a name="0.34.2"></a>
 ## [0.34.2](https://github.com/zetapush/zetapush/compare/v0.34.1...v0.34.2) (2018-09-25)
 

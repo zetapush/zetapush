@@ -5,7 +5,6 @@ import { LogLevel, Logs } from '@zetapush/platform-legacy';
 import { WorkerInstance, TaskDispatcherWorkerInstance } from '../utils/worker-instance';
 
 const DEFAULT_NAMESPACE = '';
-
 interface ListenerMessage<T> {
   data: T;
   channel: string;
@@ -130,8 +129,27 @@ export class WorkerClient extends Client {
           if (request && taskId) {
             // Get request context for task request
             const context = this.getRequestContext(request, logs, deploymentId);
+            const namespace = () => (request.data.namespace === DEFAULT_NAMESPACE ? 'default' : request.data.namespace);
+
+            // Trace call Start with params
+            logs.log({
+              contextId: request.contextId,
+              level: LogLevel.TRACE,
+              data: request,
+              logger: `${deploymentId}.apiCall.in`
+            });
+
             // Delegate task execution to worker instance
             const response = await instance.dispatch(request, context);
+
+            // Trace call End with response
+            logs.log({
+              contextId: request.contextId,
+              level: LogLevel.TRACE,
+              data: response,
+              logger: `${deploymentId}.apiCall.out`
+            });
+
             // Notify platforme job is done
             queue.done({
               ...response,

@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/client",
-  "version": "0.34.2",
+  "version": "0.35.2",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-client.js",
   "main": "lib/index.js",
@@ -30,8 +30,8 @@
     "test:ci": "karma start karma.conf.js"
   },
   "dependencies": {
-    "@zetapush/cometd": "0.34.2",
-    "@zetapush/platform-legacy": "0.34.2"
+    "@zetapush/cometd": "0.35.2",
+    "@zetapush/platform-legacy": "0.35.2"
   },
   "devDependencies": {
     "@babel/cli": "7.0.0",

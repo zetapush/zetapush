@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.35.2"></a>
+## [0.35.2](https://github.com/zetapush/zetapush/compare/v0.35.1...v0.35.2) (2018-10-17)
+
+
+
+
+**Note:** Version bump only for package @zetapush/create
+
+<a name="0.35.1"></a>
+## [0.35.1](https://github.com/zetapush/zetapush/compare/v0.35.0...v0.35.1) (2018-10-16)
+
+
+
+
+**Note:** Version bump only for package @zetapush/create
+
+<a name="0.35.0"></a>
+# [0.35.0](https://github.com/zetapush/zetapush/compare/v0.34.2...v0.35.0) (2018-10-12)
+
+
+### Bug Fixes
+
+* **ci:** Use npm ci on Jenkins so we must restore package-lock.json ([b17d550](https://github.com/zetapush/zetapush/commit/b17d550))
+
+
+### Features
+
+* **example:** update created example ([cd3d499](https://github.com/zetapush/zetapush/commit/cd3d499))
+
+
+
+
 <a name="0.34.2"></a>
 ## [0.34.2](https://github.com/zetapush/zetapush/compare/v0.34.1...v0.34.2) (2018-09-25)
 

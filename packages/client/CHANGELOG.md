@@ -3,6 +3,44 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.35.2"></a>
+## [0.35.2](https://github.com/zetapush/zetapush/compare/v0.35.1...v0.35.2) (2018-10-17)
+
+
+
+
+**Note:** Version bump only for package @zetapush/client
+
+<a name="0.35.1"></a>
+## [0.35.1](https://github.com/zetapush/zetapush/compare/v0.35.0...v0.35.1) (2018-10-16)
+
+
+
+
+**Note:** Version bump only for package @zetapush/client
+
+<a name="0.35.0"></a>
+# [0.35.0](https://github.com/zetapush/zetapush/compare/v0.34.2...v0.35.0) (2018-10-12)
+
+
+### Bug Fixes
+
+* **api:** Do not transform API return values ([4d5d49b](https://github.com/zetapush/zetapush/commit/4d5d49b))
+* **ci:** Use npm ci on Jenkins so we must restore package-lock.json ([b17d550](https://github.com/zetapush/zetapush/commit/b17d550))
+* **smart-client-persistence:** update appName on persistence data level ([d78fef3](https://github.com/zetapush/zetapush/commit/d78fef3)), closes [#199](https://github.com/zetapush/zetapush/issues/199)
+* **tests:** fix developer password in tests since use of secret token ([1ab8644](https://github.com/zetapush/zetapush/commit/1ab8644))
+
+
+### BREAKING CHANGES
+
+* **api:** A client that calls an API method returning null or undefined value will no longer
+receive an empty object
+
+182
+
+
+
+
 <a name="0.34.2"></a>
 ## [0.34.2](https://github.com/zetapush/zetapush/compare/v0.34.1...v0.34.2) (2018-09-25)
 

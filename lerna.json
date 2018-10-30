@@ -1,9 +1,14 @@
 {
   "lerna": "2.11.0",
-  "version": "0.34.2",
+  "version": "0.35.2",
   "commands": {
     "publish": {
-      "ignore": ["@zetapush/example", "@zetapush/integration", "*.md", "test/**"],
+      "ignore": [
+        "@zetapush/example",
+        "@zetapush/integration",
+        "*.md",
+        "test/**"
+      ],
       "conventionalCommits": true,
       "message": "chore(release): publish %s"
     }
