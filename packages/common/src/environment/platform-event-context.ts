@@ -52,8 +52,8 @@ export class PlatformEventContext implements ZetaPushContext, Loadable {
     return this.getUrl(ServerType.WORKER, this.context!.workers, name);
   }
 
-  getLocalZetaPushHttpPort(name?: string): number | null {
-    const info = this.serverRegistry.getServerInfo(name || ServerType.defaultName(ServerType.WORKER));
+  getLocalZetaPushHttpPort(): number | null {
+    const info = this.serverRegistry.getServerInfo(ServerType.defaultName(ServerType.WORKER));
     return info ? info.port : null;
   }
 

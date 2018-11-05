@@ -3,8 +3,9 @@ import 'jasmine';
 import {
   LegacyAdapterUserRepository,
   StandardAccountStatus,
-  LegacyLoginAlreadyUsedError,
-  LegacySimpleError
+  LoginAlreadyUsedError,
+  LegacySimpleError,
+  LegacyLoginAlreadyUsedError
 } from '../../../../src';
 import { IllegalStateError } from '../../../../src/common/api';
 
