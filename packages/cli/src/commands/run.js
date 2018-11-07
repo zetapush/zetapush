@@ -1,5 +1,7 @@
 const process = require('process');
 const ora = require('ora');
+const fs = require('fs');
+const path = require('path');
 
 const {
   log,
@@ -10,7 +12,8 @@ const {
   defaultEnvironmentProvider,
   LocalServerRegistry,
   ServerType,
-  ZETAPUSH_HTTP_SERVER
+  ZETAPUSH_HTTP_SERVER,
+  readConfigFromPackageJson
 } = require('@zetapush/common');
 const { displayHelp } = require('@zetapush/troubleshooting');
 const { WorkerRunner, WorkerRunnerEvents } = require('@zetapush/worker');
@@ -92,11 +95,59 @@ const run = async (command, config, declaration) => {
     });
   });
 
-  runner.run(declaration);
+  runner.run(declaration, readConfigFromPackageJson());
+
   if (command.serveFront) {
-    const frontPort = serverRegistry.getServerInfo(ServerType.defaultName(ServerType.FRONT)).port;
-    return createServer(command, config, frontPort);
+    return searchAndCreateServers(command, declaration, config, serverRegistry);
   }
+};
+
+/**
+ * Search the front to deploy
+ * @param {*} command
+ * @param {*} declaration
+ * @param {*} config
+ */
+const searchAndCreateServers = (command, declaration, config, serverRegistry) => {
+  return new Promise(async (resolve, reject) => {
+    const { fronts: artefactsFront } = readConfigFromPackageJson();
+    const basePort = 3001;
+    // Case --fronts is specified
+    if (command.fronts) {
+      const usedFronts = command.fronts.split(',');
+
+      if (Object.keys(artefactsFront).length > 0) {
+        // Search path of fronts in the artefacts config
+        for (let i = 0; i < usedFronts.length; i++) {
+          const frontPort = await findFreePort(basePort);
+          if (!artefactsFront[usedFront]) {
+            reject(`Front not found, check your configuration`);
+          }
+          await createServer(usedFronts[i], artefactsFront[usedFronts[i]], config, frontPort);
+        }
+        resolve();
+      } else {
+        reject('The configuration of your front locations is missing. Check your package.json file.');
+      }
+    }
+    // Case --front is specified or no configuration is specified
+    else if (command.front) {
+      const usedFront = command.front;
+      const frontPort = await findFreePort(basePort);
+      // Basic case without configuration
+      if (fs.existsSync(path.join(process.cwd(), usedFront))) {
+        await createServer(usedFront, usedFront, config, frontPort);
+      } else if (Object.keys(artefactsFront).length > 0) {
+        if (!artefactsFront[usedFront]) {
+          reject(`Front not found, check your configuration`);
+        }
+        await createServer(usedFront, artefactsFront[usedFront], config, frontPort);
+        resolve();
+      } else {
+        reject('The configuration of your front location is missing. Check your package.json file.');
+      }
+    }
+  });
 };
 
 const listenTerminalSignals = (client, runner) => {

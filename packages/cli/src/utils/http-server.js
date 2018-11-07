@@ -15,7 +15,7 @@ const { info } = require('@zetapush/common');
  * @param {Object} config
  * @param {number} port
  */
-const createServer = (command, config, port) => {
+const createServer = (name, path, config, port) => {
   const injected = ` data-zp-sandboxid="${config.appName}" data-zp-platform-url="${config.platformUrl}"`;
   info('Create HTTP Server');
   const server = http.createServer((request, response) => {
@@ -23,7 +23,7 @@ const createServer = (command, config, port) => {
       request,
       response,
       {
-        public: command.front
+        public: path
       },
       {
         stat: (filepath) =>
@@ -63,7 +63,7 @@ const createServer = (command, config, port) => {
   return new Promise((resolve, reject) => {
     try {
       server.listen(port, () => {
-        info(`Running at http://localhost:${port}`);
+        info(`${name} is running at http://localhost:${port}`);
         resolve(port);
       });
     } catch (failure) {

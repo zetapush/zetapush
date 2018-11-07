@@ -66,7 +66,9 @@ program
   .command('run')
   .usage('[options]')
   .option('-f, --front <front>', 'Push front on cloud platform', identity, DEFAULTS.FRONT_FOLDER_PATH)
-  .option('-w, --worker <worker>', 'Push worker on cloud platform', identity, DEFAULTS.WORKER_FOLDER_PATH)
+  .option('-w, --worker <worker>', 'Run worker in local', identity, DEFAULTS.WORKER_FOLDER_PATH)
+  .option('-ws, --workers <workers>', 'Run worker in local', identity)
+  .option('-fs, --fronts <fronts>', 'Push many fronts', identity)
   .option('-s, --skip-provisioning', 'Skip provisioning steps', () => true, false)
   .option('--grab-all-traffic', 'Grab all traffic (requests) to local worker', () => true, false)
   .option('--serve-front', 'Run local http server to serve your front code', () => true, false)
@@ -74,7 +76,7 @@ program
   .description('Run your code')
   .action((command) =>
     createApp(command)
-      .then((config) => Promise.all([config, load(command)]))
+      .then((config) => Promise.all([config, load(command, config)]))
       .then(([config, declaration]) => {
         run(command, config, declaration);
       })
@@ -92,12 +94,14 @@ program
   .usage('[options]')
   .option('-f, --front <front>', 'Push front on cloud platform', identity, DEFAULTS.FRONT_FOLDER_PATH)
   .option('-w, --worker <worker>', 'Push worker on cloud platform', identity, DEFAULTS.WORKER_FOLDER_PATH)
+  .option('-ws, --workers <workers>', 'Push many workers', identity)
+  .option('-fs, --fronts <fronts>', 'Push many fronts', identity)
   .option('-r, --registry <registry>', 'Specify a npm registry url', identity, DEFAULTS.NPM_REGISTRY_URL)
-  .option('-si --ts-node-skip-ignore', 'Skip ignore for ts-node transpilation', identity, DEFAULTS.TS_NODE_SKIP_IGNORE)
+  .option('-si, --ts-node-skip-ignore', 'Skip ignore for ts-node transpilation', identity, DEFAULTS.TS_NODE_SKIP_IGNORE)
   .description('Push your application on ZetaPush platform')
   .action((command) =>
     createApp(command)
-      .then((config) => Promise.all([config, load(command)]))
+      .then((config) => Promise.all([config, load(command, config)]))
       .then(([config, declaration]) => {
         push(command, config, declaration);
       })

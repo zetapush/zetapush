@@ -176,12 +176,18 @@ class UserAction {
   private actionNameSuffix: string = ' from front';
   private credentials?: Credentials;
   private apiBuilder?: Api;
+  private apiDeploymentId?: string;
 
   constructor(private testOrContext: Context) {}
 
   name(actionName: string, suffix = ' from front') {
     this.actionName = actionName;
     this.actionNameSuffix = suffix;
+    return this;
+  }
+
+  deploymentId(deploymentId: string) {
+    this.apiDeploymentId = deploymentId;
     return this;
   }
 
@@ -221,6 +227,10 @@ class UserAction {
         if (!this.apiBuilder) {
           this.apiBuilder = new Api(this);
         }
+        // Set deploymentId if necessary
+        if (this.apiDeploymentId) {
+          this.apiBuilder.deploymentId(this.apiDeploymentId);
+        }
         api = <any>this.apiBuilder.build(client);
         frontActionLogger.debug('Api instance created');
       } catch (e) {
@@ -246,10 +256,15 @@ class UserAction {
 class Api extends Parent<UserAction> {
   private apiNamespace?: string;
   private apiCallTimeout?: number;
+  private apiDeploymentId?: string;
 
   namespace(namespace: string) {
     this.apiNamespace = namespace;
     return this;
+  }
+
+  deploymentId(deploymentId: string) {
+    this.apiDeploymentId = deploymentId;
   }
 
   timeout(timeout: number) {
@@ -258,6 +273,10 @@ class Api extends Parent<UserAction> {
   }
 
   build(client: Client) {
-    return client.createProxyTaskService({ timeout: this.apiCallTimeout, namespace: this.apiNamespace });
+    return client.createProxyTaskService({
+      timeout: this.apiCallTimeout,
+      namespace: this.apiNamespace,
+      deploymentId: this.apiDeploymentId
+    });
   }
 }

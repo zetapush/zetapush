@@ -76,7 +76,7 @@
     "tsdoc": "0.0.4",
     "typedoc": "0.11.1",
     "typescript": "3.0.1",
-    "uglify-es": "3.3.10",
+    "uglify-es": "3.3.9",
     "underscore": "1.9.1"
   },
   "publishConfig": {

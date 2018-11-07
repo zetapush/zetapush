@@ -28,7 +28,8 @@ const getRuntimeProvision = (config, declaration) => core.getRuntimeProvision(co
  * @param {String} filepath
  * @param {Object} config
  */
-const generateProvisioningFile = (filepath, config) => core.generateProvisioningFile(filepath, config, [Worker, Weak]);
+const generateProvisioningFile = (filepath, config, artefactConfig) =>
+  core.generateProvisioningFile(filepath, config, artefactConfig, Worker);
 
 module.exports = {
   generateProvisioningFile,

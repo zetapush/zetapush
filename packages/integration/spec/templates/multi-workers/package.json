@@ -1,0 +1,22 @@
+{
+  "name": "multi-workers-case",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "deploy": "zeta push",
+    "start": "zeta run",
+    "troubleshoot": "zeta troubleshoot"
+  },
+  "dependencies": {
+    "@zetapush/cli": "*",
+    "@zetapush/core": "*"
+  },
+  "workers": {
+    "myWorker1": "./worker1",
+    "myWorker2": "./worker2"
+  },
+  "fronts": {
+    "myFront1": "./front1",
+    "myFront2": "./front2"
+  }
+}

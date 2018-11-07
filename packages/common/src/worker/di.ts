@@ -143,25 +143,25 @@ export const normalize = async (declaration: WorkerDeclaration): Promise<Module>
   if (typeof declaration === Object.name.toLowerCase()) {
     // Entry point must be an EcmaScript Module
     if (declaration.__esModule === true) {
-      if (isFunction(declaration.default)) {
-        if (isDecoratedModule(declaration.default)) {
+      if (isFunction(declaration[Object.keys(declaration)[0]])) {
+        if (isDecoratedModule(declaration[Object.keys(declaration)[0]])) {
           // [Advanced Mode]: Developer can export a Module class
-          return getDecoratedModule(declaration.default);
+          return getDecoratedModule(declaration[Object.keys(declaration)[0]]);
         } else {
           // [Compatibility Mode]: Developer can export a single Api class
           return {
             expose: {
-              [DEFAULTS.DEFAULT_NAMESPACE]: declaration.default
+              [DEFAULTS.DEFAULT_NAMESPACE]: declaration[Object.keys(declaration)[0]]
             },
             providers: [],
             imports: [],
             configurers: []
           };
         }
-      } else if (isObject(declaration.default)) {
+      } else if (isObject(declaration[Object.keys(declaration)[0]])) {
         // [Compatibility Mode]: Developer can export a namespaced dictionnary
         return {
-          expose: declaration.default,
+          expose: declaration[Object.keys(declaration)[0]],
           providers: [],
           imports: [],
           configurers: []
@@ -409,38 +409,51 @@ export const analyze = async (
 /**
  * Resolve and inject dependencies
  */
-export const instantiate = async (analysis: DependencyInjectionAnalysis) => {
-  let singleton: any;
+export const instantiate = async (analysis: Array<DependencyInjectionAnalysis>) => {
+  const workers: Array<any> = [];
   try {
-    const { providers, bootLayers, exposed } = analysis;
-    // Create a root injector
-    const injector = ReflectiveInjector.resolveAndCreate(providers);
-    // Flag all instance as CloudServiceInstance
-    providers.forEach((provider: any) => {
-      const token = isFunction(provider) ? provider : (provider as any).provide;
-      const instance = injector.get(token);
-      CloudServiceInstance.flag(instance);
-    });
-    // Convert bootlayer declaration to instance
-    bootLayers.forEach((layer) => {
-      layer.forEach((CloudService: CustomCloudService, key: any) => {
-        const instance = injector.get(CloudService);
-        layer[key] = instance;
+    analysis.forEach((analyze) => {
+      const { providers, bootLayers, exposed } = analyze;
+
+      // Create a root injector
+      const injector = ReflectiveInjector.resolveAndCreate(providers);
+
+      // Flag all instance as CloudServiceInstance
+      providers.forEach((provider: any) => {
+        const token = isFunction(provider) ? provider : (provider as any).provide;
+        const instance = injector.get(token);
+        CloudServiceInstance.flag(instance);
       });
+
+      // Convert bootlayer declaration to instance
+      bootLayers.forEach((layer) => {
+        layer.forEach((CloudService: CustomCloudService, key: any) => {
+          const instance = injector.get(CloudService);
+          layer[key] = instance;
+        });
+      });
+
+      // Create a singleton mapped to exposed namespace
+      const worker = Object.entries(exposed).reduce((instance: any, [namespace, CustomCloudService]: any[]) => {
+        instance[namespace] = injector.get(CustomCloudService);
+        return instance;
+      }, Object.create(null));
+      // Add bootlayers reference in singleton instance
+      worker.bootLayers = bootLayers;
+      const workerResult = {
+        instance: worker,
+        deploymentId: Object.keys(analyze.declaration)[0]
+      };
+
+      workers.push(workerResult);
     });
-    // Create a singleton mapped to exposed namespace
-    singleton = Object.entries(exposed).reduce((instance: any, [namespace, CustomCloudService]: any[]) => {
-      instance[namespace] = injector.get(CustomCloudService);
-      return instance;
-    }, Object.create(null));
-    // Add bootlayers reference in singleton instance
-    singleton.bootLayers = bootLayers;
   } catch (ex) {
     error('instantiate', ex);
     throw ex;
   }
-  trace('instantiate', singleton);
-  return singleton;
+  trace('instantiate', workers);
+
+  return workers;
 };
 
 export const getPlatformServices = (providers: Provider[]): Service[] => {

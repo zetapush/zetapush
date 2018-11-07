@@ -107,7 +107,6 @@ function createApp(name, zetarc, version, command) {
   const packageJson = {
     name: appName,
     version: '0.1.0',
-    main: `worker/index.ts`,
     private: true,
     scripts: {
       deploy: 'zeta push',
@@ -185,12 +184,14 @@ function isSafeToCreateProjectIn(root, name) {
   return true;
 }
 
-function init(appPath, appName, originalDirectory, command) {
+function init(appPath, appName, originalDirectory, dependencies) {
   const language = 'typescript';
   // Copy the files for the user
   const templatePath = path.join(__dirname, 'template', language);
   if (fs.existsSync(templatePath)) {
     fs.copySync(templatePath, appPath);
+
+    installWorkerDependencies(dependencies, path.join(appPath, 'worker'));
   } else {
     console.error(`Could not locate supplied template: ${chalk.green(templatePath)}`);
     return;
@@ -258,8 +259,9 @@ function run(root, appName, originalDirectory, version, command) {
   console.log(`Installing ${dependencies.map((dependency) => `${chalk.cyan(dependency)}`).join(', ')}.`);
   console.log();
 
+  // Install dependencies in the worker
   return install(dependencies)
-    .then(() => init(root, appName, originalDirectory, command))
+    .then(() => init(root, appName, originalDirectory, dependencies))
     .catch((reason) => {
       console.log();
       console.log('Aborting installation.');
@@ -297,7 +299,7 @@ function run(root, appName, originalDirectory, version, command) {
 
 /**
  * Install all dependencies
- * @param {*} dependencies 
+ * @param {*} dependencies
  */
 function install(dependencies) {
   const command = 'npm';
@@ -314,6 +316,15 @@ function install(dependencies) {
       resolve();
     });
   });
+}
+
+/**
+ * Install all dependencies for worker
+ * @param {*} dependencies
+ */
+function installWorkerDependencies(dependencies, directory) {
+  const args = ['npm', 'install', '--save', '--save-exact', '--loglevel', 'error'].concat(dependencies);
+  execSync(args.join(' '), { cwd: path.resolve(directory) });
 }
 
 function tryGitInit(appPath) {

@@ -22,6 +22,12 @@ export interface ResolvedConfig extends Config {
   npmRegistry?: string;
   skipIgnore?: string;
 }
+
+export interface ArtefactsConfig {
+  workers?: any;
+  fronts?: any;
+}
+
 export type ServerClient = any;
 
 export type WorkerDeclarationNormalizer = (declaration: WorkerDeclaration) => Promise<Module>;

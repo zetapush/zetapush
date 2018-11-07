@@ -1,6 +1,7 @@
 import { WorkerClient, Worker, WorkerInstanceFactory } from './worker';
 import { Provider, Module, Environment } from '@zetapush/core';
 import { Weak, Queue } from '@zetapush/platform-legacy';
+import { ArtefactsConfig, readConfigFromPackageJson } from '@zetapush/common';
 import {
   instantiate,
   WorkerDeclaration,
@@ -89,8 +90,9 @@ export interface WorkerStartEventData extends WorkerEventData {
 export class WorkerRunner extends EventEmitter {
   private client?: WorkerClient;
   private currentDeclaration: WorkerDeclaration;
-  private currentInstance?: WorkerInstance;
-  private currentAnalysis?: DependencyInjectionAnalysis;
+  private currentInstance?: Array<WorkerInstance>;
+  private currentAnalysis: Array<DependencyInjectionAnalysis> = [];
+  private artefactsConfig?: ArtefactsConfig;
 
   constructor(
     private skipProvisioning: boolean,
@@ -115,14 +117,16 @@ export class WorkerRunner extends EventEmitter {
   private async start(
     client: WorkerClient,
     config: ResolvedConfig,
-    analysis?: DependencyInjectionAnalysis
-  ): Promise<WorkerInstance> {
-    if (!analysis) {
+    analysis?: Array<DependencyInjectionAnalysis>
+  ): Promise<Array<WorkerInstance>> {
+    if (!analysis || analysis.length == 0) {
       throw new IllegalStateError(
         'No dependency injection analysis available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
       );
     }
-    return instantiate(analysis).then((worker) => client.subscribeTaskWorker(worker, config.workerServiceId));
+    return instantiate(analysis).then((workers: Array<any>) => {
+      return Promise.all(workers.map((worker) => client.subscribeTaskWorker(worker.instance, worker.deploymentId)));
+    });
   }
 
   /**
@@ -151,7 +155,6 @@ export class WorkerRunner extends EventEmitter {
   run(declaration: WorkerDeclaration): Promise<WorkerStartEventData> {
     return new Promise((resolve, reject) => {
       const config = this.config;
-
       const clientConfig: any = config;
       const client = new WorkerClient(
         {
@@ -166,87 +169,92 @@ export class WorkerRunner extends EventEmitter {
       }
       this.client = client;
       this.currentDeclaration = declaration;
+      this.artefactsConfig = readConfigFromPackageJson();
 
-      // analyze dependencies and modules
-      this.envProvider
-        .get(client, this.getQueueApi(client))
-        .then((env: Environment) => analyze(client, declaration, env, this.customNormalizer))
-        .then((analysis: DependencyInjectionAnalysis) => (this.currentAnalysis = analysis))
-        .then(() =>
-          this.emit(WorkerRunnerEvents.BOOTSTRAPING, {
-            client,
-            config,
-            declaration
-          })
-        )
-        // bootstrap worker and platform services
-        .then(() => this.bootstrap(client, config, declaration, this.currentAnalysis))
-        .then(() =>
-          this.emit(WorkerRunnerEvents.STARTING, {
-            client,
-            config,
-            declaration
-          })
-        )
-        // start the worker
-        .then(() => this.start(client, config, this.currentAnalysis))
-        // save the instance of the worker
-        .then((instance: WorkerInstance) => {
-          this.currentInstance = instance;
-          this.emit(WorkerRunnerEvents.WORKER_CREATED, {
-            instance,
-            client,
-            config,
-            declaration
-          });
-        })
-        // call onApplicationBootstrap on all started instances
-        .then(() => this.checkApplicationBootstrap())
-        .then(() => {
-          if (!this.currentInstance) {
-            throw new IllegalStateError(
-              'No current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
+      this.envProvider.get(client, this.getQueueApi(client)).then((env: Environment) => {
+        Promise.all(
+          declaration.map((workerDeclaration: any) => {
+            return analyze(client, workerDeclaration, env, this.customNormalizer).then(
+              (analysis: DependencyInjectionAnalysis) => this.currentAnalysis.push(analysis)
             );
-          }
-          const instance = this.currentInstance;
-          this.emit(WorkerRunnerEvents.STARTED, {
-            instance,
-            client,
-            config,
-            declaration
+          })
+        )
+          .then(() => {
+            this.emit(WorkerRunnerEvents.BOOTSTRAPING, { client, config, declaration });
+          })
+          .then(() => this.bootstrap(client, config, declaration, this.currentAnalysis, this.artefactsConfig))
+          .then(() =>
+            this.emit(WorkerRunnerEvents.STARTING, {
+              client,
+              config,
+              declaration
+            })
+          )
+          // start the worker
+          .then(() => this.start(client, config, this.currentAnalysis))
+          // save the instance of the worker
+          .then((instances: Array<WorkerInstance>) => {
+            this.currentInstance = instances;
+
+            return Promise.all(
+              instances.map((instance: WorkerInstance) => {
+                this.emit(WorkerRunnerEvents.WORKER_CREATED, {
+                  instance,
+                  client,
+                  config,
+                  declaration
+                });
+
+                // call onApplicationBootstrap on all started instances
+                this.checkApplicationBootstrap(instance)
+                  .then(() => {
+                    if (!this.currentInstance) {
+                      throw new IllegalStateError(
+                        'No current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
+                      );
+                    }
+                    this.emit(WorkerRunnerEvents.STARTED, {
+                      instance,
+                      client,
+                      config,
+                      declaration
+                    });
+                    trace('Worker successfully started');
+                    resolve({
+                      instance,
+                      client,
+                      config,
+                      declaration
+                    });
+                    // .catch((err) => {
+                    //   this.emit(WorkerRunnerEvents.START_FAILED, {
+                    //     failure: err,
+                    //     client,
+                    //     config,
+                    //     declaration
+                    //   });
+                    // });
+                  })
+                  .catch((failure) => {
+                    trace('Failed to start worker', failure);
+                    // TODO: reaise error instead ?
+                    this.emit(WorkerRunnerEvents.START_FAILED, {
+                      failure,
+                      client,
+                      config,
+                      declaration
+                    });
+                    reject({
+                      failure,
+                      client,
+                      config,
+                      declaration
+                    });
+                  });
+              })
+            );
           });
-          trace('Worker successfully started');
-          resolve({
-            instance,
-            client,
-            config,
-            declaration
-          });
-          // .catch((err) => {
-          //   this.emit(WorkerRunnerEvents.START_FAILED, {
-          //     failure: err,
-          //     client,
-          //     config,
-          //     declaration
-          //   });
-          // });
-        })
-        .catch((failure) => {
-          trace('Failed to start worker', failure);
-          // TODO: reaise error instead ?
-          this.emit(WorkerRunnerEvents.START_FAILED, {
-            failure,
-            client,
-            config,
-            declaration
-          });
-          reject({
-            failure,
-            client,
-            config,
-            declaration
-          });
-        });
+      });
     });
   }
 
@@ -254,21 +262,28 @@ export class WorkerRunner extends EventEmitter {
     client: WorkerClient,
     config: ResolvedConfig,
     declaration: WorkerDeclaration,
-    analysis?: DependencyInjectionAnalysis
+    analysis?: Array<DependencyInjectionAnalysis>,
+    artefactsConfig?: ArtefactsConfig
   ): Promise<boolean> {
-    if (!analysis) {
+    if (!analysis || analysis.length == 0) {
       throw new IllegalStateError(
         'No dependency injection analysis available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
       );
     }
+
+    if (!artefactsConfig) {
+      throw new IllegalStateError('Artefact config no found');
+    }
+
     const bootstrap = this.skipProvisioning
       ? this.connectClientAndCreateServices(client, config, declaration, analysis)
       : this.checkServicesAlreadyDeployed(config).then(
           (deployed: boolean) =>
             !deployed
-              ? this.cookWithOnlyQueueService(client, config, declaration, analysis)
+              ? this.cookWithOnlyQueueServiceAndWorkers(client, config, declaration, analysis, artefactsConfig)
               : this.connectClientAndCreateServices(client, config, declaration, analysis)
         );
+
     return bootstrap;
   }
 
@@ -291,24 +306,30 @@ export class WorkerRunner extends EventEmitter {
     });
     const env = await this.envProvider.get(this.client, this.getQueueApi(this.client));
     const newAnalysis = await analyze(this.client, reloaded, env, this.customNormalizer);
-    this.currentAnalysis = newAnalysis;
-    let next = getDeploymentIdList(newAnalysis, [Queue]);
+    this.currentAnalysis = [];
+    this.currentAnalysis.push(newAnalysis);
+    let next = getDeploymentIdList(this.currentAnalysis, [Queue]);
     const deploymentListHasChange = !equals(previous, next);
     const tasks = [];
     if (deploymentListHasChange) {
-      tasks.push(this.createServices(this.client, this.config, reloaded, newAnalysis));
+      tasks.push(this.createServices(this.client, this.config, reloaded, this.currentAnalysis));
     }
     return (
       Promise.all(tasks)
         // Create a new worker instance
-        .then(() => instantiate(newAnalysis))
+        .then(() => instantiate(this.currentAnalysis))
         .then((worker) => {
           if (!this.currentInstance) {
             throw new IllegalStateError(
               'No current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
             );
           }
-          this.currentInstance.setWorker(worker);
+          Promise.all(
+            this.currentInstance.map((instance) => {
+              instance.setWorker(worker);
+            })
+          );
+
           // Update previous deployment id list
           this.currentDeclaration = reloaded;
           this.emit(WorkerRunnerEvents.RELOADED, {
@@ -333,20 +354,21 @@ export class WorkerRunner extends EventEmitter {
     trace('runner.destroy()');
     if (this.currentInstance) {
       trace('cleaning worker instance...');
-      await this.currentInstance.clean();
+      await this.currentInstance.forEach(async (instance) => {
+        await instance.clean();
+      });
       trace('worker instance cleaned...');
     }
     this.removeAllListeners();
   }
 
-  private checkApplicationBootstrap() {
+  private checkApplicationBootstrap(instance: WorkerInstance) {
     return new Promise((resolve, reject) => {
       if (!this.currentInstance) {
         throw new IllegalStateError(
           'No current worker instance available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
         );
       }
-      const instance = this.currentInstance;
       const client = this.client;
       const config = this.config;
       const declaration = this.currentDeclaration;
@@ -391,7 +413,7 @@ export class WorkerRunner extends EventEmitter {
     client: WorkerClient,
     config: ResolvedConfig,
     declaration: WorkerDeclaration,
-    analysis: DependencyInjectionAnalysis
+    analysis: Array<DependencyInjectionAnalysis>
   ): Promise<boolean> {
     const { recipeId } = recipe;
     if (recipeId === void 0) {
@@ -424,10 +446,9 @@ export class WorkerRunner extends EventEmitter {
     client: WorkerClient,
     config: ResolvedConfig,
     declaration: WorkerDeclaration,
-    analysis: DependencyInjectionAnalysis
+    analysis: Array<DependencyInjectionAnalysis>
   ) {
     const api = this.getQueueApi(client);
-
     const { items } = getRuntimeProvision(config, analysis, [Queue]);
     const services = items.map(({ item }) => item);
 
@@ -445,7 +466,7 @@ export class WorkerRunner extends EventEmitter {
     client: WorkerClient,
     config: ResolvedConfig,
     declaration: WorkerDeclaration,
-    analysis: DependencyInjectionAnalysis
+    analysis: Array<DependencyInjectionAnalysis>
   ): Promise<boolean> {
     this.emit(WorkerRunnerEvents.CONNECTING, {
       client,
@@ -481,11 +502,12 @@ export class WorkerRunner extends EventEmitter {
     }).then(({ content }: { content: any[] }) => content.length > 0);
   }
 
-  private cookWithOnlyQueueService(
+  private cookWithOnlyQueueServiceAndWorkers(
     client: WorkerClient,
     config: ResolvedConfig,
     declaration: WorkerDeclaration,
-    analysis: DependencyInjectionAnalysis
+    analysis: Array<DependencyInjectionAnalysis>,
+    artefactsConfig: ArtefactsConfig
   ): Promise<boolean> {
     this.emit(WorkerRunnerEvents.UPLOADING, {
       client,
@@ -493,7 +515,7 @@ export class WorkerRunner extends EventEmitter {
       declaration
     });
 
-    return generateProvisioningContent(config, [Worker, Weak])
+    return generateProvisioningContent(config, [Worker, Weak], declaration, Worker)
       .then(({ json }: { json: string }) => createProvisioningArchive(json))
       .then((archive: string) =>
         upload(archive, config)

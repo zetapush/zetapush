@@ -33,9 +33,11 @@
     "axios": "0.18.0",
     "core-js": "2.5.7",
     "esm": "3.0.72",
+    "folder-zip-sync": "1.0.5",
     "isomorphic-form-data": "2.0.0",
     "json5": "2.0.1",
-    "jszip": "3.1.5"
+    "jszip": "3.1.5",
+    "zip-dir": "1.0.2"
   },
   "devDependencies": {
     "@types/core-js": "2.5.0",
@@ -64,7 +66,7 @@
     "ts-mockito": "2.3.0",
     "ts-node": "7.0.1",
     "typescript": "3.0.1",
-    "uglify-es": "3.3.10"
+    "uglify-es": "3.3.9"
   },
   "publishConfig": {
     "access": "public"

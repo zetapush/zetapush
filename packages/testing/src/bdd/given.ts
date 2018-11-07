@@ -725,6 +725,7 @@ class GivenWorker extends Parent<Given> {
   private workerPushed = false;
   private timeout?: number;
   private isQuiet = false;
+  private args?: string;
   private moduleDeclaration?: () => Promise<Module>;
   private deps?: Dependencies;
   // private provs?: Provider[];
@@ -745,18 +746,20 @@ class GivenWorker extends Parent<Given> {
   /**
    * Wait for the worker to be up before executing the test
    */
-  up(timeout: number) {
+  up(args: string, timeout: number) {
     this.workerUp = true;
     this.timeout = timeout;
+    this.args = args;
     return this;
   }
 
   /**
    * Push the worker and Wait for the worker to be up before executing the test
    */
-  pushed(timeout: number) {
+  pushed(args: string, timeout: number) {
     this.workerPushed = true;
     this.timeout = timeout;
+    this.args = args;
     return this;
   }
 
@@ -848,7 +851,7 @@ class GivenWorker extends Parent<Given> {
       if (this.workerUp && currentDir) {
         givenLogger.info(`>>> Given worker: run and wait for worker up ${currentDir}`);
         const runner = new Runner(currentDir, this.timeout, localNpmRegistry, frontOptions);
-        runner.run(this.isQuiet);
+        runner.run(this.isQuiet, this.args);
         await runner.waitForWorkerUp();
         return {
           runner,
@@ -857,7 +860,7 @@ class GivenWorker extends Parent<Given> {
       }
       if (this.workerPushed && currentDir) {
         givenLogger.info(`>>> Given worker: push and wait for worker up ${currentDir}`);
-        await zetaPush(currentDir, localNpmRegistry);
+        await zetaPush(currentDir, localNpmRegistry, this.args);
         return {
           ...deps
         };

@@ -199,13 +199,15 @@ const getZetapushModuleDirectoryPath = (module: string, file?: string) => {
  * @param {string} dir Full path of the application folder
  * @param {string} localNpmRegistry Full url for a npm registry url
  */
-export const zetaPush = (dir: PathLike, localNpmRegistry = 'https://registry.npmjs.org') => {
+export const zetaPush = (dir: PathLike, localNpmRegistry = 'https://registry.npmjs.org', args = '') => {
   return new Promise((resolve, reject) => {
-    commandLogger.info(`zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()} --registry ${localNpmRegistry}]`);
+    commandLogger.info(
+      `zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()} --registry ${localNpmRegistry} ${args}]`
+    );
     const stdout: Array<string | Buffer> = [];
     const stderr: Array<string | Buffer> = [];
 
-    const cmd = execa.shell(`npm run deploy -- ${zpLogLevel()} --registry ${localNpmRegistry}`, {
+    const cmd = execa.shell(`npm run deploy -- ${args} ${zpLogLevel()} --registry ${localNpmRegistry}`, {
       cwd: dir.toString()
     });
     const out = new PassThrough();
@@ -223,7 +225,7 @@ export const zetaPush = (dir: PathLike, localNpmRegistry = 'https://registry.npm
         stderr: stderr.join('\n')
       };
       subProcessLogger.silly(
-        `zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}] --registry ${localNpmRegistry} -> `,
+        `zetaPush(${dir}) -> [npm run deploy -- ${zpLogLevel()}] --registry ${localNpmRegistry} ${args}-> `,
         {
           code,
           signal
@@ -238,12 +240,12 @@ export const zetaPush = (dir: PathLike, localNpmRegistry = 'https://registry.npm
  * Run 'zeta run' command
  * @param {string} dir Full path of the application folder
  */
-export const zetaRun = async (dir: PathLike) => {
+export const zetaRun = async (dir: PathLike, args?: string) => {
   return new Promise((resolve, reject) => {
-    commandLogger.info(`zetaRun(${dir}) -> [npm run start -- ${zpLogLevel()}]`);
+    commandLogger.info(`zetaRun(${dir}) -> [npm run start -- ${args} ${zpLogLevel()}]`);
     const stdout: Array<string | Buffer> = [];
     const stderr: Array<string | Buffer> = [];
-    const cmd = execa.shell(`npm run start -- ${zpLogLevel()}`, {
+    const cmd = execa.shell(`npm run start -- ${args} ${zpLogLevel()}`, {
       cwd: dir.toString()
     });
     const out = new PassThrough();
@@ -260,7 +262,7 @@ export const zetaRun = async (dir: PathLike) => {
         stdout: stdout.join('\n'),
         stderr: stderr.join('\n')
       };
-      subProcessLogger.silly(`zetaRun(${dir}) -> [npm run start -- ${zpLogLevel()}] -> `, {
+      subProcessLogger.silly(`zetaRun(${dir}) -> [npm run start -- ${args} ${zpLogLevel()}] -> `, {
         code,
         signal
       });
@@ -737,9 +739,9 @@ export class Runner {
     });
   }
 
-  run(quiet = false) {
-    commandLogger.info(`Runner:run() -> [npm run start -- ${zpLogLevel()} ${this.serveFront()}]`);
-    this.cmd = execa.shell(`npm run start -- ${zpLogLevel()} ${this.serveFront()}`, {
+  run(quiet = false, args: string = '') {
+    commandLogger.info(`Runner:run() -> [npm run start -- ${args} ${zpLogLevel()} ${this.serveFront()}]`);
+    this.cmd = execa.shell(`npm run start -- ${args} ${zpLogLevel()} ${this.serveFront()}`, {
       cwd: this.dir
     });
     if (this.cmd && !quiet) {

@@ -1,4 +1,4 @@
-import * as json5 from 'json5';
+const JSON5 = require('json5');
 import { ConfigurationProperties, Reloadable, Loadable } from '@zetapush/core';
 import { ConfigurationReloadError, ConfigurationFileLoadError, ConfigurationStateError } from './error';
 import { readFileSync, existsSync } from 'fs';
@@ -13,7 +13,7 @@ export class Json5ConfigurationProperties implements ConfigurationProperties, Lo
   async load(): Promise<void> {
     try {
       const content = readFileSync(this.file).toString();
-      this.conf = new PropertyAccessorWrapper(json5.parse(content));
+      this.conf = new PropertyAccessorWrapper(JSON5.parse(content));
     } catch (e) {
       throw new ConfigurationFileLoadError(`Failed to load configuration for ${this.file}`, e);
     }

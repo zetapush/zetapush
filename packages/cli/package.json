@@ -26,6 +26,8 @@
     "cosmiconfig": "5.0.5",
     "execa": "0.10.0",
     "find-free-port": "2.0.0",
+    "folder-zip-sync": "1.0.5",
+    "fs-extra": "7.0.0",
     "hot-module-replacement": "3.0.1",
     "log-update": "2.3.0",
     "ora": "2.1.0",

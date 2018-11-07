@@ -22,7 +22,7 @@ const isValid = (config = {}) => config.platformUrl && config.developerLogin && 
  */
 const save = (command, content) =>
   new Promise((resolve, reject) => {
-    const filepath = path.join(command.worker, '.zetarc');
+    const filepath = path.join(process.cwd(), '.zetarc');
     // Encrypt content before
     const encryted = encrypt(content);
     log('Save config file', filepath);
@@ -87,20 +87,19 @@ const fromDefault = async () => {
  * @return {Promise<ZetaPushConfig>}
  */
 const fromFile = async (command) => {
-  trace('Try to load conf from filesystem', command.worker);
+  trace('Try to load conf from filesystem', process.cwd());
   return explorer
-    .search(command.worker)
+    .search(process.cwd())
     .then((result) => {
-      trace('Configuration loaded from file', command.worker, result);
+      trace('Configuration loaded from file', process.cwd(), result);
       return (result && result.config) || {};
     })
     .then((config) => decrypt(config))
     .catch((e) => {
-      warn('Failed to load conf from filesystem', command.worker);
+      warn('Failed to load conf from filesystem', process.cwd());
       return {};
     });
 };
-
 let isTsLoaderRegistered = false;
 
 /**
@@ -115,6 +114,7 @@ const load = async (command, required = true) => {
   let config;
   try {
     config = merge(await fromCli(command), await fromEnv(), await fromFile(command), await fromDefault());
+
     trace('merged config', config);
     if (!config.developerLogin) {
       config.developerLogin = await getDeveloperLogin();

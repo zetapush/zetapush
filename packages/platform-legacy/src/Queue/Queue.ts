@@ -30,7 +30,7 @@ export class Queue extends Service {
    * @return {string}
    */
   static get DEFAULT_DEPLOYMENT_ID() {
-    return 'queue_0';
+    return 'worker';
   }
   /**
    * Producer / consumer real-time API
