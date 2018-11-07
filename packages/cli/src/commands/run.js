@@ -132,8 +132,8 @@ const searchAndCreateServers = (command, declaration, config, serverRegistry) =>
     }
     // Case --front is specified or no configuration is specified
     else if (command.front) {
-      const usedFront = command.front;
       const frontPort = await findFreePort(basePort);
+      const usedFront = command.front;
       // Basic case without configuration
       if (fs.existsSync(path.join(process.cwd(), usedFront))) {
         await createServer(usedFront, usedFront, config, frontPort);
