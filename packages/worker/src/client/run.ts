@@ -92,7 +92,6 @@ export class WorkerRunner extends EventEmitter {
   private currentDeclaration: WorkerDeclaration;
   private currentInstance?: Array<WorkerInstance>;
   private currentAnalysis: Array<DependencyInjectionAnalysis> = [];
-  private artefactsConfig?: ArtefactsConfig;
 
   constructor(
     private skipProvisioning: boolean,
