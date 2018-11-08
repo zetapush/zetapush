@@ -57,10 +57,13 @@ const load = (command) => {
           const id = cwd(configWorkers[command.worker]);
           workers.push(renameWorker(require(id), command.worker));
         } else {
-          trace(`Failed to load workers configuration. Check your package.json file.`);
+          const id = cwd(process.cwd());
+          console.log('==> ID : ', id);
+          workers.push(id);
         }
       }
     }
+    console.log('==> WORKERS : ', workers);
 
     // const id = cwd(command.worker);
     // let worker = require(id);
