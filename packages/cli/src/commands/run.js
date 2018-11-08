@@ -95,7 +95,7 @@ const run = async (command, config, declaration) => {
     });
   });
 
-  runner.run(declaration, readConfigFromPackageJson());
+  runner.run(declaration);
 
   if (command.serveFront) {
     return searchAndCreateServers(command, declaration, config, serverRegistry);

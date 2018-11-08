@@ -169,7 +169,6 @@ export class WorkerRunner extends EventEmitter {
       }
       this.client = client;
       this.currentDeclaration = declaration;
-      this.artefactsConfig = readConfigFromPackageJson();
 
       this.envProvider.get(client, this.getQueueApi(client)).then((env: Environment) => {
         Promise.all(
@@ -182,7 +181,7 @@ export class WorkerRunner extends EventEmitter {
           .then(() => {
             this.emit(WorkerRunnerEvents.BOOTSTRAPING, { client, config, declaration });
           })
-          .then(() => this.bootstrap(client, config, declaration, this.currentAnalysis, this.artefactsConfig))
+          .then(() => this.bootstrap(client, config, declaration, this.currentAnalysis))
           .then(() =>
             this.emit(WorkerRunnerEvents.STARTING, {
               client,
@@ -262,8 +261,7 @@ export class WorkerRunner extends EventEmitter {
     client: WorkerClient,
     config: ResolvedConfig,
     declaration: WorkerDeclaration,
-    analysis?: Array<DependencyInjectionAnalysis>,
-    artefactsConfig?: ArtefactsConfig
+    analysis?: Array<DependencyInjectionAnalysis>
   ): Promise<boolean> {
     if (!analysis || analysis.length == 0) {
       throw new IllegalStateError(
@@ -271,16 +269,12 @@ export class WorkerRunner extends EventEmitter {
       );
     }
 
-    if (!artefactsConfig) {
-      throw new IllegalStateError('Artefact config no found');
-    }
-
     const bootstrap = this.skipProvisioning
       ? this.connectClientAndCreateServices(client, config, declaration, analysis)
       : this.checkServicesAlreadyDeployed(config).then(
           (deployed: boolean) =>
             !deployed
-              ? this.cookWithOnlyQueueServiceAndWorkers(client, config, declaration, analysis, artefactsConfig)
+              ? this.cookWithOnlyQueueServiceAndWorkers(client, config, declaration, analysis)
               : this.connectClientAndCreateServices(client, config, declaration, analysis)
         );
 
@@ -506,8 +500,7 @@ export class WorkerRunner extends EventEmitter {
     client: WorkerClient,
     config: ResolvedConfig,
     declaration: WorkerDeclaration,
-    analysis: Array<DependencyInjectionAnalysis>,
-    artefactsConfig: ArtefactsConfig
+    analysis: Array<DependencyInjectionAnalysis>
   ): Promise<boolean> {
     this.emit(WorkerRunnerEvents.UPLOADING, {
       client,
