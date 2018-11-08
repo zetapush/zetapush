@@ -1,7 +1,7 @@
 import { WorkerClient, Worker, WorkerInstanceFactory } from './worker';
-import { Provider, Module, Environment } from '@zetapush/core';
+import { Environment } from '@zetapush/core';
 import { Weak, Queue } from '@zetapush/platform-legacy';
-import { ArtefactsConfig, readConfigFromPackageJson } from '@zetapush/common';
+import { ArtefactsConfig } from '@zetapush/common';
 import {
   instantiate,
   WorkerDeclaration,

@@ -6,12 +6,7 @@ const path = require('path');
  * @param {Object} command
  */
 export const readConfigFromPackageJson = () => {
-  console.log('==> CURRENT PROCESS CWD : ', process.cwd());
-
   const content = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'package.json')).toString());
-
-  console.log('==> CONTENT : ', content);
-
   const workerConfig = content.workers;
   const frontConfig = content.fronts;
   const workers: any = {};
