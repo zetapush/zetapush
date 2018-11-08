@@ -22,8 +22,11 @@ export class PlatformEventContext implements ZetaPushContext, Loadable {
 
   async load(): Promise<void> {
     try {
+      console.log('==> before connect');
       await this.client.connect();
+      console.log('==> after connect');
       this.context = await this.queueApi.getContext();
+      console.log('==> context ', this.context);
       trace('Platform context', this.context);
     } catch (e) {
       throw new ContextLoadError(`Failed to ask ZetaPush context to the platform`, e);

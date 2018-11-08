@@ -56,6 +56,9 @@ export const getBootstrapProvisionForPushContext = (
     keys.push(...Object.keys(elt));
   });
 
+  // Always add worker service
+  keys.push('worker');
+
   return {
     businessId: config.appName,
     items: keys.map((worker: any) => ({
