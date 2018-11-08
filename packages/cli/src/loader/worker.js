@@ -34,6 +34,7 @@ const load = (command) => {
     // Handle the case of we have many workers specified in the CLI
     if (command.workers) {
       const workersUsed = command.workers.split(',');
+      console.log('==> command.workers', command.workers);
       const { workers: configWorkers } = readConfigFromPackageJson();
 
       if (Object.keys(configWorkers).length > 0) {
@@ -51,13 +52,14 @@ const load = (command) => {
         const id = cwd(path.resolve(command.worker));
         workers.push(renameWorker(require(id), command.worker));
       } else {
+        console.log('==> no exists');
         const { workers: configWorkers } = readConfigFromPackageJson();
 
         if (Object.keys(configWorkers).length > 0) {
           const id = cwd(configWorkers[command.worker]);
           workers.push(renameWorker(require(id), command.worker));
         } else {
-          throw `Failed to load workers configuration. Check your package.json file.`;
+          trace(`Failed to load workers configuration. Check your package.json file.`);
         }
       }
     }
