@@ -56,7 +56,7 @@ const fromEnv = async () => {
  * @return {Promise<ZetaPushConfig>}
  */
 const fromCli = async (command) => {
-  trace('Try to load conf from cli provess.argv');
+  trace('Try to load conf from cli process.argv');
   return Promise.resolve({
     platformUrl: command.parent.platformUrl,
     appName: command.parent.appName,
