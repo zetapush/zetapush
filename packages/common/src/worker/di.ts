@@ -359,26 +359,35 @@ export const analyze = async (
   env: Environment,
   customNormalizer: WorkerDeclarationNormalizer = normalize
 ): Promise<DependencyInjectionAnalysis> => {
+  console.log('==> ANALYZE');
   const envProviders = makeEnvironmentInjectable(env);
+  console.log('==> ANALYZE');
   // Normalize worker declaration
   const normalized = await customNormalizer(declaration);
+  console.log('==> ANALYZE');
   // Get providers from imports module list
   const resolvedImports = resolveProviders(client, await getProvidersByImports(env, normalized.imports || []));
+  console.log('==> ANALYZE');
   const imported = resolvedImports.providers;
   // Get exposed CloudService
   const exposed = clean(normalized.expose);
+  console.log('==> ANALYZE');
   // Analyze exposed CloudService to get an ordered providers list
   const analyzed = analyzeService(exposed);
+  console.log('==> ANALYZE');
   // Get a resolved list of providers used in exposed DI graph
   const resolved = resolve(client, analyzed);
+  console.log('==> ANALYZE');
   // Configured providers
   const resolvedConfigured = resolveProviders(
     client,
     await getProvidersByConfigurers(env, normalized.configurers || [])
   );
+  console.log('==> ANALYZE');
   const configured = resolvedConfigured.providers;
   // Explicit providers
   const resolvedProviders = resolveProviders(client, normalized.providers || []);
+  console.log('==> ANALYZE');
   const providers = resolvedProviders.providers;
   // Priorize providers
   const priorized = filterProviders([
@@ -388,6 +397,7 @@ export const analyze = async (
     ...envProviders, // Providers for the environment
     ...providers // Providers via module provider
   ]);
+  console.log('==> ANALYZE');
   const platformServices = getPlatformServices(priorized);
   const bootLayers = analyzed.bootLayer
     .concat(resolvedImports.bootLayer)
@@ -396,6 +406,7 @@ export const analyze = async (
   trace('analyzed providers', priorized);
   trace('analyzed platformServices', platformServices);
   trace('bootstrap layers', bootLayers);
+  console.log('==> ANALYZE');
   return {
     declaration,
     providers: priorized,

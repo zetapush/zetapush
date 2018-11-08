@@ -158,6 +158,7 @@ export class WorkerRunner extends EventEmitter {
    */
   run(declaration: WorkerDeclaration): Promise<WorkerStartEventData> {
     return new Promise((resolve, reject) => {
+      console.log('==> IN RUN');
       const config = this.config;
       const clientConfig: any = config;
       const client = new WorkerClient(
@@ -175,6 +176,7 @@ export class WorkerRunner extends EventEmitter {
       this.currentDeclaration = declaration;
 
       this.envProvider.get(client, this.getQueueApi(client)).then((env: Environment) => {
+        console.log('==> AFTER PROVIDER');
         Promise.all(
           declaration.map((workerDeclaration: any) => {
             return analyze(client, workerDeclaration, env, this.customNormalizer).then(
