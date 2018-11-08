@@ -57,7 +57,7 @@ const load = (command) => {
           const id = cwd(configWorkers[command.worker]);
           workers.push(renameWorker(require(id), command.worker));
         } else {
-          const id = cwd(process.cwd());
+          const id = cwd('.');
           console.log('==> ID : ', id);
           workers.push(id);
         }
