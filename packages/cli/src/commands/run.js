@@ -120,7 +120,7 @@ const searchAndCreateServers = (command, declaration, config, serverRegistry) =>
         // Search path of fronts in the artefacts config
         for (let i = 0; i < usedFronts.length; i++) {
           const frontPort = await findFreePort(basePort);
-          if (!artefactsFront[usedFront]) {
+          if (!artefactsFront[usedFronts[i]]) {
             reject(`Front not found, check your configuration`);
           }
           await createServer(usedFronts[i], artefactsFront[usedFronts[i]], config, frontPort);
