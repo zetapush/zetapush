@@ -51,9 +51,13 @@ export const availableOnly = async (all: Array<ConfigurationProperties | null>) 
 };
 
 export const load = async (delegates: Array<Loadable | any>) => {
+  console.log('==> DELEGATE : ', delegates);
   for (let delegate of delegates) {
+    console.log('==> one : ', delegate);
     const loadable = <any>delegate;
+    console.log('==> loadable.load && (await loadable.canLoad()) : ', loadable.load && (await loadable.canLoad()));
     if (loadable.load && (await loadable.canLoad())) {
+      console.log('==> before : ', loadable);
       await loadable.load();
     }
   }
