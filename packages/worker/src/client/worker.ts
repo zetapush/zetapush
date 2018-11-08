@@ -172,6 +172,9 @@ export class WorkerClient extends Client {
       },
       Type: Worker
     });
+
+    console.log('==> START QUEUE : ', queue);
+
     try {
       queue.register({
         capacity: this.capacity,

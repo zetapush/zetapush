@@ -8,7 +8,7 @@
     "troubleshoot": "zeta troubleshoot"
   },
   "dependencies": {
-    "@zetapush/cli": "*",
-    "@zetapush/core": "*"
+    "@zetapush/cli": "0.35.2",
+    "@zetapush/core": "0.35.2"
   }
 }
