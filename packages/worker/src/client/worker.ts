@@ -121,6 +121,10 @@ export class WorkerClient extends Client {
     const logs = this.createService<Logs>({
       Type: Logs
     });
+
+    console.log('==> DEPLOYMENT ID : ', deploymentId);
+    console.log('==> WORKER : ', worker);
+
     const queue = this.createAsyncService<Worker>({
       deploymentId,
       listener: {
