@@ -40,7 +40,6 @@ export class TaskDispatcherWorkerInstance implements WorkerInstance {
    *
    */
   constructor({ timeout, worker, bootLayers }: { timeout: number; worker: any; bootLayers: any }) {
-    console.log('===> fshkjs WORKER : ', worker);
     /**
      * @access private
      * @type {number}

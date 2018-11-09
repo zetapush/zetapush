@@ -185,12 +185,16 @@ export class WorkerClient extends Client {
     console.log('==> START QUEUE : ', queue);
 
     try {
-      queue.register({
-        capacity: this.capacity,
-        routing: {
-          exclusive: this.options.grabAllTraffic
-        }
-      });
+      queue
+        .register({
+          capacity: this.capacity,
+          routing: {
+            exclusive: this.options.grabAllTraffic
+          }
+        })
+        .then((res) => {
+          console.log('==> RESULT : ', res);
+        });
     } catch (ex) {
       console.log('==> FAILED');
       const exception = {
