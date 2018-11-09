@@ -139,16 +139,23 @@ export const clean = (exposed: WorkerDeclaration): NormalizedWorkerDeclaration =
  * A worker declaration is the object return by worker project entry point
  */
 export const normalize = async (declaration: WorkerDeclaration): Promise<Module> => {
+  console.log('==> declaration : ', declaration);
+
   // Entry point must return an object
   if (typeof declaration === Object.name.toLowerCase()) {
     // Entry point must be an EcmaScript Module
+    console.log('==> a');
     if (declaration.__esModule === true) {
+      console.log('==> b');
       if (isFunction(declaration[Object.keys(declaration)[0]])) {
+        console.log('==> c');
         if (isDecoratedModule(declaration[Object.keys(declaration)[0]])) {
+          console.log('==> d');
           // [Advanced Mode]: Developer can export a Module class
           return getDecoratedModule(declaration[Object.keys(declaration)[0]]);
         } else {
           // [Compatibility Mode]: Developer can export a single Api class
+          console.log('==> e');
           return {
             expose: {
               [DEFAULTS.DEFAULT_NAMESPACE]: declaration[Object.keys(declaration)[0]]
@@ -160,6 +167,7 @@ export const normalize = async (declaration: WorkerDeclaration): Promise<Module>
         }
       } else if (isObject(declaration[Object.keys(declaration)[0]])) {
         // [Compatibility Mode]: Developer can export a namespaced dictionnary
+        console.log('==> f');
         return {
           expose: declaration[Object.keys(declaration)[0]],
           providers: [],
@@ -167,14 +175,17 @@ export const normalize = async (declaration: WorkerDeclaration): Promise<Module>
           configurers: []
         };
       } else {
+        console.log('==> g');
         error(`Unsupported Worker declaration`);
         throw new Error(`Unsupported Worker declaration, only Api, Module and Namespace are supported`);
       }
     } else {
+      console.log('==> h');
       error(`Unsupported Worker declaration, only EcmaScript module are supported`);
       throw new Error(`Unsupported Worker declaration`);
     }
   } else {
+    console.log('==> i');
     error(`Unsupported Worker declaration, invalid worker content`);
     throw new Error(`Unsupported Worker declaration`);
   }
