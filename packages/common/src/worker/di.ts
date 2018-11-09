@@ -140,6 +140,7 @@ export const clean = (exposed: WorkerDeclaration): NormalizedWorkerDeclaration =
  */
 export const normalize = async (declaration: WorkerDeclaration): Promise<Module> => {
   console.log('==> declaration : ', declaration);
+  console.log('=== Object.name.toLowerCase() : ', Object.name.toLowerCase());
 
   // Entry point must return an object
   if (typeof declaration === Object.name.toLowerCase()) {

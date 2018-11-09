@@ -59,7 +59,7 @@ const load = (command) => {
         } else {
           const id = cwd('.');
           console.log('==> ID : ', id);
-          workers.push(id);
+          workers.push(require(id));
         }
       }
     }
