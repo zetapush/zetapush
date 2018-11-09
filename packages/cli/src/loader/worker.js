@@ -58,13 +58,10 @@ const load = (command, config) => {
           workers.push(renameWorker(require(id), command.worker));
         } else {
           const id = cwd('.');
-          console.log('==> ID : ', id);
-          console.log('==> config.workerServiceId : ', config.workerServiceId);
           workers.push(renameWorker(require(id), config.workerServiceId));
         }
       }
     }
-    console.log('==> WORKERS : ', workers);
 
     // const id = cwd(command.worker);
     // let worker = require(id);

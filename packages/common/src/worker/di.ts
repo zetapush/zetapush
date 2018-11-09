@@ -139,24 +139,16 @@ export const clean = (exposed: WorkerDeclaration): NormalizedWorkerDeclaration =
  * A worker declaration is the object return by worker project entry point
  */
 export const normalize = async (declaration: WorkerDeclaration): Promise<Module> => {
-  console.log('==> declaration : ', declaration);
-  console.log('=== Object.name.toLowerCase() : ', Object.name.toLowerCase());
-
   // Entry point must return an object
   if (typeof declaration === Object.name.toLowerCase()) {
     // Entry point must be an EcmaScript Module
-    console.log('==> a');
     if (declaration.__esModule === true) {
-      console.log('==> b');
       if (isFunction(declaration[Object.keys(declaration)[0]])) {
-        console.log('==> c');
         if (isDecoratedModule(declaration[Object.keys(declaration)[0]])) {
-          console.log('==> d');
           // [Advanced Mode]: Developer can export a Module class
           return getDecoratedModule(declaration[Object.keys(declaration)[0]]);
         } else {
           // [Compatibility Mode]: Developer can export a single Api class
-          console.log('==> e');
           return {
             expose: {
               [DEFAULTS.DEFAULT_NAMESPACE]: declaration[Object.keys(declaration)[0]]
@@ -168,7 +160,6 @@ export const normalize = async (declaration: WorkerDeclaration): Promise<Module>
         }
       } else if (isObject(declaration[Object.keys(declaration)[0]])) {
         // [Compatibility Mode]: Developer can export a namespaced dictionnary
-        console.log('==> f');
         return {
           expose: declaration[Object.keys(declaration)[0]],
           providers: [],
@@ -176,17 +167,14 @@ export const normalize = async (declaration: WorkerDeclaration): Promise<Module>
           configurers: []
         };
       } else {
-        console.log('==> g');
         error(`Unsupported Worker declaration`);
         throw new Error(`Unsupported Worker declaration, only Api, Module and Namespace are supported`);
       }
     } else {
-      console.log('==> h');
       error(`Unsupported Worker declaration, only EcmaScript module are supported`);
       throw new Error(`Unsupported Worker declaration`);
     }
   } else {
-    console.log('==> i');
     error(`Unsupported Worker declaration, invalid worker content`);
     throw new Error(`Unsupported Worker declaration`);
   }
@@ -371,35 +359,26 @@ export const analyze = async (
   env: Environment,
   customNormalizer: WorkerDeclarationNormalizer = normalize
 ): Promise<DependencyInjectionAnalysis> => {
-  console.log('==> ANALYZE');
   const envProviders = makeEnvironmentInjectable(env);
-  console.log('==> ANALYZE');
   // Normalize worker declaration
   const normalized = await customNormalizer(declaration);
-  console.log('==> ANALYZE');
   // Get providers from imports module list
   const resolvedImports = resolveProviders(client, await getProvidersByImports(env, normalized.imports || []));
-  console.log('==> ANALYZE');
   const imported = resolvedImports.providers;
   // Get exposed CloudService
   const exposed = clean(normalized.expose);
-  console.log('==> ANALYZE');
   // Analyze exposed CloudService to get an ordered providers list
   const analyzed = analyzeService(exposed);
-  console.log('==> ANALYZE');
   // Get a resolved list of providers used in exposed DI graph
   const resolved = resolve(client, analyzed);
-  console.log('==> ANALYZE');
   // Configured providers
   const resolvedConfigured = resolveProviders(
     client,
     await getProvidersByConfigurers(env, normalized.configurers || [])
   );
-  console.log('==> ANALYZE');
   const configured = resolvedConfigured.providers;
   // Explicit providers
   const resolvedProviders = resolveProviders(client, normalized.providers || []);
-  console.log('==> ANALYZE');
   const providers = resolvedProviders.providers;
   // Priorize providers
   const priorized = filterProviders([
@@ -409,7 +388,6 @@ export const analyze = async (
     ...envProviders, // Providers for the environment
     ...providers // Providers via module provider
   ]);
-  console.log('==> ANALYZE');
   const platformServices = getPlatformServices(priorized);
   const bootLayers = analyzed.bootLayer
     .concat(resolvedImports.bootLayer)
@@ -418,7 +396,6 @@ export const analyze = async (
   trace('analyzed providers', priorized);
   trace('analyzed platformServices', platformServices);
   trace('bootstrap layers', bootLayers);
-  console.log('==> ANALYZE');
   return {
     declaration,
     providers: priorized,

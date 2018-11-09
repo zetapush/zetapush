@@ -17,8 +17,6 @@ export const defaultEnvironmentProvider = (
   registry: LocalServerRegistry,
   externalConfPath = process.env.CONFIG_PATH
 ) => {
-  console.log('==> DEFAULT ENVIRONMENT PROVIDER');
-
   // TODO: also handle application.json for the right worker (based on worker name and worker dir) see #ZPV3-139
   return new LocalOrPushedEnvironmentProvider(
     new LocalDevEnvironmentProvider(config, envName, baseDir, registry, externalConfPath),
@@ -79,9 +77,6 @@ export class PushedEnvironmentProvider implements EnvironmentProvider {
   async get(client: ServerClient, queueApi: any): Promise<Environment> {
     trace('confPath', process.cwd() + '/' + this.confPath);
     trace('externalConfPath', this.externalConfPath);
-
-    console.log('==> CONF PATH : ', this.confPath);
-
     return {
       name: this.envName,
       context: await defaultPushedZetaPushContextFactory(this.config, client, queueApi, this.registry),
@@ -103,11 +98,8 @@ export const defaultPushedZetaPushContextFactory = async (
   queueApi: any,
   serverRegistry: LocalServerRegistry
 ) => {
-  console.log('==> defaultPushedZetaPushContextFactory');
   const context = new PlatformEventContext(config, client, queueApi, serverRegistry);
-  console.log('==> defaultPushedZetaPushContextFactory');
   await load([context]);
-  console.log('==> defaultPushedZetaPushContextFactory');
   return context;
 };
 
@@ -121,8 +113,6 @@ export const defaultConfigurationPropertiesFactory = async (
   basePath: string,
   externalBasePath?: string
 ) => {
-  console.log('==> defaultConfigurationPropertiesFactory');
-
   const all = [
     // new CommandLineArgumentConfigurationProperties(),
     new EnvironmentVariablesConfigurationProperties(),
@@ -149,10 +139,7 @@ export const defaultConfigurationPropertiesFactory = async (
     new Json5ConfigurationProperties(`${basePath}/application.json`)
     // new PropertiesFileConfigurationProperties(`application.properties`)
   ];
-  console.log('==> ALL ', all);
   const available = await availableOnly(all);
-  console.log('==> AFTER');
   await load(available);
-  console.log('==> AFTER LOAD');
   return new PriorizedConfigurationProperties(...available);
 };

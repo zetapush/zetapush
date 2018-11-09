@@ -122,17 +122,11 @@ export class WorkerClient extends Client {
       Type: Logs
     });
 
-    console.log('==> DEPLOYMENT ID : ', deploymentId);
-    console.log('==> WORKER : ', worker);
-
     const queue = this.createAsyncService<Worker>({
       deploymentId,
       listener: {
         dispatch: async ({ data: task }: ListenerMessage<QueueTask>) => {
           const { request, taskId } = task;
-
-          console.log('==> request : ', request);
-          console.log('==> taskId : ', taskId);
 
           if (request && taskId) {
             // Get request context for task request
@@ -149,8 +143,6 @@ export class WorkerClient extends Client {
 
             // Delegate task execution to worker instance
             const response = await instance.dispatch(request, context);
-            console.log('==> response : ', response);
-
             // Trace call End with response
             logs.log({
               contextId: request.contextId,
@@ -182,19 +174,14 @@ export class WorkerClient extends Client {
       Type: Worker
     });
 
-    console.log('==> START QUEUE : ', queue);
-
     try {
-      console.log('==> kfkdhkjs before');
-      const res = await queue.register({
+      queue.register({
         capacity: this.capacity,
         routing: {
           exclusive: this.options.grabAllTraffic
         }
       });
-      console.log('==> kfkdhkjs result : ', res);
     } catch (ex) {
-      console.log('==> FAILED');
       const exception = {
         code: 'WORKER_INSTANCE_REGISTER_FAILED',
         message: 'Unable to correctly register worker instance',

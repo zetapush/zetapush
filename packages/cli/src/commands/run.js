@@ -94,13 +94,9 @@ const run = async (command, config, declaration) => {
       displayHelp(failure);
     });
   });
-
-  console.log('==> START RUNNING');
-
   runner.run(declaration);
 
   if (command.serveFront) {
-    console.log('==> SERVE FRONT');
     return searchAndCreateServers(command, declaration, config, serverRegistry);
   }
 };

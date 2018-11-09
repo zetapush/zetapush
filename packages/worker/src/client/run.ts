@@ -118,16 +118,12 @@ export class WorkerRunner extends EventEmitter {
     config: ResolvedConfig,
     analysis?: Array<DependencyInjectionAnalysis>
   ): Promise<Array<WorkerInstance>> {
-    console.log('==> START START');
-
     if (!analysis || analysis.length == 0) {
       throw new IllegalStateError(
         'No dependency injection analysis available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
       );
     }
     return instantiate(analysis).then((workers: Array<any>) => {
-      console.log('==> START INSTANTIATE : ', workers);
-
       return Promise.all(workers.map((worker) => client.subscribeTaskWorker(worker.instance, worker.deploymentId)));
     });
   }
@@ -157,7 +153,6 @@ export class WorkerRunner extends EventEmitter {
    */
   run(declaration: WorkerDeclaration): Promise<WorkerStartEventData> {
     return new Promise((resolve, reject) => {
-      console.log('==> IN RUN');
       const config = this.config;
       const clientConfig: any = config;
       const client = new WorkerClient(
@@ -175,7 +170,6 @@ export class WorkerRunner extends EventEmitter {
       this.currentDeclaration = declaration;
 
       this.envProvider.get(client, this.getQueueApi(client)).then((env: Environment) => {
-        console.log('==> AFTER PROVIDER');
         Promise.all(
           declaration.map((workerDeclaration: any) => {
             return analyze(client, workerDeclaration, env, this.customNormalizer).then(
@@ -268,8 +262,6 @@ export class WorkerRunner extends EventEmitter {
     declaration: WorkerDeclaration,
     analysis?: Array<DependencyInjectionAnalysis>
   ): Promise<boolean> {
-    console.log('==> START BOOTSTRAP');
-
     if (!analysis || analysis.length == 0) {
       throw new IllegalStateError(
         'No dependency injection analysis available. Maybe you try to reload a worker that is not running or maybe you forgot to call run() method'
