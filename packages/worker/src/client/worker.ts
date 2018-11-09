@@ -130,6 +130,10 @@ export class WorkerClient extends Client {
       listener: {
         dispatch: async ({ data: task }: ListenerMessage<QueueTask>) => {
           const { request, taskId } = task;
+
+          console.log('==> request : ', request);
+          console.log('==> taskId : ', taskId);
+
           if (request && taskId) {
             // Get request context for task request
             const context = this.getRequestContext(request, logs, deploymentId);
@@ -145,6 +149,7 @@ export class WorkerClient extends Client {
 
             // Delegate task execution to worker instance
             const response = await instance.dispatch(request, context);
+            console.log('==> response : ', response);
 
             // Trace call End with response
             logs.log({
