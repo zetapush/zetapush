@@ -27,7 +27,7 @@ let last = Date.now();
 /**
  * @param {Object} command
  */
-const load = (command) => {
+const load = (command, config) => {
   const workers = [];
 
   try {
@@ -59,7 +59,8 @@ const load = (command) => {
         } else {
           const id = cwd('.');
           console.log('==> ID : ', id);
-          workers.push(require(id));
+          console.log('==> config.workerServiceId : ', config.workerServiceId);
+          workers.push(renameWorker(require(id), config.workerServiceId));
         }
       }
     }
