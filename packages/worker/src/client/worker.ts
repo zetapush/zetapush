@@ -192,6 +192,7 @@ export class WorkerClient extends Client {
         }
       });
     } catch (ex) {
+      console.log('==> FAILED');
       const exception = {
         code: 'WORKER_INSTANCE_REGISTER_FAILED',
         message: 'Unable to correctly register worker instance',
