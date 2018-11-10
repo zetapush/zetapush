@@ -39,7 +39,7 @@ const run = async (command, config, declaration) => {
     command.grabAllTraffic,
     config,
     transports,
-    defaultEnvironmentProvider(config, 'dev', command.worker, serverRegistry),
+    defaultEnvironmentProvider(config, 'dev', process.cwd(), serverRegistry),
     undefined,
     getCometdLogLevel()
   );
