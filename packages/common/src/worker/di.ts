@@ -409,7 +409,7 @@ export const analyze = async (
 /**
  * Resolve and inject dependencies
  */
-export const instantiate = async (analysis: Array<DependencyInjectionAnalysis>) => {
+export const instantiate = async (analysis: DependencyInjectionAnalysis[]) => {
   const workers: Array<any> = [];
   try {
     analysis.forEach((analyze) => {
