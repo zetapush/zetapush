@@ -34,10 +34,12 @@ export const getLiveStatus = (config: Config, workerNumber: number, debugName = 
   }).then((response) => {
     log(`getLiveStatus`, response);
     const nodes = Object.values(response.nodes);
-    const reducedNodes: any = nodes.reduce(
+    let numberOfWorkers;
+    const reducedNodes = nodes.reduce(
       (reduced, node: any) => {
         const fronts = node.liveData['static.files.hosting'] || {};
         const workers = node.liveData['worker.deployer'] || {};
+        numberOfWorkers = workers.length;
         return {
           fronts,
           workers
@@ -49,9 +51,7 @@ export const getLiveStatus = (config: Config, workerNumber: number, debugName = 
       }
     );
 
-    const numberOfWorkers = reducedNodes.workers;
-
-    if (numberOfWorkers > workerNumber) {
+    if (numberOfWorkers && numberOfWorkers > workerNumber) {
       warn(`Warning : Some workers are displayed but are disabled with your last deployment`);
     }
 
