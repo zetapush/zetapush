@@ -1,4 +1,4 @@
-import { Config } from './common-types';
+import { Config, WorkerDeclaration } from './common-types';
 
 import { fetch } from './utils/network';
 import { log, error, info, warn, trace, debugObject } from './utils/log';
@@ -25,7 +25,7 @@ const getProgress = (config: Config, recipeId: string) =>
  * Get Application live status
  * @param {Object} config
  */
-export const getLiveStatus = (config: Config, debugName = 'getLiveStatus') =>
+export const getLiveStatus = (config: Config, workerNumber: number, debugName = 'getLiveStatus') =>
   fetch({
     config,
     method: 'GET',
@@ -34,7 +34,7 @@ export const getLiveStatus = (config: Config, debugName = 'getLiveStatus') =>
   }).then((response) => {
     log(`getLiveStatus`, response);
     const nodes = Object.values(response.nodes);
-    return nodes.reduce(
+    const reducedNodes: any = nodes.reduce(
       (reduced, node: any) => {
         const fronts = node.liveData['static.files.hosting'] || {};
         const workers = node.liveData['worker.deployer'] || {};
@@ -48,6 +48,14 @@ export const getLiveStatus = (config: Config, debugName = 'getLiveStatus') =>
         workers: {}
       }
     );
+
+    const numberOfWorkers = reducedNodes.workers;
+
+    if (numberOfWorkers > workerNumber) {
+      warn(`Warning : Some workers are displayed but are disabled with your last deployment`);
+    }
+
+    return reducedNodes;
   });
 
 export interface ProgressionInfo {
@@ -137,6 +145,7 @@ export const defaultBackoff = (delay: number, remainingRetries: number, maxRetri
 export const getDeploymentProgression = (
   config: Config,
   recipeId: string,
+  workerNumber: any,
   pollDelay = 500,
   maxRetries = 10,
   retryBackoff: (currentDelay: number, remainingRetries: number, maxRetries: number) => number = defaultBackoff
@@ -171,7 +180,7 @@ export const getDeploymentProgression = (
         });
         // events.removeAllListeners();
       } else {
-        getLiveStatus(config)
+        getLiveStatus(config, workerNumber)
           .then((status) => {
             events.emit(ProgressEvents.SUCCESS, {
               ...status,

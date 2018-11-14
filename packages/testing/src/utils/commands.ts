@@ -5,7 +5,7 @@ import { PathLike, readFileSync, writeFileSync, existsSync } from 'fs';
 import * as path from 'path';
 import * as process from 'process';
 const rimraf = require('rimraf');
-import { fetch, ResolvedConfig, decrypt, getLiveStatus } from '@zetapush/common';
+import { fetch, ResolvedConfig, decrypt } from '@zetapush/common';
 const kill = require('tree-kill');
 import { commandLogger, SubProcessLoggerStream, subProcessLogger } from './logger';
 import { PassThrough } from 'stream';

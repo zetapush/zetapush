@@ -1,4 +1,5 @@
-const { existsSync, readdirSync, lstatSync } = require('fs');
+const { existsSync, readdirSync, lstatSync, statSync } = require('fs');
+const path = require('path');
 const zip = require('zip-dir');
 
 import { trace } from './log';
@@ -13,10 +14,16 @@ export const compress = (folder: any, options = {}) =>
       if (failure) {
         return reject(failure);
       }
+
+      const workersNumber = readdirSync(path.join(folder, 'workers')).filter((f: any) =>
+        statSync(path.join(path.join(folder, 'workers'), f)).isDirectory()
+      ).length;
+
       resolve({
         folder,
         options,
-        buffer
+        buffer,
+        workersNumber
       });
     });
   });

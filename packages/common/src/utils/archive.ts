@@ -33,7 +33,7 @@ export const archive = (command: any, config: any, declaration: any, type: strin
     .then(() => createFrontsFolder(command, root, artefactsConfig.fronts))
     .then(() => generateProvisioningFile(app, config, declaration, type))
     .then(() => compress(root, { ...options, ...{ saveTo: rootArchive } }))
-    .then(() => rootArchive);
+    .then((compressed: any) => [rootArchive, compressed.workersNumber]);
 };
 
 /**
