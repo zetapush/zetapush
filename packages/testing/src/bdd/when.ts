@@ -177,12 +177,18 @@ class UserAction {
   private credentials?: Credentials;
   private apiBuilder?: Api;
   private apiDeploymentId?: string;
+  private apiNamespace?: string;
 
   constructor(private testOrContext: Context) {}
 
   name(actionName: string, suffix = ' from front') {
     this.actionName = actionName;
     this.actionNameSuffix = suffix;
+    return this;
+  }
+
+  namespace(namespace: string) {
+    this.apiNamespace = namespace;
     return this;
   }
 
@@ -231,6 +237,10 @@ class UserAction {
         if (this.apiDeploymentId) {
           this.apiBuilder.deploymentId(this.apiDeploymentId);
         }
+        if (this.apiNamespace) {
+          this.apiBuilder.namespace(this.apiNamespace);
+        }
+
         api = <any>this.apiBuilder.build(client);
         frontActionLogger.debug('Api instance created');
       } catch (e) {
@@ -273,6 +283,9 @@ class Api extends Parent<UserAction> {
   }
 
   build(client: Client) {
+    console.log('==> namespace : ', this.apiNamespace);
+    console.log('==> deploymentId : ', this.apiDeploymentId);
+
     return client.createProxyTaskService({
       timeout: this.apiCallTimeout,
       namespace: this.apiNamespace,

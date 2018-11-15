@@ -3,6 +3,7 @@ const { consoleAction, frontAction } = require('@zetapush/testing');
 const patternWorker = /Hello World from worker/;
 const patternWorker1 = /Hello World from worker1/;
 const patternWorker2 = /Hello World from worker2/;
+const patternWorker3 = /Hello World from worker 3 with namespace/;
 
 describe(`As developer with
       - valid account
@@ -63,6 +64,61 @@ describe(`As developer with
             const message2 = await api.hello2();
             expect(typeof message2).toBe('string');
             expect(patternWorker2.test(message2)).toBe(true);
+          });
+      },
+      10 * 60 * 1000
+    );
+  });
+
+  describe(`In the "zeta run" context when we specify multiple workers and with namespace`, () => {
+    it(
+      `should be able to
+      - have a new hello-world project
+      - run the hello-world
+      - call hello1() and hello2() from the exposed workers`,
+      async () => {
+        //  1) Given
+        await given()
+          /**/ .credentials()
+          /*  */ .fromEnv()
+          /*  */ .and()
+          /**/ .project()
+          /*  */ .template()
+          /*    */ .sourceDir(appDir)
+          /*    */ .and()
+          /*  */ .and()
+          /**/ .worker()
+          /*  */ .up('--workers myWorker1,myWorker3')
+          /*  */ .and()
+          /**/ .npm()
+          /*   */ .dependencies()
+          /*     */ .module('@zetapush/core')
+          /*       */ .and()
+          /*     */ .module('@zetapush/cli')
+          /*       */ .and()
+          /*     */ .and()
+          /*   */ .and()
+          /**/ .apply(this);
+
+        // 2) call worker1
+        await frontAction(this)
+          .name('2) call worker 1')
+          .deploymentId('myWorker1')
+          .execute(async (api) => {
+            const message1 = await api.hello1();
+            expect(typeof message1).toBe('string');
+            expect(patternWorker1.test(message1)).toBe(true);
+          });
+
+        // 3) call worker3 with namespcae
+        await frontAction(this)
+          .name('3) call worker 3 with namespace')
+          .deploymentId('myWorker3')
+          .namespace('worker3')
+          .execute(async (api) => {
+            const message3 = await api.hello3();
+            expect(typeof message3).toBe('string');
+            expect(patternWorker3.test(message3)).toBe(true);
           });
       },
       10 * 60 * 1000

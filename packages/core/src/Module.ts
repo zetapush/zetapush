@@ -25,7 +25,11 @@ export interface ModuleDecorator {
   new (obj?: Module): Module;
 }
 
-class ModuleDecoratorFactory {}
+class ModuleDecoratorFactory {
+  static get type() {
+    return 'ModuleDecoratorFactory';
+  }
+}
 
 export const Module: ModuleDecorator = <ModuleDecorator>makeDecorator(
   'ZetaPush:Module',
@@ -40,7 +44,7 @@ export const Module: ModuleDecorator = <ModuleDecorator>makeDecorator(
 
 export const isDecoratedModule = (module: Class): boolean => {
   const annotations: any[] = Reflect.getMetadata('annotations', module) || [];
-  return annotations.find((annotation) => annotation instanceof ModuleDecoratorFactory);
+  return annotations.find((annotation) => annotation.constructor.name === ModuleDecoratorFactory.type);
 };
 
 export const getDecoratedModule = (module: Class): Module => {

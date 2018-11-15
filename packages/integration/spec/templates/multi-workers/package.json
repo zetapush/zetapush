@@ -13,7 +13,8 @@
   },
   "workers": {
     "myWorker1": "./worker1",
-    "myWorker2": "./worker2"
+    "myWorker2": "./worker2",
+    "myWorker3": "./worker3"
   },
   "fronts": {
     "myFront1": "./front1",
