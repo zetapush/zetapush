@@ -48,8 +48,8 @@ const displayProgress = (steps) => {
   update(output);
 };
 
-const getProgression = (config, recipeId, workersNumber) => {
-  const events = getDeploymentProgression(config, recipeId, workersNumber);
+const getProgression = (config, recipeId) => {
+  const events = getDeploymentProgression(config, recipeId);
   events.on(ProgressEvents.PROGRESSION, async ({ progressDetail }) => {
     const { steps } = progressDetail;
     displayProgress(steps);

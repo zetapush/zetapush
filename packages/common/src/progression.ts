@@ -25,7 +25,7 @@ const getProgress = (config: Config, recipeId: string) =>
  * Get Application live status
  * @param {Object} config
  */
-export const getLiveStatus = (config: Config, workerNumber: number, debugName = 'getLiveStatus') =>
+export const getLiveStatus = (config: Config, debugName = 'getLiveStatus') =>
   fetch({
     config,
     method: 'GET',
@@ -35,7 +35,7 @@ export const getLiveStatus = (config: Config, workerNumber: number, debugName = 
     log(`getLiveStatus`, response);
     const nodes = Object.values(response.nodes);
     let numberOfWorkers;
-    const reducedNodes = nodes.reduce(
+    return nodes.reduce(
       (reduced, node: any) => {
         const fronts = node.liveData['static.files.hosting'] || {};
         const workers = node.liveData['worker.deployer'] || {};
@@ -50,12 +50,6 @@ export const getLiveStatus = (config: Config, workerNumber: number, debugName = 
         workers: {}
       }
     );
-
-    if (numberOfWorkers && numberOfWorkers > workerNumber) {
-      warn(`Warning : Some workers are displayed but are disabled with your last deployment`);
-    }
-
-    return reducedNodes;
   });
 
 export interface ProgressionInfo {
@@ -145,7 +139,6 @@ export const defaultBackoff = (delay: number, remainingRetries: number, maxRetri
 export const getDeploymentProgression = (
   config: Config,
   recipeId: string,
-  workerNumber: any,
   pollDelay = 500,
   maxRetries = 10,
   retryBackoff: (currentDelay: number, remainingRetries: number, maxRetries: number) => number = defaultBackoff
@@ -180,7 +173,7 @@ export const getDeploymentProgression = (
         });
         // events.removeAllListeners();
       } else {
-        getLiveStatus(config, workerNumber)
+        getLiveStatus(config)
           .then((status) => {
             events.emit(ProgressEvents.SUCCESS, {
               ...status,
