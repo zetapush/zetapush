@@ -51,7 +51,7 @@ export const getDecoratedModule = (module: Class): Module => {
   const annotations: any[] = Reflect.getMetadata('annotations', module) || [];
   return annotations.reduce(
     (reduced, annotation) => {
-      return annotation instanceof ModuleDecoratorFactory ? annotation : reduced;
+      return annotation.constructor.name === ModuleDecoratorFactory.type ? annotation : reduced;
     },
     {
       expose: {},
