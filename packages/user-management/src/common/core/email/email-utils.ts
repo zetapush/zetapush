@@ -21,7 +21,7 @@ export class EmailAddressWrapper implements EmailAddress {
   private parse(address: string) {
     const m = address.match(EMAIL_WITH_PERSONAL_PATTERN);
     if (m && m.length) {
-      this.address = m[1];
+      this.address = m[2];
       this.personal = m[1];
     } else {
       this.address = address;

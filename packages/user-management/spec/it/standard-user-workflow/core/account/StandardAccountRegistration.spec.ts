@@ -1,5 +1,5 @@
 import { given, autoclean, runInWorker } from '@zetapush/testing';
-import { mock, anyString, anything, when, verify, instance } from 'ts-mockito';
+import { mock, anyString, anything, when, verify, instance, capture, spy } from 'ts-mockito';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import 'jasmine';
@@ -26,6 +26,7 @@ import { MockedConfigurationProperties, MockedZetaPushContext } from '@zetapush/
 describe(`StandardAccountRegistration`, () => {
   const axiosInstance = axios.create({});
   const mockAxios = new MockAdapter(axiosInstance);
+  const axiosSpy = spy(axiosInstance);
   const tokenGenerator: TokenGenerator = mock(Base36RandomTokenGenerator);
   const uuidGenerator: UuidGenerator = mock(TimestampBasedUuidGenerator);
   const confirmationUrl = async ({ account, token }: { account: Account; token: Token }) =>
@@ -35,7 +36,7 @@ describe(`StandardAccountRegistration`, () => {
     <a href="${confirmationUrl}">Please confirm your account</a>`;
   const textTemplate = ({ account, confirmationUrl }: { account: Account; confirmationUrl: string }) =>
     `Hello ${account.profile.username}, 
-    Please confirm your account:${confirmationUrl}`;
+    Please confirm your account: ${confirmationUrl}`;
 
   describe(`signup()`, () => {
     describe(`on valid account`, () => {
@@ -154,33 +155,31 @@ describe(`StandardAccountRegistration`, () => {
               username: 'odile.deray'
             });
             // check that the email has been sent
-            verify(
-              axiosInstance.post(
-                'mailjet-url',
+            const [url, request] = capture(axiosSpy.post).last();
+            expect(url).toBe('mailjet-url');
+            expect(request).toEqual({
+              Messages: [
                 {
-                  Messages: [
+                  From: {
+                    Name: '',
+                    Email: 'no-reply@zetapush.com'
+                  },
+                  To: [
                     {
-                      From: {
-                        Name: '',
-                        Email: 'no-reply@zetapush.com'
-                      },
-                      To: [
-                        {
-                          Name: '',
-                          Email: 'odile.deray@zetapush.com'
-                        }
-                      ],
-                      Cc: [],
-                      Bcc: [],
-                      Subject: 'Confirm your inscription',
-                      TextPart: `Hello odile.deray, Please confirm your account: https://zetapush.com/42/123456`,
-                      HTMLPart: `Hello odile.deray, <a href="https://zetapush.com/42/123456">Please confirm your account</a>`
+                      Name: '',
+                      Email: 'odile.deray@zetapush.com'
                     }
-                  ]
-                },
-                anything()
-              )
-            );
+                  ],
+                  Cc: [],
+                  Bcc: [],
+                  Subject: 'Confirm your inscription',
+                  TextPart: `Hello odile.deray, 
+    Please confirm your account: https://zetapush.com/42/123456`,
+                  HTMLPart: `Hello odile.deray, 
+    <a href="https://zetapush.com/42/123456">Please confirm your account</a>`
+                }
+              ]
+            });
           });
         },
         5 * 60 * 1000
