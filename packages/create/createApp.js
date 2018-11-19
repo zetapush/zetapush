@@ -233,13 +233,16 @@ function init(appPath, appName, originalDirectory, command) {
   console.log(chalk.cyan(`  npm run start`));
   console.log('    Starts the development server.');
   console.log();
+  console.log(chalk.cyan(`  npm run start -- --serve-front`));
+  console.log('    Starts the development server and runs local HTTP server to serve your front code');
+  console.log();
   console.log(chalk.cyan(`  npm run deploy`));
-  console.log('    Deploy your application on ZetaPush platform.');
+  console.log('    Deploys your application on ZetaPush platform.');
   console.log();
   console.log('We suggest that you begin by typing:');
   console.log();
   console.log(chalk.cyan('  cd'), cdpath);
-  console.log(`  ${chalk.cyan(`npm run start`)}`);
+  console.log(`  ${chalk.cyan(`npm run start -- --serve-front`)}`);
   console.log();
   console.log('Enjoy, Celtia is on your back !');
 }
