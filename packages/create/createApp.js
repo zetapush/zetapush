@@ -9,7 +9,7 @@ const commander = require('commander');
 const spawn = require('cross-spawn');
 const fs = require('fs-extra');
 
-const { createAccount, DEFAULTS, getDeveloperLogin, getDeveloperPassword, logger } = require('@zetapush/cli');
+const { DEFAULTS, getDeveloperLogin, getDeveloperPassword, logger } = require('@zetapush/cli');
 
 logger.setVerbosity(1);
 
@@ -47,12 +47,11 @@ const program = new commander.Command(pkg.name)
   .action((name, command) => {
     const version = getCurrentVersion(command);
     validateOptions(command)
-      .then((config) => createAccount(config))
       .then((zetarc) => {
         createApp(name, zetarc, version, command);
       })
       .catch((failure) => {
-        logger.error('createAccount', failure);
+        logger.error('validateOptions', failure);
       });
   })
   .on('--help', () => {})
@@ -300,7 +299,7 @@ function run(root, appName, originalDirectory, version, command) {
 
 /**
  * Install all dependencies
- * @param {*} dependencies 
+ * @param {*} dependencies
  */
 function install(dependencies) {
   const command = 'npm';
