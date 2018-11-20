@@ -16,13 +16,11 @@ export class ErrorHelper {
   }
   private static instance: ErrorHelper | null = null;
   static getInstance(factory?: () => ErrorHelper) {
-    console.log('==> factory : ', factory);
     if (ErrorHelper.instance === null && factory) {
-      console.log('==> ErrorHelper.instance : ', ErrorHelper.instance);
-      ErrorHelper.instance === factory();
-      console.log('==> ErrorHelper.instance : ', ErrorHelper.instance);
+      ErrorHelper.instance = factory();
     }
     const instance = ErrorHelper.instance;
+
     setImmediate(() => {
       if (ErrorHelper.instance !== null) {
         ErrorHelper.instance.getMessages();
