@@ -1,11 +1,9 @@
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
-import { sizeSnapshot } from 'rollup-plugin-size-snapshot';
 import ts from 'rollup-plugin-typescript';
 import typescript from 'typescript';
-import { uglify } from 'rollup-plugin-uglify';
-import { minify as minifier } from 'uglify-es';
+import { terser } from 'rollup-plugin-terser';
 
 const env = process.env.NODE_ENV;
 const config = {
@@ -22,7 +20,6 @@ const config = {
       typescript
     }),
     json(),
-    sizeSnapshot(),
   ],
   output: {
     name: 'ZetaPushUserManagement',
@@ -39,17 +36,16 @@ const config = {
 
 if (env === 'production') {
   config.plugins.push(
-    uglify(
+    terser(
       {
         compress: {
           pure_getters: true,
           unsafe: true,
           unsafe_comps: true,
-          warnings: false
-        }
+          warnings: false,
+        },
       },
-      minifier
-    )
+    ),
   );
 }
 
