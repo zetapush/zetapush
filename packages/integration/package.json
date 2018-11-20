@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/integration",
-  "version": "0.34.2",
+  "version": "0.35.5",
   "private": true,
   "scripts": {
     "test": "jasmine",
