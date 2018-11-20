@@ -24,6 +24,8 @@ const pkg = require('./package.json');
 // but then silently removed during the next create.
 const errorLogFilePatterns = ['npm-debug.log', 'yarn-error.log', 'yarn-debug.log'];
 
+let projectName;
+
 const program = new commander.Command(pkg.name)
   .version(pkg.version)
   .option('-u, --platform-url <platform-url>', 'Platform URL', DEFAULTS.PLATFORM_URL)
@@ -45,18 +47,34 @@ const program = new commander.Command(pkg.name)
   .arguments('<project-directory>')
   .usage(`${chalk.green('<project-directory>')} [options]`)
   .action((name, command) => {
+    // Store project name
+    projectName = name;
     const version = getCurrentVersion(command);
     validateOptions(command)
       .then((config) => createAccount(config))
-      .then((zetarc) => {
-        createApp(name, zetarc, version, command);
-      })
+      .then((zetarc) => createApp(name, zetarc, version, command))
       .catch((failure) => {
         logger.error('createAccount', failure);
       });
   })
   .on('--help', () => {})
   .parse(process.argv);
+
+// Handle missing mandatory arguments
+if (typeof projectName === 'undefined') {
+  console.error('Please specify the project directory:');
+  console.log(
+    `  ${chalk.cyan(program.name())} ${chalk.green('<project-directory>')}`
+  );
+  console.log();
+  console.log('For example:');
+  console.log(`  ${chalk.cyan(program.name())} ${chalk.green('my-zetapush-app')}`);
+  console.log();
+  console.log(
+    `Run ${chalk.cyan(`${program.name()} --help`)} to see all options.`
+  );
+  process.exit(1);
+}
 
 function getCurrentVersion(command) {
   if (!command.forceCurrentVersion) {
@@ -300,7 +318,7 @@ function run(root, appName, originalDirectory, version, command) {
 
 /**
  * Install all dependencies
- * @param {*} dependencies 
+ * @param {*} dependencies
  */
 function install(dependencies) {
   const command = 'npm';
