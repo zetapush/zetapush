@@ -58,6 +58,8 @@ const run = async (command, config, declaration) => {
     spinner.start();
   });
   runner.on(WorkerRunnerEvents.STARTED, () => {
+    // Purge process output stream
+    console.log(String());
     spinner.stop();
     info('Worker is up!');
   });
@@ -66,6 +68,8 @@ const run = async (command, config, declaration) => {
     spinner.start();
   });
   runner.on(WorkerRunnerEvents.RELOADED, () => {
+    // Purge process output stream
+    console.log(String());
     spinner.stop();
     info('Worker is up!');
   });
