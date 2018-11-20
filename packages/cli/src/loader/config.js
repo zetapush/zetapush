@@ -22,11 +22,21 @@ const isValid = (config = {}) => config.platformUrl && config.developerLogin && 
  */
 const save = (command, content) =>
   new Promise((resolve, reject) => {
+    const clean = (dirty, defaults) => {
+      return Object.entries(dirty).reduce((cleaned, [property, value]) => {
+        if (defaults[property] !== value) {
+          cleaned[property] = value;
+        }
+        return cleaned;
+      }, {});
+    };
     const filepath = path.join(command.worker, '.zetarc');
     // Encrypt content before
     const encryted = encrypt(content);
+    // Do not persist defaults config value
+    const cleaned = clean(encryted, { ...DEFAULTS, npmRegistry: DEFAULTS.NPM_REGISTRY_URL });
     log('Save config file', filepath);
-    fs.writeFile(filepath, JSON.stringify(encryted, null, 2), (failure) => {
+    fs.writeFile(filepath, JSON.stringify(cleaned, null, 2), (failure) => {
       if (failure) {
         return reject(failure);
       }
