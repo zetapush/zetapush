@@ -3,7 +3,7 @@ import 'jasmine';
 import {
   LegacyAdapterUserRepository,
   StandardAccountStatus,
-  LoginAlreadyUsedError,
+  LegacyLoginAlreadyUsedError,
   LegacySimpleError
 } from '../../../../src';
 import { IllegalStateError } from '../../../../src/common/api';
@@ -88,7 +88,7 @@ describe(`LegacyAdapterUserRepository`, () => {
         // THEN
         expect(() => {
           throw e;
-        }).toThrowError(LoginAlreadyUsedError, 'Login "odile.deray" is already used');
+        }).toThrowError(LegacyLoginAlreadyUsedError, 'Login "odile.deray" is already used');
       }
     });
 
