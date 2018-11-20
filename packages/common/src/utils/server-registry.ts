@@ -1,7 +1,7 @@
 import { trace } from './log';
 
 export enum ServerType {
-  WORKER = 'queue_0',
+  WORKER = 'worker',
   FRONT = 'front'
 }
 
@@ -9,7 +9,7 @@ export namespace ServerType {
   export function defaultFolderName(type: ServerType) {
     switch (type) {
       case ServerType.WORKER:
-        return 'queue_0';
+        return 'worker';
       case ServerType.FRONT:
         return 'front';
     }
@@ -17,7 +17,7 @@ export namespace ServerType {
   export function defaultName(type: ServerType) {
     switch (type) {
       case ServerType.WORKER:
-        return 'queue_0';
+        return 'worker';
       case ServerType.FRONT:
         return 'front';
     }
