@@ -1,5 +1,5 @@
 import { Context } from '@zetapush/core';
-import { Authentication, Client, uuid } from '@zetapush/client';
+import { Authentication, Client, uuid, ConnectionStatusListener } from '@zetapush/client';
 import { Queue, QueueTask, TaskRequest } from '@zetapush/platform-legacy';
 import { LogLevel, Logs } from '@zetapush/platform-legacy';
 import { WorkerInstance, TaskDispatcherWorkerInstance } from '../utils/worker-instance';
@@ -52,6 +52,10 @@ export class WorkerClient extends Client {
    * Options given to the worker client
    */
   private options: WorkerClientOptions;
+  /**
+   * Queue service of this worker client
+   */
+  private queue?: Worker;
   /**
    * WorkerClient constructor
    */
@@ -112,7 +116,34 @@ export class WorkerClient extends Client {
       capacity,
       grabAllTraffic
     };
+
+    this.addConnectionStatusListener(<any>{
+      onConnectionEstablished: () => {
+        this.registerWorker();
+      }
+    });
   }
+
+  async registerWorker() {
+    if (this.queue) {
+      try {
+        this.queue.register({
+          capacity: this.capacity,
+          routing: {
+            exclusive: this.options.grabAllTraffic
+          }
+        });
+      } catch (ex) {
+        const exception = {
+          code: 'WORKER_INSTANCE_REGISTER_FAILED',
+          message: 'Unable to correctly register worker instance',
+          cause: ex
+        };
+        throw exception;
+      }
+    }
+  }
+
   /**
    * Subscribe a task worker
    */
@@ -121,7 +152,7 @@ export class WorkerClient extends Client {
     const logs = this.createService<Logs>({
       Type: Logs
     });
-    const queue = this.createAsyncService<Worker>({
+    this.queue = this.createAsyncService<Worker>({
       deploymentId,
       listener: {
         dispatch: async ({ data: task }: ListenerMessage<QueueTask>) => {
@@ -151,7 +182,10 @@ export class WorkerClient extends Client {
             });
 
             // Notify platforme job is done
-            queue.done({
+            if (!this.queue) {
+              throw `Queue service doesn't exists`;
+            }
+            this.queue.done({
               ...response,
               taskId,
               contextId: request.contextId,
@@ -163,7 +197,7 @@ export class WorkerClient extends Client {
         },
         async configure(task: TaskRequest) {
           const res = await instance.configure();
-          queue.done({
+          this.queue.done({
             result: res.result,
             taskId: task.data.taskId,
             success: res.success
@@ -172,21 +206,8 @@ export class WorkerClient extends Client {
       },
       Type: Worker
     });
-    try {
-      queue.register({
-        capacity: this.capacity,
-        routing: {
-          exclusive: this.options.grabAllTraffic
-        }
-      });
-    } catch (ex) {
-      const exception = {
-        code: 'WORKER_INSTANCE_REGISTER_FAILED',
-        message: 'Unable to correctly register worker instance',
-        cause: ex
-      };
-      throw exception;
-    }
+
+    this.registerWorker();
     return instance;
   }
   private getRequestContext(request: TaskRequest, logs: Logs, deploymentId: string): Context {
