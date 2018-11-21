@@ -7,7 +7,8 @@ require('hot-module-replacement')({
 const EventEmitter = require('events');
 // Packages
 const cwd = require('resolve-cwd');
-const { trace } = require('@zetapush/common');
+const fs = require('fs');
+const { trace, warn } = require('@zetapush/common');
 
 const events = new EventEmitter();
 
@@ -19,6 +20,9 @@ let last = Date.now();
  * @param {Object} command
  */
 const load = (command) => {
+  checkFrontDirectoryExists(command.name(), command.front, command.serveFront);
+  checkFrontDirHasHtmlFile(command.name(), command.front, command.serveFront);
+
   try {
     const id = cwd(command.worker);
     let worker = require(id);
@@ -43,6 +47,36 @@ const load = (command) => {
     trace('Failed to load worker code', e);
     throw e;
     // throw new WorkerLoadError('Failed to load worker code', e);
+  }
+};
+
+/**
+ * Check if the front directory exists
+ * @param {string} nameCommand Name of the command 'run' or 'push'
+ * @param {string} frontDir Directory name of the front
+ * @param {boolean | undefined} serveFront Serve front flag is activated or not
+ */
+const checkFrontDirectoryExists = (nameCommand, frontDir, serveFront) => {
+  if (!fs.existsSync(frontDir) && ((nameCommand === 'run' && serveFront) || nameCommand === 'push')) {
+    throw {
+      code: 'DIR_FRONT_MISSING',
+      message: `The directory ${frontDir} doesn't exists. It is configured to store your front`
+    };
+  }
+};
+
+/**
+ * Check if the front directory has html page
+ * @param {string} nameCommand Name of the command 'run' or 'push'
+ * @param {string} frontDir Directory name of the front
+ * @param {boolean | undefined} serveFront Serve front flag is activated or not
+ */
+const checkFrontDirHasHtmlFile = (nameCommand, frontDir, serveFront) => {
+  if ((nameCommand === 'run' && serveFront) || nameCommand === 'push') {
+    const listFiles = fs.readdirSync(frontDir);
+    if (!listFiles.some((elt) => elt.endsWith('.html') || elt.endsWith('.htm'))) {
+      warn(`The front folder doesn't contains any html file.`);
+    }
   }
 };
 
