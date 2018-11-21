@@ -67,7 +67,7 @@ export default class Api {
     return this.stack.push({ stack: 'list', data: item });
   }
   list() {
-    return this.stack.push({ stack: 'list' });
+    return this.stack.list({ stack: 'list' });
   }
 }
 ```
