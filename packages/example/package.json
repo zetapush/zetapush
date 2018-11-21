@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "deploy": "zeta push",
-    "start": "zeta run -vvv"
+    "start": "zeta run"
   },
   "dependencies": {
     "@types/node": "10.12.9",

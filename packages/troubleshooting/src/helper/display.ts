@@ -38,6 +38,7 @@ export const displayHelpMessage = async (error: ErrorAnalyzerResult) => {
   try {
     trace(`Display help message for ${error.code}`);
     const instance = ErrorHelper.getInstance();
+
     if (instance !== null) {
       let helpMessage = await instance.getHelp(error);
       help(chalkTpl(chalk, evaluate(helpMessage, error)));
