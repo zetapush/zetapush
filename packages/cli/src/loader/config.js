@@ -16,6 +16,22 @@ const explorer = cosmiconfig('zeta');
 const isValid = (config = {}) => config.platformUrl && config.developerLogin && config.developerPassword;
 
 /**
+ * Check if the .zetarc file is valid from his path
+ * @param {string} json
+ */
+const checkZetarcValidJson = (json) => {
+  try {
+    JSON.parse(json);
+  } catch (e) {
+    throw {
+      code: `ZETARC_NOT_VALID`,
+      message: `The .zetarc file is an invalid JSON, please check it`,
+      cause: e
+    };
+  }
+};
+
+/**
  * Load ZetaPush config file
  * @param {Object} command
  * @param {Object} content
@@ -123,6 +139,10 @@ const load = async (command, required = true) => {
       2) environment variables
       3) from file defined in ${command.worker}/.zetarc`);
   let config;
+
+  // Check if the .zetarc file is valid
+  checkZetarcValidJson(path.join(command.worker, `.zetarc`));
+
   try {
     config = merge(await fromCli(command), await fromEnv(), await fromFile(command), await fromDefault());
     trace('merged config', config);

@@ -9,6 +9,7 @@ export const HELP_CACHE_EXPIRATION: number = ZP_HELP_CACHE_EXPIRATION
 
 export enum ExitCode {
   CONFIG_01 = 'CONFIG-01',
+  CONFIG_02 = 'CONFIG-02',
   CONFIG_03 = 'CONFIG-03',
   CONFIG_04 = 'CONFIG-04',
   CONFIG_05 = 'CONFIG-05',
@@ -37,6 +38,7 @@ type ExitCodes = { [code in ExitCode]: number };
 
 export const EXIT_CODES: ExitCodes = {
   'CONFIG-01': 1,
+  'CONFIG-02': 2,
   'CONFIG-03': 3,
   'CONFIG-04': 4,
   'CONFIG-05': 5,
