@@ -8,6 +8,7 @@ const EventEmitter = require('events');
 // Packages
 const cwd = require('resolve-cwd');
 const fs = require('fs');
+const path = require('path');
 const { trace, warn } = require('@zetapush/common');
 
 const events = new EventEmitter();
@@ -20,8 +21,13 @@ let last = Date.now();
  * @param {Object} command
  */
 const load = (command) => {
+  // Check front config
   checkFrontDirectoryExists(command.name(), command.front, command.serveFront);
   checkFrontDirHasHtmlFile(command.name(), command.front, command.serveFront);
+
+  // Check worker config
+  checkPackageJsonContainsMainProperty(path.resolve(process.cwd(), 'package.json'));
+  checkMainPropertyOfPackageJsonIsCorrect(path.resolve(process.cwd(), 'package.json'));
 
   try {
     const id = cwd(command.worker);
@@ -77,6 +83,34 @@ const checkFrontDirHasHtmlFile = (nameCommand, frontDir, serveFront) => {
     if (!listFiles.some((elt) => elt.endsWith('.html') || elt.endsWith('.htm'))) {
       warn(`The front folder doesn't contains any html file.`);
     }
+  }
+};
+
+/**
+ * Check if the package.json file has a "main" property
+ * @param {string} pathPackageJson Path of the package.json
+ */
+const checkPackageJsonContainsMainProperty = (pathPackageJson) => {
+  const propertyMain = JSON.parse(fs.readFileSync(pathPackageJson)).main;
+  if (!propertyMain) {
+    throw {
+      code: 'MAIN_PROPERTY_MISSING',
+      message: `The main property is missing in your package.json file`
+    };
+  }
+};
+
+/**
+ * Check if the "main" property of the package.json is correct (if the file exists)
+ * @param {string} pathPackageJson Path of the package.json
+ */
+const checkMainPropertyOfPackageJsonIsCorrect = (pathPackageJson) => {
+  const propertyMain = JSON.parse(fs.readFileSync(pathPackageJson)).main;
+  if (!fs.existsSync(path.resolve(propertyMain))) {
+    throw {
+      code: 'WRONG_MAIN_PROPERTY',
+      message: 'The main property has a wrong value'
+    };
   }
 };
 
