@@ -195,13 +195,15 @@ export class WorkerClient extends Client {
             // Unable to dispatch task
           }
         },
-        async configure(task: TaskRequest) {
+        configure: async (task: TaskRequest) => {
           const res = await instance.configure();
-          this.queue.done({
-            result: res.result,
-            taskId: task.data.taskId,
-            success: res.success
-          });
+          if (this.queue) {
+            this.queue.done({
+              result: res.result,
+              taskId: task.data.taskId,
+              success: res.success
+            });
+          }
         }
       },
       Type: Worker

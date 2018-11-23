@@ -87,7 +87,7 @@ export class EmailAskResetPasswordManager implements AskResetPasswordManager {
       });
       return {
         account,
-        token
+        token: token.value
       };
     } catch (e) {
       throw new AskResetPasswordError(`Failed to launch reset password process`, accountDetailsResetPassword, e);

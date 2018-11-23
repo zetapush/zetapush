@@ -55,7 +55,6 @@ export class ExpressServerWrapper implements HttpServer, Bootstrappable, Cleanab
   get(handler: RequestHandler): any;
   get(path: any, handler: RequestHandler): any;
   get(...args: any[]) {
-    console.log('==> args : ', ...args);
     return (<any>this.app).get(...args);
   }
 

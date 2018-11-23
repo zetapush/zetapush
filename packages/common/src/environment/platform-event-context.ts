@@ -46,6 +46,7 @@ export class PlatformEventContext implements ZetaPushContext, Loadable {
   }
 
   getFrontUrl(name?: string): string | null {
+    console.log('==> get front url : ', this.context);
     this.checkLoaded();
     return this.getUrl(ServerType.FRONT, this.context!.fronts, name);
   }
@@ -73,6 +74,7 @@ export class PlatformEventContext implements ZetaPushContext, Loadable {
     if (name) {
       return this.getBestUrl(base[name]);
     }
+
     return this.getBestUrl(this.getDefault(which, base));
   }
 
@@ -84,6 +86,7 @@ export class PlatformEventContext implements ZetaPushContext, Loadable {
     if (defaultContext) {
       return defaultContext;
     }
+
     trace(`No default ${ServerType.defaultName(which)} from ZetaPush context`);
     return null;
   }
