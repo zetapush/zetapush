@@ -17,17 +17,23 @@ const isValid = (config = {}) => config.platformUrl && config.developerLogin && 
 
 /**
  * Check if the .zetarc file is valid from his path
- * @param {string} json
+ * @param {Object} command
  */
-const checkZetarcValidJson = (json) => {
+const checkZetarcValidJson = (command) => {
+  let content;
   try {
-    JSON.parse(json);
-  } catch (e) {
-    throw {
-      code: `ZETARC_NOT_VALID`,
-      message: `The .zetarc file is an invalid JSON, please check it`,
-      cause: e
-    };
+    content = fs.readFileSync(path.resolve(command.worker, '.zetarc'), 'utf8');
+  } catch {}
+  if (content) {
+    try {
+      JSON.parse(content);
+    } catch (e) {
+      throw {
+        code: `ZETARC_NOT_VALID`,
+        message: `The .zetarc file is an invalid JSON, please check it`,
+        cause: e
+      };
+    }
   }
 };
 
@@ -114,6 +120,10 @@ const fromDefault = async () => {
  */
 const fromFile = async (command) => {
   trace('Try to load conf from filesystem', command.worker);
+
+  // Validate .zetarc file
+  checkZetarcValidJson(command);
+
   return explorer
     .search(command.worker)
     .then((result) => {
@@ -127,8 +137,6 @@ const fromFile = async (command) => {
     });
 };
 
-let isTsLoaderRegistered = false;
-
 /**
  * @param {Object} command
  * @param {Boolean} required
@@ -139,9 +147,6 @@ const load = async (command, required = true) => {
       2) environment variables
       3) from file defined in ${command.worker}/.zetarc`);
   let config;
-
-  // Check if the .zetarc file is valid
-  checkZetarcValidJson(path.join(command.worker, `.zetarc`));
 
   try {
     config = merge(await fromCli(command), await fromEnv(), await fromFile(command), await fromDefault());
