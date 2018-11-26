@@ -79,8 +79,7 @@ program
         console.log({
           declarations
         });
-        // declarations.map((declaration) => run(command, config, declaration))
-        run(command, config, declarations[0]);
+        declarations.map((declaration) => run(command, config, declaration));
       })
       .catch((failure) => {
         warn('Run failed', failure);

@@ -1,8 +1,9 @@
 // Hot Module Replacement
 require('hot-module-replacement')({
   // regexp to decide if module should be ignored; also can be a function accepting string and returning true/false
-  ignore: /node_modules/,
-  ignore: /application.json/
+  ignore(filepath) {
+    return /node_modules/.test(filepath) || /application.json/.test(filepath);
+  }
 });
 // Core
 const EventEmitter = require('events');
