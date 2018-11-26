@@ -22,13 +22,13 @@ let last = Date.now();
  * @param {Object} command
  */
 const load = (command) => {
-  // Check front config
-  checkFrontDirectoryExists(command.name(), command.front, command.serveFront);
-  checkFrontDirHasHtmlFile(command.name(), command.front, command.serveFront);
+  // // Check front config
+  // checkFrontDirectoryExists(command.name(), command.front, command.serveFront);
+  // checkFrontDirHasHtmlFile(command.name(), command.front, command.serveFront);
 
-  // Check worker config
-  checkPackageJsonContainsMainProperty(path.resolve(process.cwd(), 'package.json'));
-  checkMainPropertyOfPackageJsonIsCorrect(path.resolve(process.cwd(), 'package.json'));
+  // // Check worker config
+  // checkPackageJsonContainsMainProperty(path.resolve(process.cwd(), 'package.json'));
+  // checkMainPropertyOfPackageJsonIsCorrect(path.resolve(process.cwd(), 'package.json'));
 
   try {
     const id = cwd(command.worker);

@@ -74,9 +74,13 @@ program
   .description('Run your code')
   .action((command) =>
     createApp(command)
-      .then((config) => Promise.all([config, load(command)]))
-      .then(([config, declaration]) => {
-        run(command, config, declaration);
+      .then((config) => Promise.all([config, load({ worker: './worker-dashbord' }), load({ worker: './worker-api' })]))
+      .then(([config, ...declarations]) => {
+        console.log({
+          declarations
+        });
+        // declarations.map((declaration) => run(command, config, declaration))
+        run(command, config, declarations[0]);
       })
       .catch((failure) => {
         warn('Run failed', failure);

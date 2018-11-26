@@ -1,4 +1,7 @@
-const client = new ZetaPushClient.WeakClient();
+const client = new ZetaPushClient.WeakClient({
+  platformUrl: 'http://hq.zpush.io:9080/zbo/pub/business/',
+  appName: '15jjjisgzq',
+});
 const api = client.createProxyTaskService();
 client.connect().then(() =>
   document.body.classList.add('connected')
