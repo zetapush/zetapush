@@ -1,4 +1,5 @@
 {
+  "name": "@zetapush/example-worker-dashboard",
   "main": "./index.ts",
   "dependencies": {
     "@types/node": "10.12.9",

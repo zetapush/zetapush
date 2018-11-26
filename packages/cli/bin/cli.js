@@ -33,6 +33,7 @@ const createApp = require('../src/commands/createApp');
 const troubleshoot = require('../src/commands/troubleshoot');
 
 const { load } = require('../src/loader/worker');
+const fragments = require('../src/loader/fragments');
 
 ErrorAnalyzer.register(new ConfigLoadIssueAnalyzer());
 ErrorAnalyzer.register(new NetworkIssueAnalyzer());
@@ -60,6 +61,32 @@ program
     'Verbosity level (-v=error+warn+info, -vv=error+warn+info+log, -vvv=error+warn+info+log+trace)',
     increaseVerbosity,
     1
+  );
+
+program
+  .command('run-multiple')
+  .usage('[options]')
+  .option('-p, --project <project>', 'Project root folder', identity, process.cwd())
+  .description('[Experimental] Run your code locally')
+  .action((command) =>
+    createApp(command)
+      .then((config) => Promise.all([config, fragments.load(command)]))
+      .then(([config, fragments]) => ({ ...config, ...fragments }))
+      .then(({ workers, ...config }) =>
+        Promise.all(Object.values(workers).map((worker) => load({ ...command, worker })))
+          .then((loaded) =>
+            Object.entries(workers).map(([id, folder], index) => ({
+              id,
+              folder,
+              declaration: loaded[index]
+            }))
+          )
+          .then((resolved) => ({
+            ...config,
+            workers: resolved
+          }))
+      )
+      .then((config) => console.log('run-multiple', config))
   );
 
 program

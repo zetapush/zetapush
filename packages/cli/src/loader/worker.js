@@ -32,7 +32,9 @@ const load = (command) => {
   // checkMainPropertyOfPackageJsonIsCorrect(path.resolve(process.cwd(), 'package.json'));
 
   try {
-    const id = cwd(command.worker);
+    const _moduleId = path.join(command.project, command.worker);
+    console.log({ _moduleId });
+    const id = cwd(_moduleId);
     let worker = require(id);
     if (module.hot) {
       module.hot.accept(id, (filepath) => {

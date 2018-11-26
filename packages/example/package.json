@@ -6,11 +6,17 @@
     "deploy": "zeta push",
     "start": "zeta run"
   },
+  "zetapush": {
+    "fronts": {
+      "front": "front"
+    },
+    "workers": {
+      "api": "worker-api",
+      "dashboard": "worker-dashboard"
+    }
+  },
   "dependencies": {
-    "@types/node": "10.12.9",
-    "@zetapush/core": "0.35.5",
     "@zetapush/cli": "0.35.5",
-    "@zetapush/platform-legacy": "0.35.5",
     "typescript": "3.1.6"
   }
 }

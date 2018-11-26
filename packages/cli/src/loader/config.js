@@ -22,7 +22,7 @@ const isValid = (config = {}) => config.platformUrl && config.developerLogin && 
 const checkZetarcValidJson = (command) => {
   let content;
   try {
-    content = fs.readFileSync(path.resolve(command.worker, '.zetarc'), 'utf8');
+    content = fs.readFileSync(path.resolve(command.project, '.zetarc'), 'utf8');
   } catch {}
   if (content) {
     try {
@@ -52,7 +52,7 @@ const save = (command, content) =>
         return cleaned;
       }, {});
     };
-    const filepath = path.join(command.worker, '.zetarc');
+    const filepath = path.join(command.project, '.zetarc');
     // Encrypt content before
     const encryted = encrypt(content);
     // Do not persist defaults config value
@@ -77,9 +77,7 @@ const fromEnv = async () => {
     appName: process.env.ZP_SANDBOX_ID,
     developerLogin: process.env.ZP_USERNAME,
     developerPassword: process.env.ZP_PASSWORD,
-    workerServiceId: process.env.ZP_WORKER_SERVICE_ID,
-    npmRegistry: process.env.NPM_REGISTRY,
-    TS_NODE_SKIP_IGNORE: process.env.TS_NODE_SKIP_IGNORE
+    workerServiceId: process.env.ZP_WORKER_SERVICE_ID
   });
 };
 
@@ -94,9 +92,7 @@ const fromCli = async (command) => {
     appName: command.parent.appName,
     developerLogin: command.parent.developerLogin,
     developerPassword: command.parent.developerPassword,
-    workerServiceId: command.parent.ZP_WORKER_SERVICE_ID,
-    npmRegistry: command.registry,
-    TS_NODE_SKIP_IGNORE: command.skipIgnore
+    workerServiceId: command.parent.ZP_WORKER_SERVICE_ID
   });
 };
 
@@ -107,9 +103,7 @@ const fromCli = async (command) => {
 const fromDefault = async () => {
   trace('Using default values');
   return Promise.resolve({
-    platformUrl: DEFAULTS.PLATFORM_URL,
-    npmRegistry: DEFAULTS.NPM_REGISTRY_URL,
-    TS_NODE_SKIP_IGNORE: DEFAULTS.TS_NODE_SKIP_IGNORE
+    platformUrl: DEFAULTS.PLATFORM_URL
   });
 };
 
@@ -119,20 +113,20 @@ const fromDefault = async () => {
  * @return {Promise<ZetaPushConfig>}
  */
 const fromFile = async (command) => {
-  trace('Try to load conf from filesystem', command.worker);
+  trace('Try to load conf from filesystem', command.project);
 
   // Validate .zetarc file
   checkZetarcValidJson(command);
 
   return explorer
-    .search(command.worker)
+    .search(command.project)
     .then((result) => {
-      trace('Configuration loaded from file', command.worker, result);
+      trace('Configuration loaded from file', command.project, result);
       return (result && result.config) || {};
     })
     .then((config) => decrypt(config))
     .catch((e) => {
-      warn('Failed to load conf from filesystem', command.worker);
+      warn('Failed to load conf from filesystem', command.project);
       return {};
     });
 };
@@ -145,7 +139,7 @@ const load = async (command, required = true) => {
   log(`Load and merge configuration with this priority order:
       1) command line arguments
       2) environment variables
-      3) from file defined in ${command.worker}/.zetarc`);
+      3) from file defined in ${command.project}/.zetarc`);
   let config;
 
   try {
