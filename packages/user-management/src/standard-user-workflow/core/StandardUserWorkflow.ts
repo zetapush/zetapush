@@ -1,23 +1,32 @@
 import {
   AccountCreationManager,
   AccountConfirmationManager,
-  AuthenticationManager,
   AccountCreationDetails,
   PendingAccountConfirmation,
   Redirection,
   RedirectionProvider,
-  ConfirmedAccount
+  ConfirmedAccount,
+  AskResetPasswordAccount,
+  ConfirmResetPasswordAccount
 } from '../api';
 import { NoAccountCreatedError } from './exceptions/NoAccountCreatedError';
 import { Credentials, Account } from '../api';
-import { debugObject } from '@zetapush/common';
+import {
+  AskResetPasswordManager,
+  AccountDetailsResetPassword,
+  PendingAskResetPassword,
+  DetailsResetPassword,
+  ConfirmResetPasswordManager
+} from '../api/LostPassword';
 
 export class StandardUserWorkflow {
   constructor(
     private accountCreationManager: AccountCreationManager,
     private accountConfirmationManager: AccountConfirmationManager,
-    private success: RedirectionProvider<ConfirmedAccount>,
-    private failure: RedirectionProvider<Error>
+    private askResetPasswordManager: AskResetPasswordManager,
+    private confirmResetPasswordManager: ConfirmResetPasswordManager,
+    private successConfirmationAccount: RedirectionProvider<ConfirmedAccount>,
+    private failureConfirmationAccount: RedirectionProvider<Error>
   ) {}
 
   async signup(accountDetails: AccountCreationDetails, confirmationRedirection?: Redirection) {
@@ -42,11 +51,11 @@ export class StandardUserWorkflow {
     try {
       const confirmedAccount = await this.accountConfirmationManager.confirm(confirmation);
       // TODO: send welcome message (asynchronously)
-      return await this.success.getRedirection(confirmedAccount);
+      return await this.successConfirmationAccount.getRedirection(confirmedAccount);
     } catch (e) {
       // TODO: log
       console.error(`Failed to confirm account ${confirmation.createdAccount.accountId}. Cause: ${e.toString()}`, e);
-      return await this.failure.getRedirection(e);
+      return await this.failureConfirmationAccount.getRedirection(e);
     }
   }
 
@@ -84,5 +93,45 @@ export class StandardUserWorkflow {
     await client.disconnect();
     
     `;
+  }
+
+  /**
+   * The askResetPassword method let your user asks to reset his password.
+   * The process is the following :
+   * 1) The user asks to reset his password providing his email
+   * 2) A link is sent to his email
+   * 3) When the user click on this link, the user is redirected to a page specified by the developer to change his password
+   * 4) When the user validate the new password, he is redirected to a page specified by the developer
+   *
+   * @param accountDetailsResetPassword Necessary input for reset a password
+   */
+  async askResetPassword(accountDetailsResetPassword: AccountDetailsResetPassword): Promise<PendingAskResetPassword> {
+    try {
+      return await this.askResetPasswordManager.askResetPassword(accountDetailsResetPassword);
+    } catch (e) {
+      console.error(`Failed to ask reset password for ${accountDetailsResetPassword}. Cause: ${e.toString()}`, e);
+      throw e;
+    }
+  }
+
+  /**
+   * After clicking in the link received by email when he asks to reset his password,
+   * the user need to choose his new password. To do this, he needs to type a couple of identicals
+   * password and validate them.
+   *
+   * @param newCoupleOfPassword Couple of new passwords
+   */
+  async confirmResetPassword(detailsResetPassword: DetailsResetPassword): Promise<Account> {
+    try {
+      return await this.confirmResetPasswordManager.confirmResetPassword(detailsResetPassword);
+    } catch (e) {
+      console.error(
+        `Failed to confirm reset password with passwords ${detailsResetPassword.firstPassword} / ${
+          detailsResetPassword.secondPassword
+        }. Cause: ${e.toString()}`,
+        e
+      );
+      throw e;
+    }
   }
 }

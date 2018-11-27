@@ -15,6 +15,14 @@
       "failure-url": "http://www.immersive.fr#account-failure"
     }
   },
+  "reset-password": {
+    "ask": {
+      "base-url": "http://localhost:2999",
+      "email": {
+        "subject": "Please choose a new password"
+      }
+    }
+  },
   "mailjet": {
     "apikey-public": "abb13e7529f0bb01e9768a8068017556",
     "apikey-private": "b84b601427442843f67a8a91b2c183bd"
