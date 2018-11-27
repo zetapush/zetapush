@@ -29,11 +29,11 @@ const { identity } = require('../src/utils/validator');
 
 const push = require('../src/commands/push');
 const run = require('../src/commands/run');
+const runProject = require('../src/commands/runProject');
 const createApp = require('../src/commands/createApp');
 const troubleshoot = require('../src/commands/troubleshoot');
 
 const { load } = require('../src/loader/worker');
-const fragments = require('../src/loader/fragments');
 
 ErrorAnalyzer.register(new ConfigLoadIssueAnalyzer());
 ErrorAnalyzer.register(new NetworkIssueAnalyzer());
@@ -64,29 +64,17 @@ program
   );
 
 program
-  .command('run-multiple')
+  .command('run-project')
   .usage('[options]')
   .option('-p, --project <project>', 'Project root folder', identity, process.cwd())
   .description('[Experimental] Run your code locally')
   .action((command) =>
     createApp(command)
-      .then((config) => Promise.all([config, fragments.load(command)]))
-      .then(([config, fragments]) => ({ ...config, ...fragments }))
-      .then(({ workers, ...config }) =>
-        Promise.all(Object.values(workers).map((worker) => load({ ...command, worker })))
-          .then((loaded) =>
-            Object.entries(workers).map(([id, folder], index) => ({
-              id,
-              folder,
-              declaration: loaded[index]
-            }))
-          )
-          .then((resolved) => ({
-            ...config,
-            workers: resolved
-          }))
-      )
-      .then((config) => console.log('run-multiple', config))
+      .then((config) => runProject(command, config))
+      .catch((failure) => {
+        warn('Run project failed', failure);
+        displayHelp(failure);
+      })
   );
 
 program
@@ -101,12 +89,9 @@ program
   .description('Run your code')
   .action((command) =>
     createApp(command)
-      .then((config) => Promise.all([config, load({ worker: './worker-dashbord' }), load({ worker: './worker-api' })]))
-      .then(([config, ...declarations]) => {
-        console.log({
-          declarations
-        });
-        declarations.map((declaration) => run(command, config, declaration));
+      .then((config) => Promise.all([config, load(command)]))
+      .then(([config, declaration]) => {
+        run(command, config, declaration);
       })
       .catch((failure) => {
         warn('Run failed', failure);
