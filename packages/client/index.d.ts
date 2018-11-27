@@ -130,6 +130,10 @@ type ProxyService = {
   [method: string]: <Input, Output>(parameters?: Input) => Promise<Output>;
 }
 
+type ProxyTaskService = {
+  [method: string]: <Input extends any[], Output>(...parameters: Input) => Promise<Output>;
+}
+
 export interface ClientOptions extends Options {
   authentication(): AbstractHandshake;
 }
@@ -176,7 +180,7 @@ export class Client {
   createAsyncService<T>(declaration: ServiceDeclaration<T>): T;
   createProxyMacroService(parameters?: ProxyServiceParameters): ProxyService;
   createProxyService(parameters?: ProxyServiceParameters): ProxyService;
-  createProxyTaskService(parameters?: ProxyTaskServiceParameters): ProxyService;
+  createProxyTaskService(parameters?: ProxyTaskServiceParameters): ProxyTaskService;
   disconnect(): Promise<void>;
   isConnected(): boolean;
   getAppName(): string;
