@@ -12,6 +12,6 @@ export interface AccountConfirmationContext extends Variables {
 export interface ConfirmationUrlProvider {
   getUrl(context: AccountConfirmationContext): Promise<string>;
 }
-export abstract class ConfirmationUrlProviderInjectable {
+export abstract class ConfirmationUrlProviderInjectable implements ConfirmationUrlProvider {
   abstract getUrl(context: AccountConfirmationContext): Promise<string>;
 }

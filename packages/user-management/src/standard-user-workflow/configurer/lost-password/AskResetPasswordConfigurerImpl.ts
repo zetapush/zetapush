@@ -93,7 +93,7 @@ export class AskResetPasswordConfigurerImpl extends AbstractParent<ResetPassword
         [
           UserRepositoryInjectable,
           TokenManagerInjectable,
-          MessageSenderInjectable,
+          scopedDependency('ask-reset-password-email.sender', MessageSenderInjectable),
           ResetPasswordUrlProviderInjectable,
           scopedDependency('ask-reset-password-email.html', TemplateManagerInjectable),
           scopedDependency('ask-reset-password-email.text', TemplateManagerInjectable)

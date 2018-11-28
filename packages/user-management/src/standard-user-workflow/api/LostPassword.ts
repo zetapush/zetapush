@@ -57,13 +57,13 @@ export interface ResetPasswordContext extends Variables {
 
 export interface PendingAskResetPassword {
   account: Account;
-  token: string;
+  token: Token;
 }
 
 export interface ResetPasswordUrlProvider {
   getUrl(context: ResetPasswordContext): Promise<string>;
 }
-export abstract class ResetPasswordUrlProviderInjectable {
+export abstract class ResetPasswordUrlProviderInjectable implements ResetPasswordUrlProvider {
   abstract getUrl(context: ResetPasswordContext): Promise<string>;
 }
 

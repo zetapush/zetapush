@@ -19,7 +19,7 @@ describe(`As developer with
 
   describe(`Nominal case with correct process`, () => {
     describe(`Run version`, () => {
-      fit(
+      it(
         `The user should has a new password at the end of the process`,
         async () => {
           let resultOfSignUp = null;

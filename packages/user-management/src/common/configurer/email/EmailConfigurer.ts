@@ -38,14 +38,14 @@ export class EmailConfigurerImpl<P> extends AbstractParent<P> implements EmailCo
   }
 
   smtp(): SmtpEmailConfigurer<EmailConfigurer<P>> {
-    this.smtpConfigurer = new SmtpEmailConfigurerImpl(this, this.defaults, createTransport);
+    this.smtpConfigurer = new SmtpEmailConfigurerImpl(this, this.defaults, createTransport, this.scope.push('sender'));
     return this.smtpConfigurer;
   }
   ovh(): OvhEmailConfigurer<EmailConfigurer<P>> {
     throw new Error('Method not implemented.');
   }
   mailjet(): MailjetEmailConfigurer<EmailConfigurer<P>> {
-    this.mailjetConfigurer = new MailjetEmailConfigurerImpl(this, this.defaults);
+    this.mailjetConfigurer = new MailjetEmailConfigurerImpl(this, this.defaults, this.scope.push('sender'));
     return this.mailjetConfigurer;
   }
 

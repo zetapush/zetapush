@@ -1,5 +1,11 @@
 import { given, autoclean, runInWorker } from '@zetapush/testing';
-import { SmtpEmailConfigurerImpl, MessageSender, MessageSenderInjectable } from '../../../../../src';
+import {
+  SmtpEmailConfigurerImpl,
+  MessageSender,
+  MessageSenderInjectable,
+  Scope,
+  scopedDependency
+} from '../../../../../src';
 import { mock } from 'ts-mockito';
 import nodemailerMock from 'nodemailer-mock';
 
@@ -26,7 +32,7 @@ describe(`SmtpHttpEmailSender`, () => {
           /**/ .testModule(async () => {
             // create configurer
 
-            const configurer = new SmtpEmailConfigurerImpl(parent, {}, createAndGetTransport);
+            const configurer = new SmtpEmailConfigurerImpl(parent, {}, createAndGetTransport, new Scope('testing'));
             configurer
               .enable(true)
               .host('smtp-host')
@@ -38,7 +44,7 @@ describe(`SmtpHttpEmailSender`, () => {
               providers: await configurer.getProviders()
             };
           })
-          /**/ .dependencies(MessageSenderInjectable)
+          /**/ .dependencies(scopedDependency('testing', MessageSenderInjectable))
           /**/ .and()
           .apply(this);
       });
