@@ -1,0 +1,21 @@
+{
+  "organization": {
+    "name": "ZetaPush"
+  },
+  "email": {
+    "from": "celtia@zetapush.com"
+  },
+  "registration": {
+    "confirmation": {
+      "email": {
+        "subject": "Please confirm your account registration"
+      },
+      "success-url": "http://localhost:3000/#login",
+      "failure-url": "http://localhost:3000/#confirmation-failed"
+    }
+  },
+  "mailjet": {
+    "apikey-public": "",
+    "apikey-private": ""
+  }
+}

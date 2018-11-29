@@ -56,3 +56,7 @@ export enum StandardUrlNames {
   CANONICAL = 'CANONICAL',
   USER_FRIENDLY = 'USER_FRIENDLY'
 }
+
+export const ZETAPUSH_HTTP_SERVER = 'ZETAPUSH_HTTP_SERVER';
+
+export const CURRENT_WORKER_NAME = undefined;

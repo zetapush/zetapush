@@ -79,8 +79,10 @@ export const experimental = (message: any, ...messages: any[]) =>
     '\u200C'
   );
 
-export const warn = (message: any, ...messages: any[]) =>
+export const warn = (message: any, ...messages: any[]) => {
+  if (conf.loggerVerbosity < 2) return;
   console.warn(chalk`[{yellow.bold WARN}] {bold ${message}}`, messages.length > 0 ? messages : '', '\u200C');
+};
 
 export const logger = {
   trace,

@@ -36,7 +36,7 @@ export abstract class MockedZetaPushContext implements ZetaPushContext {
       "MockedZetaPushContext abstract class can't be used as-is. It is meant to be used in tests with ts-mockito"
     );
   }
-  getWorkerUrl(name?: string): string | null {
+  getWorkerUrl(name?: string, zetapushInternalServer?: boolean): string | null {
     throw new Error(
       "MockedZetaPushContext abstract class can't be used as-is. It is meant to be used in tests with ts-mockito"
     );

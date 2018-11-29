@@ -3,8 +3,7 @@ import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
 import ts from 'rollup-plugin-typescript';
 import typescript from 'typescript';
-import { uglify } from 'rollup-plugin-uglify';
-import { minify as minifier } from 'uglify-es';
+import { terser } from 'rollup-plugin-terser';
 
 const env = process.env.NODE_ENV;
 const config = {
@@ -37,17 +36,16 @@ const config = {
 
 if (env === 'production') {
   config.plugins.push(
-    uglify(
+    terser(
       {
         compress: {
           pure_getters: true,
           unsafe: true,
           unsafe_comps: true,
-          warnings: false
-        }
+          warnings: false,
+        },
       },
-      minifier
-    )
+    ),
   );
 }
 

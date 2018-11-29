@@ -9,7 +9,7 @@ const commander = require('commander');
 const spawn = require('cross-spawn');
 const fs = require('fs-extra');
 
-const { createAccount, DEFAULTS, getDeveloperLogin, getDeveloperPassword, logger } = require('@zetapush/cli');
+const { DEFAULTS, getDeveloperLogin, getDeveloperPassword, logger } = require('@zetapush/cli');
 
 logger.setVerbosity(1);
 
@@ -23,6 +23,8 @@ const pkg = require('./package.json');
 // These files should be allowed to remain on a failed install,
 // but then silently removed during the next create.
 const errorLogFilePatterns = ['npm-debug.log', 'yarn-error.log', 'yarn-debug.log'];
+
+let projectName;
 
 const program = new commander.Command(pkg.name)
   .version(pkg.version)
@@ -45,18 +47,31 @@ const program = new commander.Command(pkg.name)
   .arguments('<project-directory>')
   .usage(`${chalk.green('<project-directory>')} [options]`)
   .action((name, command) => {
+    // Store project name
+    projectName = name;
     const version = getCurrentVersion(command);
     validateOptions(command)
-      .then((config) => createAccount(config))
       .then((zetarc) => {
         createApp(name, zetarc, version, command);
       })
       .catch((failure) => {
-        logger.error('createAccount', failure);
+        logger.error('validateOptions', failure);
       });
   })
   .on('--help', () => {})
   .parse(process.argv);
+
+// Handle missing mandatory arguments
+if (typeof projectName === 'undefined') {
+  console.error('Please specify the project directory:');
+  console.log(`  ${chalk.cyan(program.name())} ${chalk.green('<project-directory>')}`);
+  console.log();
+  console.log('For example:');
+  console.log(`  ${chalk.cyan(program.name())} ${chalk.green('my-zetapush-app')}`);
+  console.log();
+  console.log(`Run ${chalk.cyan(`${program.name()} --help`)} to see all options.`);
+  process.exit(1);
+}
 
 function getCurrentVersion(command) {
   if (!command.forceCurrentVersion) {
@@ -233,13 +248,16 @@ function init(appPath, appName, originalDirectory, command) {
   console.log(chalk.cyan(`  npm run start`));
   console.log('    Starts the development server.');
   console.log();
+  console.log(chalk.cyan(`  npm run start -- --serve-front`));
+  console.log('    Starts the development server and runs local HTTP server to serve your front code');
+  console.log();
   console.log(chalk.cyan(`  npm run deploy`));
-  console.log('    Deploy your application on ZetaPush platform.');
+  console.log('    Deploys your application on ZetaPush platform.');
   console.log();
   console.log('We suggest that you begin by typing:');
   console.log();
   console.log(chalk.cyan('  cd'), cdpath);
-  console.log(`  ${chalk.cyan(`npm run start`)}`);
+  console.log(`  ${chalk.cyan(`npm run start -- --serve-front`)}`);
   console.log();
   console.log('Enjoy, Celtia is on your back !');
 }
@@ -297,7 +315,7 @@ function run(root, appName, originalDirectory, version, command) {
 
 /**
  * Install all dependencies
- * @param {*} dependencies 
+ * @param {*} dependencies
  */
 function install(dependencies) {
   const command = 'npm';

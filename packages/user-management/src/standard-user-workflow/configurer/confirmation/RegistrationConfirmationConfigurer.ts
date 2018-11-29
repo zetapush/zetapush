@@ -102,7 +102,7 @@ export class RegistrationConfirmationConfigurerImpl extends AbstractParent<Regis
   async getProviders(): Promise<Provider[]> {
     const providerRegistry = new SimpleProviderRegistry();
     providerRegistry.required(
-      MessageSenderInjectable,
+      scopedDependency('confirmation-email.sender', MessageSenderInjectable),
       new MissingMandatoryConfigurationError(
         `Confirmation is enabled but neither email nor sms is enabled to send confirmation message`
       )
@@ -131,7 +131,7 @@ export class RegistrationConfirmationConfigurerImpl extends AbstractParent<Regis
         [
           UserRepositoryInjectable,
           TokenManagerInjectable,
-          MessageSenderInjectable,
+          scopedDependency('confirmation-email.sender', MessageSenderInjectable),
           ConfirmationUrlProviderInjectable,
           scopedDependency('confirmation-email.html', TemplateManagerInjectable),
           scopedDependency('confirmation-email.text', TemplateManagerInjectable)

@@ -58,7 +58,7 @@ describe(`TemplatedEmail`, () => {
               };
             })
             /**/ .dependenciesWithScope(() => [
-              MessageSenderInjectable,
+              scopedDependency('foo.sender', MessageSenderInjectable),
               scopedDependency('foo.html', TemplateManagerInjectable),
               scopedDependency('foo.text', TemplateManagerInjectable)
             ])

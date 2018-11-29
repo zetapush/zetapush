@@ -31,7 +31,14 @@ export class AccountIdAssociationLoadError extends LegacySimpleError {
   }
 }
 
+export class UserNotExists extends LegacySimpleError {
+  constructor(message: string, public login: string, cause?: Error) {
+    super(message, cause);
+  }
+}
+
 export const USER_LEGACY_ADAPTER_TABLE_SIMPLE_ASSOCIATIONS = 'LegacySimpleAssociations';
+export const USER_LEGACY_ADAPTER_TABLE_LOGIN_ASSOCIATION = 'LegacyLoginAssociation';
 export const USER_LEGACY_ADAPTER_COLUMN_DATA = 'data';
 
 export class LegacyAdapterUserRepositoryBootstrapError extends BootstrapError {}
@@ -188,7 +195,7 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
    * Get the login of a user from his ID
    * @param accountId unique ID of a user
    */
-  private async getLoginFromAccountId(accountId: string): Promise<string> {
+  async getLoginFromAccountId(accountId: string): Promise<string> {
     let columns;
     try {
       const { result } = await this.gda.get({
@@ -207,6 +214,41 @@ export class LegacyAdapterUserRepository implements Bootstrappable, UserReposito
     }
 
     return columns[USER_LEGACY_ADAPTER_COLUMN_DATA].login;
+  }
+
+  /**
+   * Retrieve the account object from his login.
+   * Used for the lost password feature
+   * @param login Login of the user
+   */
+  async getAccountFromLogin(login: string): Promise<Account> {
+    try {
+      const userInfo = await this.simple.checkAccount({ key: login });
+      if (userInfo && userInfo.status && userInfo.fields) {
+        return {
+          accountStatus: userInfo.status.data,
+          accountId: userInfo.fields.accountId,
+          profile: userInfo.fields.userProfile
+        };
+      } else {
+        throw new UserNotExists(`This user with the login "${login}" doesn't exists`, login);
+      }
+    } catch (e) {
+      throw new UserNotExists(`This user with the login "${login}" doesn't exists`, login, e);
+    }
+  }
+
+  /**
+   * Retrieve the account object from the specified accountId
+   * @param accountId accountId of the user
+   */
+  async getAccountFromAccountId(accountId: string): Promise<Account> {
+    try {
+      const login = await this.getLoginFromAccountId(accountId);
+      return await this.getAccountFromLogin(login);
+    } catch (e) {
+      throw new AccountIdAssociationLoadError(`Failed to retrieve userKey/login from accountId`, accountId, e);
+    }
   }
 
   /**

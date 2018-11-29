@@ -703,7 +703,6 @@ module.exports = function CometD(name) {
 
     function _delayedHandshake(delay) {
         _setStatus('handshaking');
-
         // We will call _handshake() which will reset _clientId, but we want to avoid
         // that between the end of this method and the call to _handshake() someone may
         // call publish() (or other methods that call _queueSend()).

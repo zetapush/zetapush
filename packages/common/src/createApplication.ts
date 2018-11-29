@@ -1,5 +1,12 @@
 import { fetch } from './utils/network';
 import { Config } from './common-types';
+import { BaseError } from './error';
+
+export class AccountNotActive extends BaseError {
+  constructor(message: string, public argumentName: string, public argumentValue: string, public cause?: Error) {
+    super(message);
+  }
+}
 
 /**
  * Get prefered cluster
@@ -25,23 +32,32 @@ const whoami = (config: Config) => fetch({ config, pathname: 'auth/whoami', debu
  * @param {Object} orga
  * @param {Object} cluster
  */
-const create = (config: Config, orga: any, cluster: any) =>
-  fetch({
+const create = (config: Config, me: any, cluster: any) => {
+  if (me.status !== 'ACTIVE') {
+    throw new AccountNotActive(
+      `This account is not active. Please validate it (You have received an email).`,
+      'email',
+      me.email
+    );
+  }
+
+  return fetch({
     config,
     method: 'POST',
     pathname: 'orga/business/create',
     body: JSON.stringify({
-      orgaId: orga.id,
+      orgaId: me.orga.id,
       cluster: cluster.id,
       name: `app@${getNameSuffix()}`,
       description: getDescription()
     }),
     debugName: 'createApplication'
   });
+};
 
 export const createApplication = (config: Config) =>
   Promise.all([whoami(config), getPreferedCluster(config)])
-    .then(([me, cluster]: any[]) => create(config, me.orga, cluster))
+    .then(([me, cluster]: any[]) => create(config, me, cluster))
     .then((application: any) => ({
       ...config,
       appName: application.businessId,
