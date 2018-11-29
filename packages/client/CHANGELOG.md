@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.36.0"></a>
+# [0.36.0](https://github.com/zetapush/zetapush/compare/v0.35.5...v0.36.0) (2018-11-29)
+
+
+### Bug Fixes
+
+* **client:** remove queued subscriptions listeners on connection broken ([a1b9cbb](https://github.com/zetapush/zetapush/commit/a1b9cbb))
+* **typings:** support new ProxyTaskService definition ([c9a6202](https://github.com/zetapush/zetapush/commit/c9a6202))
+
+
+
+
 <a name="0.35.5"></a>
 ## [0.35.5](https://github.com/zetapush/zetapush/compare/v0.35.4...v0.35.5) (2018-10-30)
 

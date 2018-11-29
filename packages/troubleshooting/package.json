@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/troubleshooting",
-  "version": "0.35.5",
+  "version": "0.36.0",
   "description": "Zeta Push Next",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -22,7 +22,7 @@
     "test:ci+coverage": "rimraf coverage .nyc_output && nyc node_modules/.bin/ts-node src/index.ts"
   },
   "dependencies": {
-    "@zetapush/common": "0.35.5",
+    "@zetapush/common": "0.36.0",
     "axios": "0.18.0",
     "default-gateway": "3.0.1",
     "execa": "1.0.0",
@@ -38,8 +38,8 @@
     "rollup-plugin-commonjs": "9.2.0",
     "rollup-plugin-json": "3.1.0",
     "rollup-plugin-node-resolve": "3.4.0",
-    "rollup-plugin-typescript": "1.0.0",
     "rollup-plugin-terser": "3.0.0",
+    "rollup-plugin-typescript": "1.0.0",
     "rollup-watch": "4.3.1",
     "ts-node": "7.0.1",
     "typescript": "3.1.6"
