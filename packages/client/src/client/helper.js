@@ -326,6 +326,15 @@ export class ClientHelper {
    * Notify listeners when connection is broken
    */
   connectionBroken() {
+    // Clean queue subscriptions
+    this.subscribeQueue.forEach((queued) => {
+      for (let method in queued.subscriptions) {
+        if (queued.subscriptions.hasOwnProperty(method)) {
+          queued.subscriptions[method] = void 0;
+        }
+      }
+    });
+    // Notify listeners
     this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
       listener.onConnectionBroken();
     });
