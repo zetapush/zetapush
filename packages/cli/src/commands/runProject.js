@@ -38,6 +38,12 @@ const runProject = (command, config) =>
           workers: resolved
         }))
     )
-    .then((config) => console.log('run-project', config));
+    .then((config) => console.log('run-project', config))
+    .then(() => /** TODO: Construire une liste prédictible des ports à utiliser pour chaque worker et front */ config)
+    .then(() => /** TODO: Résoudre le graphe d'injection de dépendance pour chaque worker */ config)
+    .then(() => /** TODO: Provisioning unique de l'ensemble des workers */ config)
+    .then(() => /** TODO: Register workers */ config)
+    .then(() => /** TODO: Bootstrap */ config)
+    .then(() => /** TODO: Start fronts */ config);
 
 module.exports = runProject;
