@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/common",
-  "version": "0.37.0",
+  "version": "0.37.1",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-common.js",
   "main": "lib/index.js",
@@ -28,7 +28,7 @@
     "test:ci": "cross-env TS_NODE_PROJECT=tsconfig.test.json node -r ts-node/register node_modules/jasmine/bin/jasmine.js"
   },
   "dependencies": {
-    "@zetapush/core": "0.37.0",
+    "@zetapush/core": "0.37.1",
     "aes-js": "3.1.2",
     "axios": "0.18.0",
     "core-js": "2.5.7",
