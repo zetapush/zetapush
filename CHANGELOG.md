@@ -3,6 +3,36 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.37.0"></a>
+# [0.37.0](https://github.com/zetapush/zetapush/compare/v0.35.5...v0.37.0) (2018-11-29)
+
+
+### Bug Fixes
+
+* **cli:** update zetarc validation process ([1494b49](https://github.com/zetapush/zetapush/commit/1494b49))
+* **client:** remove queued subscriptions listeners on connection broken ([a1b9cbb](https://github.com/zetapush/zetapush/commit/a1b9cbb))
+* **http:** differentiate custom http server url from zetapush http server url ([6138269](https://github.com/zetapush/zetapush/commit/6138269))
+* **http:** remove [@zetapush](https://github.com/zetapush) prefix ([0f15923](https://github.com/zetapush/zetapush/commit/0f15923))
+* **http:** remove [@zetapush](https://github.com/zetapush) prefix ([7876656](https://github.com/zetapush/zetapush/commit/7876656))
+* **Integration:** add typescript and ts-node dependencies ([9ea927b](https://github.com/zetapush/zetapush/commit/9ea927b))
+* **Livereload:** avoid error when update "application.json" file (livereload issue) ([b6dc96d](https://github.com/zetapush/zetapush/commit/b6dc96d)), closes [#219](https://github.com/zetapush/zetapush/issues/219)
+* **log:** purge process output stream before spinner stop ([69a3fa0](https://github.com/zetapush/zetapush/commit/69a3fa0)), closes [#151](https://github.com/zetapush/zetapush/issues/151)
+* **Troubleshooting:** add correct error message for bad .zetarc file format (JSON) ([6ed4788](https://github.com/zetapush/zetapush/commit/6ed4788))
+* **Troubleshooting:** fix troubleshooting displayer ([c0d4850](https://github.com/zetapush/zetapush/commit/c0d4850))
+* **typings:** support new ProxyTaskService definition ([c9a6202](https://github.com/zetapush/zetapush/commit/c9a6202))
+
+
+### Features
+
+* **cli:** handle missing mandatory arguments ([f554f1c](https://github.com/zetapush/zetapush/commit/f554f1c))
+* **config:** clean defaults properties from serialization process ([5eacc77](https://github.com/zetapush/zetapush/commit/5eacc77))
+* **reset-password:** separate senders between confirmation and reset password ([0aff35a](https://github.com/zetapush/zetapush/commit/0aff35a))
+* **Troubleshooting:** add error management for worker configuration ([690719a](https://github.com/zetapush/zetapush/commit/690719a))
+* **Troubleshooting:** add troubleshooting when front folder missing ([106c62d](https://github.com/zetapush/zetapush/commit/106c62d))
+
+
+
+
 <a name="0.36.0"></a>
 # [0.36.0](https://github.com/zetapush/zetapush/compare/v0.35.5...v0.36.0) (2018-11-29)
 
