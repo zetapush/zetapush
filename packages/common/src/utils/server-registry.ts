@@ -1,7 +1,7 @@
 import { trace } from './log';
 
 export enum ServerType {
-  WORKER = 'worker',
+  WORKER = 'queue_0', // FIXME: temporary hack until multiple workers are fully supported
   FRONT = 'front'
 }
 
@@ -9,7 +9,7 @@ export namespace ServerType {
   export function defaultFolderName(type: ServerType) {
     switch (type) {
       case ServerType.WORKER:
-        return 'worker';
+        return 'queue_0'; // FIXME: temporary hack until multiple workers are fully supported
       case ServerType.FRONT:
         return 'front';
     }
@@ -17,7 +17,7 @@ export namespace ServerType {
   export function defaultName(type: ServerType) {
     switch (type) {
       case ServerType.WORKER:
-        return 'worker';
+        return 'queue_0'; // FIXME: temporary hack until multiple workers are fully supported
       case ServerType.FRONT:
         return 'front';
     }

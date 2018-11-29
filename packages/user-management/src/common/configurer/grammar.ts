@@ -6,6 +6,7 @@ import { AxiosInstance } from 'axios';
 import { UserRepository } from '../api/User';
 import { ConfirmationUrlProvider, AccountConfirmationContext } from '../../standard-user-workflow/api/Confirmation';
 import { Provider } from '@zetapush/core';
+import { ResetPasswordUrlProvider, ResetPasswordContext } from '../../standard-user-workflow/api/LostPassword';
 
 export interface And<P> {
   /**
@@ -307,21 +308,29 @@ export interface RegistrationConfirmationConfigurer extends And<RegistrationConf
 
   token(): TokenManagerConfigurer<RegistrationConfirmationConfigurer>;
 }
-
-//==================== account login ====================//
-
-export interface AuthenticationConfigurer extends And<StandardUserWorkflowConfigurer> {
-  loginPassword(): LoginPasswordAuthenticationConfigurer;
-}
-
-export interface LoginPasswordAuthenticationConfigurer {}
-
 //==================== account password reset ====================//
 
-export interface LostPasswordConfigurer extends And<AccountConfigurer> {
+export interface LostPasswordConfigurer extends And<StandardUserWorkflowConfigurer> {
   reset(): ResetPasswordConfigurer;
 }
 
-export interface ResetPasswordConfigurer extends And<AccountConfigurer> {
-  email(): EmailConfigurer<ResetPasswordConfigurer>;
+export interface ResetPasswordConfigurer extends And<LostPasswordConfigurer> {
+  ask(): AskResetPasswordConfigurer;
+  confirm(): ConfirmResetPasswordConfigurer;
+  token(): TokenManagerConfigurer<ResetPasswordConfigurer>;
 }
+
+export interface AskResetPasswordConfigurer extends And<ResetPasswordConfigurer> {
+  email(): EmailConfigurer<AskResetPasswordConfigurer>;
+  url(urlProvider: ResetPasswordUrlProvider): AskResetPasswordConfigurer;
+  url(func: (context: ResetPasswordContext) => Promise<string>): AskResetPasswordConfigurer;
+  url(askResetPasswordUrl: string): AskResetPasswordConfigurer;
+}
+
+export interface ConfirmResetPasswordConfigurer extends And<ResetPasswordConfigurer> {}
+
+//==================== account authentication ====================//
+
+export interface AuthenticationConfigurer extends And<StandardUserWorkflowConfigurer> {}
+
+export interface LoginPasswordAuthenticationConfigurer {}

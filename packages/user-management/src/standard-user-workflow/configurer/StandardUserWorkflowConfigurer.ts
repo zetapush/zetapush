@@ -15,16 +15,27 @@ import {
   AccountCreationManager,
   RedirectionProviderInjectable,
   RedirectionProvider,
-  ConfirmedAccount
+  ConfirmedAccount,
+  AskResetPasswordAccount,
+  ConfirmResetPasswordAccount,
+  Account
 } from '../api';
 import { ConfirmationUrlHttpHandler } from '../core/account/confirmation/ConfirmationUrlHttpHandler';
 import { HttpServerInjectable, HttpServer, ExpressServerConfigurer } from '@zetapush/http-server';
 import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
 import { AuthenticationConfigurerImpl } from '../configurer/account/AuthenticationConfigurerImpl';
+import { LostPasswordConfigurerImpl } from './lost-password';
+import {
+  AskResetPasswordManagerInjectable,
+  ConfirmResetPasswordManagerInjectable,
+  AskResetPasswordManager,
+  ConfirmResetPasswordManager
+} from '../api/LostPassword';
 
 export class StandardUserWorkflowConfigurerImpl implements StandardUserWorkflowConfigurer, Configurer {
   private registrationConfigurer?: RegistrationConfigurerImpl;
   private authenticationConfigurer?: AuthenticationConfigurerImpl;
+  private lostPasswordConfigurer?: LostPasswordConfigurerImpl;
 
   constructor(private properties: ConfigurationProperties, private zetapushContext: ZetaPushContext) {}
 
@@ -39,26 +50,41 @@ export class StandardUserWorkflowConfigurerImpl implements StandardUserWorkflowC
   }
 
   lostPassword(): LostPasswordConfigurer {
-    throw new Error('Not implemented');
+    this.lostPasswordConfigurer = new LostPasswordConfigurerImpl(this, this.properties, this.zetapushContext);
+    return this.lostPasswordConfigurer;
   }
 
   async getProviders(): Promise<Provider[]> {
     const providerRegistry = new SimpleProviderRegistry();
+    providerRegistry.registerConfigurer(this.lostPasswordConfigurer);
+
     await providerRegistry.registerConfigurer(this.registrationConfigurer, this.authenticationConfigurer);
     providerRegistry.registerFactory(
       StandardUserWorkflow,
       [
         AccountCreationManagerInjectable,
         AccountConfirmationManagerInjectable,
+        AskResetPasswordManagerInjectable,
+        ConfirmResetPasswordManagerInjectable,
         scopedDependency('confirmation.success', RedirectionProviderInjectable),
         scopedDependency('confirmation.failure', RedirectionProviderInjectable)
       ],
       (
         creationManager: AccountCreationManager,
         confirmationManager: AccountConfirmationManager,
-        success: RedirectionProvider<ConfirmedAccount>,
-        failure: RedirectionProvider<Error>
-      ) => new StandardUserWorkflow(creationManager, confirmationManager, success, failure)
+        askResetPasswordManager: AskResetPasswordManager,
+        confirmResetPasswordManager: ConfirmResetPasswordManager,
+        successConfirmationAccount: RedirectionProvider<ConfirmedAccount>,
+        failureConfirmationAccount: RedirectionProvider<Error>
+      ) =>
+        new StandardUserWorkflow(
+          creationManager,
+          confirmationManager,
+          askResetPasswordManager,
+          confirmResetPasswordManager,
+          successConfirmationAccount,
+          failureConfirmationAccount
+        )
     );
     // TODO: should only provide Http handler if confirmation url configured and points to zetapush ?
     // TODO: this should be imported through modules

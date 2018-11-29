@@ -1,31 +1,15 @@
-import { Injectable, Context, Module } from '@zetapush/core';
+import { Module } from '@zetapush/core';
+import {
+  StandardUserManagementModule,
+  StandardUserWorkflow,
+  ConfirmationUrlHttpHandler
+} from '@zetapush/user-management';
 
-import { Calendar } from './calendar';
-import { Storage } from './storage';
-import { LoggerConfig } from './logger';
-
-@Injectable()
-export class Api {
-  requestContext!: Context;
-  constructor(
-    private storage: Storage,
-    private calendar: Calendar,
-    config: LoggerConfig
-    ) {}
-  add(item: any) {
-    return this.storage.push(item);
+@Module({
+  imports: [StandardUserManagementModule],
+  expose: {
+    user: StandardUserWorkflow,
+    http: ConfirmationUrlHttpHandler
   }
-  list() {
-    return this.storage.list();
-  }
-  hello() {
-    this.requestContext.logger.debug('hello');
-    return `Hello ${this.requestContext.owner} from TypeScript ${this.calendar.getNow()}`;
-  }
-  reduce(list: number[]) {
-    return list.reduce((cumulator, value) => cumulator + value, 0);
-  }
-}
-
-@Module({ expose: Api })
-export default class ApiModule {}
+})
+export default class Api {}

@@ -1,11 +1,6 @@
 import 'jasmine';
 
-import {
-  LegacyAdapterUserRepository,
-  StandardAccountStatus,
-  LegacyLoginAlreadyUsedError,
-  LegacySimpleError
-} from '../../../../src';
+import { LegacyAdapterUserRepository, StandardAccountStatus, LegacyLoginAlreadyUsedError } from '../../../../src';
 import { IllegalStateError } from '../../../../src/common/api';
 
 describe(`LegacyAdapterUserRepository`, () => {

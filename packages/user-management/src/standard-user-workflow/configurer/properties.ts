@@ -14,6 +14,13 @@ export enum RegistrationConfirmationPropertyKeys {
   AccountConfirmationFailedRedirectionUrl = 'registration.confirmation.failure-url'
 }
 
+export enum ResetPasswordPropertiesKeys {
+  BaseUrl = 'reset-password.ask.base-url',
+  AskUrl = 'reset-password.ask.url',
+  EmailFrom = 'reset-password.ask.email.from',
+  EmailSubject = 'reset-password.ask.email.subject'
+}
+
 export enum MailjetPropertyKey {
   Enable = 'mailjet.enable',
   Url = 'mailjet.url',

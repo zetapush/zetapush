@@ -131,6 +131,13 @@ export interface AccountConfirmationTemplateVariables extends Variables {
   readonly confirmationUrl: string;
 }
 
+export interface AccountResetPasswordTemplateVariables extends Variables {
+  readonly account: Account;
+  readonly token: Token;
+  readonly properties: ConfigurationProperties;
+  readonly zetapushContext: ZetaPushContext;
+}
+
 /**
  * The information about the account of a user.
  * The account has:
@@ -211,6 +218,10 @@ export interface AccountCreationDetails {
  * @see Account
  */
 export interface ConfirmedAccount extends Account {}
+
+export interface AskResetPasswordAccount extends Account {}
+
+export interface ConfirmResetPasswordAccount extends Account {}
 
 /**
  * Returned when you ask an account confirmation
