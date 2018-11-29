@@ -2,10 +2,9 @@ import { ZetaPushContext } from '@zetapush/core';
 import { ResolvedConfig } from '../common-types';
 import { LocalServerRegistry, ServerType, ServerInfo } from '../utils/server-registry';
 import { trace } from '../utils/log';
+import { ZETAPUSH_HTTP_SERVER } from './context';
 
 export const defaultLocalUrlProvider = (info: ServerInfo) => `http://localhost:${info.port}`;
-
-export const ZETAPUSH_HTTP_SERVER = 'ZETAPUSH_HTTP_SERVER';
 
 export class LocalServerRegistryZetaPushContext implements ZetaPushContext {
   constructor(
@@ -26,7 +25,10 @@ export class LocalServerRegistryZetaPushContext implements ZetaPushContext {
     return this.getUrl(ServerType.FRONT, name);
   }
 
-  getWorkerUrl(name?: string | undefined): string | null {
+  getWorkerUrl(name?: string | undefined, zetapushInternalServer?: boolean): string | null {
+    if (zetapushInternalServer) {
+      return this.getUrl(ServerType.WORKER, ZETAPUSH_HTTP_SERVER);
+    }
     return this.getUrl(ServerType.WORKER, name);
   }
 

@@ -1,5 +1,5 @@
 import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
-import { trace } from '@zetapush/common';
+import { trace, CURRENT_WORKER_NAME } from '@zetapush/common';
 import {
   RegistrationConfirmationPropertyKeys,
   EmailPropertyKeys,
@@ -31,9 +31,10 @@ export const DEFAULT_CONFIRMATION_URL = async ({
   account,
   token
 }: AccountConfirmationContext) => {
-  const url = `${properties.get(RegistrationConfirmationPropertyKeys.BaseUrl, zetapushContext.getWorkerUrl())}/users/${
-    account.accountId
-  }/confirm/${token.value}`;
+  const url = `${properties.get(
+    RegistrationConfirmationPropertyKeys.BaseUrl,
+    zetapushContext.getWorkerUrl(CURRENT_WORKER_NAME, true)
+  )}/users/${account.accountId}/confirm/${token.value}`;
   trace('confirmation url', url);
   return url;
 };
