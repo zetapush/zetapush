@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/core",
-  "version": "0.35.5",
+  "version": "0.37.1",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-core.js",
   "main": "lib/index.js",
@@ -36,8 +36,8 @@
     "rollup-plugin-commonjs": "9.2.0",
     "rollup-plugin-json": "3.1.0",
     "rollup-plugin-node-resolve": "3.4.0",
-    "rollup-plugin-typescript": "1.0.0",
     "rollup-plugin-terser": "3.0.0",
+    "rollup-plugin-typescript": "1.0.0",
     "rollup-watch": "4.3.1",
     "ts-node": "7.0.1",
     "typescript": "3.1.6"

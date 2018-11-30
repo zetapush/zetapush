@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.37.1"></a>
+## [0.37.1](https://github.com/zetapush/zetapush/compare/v0.37.0...v0.37.1) (2018-11-29)
+
+
+### Bug Fixes
+
+* **StandardUserWorkflow:** expose API LostPassword ([9dec01a](https://github.com/zetapush/zetapush/commit/9dec01a))
+
+
+
+
+<a name="0.37.0"></a>
+# [0.37.0](https://github.com/zetapush/zetapush/compare/v0.35.5...v0.37.0) (2018-11-29)
+
+
+### Bug Fixes
+
+* **http:** differentiate custom http server url from zetapush http server url ([6138269](https://github.com/zetapush/zetapush/commit/6138269))
+* **http:** remove [@zetapush](https://github.com/zetapush) prefix ([0f15923](https://github.com/zetapush/zetapush/commit/0f15923))
+* **http:** remove [@zetapush](https://github.com/zetapush) prefix ([7876656](https://github.com/zetapush/zetapush/commit/7876656))
+
+
+### Features
+
+* **reset-password:** separate senders between confirmation and reset password ([0aff35a](https://github.com/zetapush/zetapush/commit/0aff35a))
+
+
+
+
+<a name="0.36.0"></a>
+# [0.36.0](https://github.com/zetapush/zetapush/compare/v0.35.5...v0.36.0) (2018-11-29)
+
+
+### Bug Fixes
+
+* **http:** differentiate custom http server url from zetapush http server url ([6138269](https://github.com/zetapush/zetapush/commit/6138269))
+* **http:** remove [@zetapush](https://github.com/zetapush) prefix ([0f15923](https://github.com/zetapush/zetapush/commit/0f15923))
+* **http:** remove [@zetapush](https://github.com/zetapush) prefix ([7876656](https://github.com/zetapush/zetapush/commit/7876656))
+
+
+### Features
+
+* **reset-password:** separate senders between confirmation and reset password ([0aff35a](https://github.com/zetapush/zetapush/commit/0aff35a))
+
+
+
+
 <a name="0.35.5"></a>
 ## [0.35.5](https://github.com/zetapush/zetapush/compare/v0.35.4...v0.35.5) (2018-10-30)
 
