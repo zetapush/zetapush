@@ -12,7 +12,7 @@ import {
   TemplateManagerInjectable,
   MessageSenderInjectable
 } from '../../../../src';
-import { mock, anyString, anything, when, verify } from 'ts-mockito';
+import { mock, anyString, anything, when, verify, spy, capture } from 'ts-mockito';
 import { AxiosInstance, AxiosResponse } from 'axios';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -23,6 +23,7 @@ describe(`TemplatedEmail`, () => {
   const axiosInstance = axios.create({});
   const parent = mock(<any>{});
   const mockAxios = new MockAdapter(axiosInstance);
+  const axiosSpy = spy(axiosInstance);
   const variables = {};
 
   describe(`send()`, () => {
@@ -41,6 +42,7 @@ describe(`TemplatedEmail`, () => {
               // create configurer
               const configurer = new EmailConfigurerImpl(parent, new Scope('foo'));
               configurer
+                .from('Kara <kara@zetapush.com>')
                 .mailjet()
                 /**/ .enable(true)
                 /**/ .apiKeyPublic('public-key')
@@ -87,33 +89,29 @@ describe(`TemplatedEmail`, () => {
                 }
               });
               // THEN
-              verify(
-                axiosInstance.post(
-                  'mailjet-url',
+              const [url, request] = capture(axiosSpy.post).last();
+              expect(url).toBe('mailjet-url');
+              expect(request).toEqual({
+                Messages: [
                   {
-                    Messages: [
+                    From: {
+                      Name: 'Kara',
+                      Email: 'kara@zetapush.com'
+                    },
+                    To: [
                       {
-                        From: {
-                          Name: 'Kara',
-                          Email: 'kara@zetapush.com'
-                        },
-                        To: [
-                          {
-                            Name: '',
-                            Email: 'odile.deray@zetapush.com'
-                          }
-                        ],
-                        Cc: [],
-                        Bcc: [],
-                        Subject: 'Mailjet sender test',
-                        TextPart: 'Yeah !',
-                        HTMLPart: '<h1>Yeah !</h1>'
+                        Name: '',
+                        Email: 'odile.deray@zetapush.com'
                       }
-                    ]
-                  },
-                  anything()
-                )
-              );
+                    ],
+                    Cc: [],
+                    Bcc: [],
+                    Subject: 'Mailjet sender test',
+                    TextPart: 'Yeah !',
+                    HTMLPart: '<h1>Yeah !</h1>'
+                  }
+                ]
+              });
             }
           );
         });

@@ -6,7 +6,7 @@ import {
   scopedDependency,
   Scope
 } from '../../../../../src';
-import { mock, anything, verify } from 'ts-mockito';
+import { mock, anything, verify, capture, spy } from 'ts-mockito';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import 'jasmine';
@@ -15,6 +15,7 @@ describe(`MailjetHttpEmailSender`, () => {
   const axiosInstance = axios.create({});
   const mockAxios = new MockAdapter(axiosInstance);
   mockAxios.onPost('mailjet-url').reply(200, {});
+  const axiosSpy = spy(axiosInstance);
   const parent = mock(<any>{});
 
   describe(`send()`, () => {
@@ -60,33 +61,29 @@ describe(`MailjetHttpEmailSender`, () => {
           });
 
           // THEN
-          verify(
-            axiosInstance.post(
-              'mailjet-url',
+          const [url, request] = capture(axiosSpy.post).last();
+          expect(url).toBe('mailjet-url');
+          expect(request).toEqual({
+            Messages: [
               {
-                Messages: [
+                From: {
+                  Name: 'Kara',
+                  Email: 'kara@zetapush.com'
+                },
+                To: [
                   {
-                    From: {
-                      Name: 'Kara',
-                      Email: 'kara@zetapush.com'
-                    },
-                    To: [
-                      {
-                        Name: '',
-                        Email: 'odile.deray@zetapush.com'
-                      }
-                    ],
-                    Cc: [],
-                    Bcc: [],
-                    Subject: 'Mailjet sender test',
-                    TextPart: undefined,
-                    HTMLPart: '<h1>Yeah !</h1>'
+                    Name: '',
+                    Email: 'odile.deray@zetapush.com'
                   }
-                ]
-              },
-              anything()
-            )
-          );
+                ],
+                Cc: [],
+                Bcc: [],
+                Subject: 'Mailjet sender test',
+                TextPart: undefined,
+                HTMLPart: '<h1>Yeah !</h1>'
+              }
+            ]
+          });
         });
       });
 

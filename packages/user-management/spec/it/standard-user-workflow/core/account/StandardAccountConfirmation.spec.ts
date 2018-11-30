@@ -35,10 +35,10 @@ describe(`StandardAccountConfirmation`, () => {
     `https://zetapush.com/${account.accountId}/${token.value}`;
   const htmlTemplate = ({ account, confirmationUrl }: { account: Account; confirmationUrl: string }) =>
     `Hello ${account.profile.username}, 
-    <a href="${confirmationUrl}">Please confirm your account</a>`;
+     <a href="${confirmationUrl}">Please confirm your account</a>`;
   const textTemplate = ({ account, confirmationUrl }: { account: Account; confirmationUrl: string }) =>
     `Hello ${account.profile.username}, 
-    Please confirm your account:${confirmationUrl}`;
+     Please confirm your account: ${confirmationUrl}`;
 
   describe(`confirm()`, () => {
     describe(`on valid account`, () => {
