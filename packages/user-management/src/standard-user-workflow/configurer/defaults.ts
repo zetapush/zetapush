@@ -1,15 +1,18 @@
 import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
-import { trace } from '@zetapush/common';
+import { trace, CURRENT_WORKER_NAME } from '@zetapush/common';
 import {
   RegistrationConfirmationPropertyKeys,
+  ResetPasswordPropertiesKeys,
   EmailPropertyKeys,
   ProductPropertyKeys,
   MailjetPropertyKey,
   SmtpPropertyKey
 } from './properties';
 import { Token } from '../../common/api';
-import { Account, AccountConfirmationTemplateVariables } from '../api';
+import { Account, AccountConfirmationTemplateVariables, AccountResetPasswordTemplateVariables } from '../api';
 import { AccountConfirmationContext } from '../api/Confirmation';
+import { ResetPasswordContext } from '../api/LostPassword';
+import path from 'path';
 
 // TODO: general provider
 export const DEFAULT_USERNAME = (account: Account) => {
@@ -33,8 +36,8 @@ export const DEFAULT_CONFIRMATION_URL = async ({
 }: AccountConfirmationContext) => {
   const url = `${properties.get(
     RegistrationConfirmationPropertyKeys.BaseUrl,
-    zetapushContext.getWorkerUrl()
-  )}/@zetapush/users/${account.accountId}/confirm/${token.value}`;
+    zetapushContext.getWorkerUrl(CURRENT_WORKER_NAME, true)
+  )}/users/${account.accountId}/confirm/${token.value}`;
   trace('confirmation url', url);
   return url;
 };
@@ -121,3 +124,48 @@ export const DEFAULT_SMTP_SSL = (properties: ConfigurationProperties): boolean =
 
 export const DEFAULT_SMTP_STARTTLS = (properties: ConfigurationProperties): boolean =>
   properties.get(SmtpPropertyKey.StartTls, true);
+
+/**
+ * Rest password by email properties
+ */
+export const DEFAULT_ASK_RESET_PASSWORD_SENDER = (properties: ConfigurationProperties) =>
+  properties.get(
+    ResetPasswordPropertiesKeys.EmailFrom,
+    properties.get(
+      EmailPropertyKeys.From,
+      `no-reply@${properties.get(ProductPropertyKeys.OrganizationName, 'zetapush')}.com`
+    )
+  );
+
+export const DEFAULT_ASK_RESET_PASSWORD_SUBJECT = (properties: ConfigurationProperties) =>
+  properties.get(ResetPasswordPropertiesKeys.EmailSubject, `Reset your password`);
+
+export const DEFAULT_ASK_RESET_PASSWORD_HTML_TEMPLATE = ({
+  account,
+  askResetPasswordUrl
+}: AccountResetPasswordTemplateVariables) =>
+  `Hello ${DEFAULT_USERNAME(account)}, 
+  
+  <a href="${askResetPasswordUrl}">Please choose a new password</a>`;
+
+export const DEFAULT_ASK_RESET_PASSWORD_TEXT_TEMPLATE = ({
+  account,
+  askResetPasswordUrl
+}: AccountResetPasswordTemplateVariables) =>
+  `Hello ${DEFAULT_USERNAME(account)}, 
+  
+  Please choose a new password: ${askResetPasswordUrl}`;
+
+export const DEFAULT_ASK_RESET_PASSWORD_URL = async ({
+  account,
+  token,
+  properties,
+  zetapushContext
+}: ResetPasswordContext) => {
+  const url = `${properties.get(
+    ResetPasswordPropertiesKeys.BaseUrl,
+    zetapushContext.getFrontUrl()
+  )}#ask-reset-password/${token.value}`;
+  trace('reset password url', url);
+  return url;
+};

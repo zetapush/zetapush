@@ -49,7 +49,8 @@ describe(`defaultEnvironmentProvider()`, () => {
             when(this.registry.getServerInfo('front')).thenReturn({
               port: 3000
             });
-            when(this.registry.getServerInfo('worker')).thenReturn({
+            // FIXME: temporary hack until multiple workers are fully supported
+            when(this.registry.getServerInfo('queue_0')).thenReturn({
               port: 2999
             });
           });
@@ -167,7 +168,8 @@ describe(`defaultEnvironmentProvider()`, () => {
             describe(`with correct platform response`, () => {
               beforeEach(async () => {
                 when(this.contextResponse.workers).thenReturn({
-                  worker: {
+                  // FIXME: temporary hack until multiple workers are fully supported
+                  queue_0: {
                     urls: { HOSTED: 'http://10.0.0.1/worker', USER_FRIENDLY: 'http://worker.zetapush.app' }
                   }
                 });

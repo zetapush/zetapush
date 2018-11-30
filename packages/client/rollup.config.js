@@ -2,9 +2,7 @@ import babel from 'rollup-plugin-babel';
 import commonjs from 'rollup-plugin-commonjs';
 import json from 'rollup-plugin-json';
 import resolve from 'rollup-plugin-node-resolve';
-import { sizeSnapshot } from 'rollup-plugin-size-snapshot';
-import { uglify } from 'rollup-plugin-uglify';
-import { minify as minifier } from 'uglify-es';
+import { terser } from 'rollup-plugin-terser';
 
 const env = process.env.NODE_ENV;
 const config = {
@@ -30,14 +28,16 @@ const config = {
 
 if (env === 'production') {
   config.plugins.push(
-    uglify({
-      compress: {
-        pure_getters: true,
-        unsafe: true,
-        unsafe_comps: true,
-        warnings: false,
+    terser(
+      {
+        compress: {
+          pure_getters: true,
+          unsafe: true,
+          unsafe_comps: true,
+          warnings: false,
+        },
       },
-    }, minifier),
+    ),
   );
 }
 

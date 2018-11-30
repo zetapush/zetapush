@@ -13,6 +13,14 @@ export interface UserRepository {
   getProfile(accountId: string): Promise<UserProfile>;
 
   updateStatus(accountId: string, newStatus: AccountStatus): Promise<void>;
+
+  getAccountFromLogin(login: string): Promise<Account>;
+
+  getAccountFromAccountId(accountId: string): Promise<Account>;
+
+  getLoginFromAccountId(accountId: string): Promise<string>;
+
+  getUserKey(accountId: string): Promise<string>;
 }
 
 export abstract class UserRepositoryInjectable implements UserRepository {
@@ -28,4 +36,12 @@ export abstract class UserRepositoryInjectable implements UserRepository {
   abstract getProfile(accountId: string): Promise<UserProfile>;
 
   abstract updateStatus(accountId: string, newStatus: AccountStatus): Promise<void>;
+
+  abstract getAccountFromLogin(login: string): Promise<Account>;
+
+  abstract getAccountFromAccountId(accountId: string): Promise<Account>;
+
+  abstract getLoginFromAccountId(accountId: string): Promise<string>;
+
+  abstract getUserKey(accountId: string): Promise<string>;
 }

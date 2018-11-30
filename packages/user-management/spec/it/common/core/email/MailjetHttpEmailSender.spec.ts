@@ -1,5 +1,11 @@
 import { given, autoclean, runInWorker } from '@zetapush/testing';
-import { MailjetEmailConfigurerImpl, MessageSender, MessageSenderInjectable } from '../../../../../src';
+import {
+  MailjetEmailConfigurerImpl,
+  MessageSender,
+  MessageSenderInjectable,
+  scopedDependency,
+  Scope
+} from '../../../../../src';
 import { mock, anything, verify, capture, spy } from 'ts-mockito';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -26,6 +32,7 @@ describe(`MailjetHttpEmailSender`, () => {
             const configurer = new MailjetEmailConfigurerImpl(
               parent,
               { from: 'Kara <kara@zetapush.com>' },
+              new Scope('testing'),
               axiosInstance
             );
             configurer
@@ -37,7 +44,7 @@ describe(`MailjetHttpEmailSender`, () => {
               providers: await configurer.getProviders()
             };
           })
-          /**/ .dependencies(MessageSenderInjectable)
+          /**/ .dependencies(scopedDependency('testing', MessageSenderInjectable))
           /**/ .and()
           .apply(this);
       });

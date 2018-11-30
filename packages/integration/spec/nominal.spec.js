@@ -45,7 +45,6 @@ describe(`As developer with
       expect(zetarc.appName).toBeDefined();
       expect(zetarc.appName.length).toBeGreaterThan(0);
       expect(zetarc.developerLogin).toBe(this.developerLogin);
-      expect(zetarc.developerPassword).toBe(this.developerPassword);
 
       // 3) check using a client
       await frontAction({ zetarc })

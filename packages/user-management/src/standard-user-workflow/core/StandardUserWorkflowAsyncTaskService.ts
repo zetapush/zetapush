@@ -1,5 +1,6 @@
 import { Service } from '@zetapush/platform-legacy';
 import { PendingAccountConfirmation, Redirection, Account, AccountCreationDetails, Credentials } from '../api';
+import { AccountDetailsResetPassword, PendingAskResetPassword, DetailsResetPassword } from '../api/LostPassword';
 
 /**
  * StandardUserWorflow client side implementation
@@ -121,5 +122,30 @@ export class StandardUserWorkflowAsyncTaskService extends Service {
    */
   logout(): Promise<void> {
     return this.$publish('logout');
+  }
+
+  /**
+   * The askResetPassword method let your user asks to reset his password.
+   * The process is the following :
+   * 1) The user asks to reset his password providing his email
+   * 2) A link is sent to his email
+   * 3) When the user click on this link, the user is redirected to a page specified by the developer to change his password
+   * 4) When the user validate the new password, he is redirected to a page specified by the developer
+   *
+   * @param accountDetailsResetPassword Necessary input for reset a password
+   */
+  askResetPassword(accountDetailsResetPassword: AccountDetailsResetPassword): Promise<PendingAskResetPassword> {
+    return this.$publish('askResetPassword', accountDetailsResetPassword);
+  }
+
+  /**
+   * After clicking in the link received by email when he asks to reset his password,
+   * the user need to choose his new password. To do this, he needs to type a couple of identicals
+   * password and validate them.
+   *
+   * @param newCoupleOfPassword Couple of new passwords
+   */
+  confirmResetPassword(detailsResetPassword: DetailsResetPassword): Promise<Account> {
+    return this.$publish('confirmResetPassword', detailsResetPassword);
   }
 }

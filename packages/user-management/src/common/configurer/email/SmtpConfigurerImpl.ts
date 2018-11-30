@@ -1,6 +1,6 @@
 import { AbstractParent } from '../AbstractParent';
 import { SmtpEmailConfigurer } from '../grammar';
-import { Configurer, SimpleProviderRegistry } from '../Configurer';
+import { Configurer, SimpleProviderRegistry, Scope, scoped } from '../Configurer';
 import { Provider } from '@zetapush/core';
 import { Email, MessageSenderInjectable } from '../../api';
 import { MissingMandatoryConfigurationError } from '../ConfigurerError';
@@ -17,7 +17,12 @@ export class SmtpEmailConfigurerImpl<P> extends AbstractParent<P> implements Smt
   private enableTls?: boolean;
   private alternativeHelper: AlternativeHelper<this>;
 
-  constructor(parent: P, private defaults: Partial<Email>, private mailer: ConfigureSmtpTransport) {
+  constructor(
+    parent: P,
+    private defaults: Partial<Email>,
+    private mailer: ConfigureSmtpTransport,
+    private scope: Scope
+  ) {
     super(parent);
     this.alternativeHelper = new AlternativeHelper(this);
   }
@@ -60,7 +65,7 @@ export class SmtpEmailConfigurerImpl<P> extends AbstractParent<P> implements Smt
   async getProviders(): Promise<Provider[]> {
     const providerRegistry = new SimpleProviderRegistry();
     if (await this.alternativeHelper.isEnabled()) {
-      providerRegistry.registerFactory(MessageSenderInjectable, [], () => {
+      providerRegistry.registerFactory(scoped(this.scope, MessageSenderInjectable), [], () => {
         if (!this.smtpHost) {
           throw new MissingMandatoryConfigurationError('Missing host for SMTP configuration');
         }

@@ -9,7 +9,7 @@ const program = require('commander');
 
 const { version } = require('../package.json');
 
-const { DEFAULTS, setVerbosity, error } = require('@zetapush/common');
+const { DEFAULTS, setVerbosity, warn } = require('@zetapush/common');
 const {
   ErrorAnalyzer,
   errorHelper,
@@ -79,7 +79,7 @@ program
         run(command, config, declaration);
       })
       .catch((failure) => {
-        error('Run failed', failure);
+        warn('Run failed', failure);
         displayHelp(failure);
       })
   )
@@ -102,7 +102,7 @@ program
         push(command, config, declaration);
       })
       .catch((failure) => {
-        error('Push failed', failure);
+        warn('Push failed', failure);
         displayHelp(failure);
       })
   )

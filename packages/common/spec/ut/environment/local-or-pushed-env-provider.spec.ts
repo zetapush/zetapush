@@ -13,7 +13,7 @@ class MockedZetaPushContext implements ZetaPushContext {
   getFrontUrl(name?: string): string {
     throw new Error('Method not implemented.');
   }
-  getWorkerUrl(name?: string): string {
+  getWorkerUrl(name?: string, zetapushInternalServer?: boolean): string {
     throw new Error('Method not implemented.');
   }
   getLocalZetaPushHttpPort(): number {

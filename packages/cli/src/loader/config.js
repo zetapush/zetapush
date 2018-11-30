@@ -16,17 +16,49 @@ const explorer = cosmiconfig('zeta');
 const isValid = (config = {}) => config.platformUrl && config.developerLogin && config.developerPassword;
 
 /**
+ * Check if the .zetarc file is valid from his path
+ * @param {Object} command
+ */
+const checkZetarcValidJson = (command) => {
+  let content;
+  try {
+    content = fs.readFileSync(path.resolve(command.worker, '.zetarc'), 'utf8');
+  } catch {}
+  if (content) {
+    try {
+      JSON.parse(content);
+    } catch (e) {
+      throw {
+        code: `ZETARC_NOT_VALID`,
+        message: `The .zetarc file is an invalid JSON, please check it`,
+        cause: e
+      };
+    }
+  }
+};
+
+/**
  * Load ZetaPush config file
  * @param {Object} command
  * @param {Object} content
  */
 const save = (command, content) =>
   new Promise((resolve, reject) => {
+    const clean = (dirty, defaults) => {
+      return Object.entries(dirty).reduce((cleaned, [property, value]) => {
+        if (defaults[property] !== value) {
+          cleaned[property] = value;
+        }
+        return cleaned;
+      }, {});
+    };
     const filepath = path.join(command.worker, '.zetarc');
     // Encrypt content before
     const encryted = encrypt(content);
+    // Do not persist defaults config value
+    const cleaned = clean(encryted, { ...DEFAULTS, npmRegistry: DEFAULTS.NPM_REGISTRY_URL });
     log('Save config file', filepath);
-    fs.writeFile(filepath, JSON.stringify(encryted, null, 2), (failure) => {
+    fs.writeFile(filepath, JSON.stringify(cleaned, null, 2), (failure) => {
       if (failure) {
         return reject(failure);
       }
@@ -56,7 +88,7 @@ const fromEnv = async () => {
  * @return {Promise<ZetaPushConfig>}
  */
 const fromCli = async (command) => {
-  trace('Try to load conf from cli provess.argv');
+  trace('Try to load conf from cli process.argv');
   return Promise.resolve({
     platformUrl: command.parent.platformUrl,
     appName: command.parent.appName,
@@ -88,6 +120,10 @@ const fromDefault = async () => {
  */
 const fromFile = async (command) => {
   trace('Try to load conf from filesystem', command.worker);
+
+  // Validate .zetarc file
+  checkZetarcValidJson(command);
+
   return explorer
     .search(command.worker)
     .then((result) => {
@@ -101,8 +137,6 @@ const fromFile = async (command) => {
     });
 };
 
-let isTsLoaderRegistered = false;
-
 /**
  * @param {Object} command
  * @param {Boolean} required
@@ -113,6 +147,7 @@ const load = async (command, required = true) => {
       2) environment variables
       3) from file defined in ${command.worker}/.zetarc`);
   let config;
+
   try {
     config = merge(await fromCli(command), await fromEnv(), await fromFile(command), await fromDefault());
     trace('merged config', config);

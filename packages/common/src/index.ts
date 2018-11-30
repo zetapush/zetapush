@@ -1,7 +1,6 @@
 export * from './metadata';
 export * from './common-types';
 export * from './defaults';
-export * from './createAccount';
 export * from './createApplication';
 export * from './progression';
 export * from './worker/di';

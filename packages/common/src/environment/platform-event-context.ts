@@ -11,13 +11,16 @@ import {
 import { LocalServerRegistry, ServerType } from '../utils/server-registry';
 import { trace } from '../utils/log';
 
+export const defaultZetaPushInternalUrlProvider = (url: string) => `${url}/@zetapush`; // TODO: @zetapush prefix should be provided by platform
+
 export class PlatformEventContext implements ZetaPushContext, Loadable {
   private context?: RuntimeContext;
   constructor(
     private config: ResolvedConfig,
     private client: ServerClient,
     private queueApi: any,
-    private serverRegistry: LocalServerRegistry
+    private serverRegistry: LocalServerRegistry,
+    private zetapushInternalUrlProvider = defaultZetaPushInternalUrlProvider
   ) {}
 
   async load(): Promise<void> {
@@ -43,17 +46,27 @@ export class PlatformEventContext implements ZetaPushContext, Loadable {
   }
 
   getFrontUrl(name?: string): string | null {
+    console.log('==> get front url : ', this.context);
     this.checkLoaded();
     return this.getUrl(ServerType.FRONT, this.context!.fronts, name);
   }
 
-  getWorkerUrl(name?: string): string | null {
+  getWorkerUrl(name?: string, zetapushInternalServer?: boolean): string | null {
     this.checkLoaded();
-    return this.getUrl(ServerType.WORKER, this.context!.workers, name);
+    const url = this.getUrl(ServerType.WORKER, this.context!.workers, name);
+    if (!url) {
+      return url;
+    }
+    // when run in cloud, the base URL is the same
+    // to distinguish between HTTP servers, we use routing paths
+    if (zetapushInternalServer) {
+      return this.zetapushInternalUrlProvider(url);
+    }
+    return url;
   }
 
-  getLocalZetaPushHttpPort(name?: string): number | null {
-    const info = this.serverRegistry.getServerInfo(name || ServerType.defaultName(ServerType.WORKER));
+  getLocalZetaPushHttpPort(): number | null {
+    const info = this.serverRegistry.getServerInfo(ServerType.defaultName(ServerType.WORKER));
     return info ? info.port : null;
   }
 
@@ -61,6 +74,7 @@ export class PlatformEventContext implements ZetaPushContext, Loadable {
     if (name) {
       return this.getBestUrl(base[name]);
     }
+
     return this.getBestUrl(this.getDefault(which, base));
   }
 
@@ -72,6 +86,7 @@ export class PlatformEventContext implements ZetaPushContext, Loadable {
     if (defaultContext) {
       return defaultContext;
     }
+
     trace(`No default ${ServerType.defaultName(which)} from ZetaPush context`);
     return null;
   }

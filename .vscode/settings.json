@@ -1,39 +1,15 @@
 {
   "triggerTaskOnSave.tasks": {
-    "testing [prepare]": [
-      "packages/testing/src/**"
-    ],
-    "common [prepare]": [
-      "packages/common/src/**"
-    ],
-    "client [prepare]": [
-      "packages/client/src/**",
-      "packages/client/bin/**"
-    ],
-    "core [prepare]": [
-      "packages/core/src/**"
-    ],
-    "worker [prepare]": [
-      "packages/worker/src/**"
-    ],
-    "http-server [prepare]": [
-      "packages/http-server/src/**"
-    ],
-    "user-management [prepare]": [
-      "packages/user-management/src/**"
-    ],
-    "lerna [clean+bootstrap]": [
-      "packages/*/package.json"
-    ]
+    "testing [prepare]": ["packages/testing/src/**"],
+    "common [prepare]": ["packages/common/src/**"],
+    "client [prepare]": ["packages/client/src/**", "packages/client/bin/**"],
+    "core [prepare]": ["packages/core/src/**"],
+    "worker [prepare]": ["packages/worker/src/**"],
+    "http-server [prepare]": ["packages/http-server/src/**"],
+    "user-management [prepare]": ["packages/user-management/src/**"],
+    "lerna [clean+bootstrap]": ["packages/*/package.json"]
   },
-  "coverage-gutters.showGutterCoverage": false,
-  "coverage-gutters.showLineCoverage": true,
-  "coverage-gutters.showRulerCoverage": true,
-  "coverage-gutters.xmlname": "cobertura-coverage.xml",
-  "lcov.path": [
-    "packages/user-management/coverage/lcov.info",
-  ],
+  "lcov.path": ["packages/user-management/coverage/lcov.info"]
   // "jasmineExplorer.logpanel": true,
   // "jasmineExplorer.nodePath": "~/.nvm/versions/node/v10.8.0/bin/node",
-
 }

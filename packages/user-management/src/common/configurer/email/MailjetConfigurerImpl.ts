@@ -1,7 +1,7 @@
 import { AbstractParent } from '../AbstractParent';
 import { MailjetEmailConfigurer } from '../grammar';
 import axios, { AxiosInstance } from 'axios';
-import { Configurer, SimpleProviderRegistry } from '../Configurer';
+import { Configurer, SimpleProviderRegistry, Scope, scoped } from '../Configurer';
 import { Email, MessageSenderInjectable } from '../../api';
 import { MissingMandatoryConfigurationError } from '../ConfigurerError';
 import { MailjetHttpEmailSender, MailjetAuth } from '../../core';
@@ -17,7 +17,7 @@ export class MailjetEmailConfigurerImpl<P> extends AbstractParent<P> implements 
   private axiosInstance: AxiosInstance;
   private alternativeHelper: AlternativeHelper<this>;
 
-  constructor(parent: P, private defaults: Partial<Email>, private axios?: AxiosInstance) {
+  constructor(parent: P, private defaults: Partial<Email>, private scope: Scope, private axios?: AxiosInstance) {
     super(parent);
     this.alternativeHelper = new AlternativeHelper(this);
   }
@@ -48,7 +48,7 @@ export class MailjetEmailConfigurerImpl<P> extends AbstractParent<P> implements 
   async getProviders(): Promise<Provider[]> {
     const providerRegistry = new SimpleProviderRegistry();
     if (await this.alternativeHelper.isEnabled()) {
-      providerRegistry.registerFactory(MessageSenderInjectable, [], () => {
+      providerRegistry.registerFactory(scoped(this.scope, MessageSenderInjectable), [], () => {
         const url = this.mailjetUrl || DEFAULT_MAILJET_URL;
         if (!this.mailjetApiKeyPublic || !this.mailjetApiKeyPrivate) {
           throw new MissingMandatoryConfigurationError('Missing apiKeyPublic or apiKeyPrivate for Mailjet');
