@@ -1,7 +1,7 @@
-import { Context } from '@zetapush/core';
+import { RequestContext } from '@zetapush/core';
 import { CloudServiceInstance } from '@zetapush/common';
 
-export const inject = (instance: any, requestContext: Context) =>
+export const inject = (instance: any, requestContext: RequestContext) =>
   new Proxy(instance, {
     get: (target: any, property: string): any => {
       if (property === 'requestContext') {

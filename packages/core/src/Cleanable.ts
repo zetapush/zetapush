@@ -1,5 +1,5 @@
-import { Context } from './Context';
+import { RequestContext } from './Context';
 
 export interface Cleanable {
-  onApplicationCleanup(context?: Context): Promise<any>;
+  onApplicationCleanup(context?: RequestContext): Promise<any>;
 }

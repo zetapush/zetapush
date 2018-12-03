@@ -1,4 +1,4 @@
-import { Context } from '@zetapush/core';
+import { RequestContext } from '@zetapush/core';
 import { timeoutify, trace, warn } from '@zetapush/common';
 import { TaskRequest } from '@zetapush/platform-legacy';
 
@@ -11,7 +11,7 @@ const DEFAULT_ERROR_CODE = 'API_ERROR';
 
 export interface WorkerInstance {
   setWorker(worker: any): void;
-  dispatch(request: TaskRequest, context: Context): Promise<{ result: any; success: boolean }>;
+  dispatch(request: TaskRequest, context: RequestContext): Promise<{ result: any; success: boolean }>;
   configure(): Promise<{ result: any; success: boolean }>;
   clean(): Promise<void>;
 }
@@ -127,7 +127,7 @@ export class TaskDispatcherWorkerInstance implements WorkerInstance {
     return instance.constructor.name;
   }
 
-  async dispatch(request: TaskRequest, context: Context) {
+  async dispatch(request: TaskRequest, context: RequestContext) {
     const { data } = request;
     const { name, namespace, parameters } = data;
     try {

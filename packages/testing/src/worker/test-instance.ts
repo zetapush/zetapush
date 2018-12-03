@@ -1,7 +1,7 @@
 import { timeoutify, WorkerDeclaration, WorkerDeclarationNormalizer } from '@zetapush/common';
 import {
   Injectable,
-  Context,
+  RequestContext,
   Module,
   Provider,
   FactoryProvider,
@@ -94,7 +94,7 @@ export class TestWorkerInstance extends TaskDispatcherWorkerInstance {
       const context = {
         contextId: 'ZetaTest',
         owner: 'ZetaTest'
-      } as Context;
+      } as RequestContext;
       // Api instance
       const tasker = this.worker[namespace];
       // Inject context in a proxified worker namespace
