@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://zetapush.com/">
-    <img alt="zetapush" src="https://zetapush.com/assets/img/zt_logo@2x.png" width="500">
+    <img alt="zetapush" src="https://www.zetapush.com/wp-content/uploads/2018/09/ZPlogo-websafe.png" width="500">
   </a>
 </p>
 
