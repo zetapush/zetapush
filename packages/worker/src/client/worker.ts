@@ -1,4 +1,4 @@
-import { Context } from '@zetapush/core';
+import { RequestContext } from '@zetapush/core';
 import { Authentication, Client, uuid, ConnectionStatusListener } from '@zetapush/client';
 import { Queue, QueueTask, TaskRequest } from '@zetapush/platform-legacy';
 import { LogLevel, Logs } from '@zetapush/platform-legacy';
@@ -212,7 +212,7 @@ export class WorkerClient extends Client {
     this.registerWorker();
     return instance;
   }
-  private getRequestContext(request: TaskRequest, logs: Logs, deploymentId: string): Context {
+  private getRequestContext(request: TaskRequest, logs: Logs, deploymentId: string): RequestContext {
     const { contextId, data, owner = '', originator } = request;
     const { name } = data;
     const namespace = () => (data.namespace === DEFAULT_NAMESPACE ? 'default' : data.namespace);

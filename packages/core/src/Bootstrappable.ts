@@ -1,5 +1,5 @@
-import { Context } from './Context';
+import { RequestContext } from './Context';
 
 export interface Bootstrappable {
-  onApplicationBootstrap(context?: Context): Promise<any>;
+  onApplicationBootstrap(context?: RequestContext): Promise<any>;
 }
