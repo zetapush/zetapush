@@ -205,7 +205,7 @@ export class Client {
 }
 
 export class SmartClient extends Client {
-  constructor(options: SmartClientOptions)
+  constructor(options?: SmartClientOptions)
   getCredentials(): any;
   getSession(): any;
   hasCredentials(): boolean;
@@ -215,7 +215,7 @@ export class SmartClient extends Client {
 }
 
 export class WeakClient extends Client {
-  constructor(options: WeakClientOptions);
+  constructor(options?: WeakClientOptions);
   getToken(): Token;
 }
 
