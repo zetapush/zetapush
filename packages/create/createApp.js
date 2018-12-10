@@ -64,12 +64,15 @@ const program = new commander.Command(pkg.name)
 // Handle missing mandatory arguments
 if (typeof projectName === 'undefined') {
   console.error('Please specify the project directory:');
-  console.log(`  ${chalk.cyan(program.name())} ${chalk.green('<project-directory>')}`);
+  console.log(`  ${chalk.cyan('npm init @zetapush')} ${chalk.green('<project-directory>')}`);
   console.log();
   console.log('For example:');
-  console.log(`  ${chalk.cyan(program.name())} ${chalk.green('my-zetapush-app')}`);
+  console.log(`  ${chalk.cyan('npm init @zetapush')} ${chalk.green('my-zetapush-app')}`);
   console.log();
-  console.log(`Run ${chalk.cyan(`${program.name()} --help`)} to see all options.`);
+  console.log('Using npm lower than 6 ?');
+  console.log(`  ${chalk.cyan(`npx ${program.name()}`)} ${chalk.green('my-zetapush-app')}`);
+  console.log();
+  console.log(`Run ${chalk.cyan(`npx ${program.name()} --help`)} to see all options.`);
   process.exit(1);
 }
 
