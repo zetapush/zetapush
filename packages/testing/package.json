@@ -35,8 +35,10 @@
     "copy-dir": "0.4.0",
     "execa": "1.0.0",
     "find-free-port": "2.0.0",
+    "localtunnel": "1.9.1",
     "rimraf": "2.6.2",
     "tree-kill": "1.2.1",
+    "verdaccio": "3.8.6",
     "winston": "3.1.0"
   },
   "devDependencies": {
@@ -45,12 +47,10 @@
     "@types/node": "10.12.9",
     "@types/rimraf": "2.0.2",
     "cross-env": "5.2.0",
-    "execa": "1.0.0",
     "find-free-port": "2.0.0",
     "jasmine": "3.3.0",
     "jasmine-reporters": "2.3.2",
     "js-yaml": "3.12.0",
-    "localtunnel": "1.9.1",
     "rollup": "0.67.3",
     "rollup-plugin-commonjs": "9.2.0",
     "rollup-plugin-json": "3.1.0",
@@ -58,8 +58,7 @@
     "rollup-plugin-terser": "3.0.0",
     "rollup-plugin-typescript": "1.0.0",
     "rollup-watch": "4.3.1",
-    "typescript": "3.1.6",
-    "verdaccio": "3.8.6"
+    "typescript": "3.1.6"
   },
   "publishConfig": {
     "access": "public"

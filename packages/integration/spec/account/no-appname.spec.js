@@ -2,7 +2,7 @@ const { zetaPush, readZetarc } = require('@zetapush/testing');
 const PATTERN = /Hello World from Worker at (\d+)/;
 const { given, consoleAction, frontAction, autoclean } = require('@zetapush/testing');
 
-describe(`As developer with
+xdescribe(`As developer with
         - account exists
         - no appName
     `, () => {
