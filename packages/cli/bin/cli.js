@@ -73,6 +73,7 @@ program
   .option('--grab-all-traffic', 'Grab all traffic (requests) to local worker', () => true, false)
   .option('--serve-front', 'Run local http server to serve your front code', () => true, false)
   .option('--skip-bootstrap', 'Discard all onApplicationBootstrap methods on run', () => true, false)
+  .option('--ipc <id>', 'Connect to an IPC server to send messages')
   .description('Run your code')
   .action((command) =>
     createApp(command)

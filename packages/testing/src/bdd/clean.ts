@@ -32,14 +32,14 @@ export const autoclean = async (testOrContext: Context, disableResetNpmRegistry 
       cleanLogger.warn('Failed to autoclean (destroy worker). Skipping the error.', e);
     }
   }
-  if (context && context.projectDir) {
+  if (context && context.projectDir && context.clean.nukeProject) {
     try {
       cleanLogger.warn('nuking project...', context.projectDir);
       await nukeProject(context.projectDir);
     } catch (e) {
       cleanLogger.warn('Failed to autoclean (nukeProject). Skipping the error.', e);
     }
-  } else if (context && context.zetarc) {
+  } else if (context && context.zetarc && context.clean.nukeApp) {
     try {
       cleanLogger.warn('nuking app...', context.zetarc);
       await nukeApp(<ResolvedConfig>context.zetarc);

@@ -27,13 +27,32 @@ export class GivenConfigurationRunError extends Error {
   }
 }
 
+const getTestContext = () => {
+  return {
+    contextId: 'ZetaTest',
+    owner: 'ZetaTest',
+    logger: getTestLogger()
+  } as RequestContext;
+};
+
+const getTestLogger = () => {
+  return Object.freeze({
+    trace(...messages: any[]) {},
+    debug(...messages: any[]) {},
+    info(...messages: any[]) {},
+    warn(...messages: any[]) {},
+    error(...messages: any[]) {}
+  });
+};
+
 @Injectable()
 export class TestDeclarationWrapper {
   constructor(private wrapper: Wrapper) {}
 
   async test() {
     try {
-      await this.wrapper.workerDeclaration(...this.wrapper.deps);
+      const deps = this.wrapper.deps.map((d) => inject(d, getTestContext()));
+      await this.wrapper.workerDeclaration(...deps);
     } catch (e) {
       runInWorkerLogger.error('Failed to run function provided in runInWorker()', e);
       throw e;
@@ -91,10 +110,7 @@ export class TestWorkerInstance extends TaskDispatcherWorkerInstance {
   async directCall(namespace: string, name: string, ...parameters: any[]) {
     try {
       // Wrap request context
-      const context = {
-        contextId: 'ZetaTest',
-        owner: 'ZetaTest'
-      } as RequestContext;
+      const context = getTestContext();
       // Api instance
       const tasker = this.worker[namespace];
       // Inject context in a proxified worker namespace

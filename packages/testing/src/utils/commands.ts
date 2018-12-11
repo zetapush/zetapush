@@ -12,6 +12,8 @@ import { PassThrough } from 'stream';
 import { FrontOptions } from './types';
 import { debugObject } from '@zetapush/common';
 import { getZetaFilePath } from '@zetapush/common';
+import { Socket } from 'dgram';
+const ipc = require('node-ipc');
 
 const PLATFORM_URL = 'https://celtia.zetapush.com/zbo/pub/business';
 
@@ -659,13 +661,17 @@ export const nukeApp = (zetarc: ResolvedConfig) => {
 export class Runner {
   private cmd?: ExecaChildProcess;
   private runExitCode = 0;
+  private localWorkerStarted = false;
+  private ipcId: string;
 
   constructor(
     private dir: string,
     private timeout = 300000,
     private localNpmRegistry: string = 'https://registry.npmjs.org',
     private frontOptions?: FrontOptions
-  ) {}
+  ) {
+    this.ipcId = `zetapush-testing-${Date.now()}`;
+  }
 
   async waitForWorkerUp() {
     commandLogger.debug('Runner:waitForWorkerUp()');
@@ -717,6 +723,7 @@ export class Runner {
   private isReady(response: any) {
     const nodes = Object.values(response.nodes);
     return (
+      this.localWorkerStarted &&
       nodes
         // { nodes: { str1: { items: { logs_0: { itemId: "logs", ...}, weak_0: { itemId: "weak", ... } } } }
         // -> [{ itemId: "logs", ...}, { itemId: "weak", ... }]
@@ -728,6 +735,7 @@ export class Runner {
 
   stop() {
     return new Promise((resolve) => {
+      ipc.server.stop();
       if (!this.cmd) {
         return resolve();
       }
@@ -738,8 +746,9 @@ export class Runner {
   }
 
   run(quiet = false) {
-    commandLogger.info(`Runner:run() -> [npm run start -- ${zpLogLevel()} ${this.serveFront()}]`);
-    this.cmd = execa.shell(`npm run start -- ${zpLogLevel()} ${this.serveFront()}`, {
+    this.startIpcServer();
+    commandLogger.info(`Runner:run() -> [npm run start -- ${zpLogLevel()} ${this.serveFront()} --ipc ${this.ipcId}]`);
+    this.cmd = execa.shell(`npm run start -- ${zpLogLevel()} ${this.serveFront()} --ipc ${this.ipcId}`, {
       cwd: this.dir
     });
     if (this.cmd && !quiet) {
@@ -750,6 +759,19 @@ export class Runner {
       this.cmd.once('close', (code) => (this.runExitCode = code));
     }
     return this.cmd;
+  }
+
+  private startIpcServer() {
+    ipc.config.id = this.ipcId;
+    ipc.config.retry = 1500;
+    ipc.config.logger = commandLogger.silly;
+
+    ipc.serve(() => {
+      ipc.server.on('worker-started', (data: string, socket: Socket) => {
+        this.localWorkerStarted = true;
+      });
+    });
+    ipc.server.start();
   }
 
   private serveFront() {
