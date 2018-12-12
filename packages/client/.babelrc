@@ -14,7 +14,9 @@
           }
         ]
       ],
-      "plugins": []
+      "plugins": [
+        "preval"
+      ]
     },
     "commonjs": {
       "presets": [
@@ -29,7 +31,8 @@
         ]
       ],
       "plugins": [
-        "@babel/plugin-transform-modules-commonjs"
+        "@babel/plugin-transform-modules-commonjs",
+        "preval"
       ]
     },
     "es": {
@@ -44,7 +47,9 @@
           }
         ]
       ],
-      "plugins": []
+      "plugins": [
+        "preval"
+      ]
     },
     "test": {
       "presets": [
@@ -61,7 +66,8 @@
         ]
       ],
       "plugins": [
-        "istanbul"
+        "istanbul",
+        "preval"
       ]
     }
   }
