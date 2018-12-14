@@ -24,13 +24,15 @@ const {
   WorkerRegisterErrorAnalyser
 } = require('@zetapush/troubleshooting');
 
-const { helpMessageRun, helpMessagePush } = require('../src/utils/helper-messages');
+const { helpMessageRun, helpMessagePush, helpMessageConfig } = require('../src/utils/helper-messages');
 const { identity } = require('../src/utils/validator');
+const { LogsConfigurations } = require('../src/utils/log');
 
 const push = require('../src/commands/push');
 const run = require('../src/commands/run');
 const createApp = require('../src/commands/createApp');
 const troubleshoot = require('../src/commands/troubleshoot');
+const config = require('../src/commands/config');
 
 const { load } = require('../src/loader/worker');
 
@@ -117,6 +119,18 @@ program
   .description('Display help to resolve a particular error (ex: NET-01, NET-02, ...)')
   .action((errorCode, command) => {
     troubleshoot(errorCode, command);
+  });
+
+program
+  .command('config')
+  .usage('[options]')
+  .option('-w, --worker <worker>', 'Push worker on cloud platform', identity, DEFAULTS.WORKER_FOLDER_PATH)
+  .option('-l, --logs <level>', 'Set the log level', identity, LogsConfigurations.default)
+  .option('-g, --get', 'Get the current configuration', identity)
+  .description('Set the log level of your application')
+  .action((command) => config(command))
+  .on('--help', () => {
+    console.log(helpMessageConfig());
   });
 
 program.parse(process.argv);
