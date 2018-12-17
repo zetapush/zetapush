@@ -23,7 +23,7 @@ const checkZetarcValidJson = (command) => {
   let content;
   try {
     content = fs.readFileSync(path.resolve(command.worker, '.zetarc'), 'utf8');
-  } catch {}
+  } catch (e) {}
   if (content) {
     try {
       JSON.parse(content);

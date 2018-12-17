@@ -104,7 +104,7 @@ export class RegistrationConfirmationConfigurerImpl extends AbstractParent<Regis
     providerRegistry.required(
       scopedDependency('confirmation-email.sender', MessageSenderInjectable),
       new MissingMandatoryConfigurationError(
-        `Confirmation is enabled but neither email nor sms is enabled to send confirmation message`
+        `Confirmation is enabled but neither email nor sms is enabled/configured to send confirmation message`
       )
     );
 

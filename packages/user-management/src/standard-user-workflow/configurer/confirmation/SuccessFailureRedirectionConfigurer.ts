@@ -8,6 +8,7 @@ import { Provider } from '@zetapush/core';
 import { RedirectionProviderInjectable } from '../../api';
 import { StaticUrlRedirectionProvider } from '../../core/account/confirmation/StaticUrlRedirectionProvider';
 import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
+import { trace } from '@zetapush/common';
 
 export class SuccessFailureRedirectionConfigurerImpl<P> extends AbstractParent<P>
   implements SuccessFailureRedirectionConfigurer<P>, Configurer {
@@ -29,7 +30,7 @@ export class SuccessFailureRedirectionConfigurerImpl<P> extends AbstractParent<P
   }
 
   async getProviders(): Promise<Provider[]> {
-    console.log('confirmation redirection urls', this.successRedirectUrl, this.failureRedirectUrl);
+    trace('confirmation redirection urls', this.successRedirectUrl, this.failureRedirectUrl);
     const providerRegistry = new SimpleProviderRegistry();
     // TODO: allow more customization
     providerRegistry.registerFactory(

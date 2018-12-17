@@ -13,6 +13,7 @@ import { Account, AccountConfirmationTemplateVariables, AccountResetPasswordTemp
 import { AccountConfirmationContext } from '../api/Confirmation';
 import { ResetPasswordContext } from '../api/LostPassword';
 import path from 'path';
+import { URL } from 'url';
 
 // TODO: general provider
 export const DEFAULT_USERNAME = (account: Account) => {
@@ -34,10 +35,12 @@ export const DEFAULT_CONFIRMATION_URL = async ({
   account,
   token
 }: AccountConfirmationContext) => {
-  const url = `${properties.get(
-    RegistrationConfirmationPropertyKeys.BaseUrl,
-    zetapushContext.getWorkerUrl(CURRENT_WORKER_NAME, true)
-  )}/users/${account.accountId}/confirm/${token.value}`;
+  let url = properties.get<string>(RegistrationConfirmationPropertyKeys.BaseUrl);
+  url = absolutize(
+    `${url || ''}/users/${account.accountId}/confirm/${token.value}`,
+    zetapushContext.getWorkerUrl(CURRENT_WORKER_NAME, true),
+    ''
+  );
   trace('confirmation url', url);
   return url;
 };
@@ -89,20 +92,24 @@ export const DEFAULT_MAILJET_API_KEY_PRIVATE = (properties: ConfigurationPropert
 export const DEFAULT_CONFIRMATION_SUCCESS_REDIRECTION = (
   properties: ConfigurationProperties,
   zetapushContext: ZetaPushContext
-): string =>
-  properties.get(
-    RegistrationConfirmationPropertyKeys.AccountConfirmedRedirectionUrl,
-    `${zetapushContext.getFrontUrl()}#account-confirmed`
-  );
+): string => {
+  let url = properties.get<string>(RegistrationConfirmationPropertyKeys.AccountConfirmedRedirectionUrl);
+  // TODO: may need to add context (which user for example ?)
+  url = absolutize(url, zetapushContext.getFrontUrl(), '#login');
+  trace('confirmation success url', url);
+  return url;
+};
 
 export const DEFAULT_CONFIRMATION_FAILURE_REDIRECTION = (
   properties: ConfigurationProperties,
   zetapushContext: ZetaPushContext
-): string =>
-  properties.get(
-    RegistrationConfirmationPropertyKeys.AccountConfirmationFailedRedirectionUrl,
-    `${zetapushContext.getFrontUrl()}#account-confirmation-error`
-  );
+): string => {
+  let url = properties.get<string>(RegistrationConfirmationPropertyKeys.AccountConfirmationFailedRedirectionUrl);
+  // TODO: may need to add context (which user for example ?)
+  url = absolutize(url, zetapushContext.getFrontUrl(), '#account-confirmation-error');
+  trace('confirmation failure url', url);
+  return url;
+};
 
 export const DEFAULT_SMTP_ENABLE = (properties: ConfigurationProperties) =>
   properties.get(SmtpPropertyKey.Enable, true) && properties.has(SmtpPropertyKey.Host);
@@ -162,10 +169,20 @@ export const DEFAULT_ASK_RESET_PASSWORD_URL = async ({
   properties,
   zetapushContext
 }: ResetPasswordContext) => {
-  const url = `${properties.get(
-    ResetPasswordPropertiesKeys.BaseUrl,
-    zetapushContext.getFrontUrl()
-  )}#ask-reset-password/${token.value}`;
+  let url = `${properties.get(ResetPasswordPropertiesKeys.BaseUrl, zetapushContext.getFrontUrl())}#ask-reset-password/${
+    token.value
+  }`;
+  url = absolutize(url, zetapushContext.getFrontUrl(), `#ask-reset-password/${token.value}`);
   trace('reset password url', url);
   return url;
+};
+
+const absolutize = (url: string | null, baseUrl: string | null, defaultPath: string): string => {
+  let relativeUrl = url;
+  if (relativeUrl === null) {
+    relativeUrl = defaultPath;
+  }
+  // TODO: what to do if relative URL and baseUrl is null ?
+  let absoluteUrl = new URL(relativeUrl, baseUrl || '');
+  return absoluteUrl.toString();
 };
