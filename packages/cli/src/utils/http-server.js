@@ -23,17 +23,25 @@ const createServer = (command, config, port) => {
       request,
       response,
       {
-        public: command.front
+        public: command.front,
+        headers: [
+          {
+            source: '*.html',
+            headers: {
+              key: 'Cache-Control',
+              value: 'no-store'
+            }
+          }
+        ]
       },
       {
         stat: (filepath) =>
-          stat(filepath).then(
-            (stats) =>
-              filepath.endsWith('.html')
-                ? Object.assign(stats, {
-                    size: stats.size + injected.length
-                  })
-                : stats
+          stat(filepath).then((stats) =>
+            filepath.endsWith('.html')
+              ? Object.assign(stats, {
+                  size: stats.size + injected.length
+                })
+              : stats
           ),
         createReadStream(filepath) {
           const stream = fs.createReadStream(filepath);
