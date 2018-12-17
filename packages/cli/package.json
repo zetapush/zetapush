@@ -21,6 +21,7 @@
     "@zetapush/platform-legacy": "0.37.2",
     "@zetapush/troubleshooting": "0.37.2",
     "@zetapush/worker": "0.37.2",
+    "axios": "^0.18.0",
     "chalk": "2.4.1",
     "commander": "2.19.0",
     "cosmiconfig": "5.0.7",
