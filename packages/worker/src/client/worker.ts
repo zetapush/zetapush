@@ -127,6 +127,9 @@ export class WorkerClient extends Client {
   async registerWorker() {
     if (this.queue) {
       try {
+        // Worker muster be registered with a unique resource
+        this.setResource(`node_js_worker_${uuid()}`);
+        // Register worker on queue service
         this.queue.register({
           capacity: this.capacity,
           routing: {
