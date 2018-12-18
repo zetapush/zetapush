@@ -1,5 +1,6 @@
 export enum ProductPropertyKeys {
-  OrganizationName = 'organization.name'
+  OrganizationName = 'organization.name',
+  ProductName = 'product.name'
 }
 
 export enum EmailPropertyKeys {

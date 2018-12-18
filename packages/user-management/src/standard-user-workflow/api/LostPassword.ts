@@ -57,7 +57,7 @@ export interface ResetPasswordContext extends Variables {
 
 export interface PendingAskResetPassword {
   account: Account;
-  token: string;
+  token: Token;
 }
 
 export interface ResetPasswordUrlProvider {
