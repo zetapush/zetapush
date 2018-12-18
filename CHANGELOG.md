@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.37.3"></a>
+## [0.37.3](https://github.com/zetapush/zetapush/compare/v0.37.2...v0.37.3) (2018-12-18)
+
+
+### Features
+
+* **cli:** disable Cache-Control for served html files ([59e04cb](https://github.com/zetapush/zetapush/commit/59e04cb))
+* **CLI:** add 'config' command to set or get the current config ([7b03885](https://github.com/zetapush/zetapush/commit/7b03885))
+* **context:** allow to configure relative URL to benefit from auto conf ([2420240](https://github.com/zetapush/zetapush/commit/2420240))
+* **worker:** update resource before each register ([66606ed](https://github.com/zetapush/zetapush/commit/66606ed))
+
+
+
+
 <a name="0.37.2"></a>
 ## [0.37.2](https://github.com/zetapush/zetapush/compare/v0.37.1...v0.37.2) (2018-12-14)
 
