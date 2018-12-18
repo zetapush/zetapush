@@ -203,7 +203,7 @@ describe(`StandardAccountRegistration`, () => {
               }
             });
             // make HTTP request to confirm the account
-            const response = await axios.get('http://localhost:2999/@zetapush/users/42/confirm/123456');
+            const response = await axios.get('http://localhost:2999/users/42/confirm/123456');
 
             // THEN
             // check redirection

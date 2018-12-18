@@ -14,6 +14,10 @@ import { AccountConfirmationContext } from '../api/Confirmation';
 import { ResetPasswordContext } from '../api/LostPassword';
 import path from 'path';
 
+export const DEFAULT_APPLICATION_NAME = (properties: ConfigurationProperties) => {
+  return properties.get(ProductPropertyKeys.ProductName);
+};
+
 // TODO: general provider
 export const DEFAULT_USERNAME = (account: Account) => {
   if (account.profile.login) {
@@ -25,7 +29,10 @@ export const DEFAULT_USERNAME = (account: Account) => {
   if (account.profile.firstname && account.profile.lastname) {
     return `${account.profile.firstname} ${account.profile.lastname}`;
   }
-  return 'you';
+  if (account.profile.email) {
+    return `${account.profile.email}`;
+  }
+  return '';
 };
 
 export const DEFAULT_CONFIRMATION_URL = async ({
@@ -44,19 +51,44 @@ export const DEFAULT_CONFIRMATION_URL = async ({
 
 export const DEFAULT_CONFIRMATION_HTML_TEMPLATE = ({
   account,
-  confirmationUrl
+  confirmationUrl,
+  properties
 }: AccountConfirmationTemplateVariables) =>
-  `Hello ${DEFAULT_USERNAME(account)}, 
+  `<h1>Welcome ${DEFAULT_USERNAME(account)}!</h1>
 
-<a href="${confirmationUrl}">Please confirm your account</a>`;
+<p>
+Thank you for signing up${DEFAULT_APPLICATION_NAME(properties) ? ' for ' + DEFAULT_APPLICATION_NAME(properties) : ''}!
+</p>
+
+<p>
+Please verify your email address by clicking the button below.
+</p>
+<table border="0" cellpadding="0" cellspacing="0" width="335" style="border-spacing:0;border-collapse:separate;table-layout:auto;width:335px;padding:0">
+  <tbody><tr style="padding:0">
+    <td align="center" valign="middle" style="word-break:break-word;border-collapse:collapse!important;border-radius:35px;padding:20px 25px" bgcolor="#00c9c9">
+      <a href="${confirmationUrl}" style="color:#fff!important;text-decoration:none;display:block;font-size:23px;">Confirm my account</a>
+    </td>
+  </tr>
+</tbody>
+</table>
+<p>
+If you didn't request this, please ignore this email.
+</p>`;
 
 export const DEFAULT_CONFIRMATION_TEXT_TEMPLATE = ({
   account,
-  confirmationUrl
-}: AccountConfirmationTemplateVariables) =>
-  `Hello ${DEFAULT_USERNAME(account)}, 
+  confirmationUrl,
+  properties
+}: AccountConfirmationTemplateVariables) => {
+  `Welcome ${DEFAULT_USERNAME(account)}! 
 
-Please confirm your account: ${confirmationUrl}`;
+Thank you for signing up${DEFAULT_APPLICATION_NAME(properties) ? ' for ' + DEFAULT_APPLICATION_NAME(properties) : ''}!
+
+Please verify your email address by clicking the link below.
+${confirmationUrl}
+
+If you didn't request this, please ignore this email.`;
+};
 
 export const DEFAULT_CONFIRMATION_SUBJECT = (properties: ConfigurationProperties) =>
   properties.get(RegistrationConfirmationPropertyKeys.EmailSubject, `Confirm your inscription`);
