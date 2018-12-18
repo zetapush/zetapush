@@ -272,9 +272,11 @@ export class ClientHelper {
   authenticationFailed(error, ext) {
     this.userId = null;
     this.userInfo = null;
-    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
-      listener.onFailedHandshake(error, ext);
-    });
+    this.connectionListeners
+      .filter(({ enabled }) => enabled)
+      .forEach(({ listener }) => {
+        listener.onFailedHandshake(error, ext);
+      });
   }
 
   /**
@@ -335,9 +337,11 @@ export class ClientHelper {
       }
     });
     // Notify listeners
-    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
-      listener.onConnectionBroken();
-    });
+    this.connectionListeners
+      .filter(({ enabled }) => enabled)
+      .forEach(({ listener }) => {
+        listener.onConnectionBroken();
+      });
   }
   /**
    * Notify listeners when connection is closed
@@ -345,33 +349,41 @@ export class ClientHelper {
   connectionClosed() {
     this.userId = null;
     this.userInfo = null;
-    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
-      listener.onConnectionClosed();
-    });
+    this.connectionListeners
+      .filter(({ enabled }) => enabled)
+      .forEach(({ listener }) => {
+        listener.onConnectionClosed();
+      });
   }
   /**
    * Notify listeners when connection is established
    */
   connectionEstablished() {
-    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
-      listener.onConnectionEstablished();
-    });
+    this.connectionListeners
+      .filter(({ enabled }) => enabled)
+      .forEach(({ listener }) => {
+        listener.onConnectionEstablished();
+      });
   }
   /**
    * Notify listeners when connection to server fail
    */
   connectionToServerFail(failure) {
-    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
-      listener.onConnectionToServerFail(failure);
-    });
+    this.connectionListeners
+      .filter(({ enabled }) => enabled)
+      .forEach(({ listener }) => {
+        listener.onConnectionToServerFail(failure);
+      });
   }
   /**
    * Notify listeners when connection will close
    */
   connectionWillClose() {
-    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
-      listener.onConnectionWillClose();
-    });
+    this.connectionListeners
+      .filter(({ enabled }) => enabled)
+      .forEach(({ listener }) => {
+        listener.onConnectionWillClose();
+      });
   }
   /**
    * Create a promise based service
@@ -882,9 +894,11 @@ export class ClientHelper {
       this.userId = authentication.userId;
       this.userInfo = authentication.userInfo;
     }
-    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
-      listener.onSuccessfulHandshake(authentication);
-    });
+    this.connectionListeners
+      .filter(({ enabled }) => enabled)
+      .forEach(({ listener }) => {
+        listener.onSuccessfulHandshake(authentication);
+      });
   }
   /**
    * Is client connected to ZetaPush
@@ -898,9 +912,11 @@ export class ClientHelper {
    */
   messageLost(channel, data) {
     this.cometd._debug('ClientHelper::messageLost', channel, data);
-    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
-      listener.onMessageLost(channel, data);
-    });
+    this.connectionListeners
+      .filter(({ enabled }) => enabled)
+      .forEach(({ listener }) => {
+        listener.onMessageLost(channel, data);
+      });
   }
   /**
    * Negociate authentication
@@ -908,18 +924,22 @@ export class ClientHelper {
    */
   negotiationFailed(error, ext) {
     this.cometd._debug('ClientHelper::negotiationFailed', error, ext);
-    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
-      listener.onNegotiationFailed(error, ext);
-    });
+    this.connectionListeners
+      .filter(({ enabled }) => enabled)
+      .forEach(({ listener }) => {
+        listener.onNegotiationFailed(error, ext);
+      });
   }
   /**
    * Notify listeners when no server url available
    */
   noServerUrlAvailable() {
     this.cometd._debug('ClientHelper::noServerUrlAvailable');
-    this.connectionListeners.filter(({ enabled }) => enabled).forEach(({ listener }) => {
-      listener.onNoServerUrlAvailable();
-    });
+    this.connectionListeners
+      .filter(({ enabled }) => enabled)
+      .forEach(({ listener }) => {
+        listener.onNoServerUrlAvailable();
+      });
   }
   /**
    * Wrap CometdD publish method
@@ -958,6 +978,13 @@ export class ClientHelper {
    */
   setLogLevel(level) {
     this.cometd.setLogLevel(level);
+  }
+  /**
+   * Set resource used to identify connection
+   * @param {String} resource
+   */
+  setResource(resource) {
+    this.resource = resource;
   }
   /**
    * Subsribe all methods defined in the listener for the given prefixed channel
