@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.37.4"></a>
+## [0.37.4](https://github.com/zetapush/zetapush/compare/v0.37.3...v0.37.4) (2018-12-18)
+
+
+### Bug Fixes
+
+* **email+password loss:** fix confirmation email content and fix password loss type ([2a52ea6](https://github.com/zetapush/zetapush/commit/2a52ea6))
+
+
+
+
 <a name="0.37.3"></a>
 ## [0.37.3](https://github.com/zetapush/zetapush/compare/v0.37.2...v0.37.3) (2018-12-18)
 

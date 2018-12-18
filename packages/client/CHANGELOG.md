@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.37.4"></a>
+## [0.37.4](https://github.com/zetapush/zetapush/compare/v0.37.3...v0.37.4) (2018-12-18)
+
+
+### Bug Fixes
+
+* **client:** add unimplemented method setResource on ClientHelper ([30f5fd5](https://github.com/zetapush/zetapush/commit/30f5fd5))
+
+
+
+
 <a name="0.37.3"></a>
 ## [0.37.3](https://github.com/zetapush/zetapush/compare/v0.37.2...v0.37.3) (2018-12-18)
 
