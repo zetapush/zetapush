@@ -9,6 +9,7 @@ const { displayHelp } = require('@zetapush/troubleshooting');
 const { compress } = require('../utils/compress-folder');
 const { generateProvisioningFile } = require('../utils/provisioning');
 const { getProgression } = require('../utils/progression');
+const { checkLockFile } = require('../utils/prerequisites');
 
 /**
  * Generate an archive (.zip file) used by upload process
@@ -46,7 +47,8 @@ const archive = (command, config, declaration) => {
 const push = (command, config, declaration) => {
   log(`Execute command <push> ${command.worker}`);
   info(`Bundle your application components`);
-  archive(command, config, declaration)
+  checkLockFile(command)
+    .then(() => archive(command, config, declaration))
     .then((rootArchive) => upload(fs.createReadStream(rootArchive), config))
     .then((recipe) => {
       log('Uploaded', recipe.recipeId);
