@@ -1,4 +1,4 @@
-const { error, trace, warn } = require('@zetapush/common');
+const { trace, warn } = require('@zetapush/common');
 const lockVerify = require('lock-verify');
 
 /**
@@ -25,11 +25,15 @@ const checkLockFile = (command) =>
   skipLockFileCheck()
     ? Promise.resolve(true)
     : lockVerify(command.worker).then((result) => {
+        trace('lockVerify', result);
         result.warnings.forEach((warning) => warn(warning));
         if (!result.status) {
-          error('Unable to push your worker because your package-lock.json is out sync with package.json');
-          result.errors.forEach((failure) => error(failure));
-          process.exit(1);
+          trace('Unable to push your worker because your package-lock.json is out sync with package.json');
+          throw {
+            code: 'PACKAGE_LOCK_OUT_OF_SYNC',
+            message: 'package-lock.json is out sync with package.json',
+            cause: result
+          };
         }
       });
 

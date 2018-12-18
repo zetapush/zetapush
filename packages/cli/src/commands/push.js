@@ -60,7 +60,7 @@ const push = (command, config, declaration) => {
       getProgression(config, recipeId);
     })
     .catch((failure) => {
-      error('Push failed', failure);
+      error('Unable to push your worker', failure);
       displayHelp(failure);
     });
 };
