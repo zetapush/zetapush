@@ -224,8 +224,10 @@ export interface SmsConfigurer<P> extends And<P> {
 }
 
 export interface SuccessFailureRedirectionConfigurer<P> extends And<P> {
+  // TODO: allow functions and context
   successUrl(url: string): SuccessFailureRedirectionConfigurer<P>;
 
+  // TODO: allow functions and context
   failureUrl(url: string): SuccessFailureRedirectionConfigurer<P>;
 }
 
