@@ -167,6 +167,11 @@ export const npmInit = (
     subProcessLogger.silly(`npmInit() -> exited`, { code, signal });
   });
 
+  // add node-ipc dependency to listen to started event
+  cmd.on('exit', async () => {
+    await addDependency('node-ipc@9.1.1');
+  });
+
   // replace dependencies in node_modules with symlink to local dependencies
   if (useSymlinkedDependencies()) {
     cmd.on('exit', async () => {
@@ -174,6 +179,16 @@ export const npmInit = (
     });
   }
 
+  return cmd;
+};
+
+const addDependency = async (dependency: string) => {
+  const cmd = execa('npm', ['install', dependency], { cwd: '.generated-projects' });
+  cmd.stdout.pipe(new SubProcessLoggerStream('silly'));
+  cmd.stderr.pipe(new SubProcessLoggerStream('warn'));
+  cmd.on('exit', (code: number, signal: any) => {
+    subProcessLogger.silly(`npmInit() -> exited`, { code, signal });
+  });
   return cmd;
 };
 
@@ -441,6 +456,9 @@ export const npmInstall = async (dir: PathLike, version: string, localNpmRegistr
     jsonContent.dependencies[data] = version;
   });
 
+  // add node-ipc dependency to listen to started event
+  jsonContent.dependencies['node-ipc'] = '9.1.1';
+
   writeFileSync(`${dir}/package.json`, JSON.stringify(jsonContent), {
     encoding: 'utf-8'
   });
@@ -539,6 +557,9 @@ export const npmInstallLatestVersion = async (dir: PathLike, localNpmRegistry = 
     });
     subProcessLogger.silly('\n' + restPf.stdout);
     subProcessLogger.warn('\n' + restPf.stderr);
+
+    // add node-ipc dependency to listen to started event
+    await addDependency('node-ipc@9.1.1');
 
     // replace dependencies in node_modules with symlink to local dependencies
     if (useSymlinkedDependencies()) {

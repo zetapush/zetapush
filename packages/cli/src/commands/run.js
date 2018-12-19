@@ -1,6 +1,5 @@
 const process = require('process');
 const ora = require('ora');
-const ipc = require('node-ipc');
 
 const {
   log,
@@ -42,7 +41,9 @@ const run = async (command, config, declaration) => {
     getCometdLogLevel()
   );
 
-  registerIpc(runner, command.ipc);
+  if (command.ipc) {
+    registerIpc(runner, command.ipc);
+  }
 
   const spinner = ora('Starting worker... \n');
 
@@ -158,6 +159,14 @@ const findAndRegisterLocalPorts = async (command) => {
 };
 
 const registerIpc = (runner, name) => {
+  let ipc;
+  try {
+    ipc = require('node-ipc');
+  } catch (e) {
+    error(`node-ipc not installed so testing module can't communicate with tested application`);
+    displayHelp(e);
+  }
+
   ipc.config.id = 'zetapush-worker';
   ipc.config.retry = 1500;
   ipc.config.logger = trace;
