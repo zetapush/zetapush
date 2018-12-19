@@ -19,7 +19,9 @@ export class DefaultAnnotationsConfigurer<P> extends AbstractParent<P> implement
   }
 
   validation(): ValidationConfigurer<AnnotationsConfigurer<P>> {
-    this.validationBuilder = new ClassValidatorValidationConfigurer(this, this.model);
+    if (!this.validationBuilder) {
+      this.validationBuilder = new ClassValidatorValidationConfigurer(this, this.model);
+    }
     return this.validationBuilder;
   }
 

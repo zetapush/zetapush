@@ -28,21 +28,27 @@ export class ResetPasswordConfigurerImpl extends AbstractParent<LostPasswordConf
   }
 
   ask(): AskResetPasswordConfigurer {
-    this.askResetPasswordConfigurer = new AskResetPasswordConfigurerImpl(this, this.properties, this.zetapushContext);
+    if (!this.askResetPasswordConfigurer) {
+      this.askResetPasswordConfigurer = new AskResetPasswordConfigurerImpl(this, this.properties, this.zetapushContext);
+    }
     return this.askResetPasswordConfigurer;
   }
 
   confirm(): ConfirmResetPasswordConfigurer {
-    this.confirmResetPasswordConfigurer = new ConfirmResetPasswordConfigurerImpl(
-      this,
-      this.properties,
-      this.zetapushContext
-    );
+    if (!this.confirmResetPasswordConfigurer) {
+      this.confirmResetPasswordConfigurer = new ConfirmResetPasswordConfigurerImpl(
+        this,
+        this.properties,
+        this.zetapushContext
+      );
+    }
     return this.confirmResetPasswordConfigurer;
   }
 
   token(): TokenManagerConfigurer<ResetPasswordConfigurer> {
-    this.tokenManagerConfigurer = new TokenManagerConfigurerImpl(this);
+    if (!this.tokenManagerConfigurer) {
+      this.tokenManagerConfigurer = new TokenManagerConfigurerImpl(this);
+    }
     return this.tokenManagerConfigurer;
   }
 

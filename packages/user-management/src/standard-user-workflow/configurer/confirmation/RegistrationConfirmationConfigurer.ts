@@ -81,12 +81,16 @@ export class RegistrationConfirmationConfigurerImpl extends AbstractParent<Regis
   }
 
   token(): TokenManagerConfigurer<RegistrationConfirmationConfigurer> {
-    this.tokenConfigurer = new TokenManagerConfigurerImpl(this);
+    if (!this.tokenConfigurer) {
+      this.tokenConfigurer = new TokenManagerConfigurerImpl(this);
+    }
     return this.tokenConfigurer;
   }
 
   email(): EmailConfigurer<RegistrationConfirmationConfigurer> {
-    this.emailConfigurer = new EmailConfigurerImpl(this, new Scope('confirmation-email'));
+    if (!this.emailConfigurer) {
+      this.emailConfigurer = new EmailConfigurerImpl(this, new Scope('confirmation-email'));
+    }
     return this.emailConfigurer;
   }
 
@@ -95,7 +99,9 @@ export class RegistrationConfirmationConfigurerImpl extends AbstractParent<Regis
   }
 
   redirection(): SuccessFailureRedirectionConfigurer<RegistrationConfirmationConfigurer> {
-    this.redirectionConfigurer = new SuccessFailureRedirectionConfigurerImpl(this, new Scope('confirmation'));
+    if (!this.redirectionConfigurer) {
+      this.redirectionConfigurer = new SuccessFailureRedirectionConfigurerImpl(this, new Scope('confirmation'));
+    }
     return this.redirectionConfigurer;
   }
 

@@ -38,23 +38,36 @@ export class EmailConfigurerImpl<P> extends AbstractParent<P> implements EmailCo
   }
 
   smtp(): SmtpEmailConfigurer<EmailConfigurer<P>> {
-    this.smtpConfigurer = new SmtpEmailConfigurerImpl(this, this.defaults, createTransport, this.scope.push('sender'));
+    if (!this.smtpConfigurer) {
+      this.smtpConfigurer = new SmtpEmailConfigurerImpl(
+        this,
+        this.defaults,
+        createTransport,
+        this.scope.push('sender')
+      );
+    }
     return this.smtpConfigurer;
   }
   ovh(): OvhEmailConfigurer<EmailConfigurer<P>> {
     throw new Error('Method not implemented.');
   }
   mailjet(): MailjetEmailConfigurer<EmailConfigurer<P>> {
-    this.mailjetConfigurer = new MailjetEmailConfigurerImpl(this, this.defaults, this.scope.push('sender'));
+    if (!this.mailjetConfigurer) {
+      this.mailjetConfigurer = new MailjetEmailConfigurerImpl(this, this.defaults, this.scope.push('sender'));
+    }
     return this.mailjetConfigurer;
   }
 
   htmlTemplate(): EmailTemplateConfigurer<EmailConfigurer<P>> {
-    this.htmlTemplateConfigurer = new EmailTemplateConfigurerImpl(this, this.scope.push('html'));
+    if (!this.htmlTemplateConfigurer) {
+      this.htmlTemplateConfigurer = new EmailTemplateConfigurerImpl(this, this.scope.push('html'));
+    }
     return this.htmlTemplateConfigurer;
   }
   textTemplate(): TextTemplateConfigurer<EmailConfigurer<P>> {
-    this.textTemplateConfigurer = new TextTemplateConfigurerImpl(this, this.scope.push('text'));
+    if (!this.textTemplateConfigurer) {
+      this.textTemplateConfigurer = new TextTemplateConfigurerImpl(this, this.scope.push('text'));
+    }
     return this.textTemplateConfigurer;
   }
 

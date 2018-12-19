@@ -40,17 +40,23 @@ export class StandardUserWorkflowConfigurerImpl implements StandardUserWorkflowC
   constructor(private properties: ConfigurationProperties, private zetapushContext: ZetaPushContext) {}
 
   registration(): RegistrationConfigurer {
-    this.registrationConfigurer = new RegistrationConfigurerImpl(this, this.properties, this.zetapushContext);
+    if (!this.registrationConfigurer) {
+      this.registrationConfigurer = new RegistrationConfigurerImpl(this, this.properties, this.zetapushContext);
+    }
     return this.registrationConfigurer;
   }
 
   login(): AuthenticationConfigurer {
-    this.authenticationConfigurer = new AuthenticationConfigurerImpl(this, this.properties, this.zetapushContext);
+    if (!this.authenticationConfigurer) {
+      this.authenticationConfigurer = new AuthenticationConfigurerImpl(this, this.properties, this.zetapushContext);
+    }
     return this.authenticationConfigurer;
   }
 
   lostPassword(): LostPasswordConfigurer {
-    this.lostPasswordConfigurer = new LostPasswordConfigurerImpl(this, this.properties, this.zetapushContext);
+    if (!this.lostPasswordConfigurer) {
+      this.lostPasswordConfigurer = new LostPasswordConfigurerImpl(this, this.properties, this.zetapushContext);
+    }
     return this.lostPasswordConfigurer;
   }
 
