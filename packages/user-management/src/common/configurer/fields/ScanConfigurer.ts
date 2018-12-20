@@ -19,7 +19,9 @@ export class DefaultScanConfigurer<P> extends AbstractParent<P> implements Confi
   }
 
   annotations(): AnnotationsConfigurer<ScanConfigurer<P>> {
-    this.annotationsBuilder = new DefaultAnnotationsConfigurer(this, this.model);
+    if (!this.annotationsBuilder) {
+      this.annotationsBuilder = new DefaultAnnotationsConfigurer(this, this.model);
+    }
     return this.annotationsBuilder;
   }
 

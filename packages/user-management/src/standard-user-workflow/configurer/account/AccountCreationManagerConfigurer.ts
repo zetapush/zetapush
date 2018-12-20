@@ -39,12 +39,16 @@ export class AccountCreationManagerConfigurerImpl extends AbstractParent<Registr
   }
 
   uuid(): UuidConfigurer<AccountConfigurer> {
-    this.accountUuidConfigurer = new UuidGeneratorConfigurerImpl(this);
+    if (!this.accountUuidConfigurer) {
+      this.accountUuidConfigurer = new UuidGeneratorConfigurerImpl(this);
+    }
     return this.accountUuidConfigurer;
   }
 
   initialStatus(): AccountStatusConfigurer {
-    this.initialStatusConfigurer = new AccountStatusConfigurerImpl(this);
+    if (!this.initialStatusConfigurer) {
+      this.initialStatusConfigurer = new AccountStatusConfigurerImpl(this);
+    }
     return this.initialStatusConfigurer;
   }
 

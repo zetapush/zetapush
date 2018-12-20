@@ -22,7 +22,9 @@ export class LostPasswordConfigurerImpl extends AbstractParent<StandardUserWorkf
   }
 
   reset(): ResetPasswordConfigurer {
-    this.resetPasswordConfigurer = new ResetPasswordConfigurerImpl(this, this.properties, this.zetapushContext);
+    if (!this.resetPasswordConfigurer) {
+      this.resetPasswordConfigurer = new ResetPasswordConfigurerImpl(this, this.properties, this.zetapushContext);
+    }
     return this.resetPasswordConfigurer;
   }
 

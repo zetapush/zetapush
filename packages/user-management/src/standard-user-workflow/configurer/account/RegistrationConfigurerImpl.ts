@@ -26,7 +26,9 @@ export class RegistrationConfigurerImpl extends AbstractParent<StandardUserWorkf
   }
 
   account(): AccountConfigurer {
-    this.accountConfigurer = new AccountCreationManagerConfigurerImpl(this);
+    if (!this.accountConfigurer) {
+      this.accountConfigurer = new AccountCreationManagerConfigurerImpl(this);
+    }
     return this.accountConfigurer;
   }
 
@@ -35,11 +37,13 @@ export class RegistrationConfigurerImpl extends AbstractParent<StandardUserWorkf
   }
 
   confirmation(): RegistrationConfirmationConfigurer {
-    this.confirmationConfigurer = new RegistrationConfirmationConfigurerImpl(
-      this,
-      this.properties,
-      this.zetapushContext
-    );
+    if (!this.confirmationConfigurer) {
+      this.confirmationConfigurer = new RegistrationConfirmationConfigurerImpl(
+        this,
+        this.properties,
+        this.zetapushContext
+      );
+    }
     return this.confirmationConfigurer;
   }
 

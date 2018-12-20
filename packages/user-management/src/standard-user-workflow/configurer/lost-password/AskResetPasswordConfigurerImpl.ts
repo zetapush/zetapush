@@ -57,7 +57,9 @@ export class AskResetPasswordConfigurerImpl extends AbstractParent<ResetPassword
   }
 
   email(): EmailConfigurer<AskResetPasswordConfigurer> {
-    this.emailConfigurer = new EmailConfigurerImpl(this, new Scope('ask-reset-password-email'));
+    if (!this.emailConfigurer) {
+      this.emailConfigurer = new EmailConfigurerImpl(this, new Scope('ask-reset-password-email'));
+    }
     return this.emailConfigurer;
   }
 

@@ -19,7 +19,9 @@ export class DefaultFieldsConfigurer<P> extends AbstractParent<P> implements Con
   }
 
   scan(model: Type<any>): ScanConfigurer<FieldsConfigurer<P>> {
-    this.scanBuilder = new DefaultScanConfigurer(this, model);
+    if (!this.scanBuilder) {
+      this.scanBuilder = new DefaultScanConfigurer(this, model);
+    }
     return this.scanBuilder();
   }
 
