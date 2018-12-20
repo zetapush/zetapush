@@ -1,5 +1,6 @@
 import { RequestContext } from '@zetapush/core';
 import { Authentication, Client, uuid, ConnectionStatusListener } from '@zetapush/client';
+import { trace } from '@zetapush/common';
 import { Queue, QueueTask, TaskRequest } from '@zetapush/platform-legacy';
 import { LogLevel, Logs } from '@zetapush/platform-legacy';
 import { WorkerInstance, TaskDispatcherWorkerInstance } from '../utils/worker-instance';
@@ -20,6 +21,7 @@ export interface WorkerClientOptions {
   resource: string;
   timeout: number;
   capacity: number;
+  maxConnectionAttempts: number;
   grabAllTraffic: boolean;
 }
 
@@ -40,6 +42,10 @@ export class WorkerClient extends Client {
    * Worker capacity
    */
   private capacity: number;
+  /**
+   * Max connection attempts
+   */
+  private maxConnectionAttempts: number;
   /**
    * Worker task timeout
    */
@@ -70,7 +76,8 @@ export class WorkerClient extends Client {
       resource = `node_js_worker_${uuid()}`,
       timeout = 60 * 1000,
       capacity = 100,
-      grabAllTraffic = false
+      grabAllTraffic = false,
+      maxConnectionAttempts = 25
     }: WorkerClientOptions,
     workerInstanceFactory?: WorkerInstanceFactory
   ) {
@@ -98,6 +105,11 @@ export class WorkerClient extends Client {
      * @access private
      * @type {number}
      */
+    this.maxConnectionAttempts = maxConnectionAttempts;
+    /**
+     * @access private
+     * @type {number}
+     */
     this.timeout = timeout;
     /**
      * @access private
@@ -118,31 +130,58 @@ export class WorkerClient extends Client {
     };
 
     this.addConnectionStatusListener(<any>{
+      onConnectionBroken: () => {
+        trace('onConnectionBroken');
+        // Worker must be registered with a unique resource
+        this.setResource(`node_js_worker_${uuid()}`);
+      },
       onConnectionEstablished: () => {
+        trace('onConnectionEstablished');
         this.registerWorker();
       }
     });
   }
-
+  connect() {
+    // Worker must be registered with a unique resource
+    this.setResource(`node_js_worker_${uuid()}`);
+    // Connect
+    return super.connect();
+  }
   async registerWorker() {
     if (this.queue) {
-      try {
-        // Worker must be registered with a unique resource
-        this.setResource(`node_js_worker_${uuid()}`);
-        // Register worker on queue service
-        this.queue.register({
-          capacity: this.capacity,
-          routing: {
-            exclusive: this.options.grabAllTraffic
-          }
-        });
-      } catch (ex) {
-        const exception = {
-          code: 'WORKER_INSTANCE_REGISTER_FAILED',
-          message: 'Unable to correctly register worker instance',
-          cause: ex
-        };
-        throw exception;
+      let registered = null;
+      let attempts = 0;
+      let exception;
+      while (registered === null) {
+        // Increase attempts counter
+        ++attempts;
+        try {
+          trace('Try to register on queue service', {
+            attempts,
+            capacity: this.capacity,
+            routing: {
+              exclusive: this.options.grabAllTraffic
+            }
+          });
+          // Register worker on queue service
+          registered = await this.queue.register({
+            capacity: this.capacity,
+            routing: {
+              exclusive: this.options.grabAllTraffic
+            }
+          });
+          trace('Register on queue service success', { attempts });
+        } catch (ex) {
+          trace('Register on queue service failed');
+          exception = {
+            code: 'WORKER_INSTANCE_REGISTER_FAILED',
+            message: 'Unable to correctly register worker instance',
+            cause: ex
+          };
+        }
+        if (attempts > this.maxConnectionAttempts) {
+          throw exception;
+        }
       }
     }
   }
