@@ -14,5 +14,6 @@ export { InjectionIssueAnalyzer } from './analyzer/injection-issue';
 export { CustomCloudServiceStartErrorAnalyzer } from './analyzer/custom-cloud-service-start-issue';
 export { OnApplicationBoostrapErrorAnalyser } from './analyzer/bootstrap-issue';
 export { WorkerRegisterErrorAnalyser } from './analyzer/worker-register-issue';
+export { PackageSyncErrorAnalyser } from './analyzer/package-sync';
 
 export const errorHelper = ErrorHelper.getInstance(() => new CacheErrorHelper(new HttpDownloadErrorHelper(), false));
