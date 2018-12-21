@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.37.5"></a>
+## [0.37.5](https://github.com/zetapush/zetapush/compare/v0.37.1...v0.37.5) (2018-12-21)
+
+
+### Bug Fixes
+
+* **email+password loss:** fix confirmation email content and fix password loss type ([2a52ea6](https://github.com/zetapush/zetapush/commit/2a52ea6))
+* **user-management:** fix configurer override ([c61eb1b](https://github.com/zetapush/zetapush/commit/c61eb1b))
+
+
+### Features
+
+* **context:** allow to configure relative URL to benefit from auto conf ([2420240](https://github.com/zetapush/zetapush/commit/2420240))
+
+
+
+
 <a name="0.37.4"></a>
 ## [0.37.4](https://github.com/zetapush/zetapush/compare/v0.37.3...v0.37.4) (2018-12-18)
 
