@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/core",
-  "version": "0.37.5",
+  "version": "0.37.6",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-core.js",
   "main": "lib/index.js",

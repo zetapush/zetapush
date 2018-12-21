@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.37.6"></a>
+## [0.37.6](https://github.com/zetapush/zetapush/compare/v0.37.1...v0.37.6) (2018-12-21)
+
+
+### Features
+
+* **cli:** check synchronisity between package-lock.json and package.json ([18074d9](https://github.com/zetapush/zetapush/commit/18074d9))
+* **cli:** disable Cache-Control for served html files ([59e04cb](https://github.com/zetapush/zetapush/commit/59e04cb))
+* **cli:** handle promise rejection with a warning message ([b9d79de](https://github.com/zetapush/zetapush/commit/b9d79de))
+* **CLI:** add 'config' command to set or get the current config ([7b03885](https://github.com/zetapush/zetapush/commit/7b03885))
+* **context:** allow to configure relative URL to benefit from auto conf ([2420240](https://github.com/zetapush/zetapush/commit/2420240))
+* **push:** add troubleshooting section for PACKAGE_LOCK_OUT_OF_SYNC error ([0fbf6ba](https://github.com/zetapush/zetapush/commit/0fbf6ba))
+
+
+
+
 <a name="0.37.5"></a>
 ## [0.37.5](https://github.com/zetapush/zetapush/compare/v0.37.1...v0.37.5) (2018-12-21)
 

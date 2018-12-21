@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.37.6"></a>
+## [0.37.6](https://github.com/zetapush/zetapush/compare/v0.37.1...v0.37.6) (2018-12-21)
+
+
+
+
+**Note:** Version bump only for package @zetapush/http-server
+
 <a name="0.37.5"></a>
 ## [0.37.5](https://github.com/zetapush/zetapush/compare/v0.37.1...v0.37.5) (2018-12-21)
 

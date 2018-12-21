@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.37.6"></a>
+## [0.37.6](https://github.com/zetapush/zetapush/compare/v0.37.1...v0.37.6) (2018-12-21)
+
+
+### Bug Fixes
+
+* **client:** add unimplemented method setResource on ClientHelper ([30f5fd5](https://github.com/zetapush/zetapush/commit/30f5fd5))
+
+
+### Features
+
+* **CLI:** add 'config' command to set or get the current config ([7b03885](https://github.com/zetapush/zetapush/commit/7b03885))
+* **client:** use dynamic version instead of static version ([53ff4a7](https://github.com/zetapush/zetapush/commit/53ff4a7))
+* **stability:** implements auto register after server reboot ([a636af7](https://github.com/zetapush/zetapush/commit/a636af7))
+
+
+
+
 <a name="0.37.5"></a>
 ## [0.37.5](https://github.com/zetapush/zetapush/compare/v0.37.1...v0.37.5) (2018-12-21)
 

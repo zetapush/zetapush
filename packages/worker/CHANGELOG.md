@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.37.6"></a>
+## [0.37.6](https://github.com/zetapush/zetapush/compare/v0.37.1...v0.37.6) (2018-12-21)
+
+
+### Bug Fixes
+
+* **Worker:** fix auto register after platform reboot ([ac9b1be](https://github.com/zetapush/zetapush/commit/ac9b1be))
+
+
+### Features
+
+* **stability:** implements auto register after server reboot ([a636af7](https://github.com/zetapush/zetapush/commit/a636af7))
+* **worker:** update resource before each register ([66606ed](https://github.com/zetapush/zetapush/commit/66606ed))
+
+
+
+
 <a name="0.37.5"></a>
 ## [0.37.5](https://github.com/zetapush/zetapush/compare/v0.37.1...v0.37.5) (2018-12-21)
 
