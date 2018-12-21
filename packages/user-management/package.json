@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/user-management",
-  "version": "0.37.6",
+  "version": "0.37.7",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-user-management.js",
   "main": "lib/index.js",
@@ -31,11 +31,11 @@
     "build:api-doc": "typedoc --out ./docs ./src/index.ts"
   },
   "dependencies": {
-    "@zetapush/client": "0.37.6",
-    "@zetapush/common": "0.37.6",
-    "@zetapush/core": "0.37.6",
-    "@zetapush/http-server": "0.37.6",
-    "@zetapush/platform-legacy": "0.37.6",
+    "@zetapush/client": "0.37.7",
+    "@zetapush/common": "0.37.7",
+    "@zetapush/core": "0.37.7",
+    "@zetapush/http-server": "0.37.7",
+    "@zetapush/platform-legacy": "0.37.7",
     "axios": "0.19.0-beta.1",
     "class-validator": "0.9.1",
     "nodemailer": "4.7.0"
@@ -43,8 +43,8 @@
   "devDependencies": {
     "@types/jasmine": "3.3.0",
     "@types/nodemailer": "4.6.5",
-    "@zetapush/testing": "0.37.6",
-    "@zetapush/worker": "0.37.6",
+    "@zetapush/testing": "0.37.7",
+    "@zetapush/worker": "0.37.7",
     "axios-mock-adapter": "1.15.0",
     "catharsis": "0.8.9",
     "cross-env": "5.2.0",
