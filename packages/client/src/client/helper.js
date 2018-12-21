@@ -1,21 +1,31 @@
 import { CometD, Transports } from '@zetapush/cometd';
 import { Macro, Queue } from '@zetapush/platform-legacy';
 import { ConnectionStatusListener } from '../connection/connection-status.js';
-import { getSandboxConfig, isDerivedOf, merge, shuffle, uuid, timeoutify } from '../utils/index.js';
+import {
+  getInstanceMethodNames,
+  getSandboxConfig,
+  isDerivedOf,
+  merge,
+  shuffle,
+  uuid,
+  timeoutify
+} from '../utils/index.js';
 
 class Timeout {
   static wrap(instance, timeout) {
-    for (let method in instance) {
-      if (typeof instance[method] === 'function' && (method !== '$publish' || method !== 'constructor')) {
-        const wrapper = function wrapper(wrapped, context) {
-          return function anonymous(...parameters) {
-            const task = () => wrapped.apply(context, parameters);
-            return task();
-          };
-        };
-        instance[method] = wrapper(instance[method], instance, timeout);
-      }
-    }
+    const methods = getInstanceMethodNames(instance);
+    methods
+      .filter((method) => !['$publish'].includes(method))
+      .forEach((method) => {
+        const task = instance[method];
+        instance[method] = timeoutify(
+          function(...parameters) {
+            return task.apply(instance, parameters);
+          },
+          timeout,
+          method
+        );
+      });
     return instance;
   }
 }
