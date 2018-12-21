@@ -126,7 +126,8 @@ export class WorkerClient extends Client {
       resource,
       timeout,
       capacity,
-      grabAllTraffic
+      grabAllTraffic,
+      maxConnectionAttempts
     };
 
     this.addConnectionStatusListener(<any>{
