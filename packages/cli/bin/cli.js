@@ -5,7 +5,7 @@ require('ts-node').register({
   ignore: '/node_modules/'
 });
 // Handle promise rejection
-require('./helper/handle-promise-rejection');
+require('../src/helper/handle-promise-rejection');
 
 const program = require('commander');
 
