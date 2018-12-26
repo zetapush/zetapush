@@ -12,6 +12,8 @@ import { PassThrough } from 'stream';
 import { FrontOptions } from './types';
 import { debugObject } from '@zetapush/common';
 import { getZetaFilePath } from '@zetapush/common';
+import { Socket } from 'dgram';
+const ipc = require('node-ipc');
 
 const PLATFORM_URL = 'https://celtia.zetapush.com/zbo/pub/business';
 
@@ -165,6 +167,11 @@ export const npmInit = (
     subProcessLogger.silly(`npmInit() -> exited`, { code, signal });
   });
 
+  // add node-ipc dependency to listen to started event
+  cmd.on('exit', async () => {
+    await addDependency('node-ipc@9.1.1');
+  });
+
   // replace dependencies in node_modules with symlink to local dependencies
   if (useSymlinkedDependencies()) {
     cmd.on('exit', async () => {
@@ -172,6 +179,16 @@ export const npmInit = (
     });
   }
 
+  return cmd;
+};
+
+const addDependency = async (dependency: string) => {
+  const cmd = execa('npm', ['install', dependency], { cwd: '.generated-projects' });
+  cmd.stdout.pipe(new SubProcessLoggerStream('silly'));
+  cmd.stderr.pipe(new SubProcessLoggerStream('warn'));
+  cmd.on('exit', (code: number, signal: any) => {
+    subProcessLogger.silly(`npmInit() -> exited`, { code, signal });
+  });
   return cmd;
 };
 
@@ -439,6 +456,9 @@ export const npmInstall = async (dir: PathLike, version: string, localNpmRegistr
     jsonContent.dependencies[data] = version;
   });
 
+  // add node-ipc dependency to listen to started event
+  jsonContent.dependencies['node-ipc'] = '9.1.1';
+
   writeFileSync(`${dir}/package.json`, JSON.stringify(jsonContent), {
     encoding: 'utf-8'
   });
@@ -537,6 +557,9 @@ export const npmInstallLatestVersion = async (dir: PathLike, localNpmRegistry = 
     });
     subProcessLogger.silly('\n' + restPf.stdout);
     subProcessLogger.warn('\n' + restPf.stderr);
+
+    // add node-ipc dependency to listen to started event
+    await addDependency('node-ipc@9.1.1');
 
     // replace dependencies in node_modules with symlink to local dependencies
     if (useSymlinkedDependencies()) {
@@ -659,13 +682,17 @@ export const nukeApp = (zetarc: ResolvedConfig) => {
 export class Runner {
   private cmd?: ExecaChildProcess;
   private runExitCode = 0;
+  private localWorkerStarted = false;
+  private ipcId: string;
 
   constructor(
     private dir: string,
     private timeout = 300000,
     private localNpmRegistry: string = 'https://registry.npmjs.org',
     private frontOptions?: FrontOptions
-  ) {}
+  ) {
+    this.ipcId = `zetapush-testing-${Date.now()}`;
+  }
 
   async waitForWorkerUp() {
     commandLogger.debug('Runner:waitForWorkerUp()');
@@ -717,6 +744,7 @@ export class Runner {
   private isReady(response: any) {
     const nodes = Object.values(response.nodes);
     return (
+      this.localWorkerStarted &&
       nodes
         // { nodes: { str1: { items: { logs_0: { itemId: "logs", ...}, weak_0: { itemId: "weak", ... } } } }
         // -> [{ itemId: "logs", ...}, { itemId: "weak", ... }]
@@ -728,6 +756,7 @@ export class Runner {
 
   stop() {
     return new Promise((resolve) => {
+      ipc.server.stop();
       if (!this.cmd) {
         return resolve();
       }
@@ -738,8 +767,9 @@ export class Runner {
   }
 
   run(quiet = false) {
-    commandLogger.info(`Runner:run() -> [npm run start -- ${zpLogLevel()} ${this.serveFront()}]`);
-    this.cmd = execa.shell(`npm run start -- ${zpLogLevel()} ${this.serveFront()}`, {
+    this.startIpcServer();
+    commandLogger.info(`Runner:run() -> [npm run start -- ${zpLogLevel()} ${this.serveFront()} --ipc ${this.ipcId}]`);
+    this.cmd = execa.shell(`npm run start -- ${zpLogLevel()} ${this.serveFront()} --ipc ${this.ipcId}`, {
       cwd: this.dir
     });
     if (this.cmd && !quiet) {
@@ -750,6 +780,19 @@ export class Runner {
       this.cmd.once('close', (code) => (this.runExitCode = code));
     }
     return this.cmd;
+  }
+
+  private startIpcServer() {
+    ipc.config.id = this.ipcId;
+    ipc.config.retry = 1500;
+    ipc.config.logger = commandLogger.silly;
+
+    ipc.serve(() => {
+      ipc.server.on('worker-started', (data: string, socket: Socket) => {
+        this.localWorkerStarted = true;
+      });
+    });
+    ipc.server.start();
   }
 
   private serveFront() {
