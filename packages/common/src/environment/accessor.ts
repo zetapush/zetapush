@@ -5,9 +5,12 @@ export class PropertyAccessorWrapper {
     if (!prop) {
       return !!this.obj;
     }
-    const parts = this.parts(prop);
     let current = this.obj;
+    const parts = this.parts(prop);
     for (let part of parts) {
+      if (current === null || typeof current === 'undefined') {
+        return false;
+      }
       if (!(part in current)) {
         return false;
       }
@@ -20,9 +23,12 @@ export class PropertyAccessorWrapper {
     if (!prop) {
       return this.obj;
     }
-    const parts = this.parts(prop);
     let current = this.obj;
+    const parts = this.parts(prop);
     for (let part of parts) {
+      if (current === null || typeof current === 'undefined') {
+        return current;
+      }
       if (!(part in current)) {
         return null;
       }

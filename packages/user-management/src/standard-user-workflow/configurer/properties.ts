@@ -8,15 +8,14 @@ export enum EmailPropertyKeys {
 }
 
 export enum RegistrationConfirmationPropertyKeys {
-  BaseUrl = 'registration.confirmation.base-url',
   EmailFrom = 'registration.confirmation.email.from',
   EmailSubject = 'registration.confirmation.email.subject',
+  AccountConfirmationUrl = 'registration.confirmation.confirm-url',
   AccountConfirmedRedirectionUrl = 'registration.confirmation.success-url',
   AccountConfirmationFailedRedirectionUrl = 'registration.confirmation.failure-url'
 }
 
 export enum ResetPasswordPropertiesKeys {
-  BaseUrl = 'reset-password.ask.base-url',
   AskUrl = 'reset-password.ask.url',
   EmailFrom = 'reset-password.ask.email.from',
   EmailSubject = 'reset-password.ask.email.subject'

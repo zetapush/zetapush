@@ -6,7 +6,8 @@ import {
   PushedEnvironmentProvider,
   ResolvedConfig,
   ServerClient,
-  LocalServerRegistry
+  LocalServerRegistry,
+  CURRENT_WORKER_NAME
 } from '../../../src';
 import { mock, instance, when, anything } from 'ts-mockito';
 import { Environment, ZetaPushContext } from '@zetapush/core';
@@ -185,6 +186,12 @@ describe(`defaultEnvironmentProvider()`, () => {
                 it(`returns null`, async () => {
                   const { context } = await this.provider.get(instance(this.client), instance(this.queueApi));
                   expect(context.getWorkerUrl('unexisting')).toBeNull();
+                });
+              });
+              describe(`with default name and internal server`, () => {
+                it(`returns worker url from cloud for internal server`, async () => {
+                  const { context } = await this.provider.get(instance(this.client), instance(this.queueApi));
+                  expect(context.getWorkerUrl(CURRENT_WORKER_NAME, true)).toBe('http://worker.zetapush.app/@zetapush');
                 });
               });
             });
