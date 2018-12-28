@@ -89,7 +89,7 @@ describe(`TemplatedMessageAccountConfirmationManager`, () => {
           /**/ .dependencies(AccountConfirmationManagerInjectable)
           /**/ .and()
           .apply(this);
-      });
+      }, 5 * 60 * 1000);
 
       it(
         `sends the email to the account to confirm`,

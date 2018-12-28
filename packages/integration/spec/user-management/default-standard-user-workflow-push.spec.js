@@ -29,7 +29,7 @@ describe(`default StandardUserWorkflow published on cloud`, () => {
           /*  */ .pushed()
           /*  */ .and()
           /**/ .apply(this);
-      });
+      }, 10 * 60 * 1000);
 
       it(
         `allows connection of the user`,

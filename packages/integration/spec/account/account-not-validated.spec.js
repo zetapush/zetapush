@@ -18,7 +18,7 @@ describe(`As developer with
       /*     */ .and()
       /*   */ .and()
       /**/ .apply(this);
-  }, 30 * 60 * 1000);
+  }, 10 * 60 * 1000);
 
   it(
     "Should fail with errorCode 'ACCOUNT-05' (55) for 'zeta push'",
@@ -28,7 +28,7 @@ describe(`As developer with
         expect(code).toBe(errorCode);
       });
     },
-    20 * 60 * 1000
+    10 * 60 * 1000
   );
 
   it(
@@ -39,6 +39,6 @@ describe(`As developer with
         expect(code).toBe(errorCode);
       });
     },
-    15 * 60 * 1000
+    10 * 60 * 1000
   );
 });

@@ -47,7 +47,7 @@ describe(`SmtpHttpEmailSender`, () => {
           /**/ .dependencies(scopedDependency('testing', MessageSenderInjectable))
           /**/ .and()
           .apply(this);
-      });
+      }, 5 * 60 * 1000);
 
       it(`sends the email through SMTP configuration`, async () => {
         await runInWorker(this, async (sender: MessageSender) => {

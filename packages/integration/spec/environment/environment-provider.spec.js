@@ -24,7 +24,7 @@ describe(`Injected environment`, () => {
           /*  */ .serve()
           /*  */ .and()
           /**/ .apply(this);
-      });
+      }, 10 * 60 * 1000);
 
       it(`injects both front and worker local urls`, async () => {
         await frontAction(this)
@@ -56,7 +56,7 @@ describe(`Injected environment`, () => {
           /*  */ .up()
           /*  */ .and()
           /**/ .apply(this);
-      });
+      }, 10 * 60 * 1000);
 
       it(`injects local worker url`, async () => {
         await frontAction(this)
@@ -109,7 +109,7 @@ describe(`Injected environment`, () => {
         /*  */ .pushed()
         /*  */ .and()
         /**/ .apply(this);
-    });
+    }, 10 * 60 * 1000);
 
     xit(`injects both front and worker cloud urls`, async () => {
       await frontAction(this)

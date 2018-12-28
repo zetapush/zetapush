@@ -123,7 +123,7 @@ describe(`StandardAccountConfirmation`, () => {
           /**/ .dependencies(StandardUserWorkflow, Simple, ConfirmationUrlHttpHandler)
           /**/ .and()
           .apply(this);
-      });
+      }, 5 * 60 * 1000);
 
       it(
         `creates the account and validate it`,

@@ -134,7 +134,7 @@ describe(`As developer with
           /*  */ .pushed()
           /*  */ .and()
           /**/ .apply(this);
-      });
+      }, 10 * 60 * 1000);
 
       it(
         `allows connection of the user`,

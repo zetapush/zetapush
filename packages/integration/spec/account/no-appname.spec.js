@@ -44,6 +44,6 @@ describe(`As developer with
           expect(PATTERN.test(message)).toBe(true);
         });
     },
-    15 * 60 * 1000
+    10 * 60 * 1000
   );
 });

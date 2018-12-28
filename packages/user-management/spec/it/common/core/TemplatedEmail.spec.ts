@@ -66,7 +66,7 @@ describe(`TemplatedEmail`, () => {
             ])
             /**/ .and()
             .apply(this);
-        });
+        }, 5 * 60 * 1000);
 
         it(`sends the email through mailjet`, async () => {
           await runInWorker(

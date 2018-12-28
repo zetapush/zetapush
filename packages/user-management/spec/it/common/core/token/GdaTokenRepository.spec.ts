@@ -20,7 +20,7 @@ describe(`GdaTokenRepository`, () => {
       /**/ .dependencies(Gda, GdaConfigurer, TokenFactory)
       /**/ .and()
       .apply(this);
-  });
+  }, 5 * 60 * 1000);
 
   afterEach(async () => {
     await autoclean(this);

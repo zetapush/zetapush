@@ -36,7 +36,7 @@ describe(`StandardAccountAuthentication`, () => {
           .dependencies(AccountCreationManagerInjectable, LegacyAdapterUserRepository)
           .and()
           .apply(this);
-      });
+      }, 5 * 60 * 1000);
 
       describe(`On valid authentication`, () => {
         it(

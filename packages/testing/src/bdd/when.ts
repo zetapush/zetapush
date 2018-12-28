@@ -126,15 +126,15 @@ export const runInWorker = (testOrContext: Context, workerDeclaration: (...insta
       });
 
       runner.on(WorkerRunnerEvents.UPLOAD_FAILED, ({ failure }: any) => {
-        runInWorkerLogger.error('Worker upload failed');
+        runInWorkerLogger.error('Worker upload failed', failure);
         runner.destroy();
         reject(failure);
       });
-      runner.on(WorkerRunnerEvents.CONFIGURE_APP_FAILED, () =>
-        runInWorkerLogger.warn(`Application configuration failed (onApplicationBootstrap)...`)
+      runner.on(WorkerRunnerEvents.CONFIGURE_APP_FAILED, ({ failure }: any) =>
+        runInWorkerLogger.warn(`Application configuration failed (onApplicationBootstrap)...`, failure)
       );
       runner.on(WorkerRunnerEvents.START_FAILED, ({ failure }: any) => {
-        runInWorkerLogger.error('Worker start failed');
+        runInWorkerLogger.error('Worker start failed', failure);
         runner.destroy();
         reject(failure);
       });

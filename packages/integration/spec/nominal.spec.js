@@ -14,7 +14,7 @@ describe(`As developer with
     this.platformUrl = process.env.ZETAPUSH_PLATFORM_URL;
     // clean
     await rm(fullPathProject);
-  });
+  }, 10 * 60 * 1000);
 
   afterEach(async () => {
     try {

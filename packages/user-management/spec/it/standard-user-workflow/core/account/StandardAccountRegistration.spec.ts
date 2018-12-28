@@ -120,7 +120,7 @@ describe(`StandardAccountRegistration`, () => {
           /**/ .dependencies(StandardUserWorkflow, Simple, ConfirmationUrlHttpHandler)
           /**/ .and()
           .apply(this);
-      });
+      }, 5 * 60 * 1000);
 
       it(
         `creates the account and send an email with confirmation link to the email address of the user`,

@@ -19,7 +19,7 @@ describe(`Front calling API methods`, () => {
       /*   */ .up()
       /*   */ .and()
       /**/ .apply(this);
-  });
+  }, 10 * 60 * 1000);
 
   it(
     `receives values returned by worker API`,

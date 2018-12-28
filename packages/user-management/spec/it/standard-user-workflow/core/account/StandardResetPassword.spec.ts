@@ -168,7 +168,7 @@ describe(`StandardResetPassword`, () => {
           /**/ .dependencies(StandardUserWorkflow, Simple, ConfirmationUrlHttpHandler)
           /**/ .and()
           .apply(this);
-      });
+      }, 5 * 60 * 1000);
 
       it(
         `Ask to reset password`,

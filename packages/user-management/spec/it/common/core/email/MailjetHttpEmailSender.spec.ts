@@ -47,7 +47,7 @@ describe(`MailjetHttpEmailSender`, () => {
           /**/ .dependencies(scopedDependency('testing', MessageSenderInjectable))
           /**/ .and()
           .apply(this);
-      });
+      }, 5 * 60 * 1000);
 
       it(`sends the email through mailjet`, async () => {
         await runInWorker(this, async (sender: MessageSender) => {

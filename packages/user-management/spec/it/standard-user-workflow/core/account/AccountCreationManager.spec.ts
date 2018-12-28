@@ -42,7 +42,7 @@ describe(`AccountCreationManager`, () => {
           /**/ .dependencies(AccountCreationManagerInjectable, Simple, Gda)
           /**/ .and()
           .apply(this);
-      });
+      }, 5 * 60 * 1000);
 
       describe(`on a valid account`, () => {
         it(

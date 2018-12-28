@@ -113,19 +113,21 @@ class Given {
         localNpmRegistry = resultNpmDependencies.npmRegistry;
         processLocalRegistry = resultNpmDependencies.processVerdaccio;
       }
+      let nukeProject = false;
+      let nukeApp = false;
       givenLogger.debug(`>> Apply Given`);
       if (this.givenCredentials) {
-        Object.assign(this.sharedCredentials, await this.givenCredentials.execute());
+        let credentials = await this.givenCredentials.execute();
+        Object.assign(this.sharedCredentials, credentials);
+        nukeApp = credentials.nukeApp;
       }
 
       let projectDir;
-      let nukeProject = false;
-      let nukeApp = false;
       if (this.givenApp) {
         const givenApp = await this.givenApp.execute(localNpmRegistry);
         projectDir = givenApp.projectDir;
-        nukeProject = givenApp.nukeProject;
-        nukeApp = givenApp.nukeApp;
+        nukeProject = nukeProject || givenApp.nukeProject;
+        nukeApp = nukeApp || givenApp.nukeApp;
       }
       let frontOptions;
       if (this.givenFront) {
@@ -598,6 +600,7 @@ class GivenCredentials extends Parent<Given> {
   }
 
   async execute() {
+    let nukeApp = false;
     if (this.zetarc) {
       const zetarc = await readZetarc('.');
       this.developerLogin = zetarc.developerLogin;
@@ -612,12 +615,14 @@ class GivenCredentials extends Parent<Given> {
         platformUrl: this.url
       });
       this.appName = appName;
+      nukeApp = true;
     }
     return {
       developerLogin: this.developerLogin,
       developerPassword: this.developerPassword,
       platformUrl: this.url,
-      appName: this.appName
+      appName: this.appName,
+      nukeApp
     };
   }
 }
