@@ -75,7 +75,7 @@ describe(`StandardResetPassword`, () => {
         this.properties = mock(MockedConfigurationProperties);
         this.zetapushContext = mock(MockedZetaPushContext);
         when(this.zetapushContext.getLocalZetaPushHttpPort()).thenReturn(2999);
-        when(this.properties.get(ResetPasswordPropertiesKeys.BaseUrl, anyString())).thenReturn('http://locahost:8000');
+        when(this.properties.get(ResetPasswordPropertiesKeys.AskUrl, anyString())).thenReturn('http://locahost:8000');
         when(this.zetapushContext.getFrontUrl()).thenReturn('http://locahost:8000');
         await given()
           .credentials()
