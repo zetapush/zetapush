@@ -416,7 +416,8 @@ export class WorkerRunner extends EventEmitter {
 
   private getQueueApi(client: WorkerClient) {
     return client.createAsyncService({
-      Type: Queue
+      Type: Queue,
+      timeout: 60000
     });
   }
 
