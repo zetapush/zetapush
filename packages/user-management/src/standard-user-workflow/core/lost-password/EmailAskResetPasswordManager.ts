@@ -69,7 +69,7 @@ export class EmailAskResetPasswordManager implements AskResetPasswordManager {
       const email = await this.emailAddressProvider.getEmailAddress(account);
       const variables = await this.variablesProvider.getVariables({
         account,
-        token
+        token: token.value
       });
 
       const askResetPasswordUrl = await this.urlProvider.getUrl(variables);

@@ -3,15 +3,23 @@
     "name": "ZetaPush"
   },
   "email": {
-    "from": "celtia@zetapush.com"
+    "from": "TOTO <celtia@zetapush.com>"
   },
   "registration": {
     "confirmation": {
       "email": {
         "subject": "Please confirm your account registration"
       },
-      "success-url": "http://localhost:3000/#login",
-      "failure-url": "http://localhost:3000/#confirmation-failed"
+      "success-url": "#login",
+      "failure-url": "#confirmation-failed"
+    }
+  },
+  "reset-password": {
+    "ask": {
+      "url": "#ask-reset-password/${token}",
+      "email": {
+        "subject": "Please choose a new password"
+      }
     }
   },
   "mailjet": {
