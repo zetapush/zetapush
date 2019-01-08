@@ -15,7 +15,7 @@ import { getZetaFilePath } from '@zetapush/common';
 import { Socket } from 'dgram';
 const ipc = require('node-ipc');
 
-const PLATFORM_URL = 'https://celtia.zetapush.com/zbo/pub/business';
+const PLATFORM_URL = 'https://zbo.zpush.io/zbo/pub/business';
 
 export const rm = (path: PathLike) =>
   new Promise((resolve, reject) => rimraf(path.toString(), (failure: any) => (failure ? reject(failure) : resolve())));
