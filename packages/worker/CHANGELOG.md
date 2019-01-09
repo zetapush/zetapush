@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="0.38.0"></a>
+# [0.38.0](https://github.com/zetapush/zetapush/compare/v0.37.7...v0.38.0) (2019-01-09)
+
+
+### Bug Fixes
+
+* **createServices:** increase the timeout of the createServices call ([b27a263](https://github.com/zetapush/zetapush/commit/b27a263))
+* **StandardUserWorkflow:** fix email templating for reset password ([943dc30](https://github.com/zetapush/zetapush/commit/943dc30))
+
+
+
+
 <a name="0.37.7"></a>
 ## [0.37.7](https://github.com/zetapush/zetapush/compare/v0.37.6...v0.37.7) (2018-12-21)
 

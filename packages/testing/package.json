@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/testing",
-  "version": "0.37.7",
+  "version": "0.38.0",
   "description": "Zeta Push Next",
   "browser": "dist/zetapush-testing.js",
   "main": "lib/index.js",
@@ -26,21 +26,21 @@
     "prepare": "npm run clean && npm run build"
   },
   "dependencies": {
-    "@zetapush/client": "0.37.7",
-    "@zetapush/cometd": "0.37.7",
-    "@zetapush/common": "0.37.7",
-    "@zetapush/core": "0.37.7",
-    "@zetapush/worker": "0.37.7",
+    "@zetapush/client": "0.38.0",
+    "@zetapush/cometd": "0.38.0",
+    "@zetapush/common": "0.38.0",
+    "@zetapush/core": "0.38.0",
+    "@zetapush/worker": "0.38.0",
     "chalk": "2.4.1",
     "copy-dir": "0.4.0",
     "execa": "1.0.0",
     "find-free-port": "2.0.0",
-    "rimraf": "2.6.2",
-    "tree-kill": "1.2.1",
-    "winston": "3.1.0",
     "find-in-files": "0.5.0",
     "find-up": "3.0.0",
-    "node-ipc": "9.1.1"
+    "node-ipc": "9.1.1",
+    "rimraf": "2.6.2",
+    "tree-kill": "1.2.1",
+    "winston": "3.1.0"
   },
   "devDependencies": {
     "@types/execa": "0.9.0",

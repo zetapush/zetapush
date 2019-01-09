@@ -1,6 +1,6 @@
 {
   "name": "@zetapush/create",
-  "version": "0.37.7",
+  "version": "0.38.0",
   "description": "Zeta Push Next",
   "files": [
     "index.js",
@@ -14,7 +14,7 @@
   "license": "MIT",
   "scripts": {},
   "dependencies": {
-    "@zetapush/cli": "0.37.7",
+    "@zetapush/cli": "0.38.0",
     "chalk": "2.4.1",
     "commander": "2.19.0",
     "cross-spawn": "6.0.5",
