@@ -19,7 +19,7 @@ import {
   npmInstall,
   zetaPush
 } from '../utils/commands';
-import { TestContext, Dependencies, FrontOptions } from '../utils/types';
+import { TestContext, Dependencies, FrontOptions, initialized } from '../utils/types';
 import { createApplication, DEFAULTS } from '@zetapush/common';
 import { InjectionToken, Module } from '@zetapush/core';
 const findFreePort = require('find-free-port');
@@ -31,6 +31,8 @@ const yaml = require('js-yaml');
 const localtunnel = require('localtunnel');
 const spawn = require('child_process').spawn;
 const rimraf = require('rimraf');
+const findInFiles = require('find-in-files');
+const findUp = require('find-up');
 
 export const given = () => new Given();
 
@@ -117,8 +119,13 @@ class Given {
       }
 
       let projectDir;
+      let nukeProject = false;
+      let nukeApp = false;
       if (this.givenApp) {
-        projectDir = await this.givenApp.execute(localNpmRegistry);
+        const givenApp = await this.givenApp.execute(localNpmRegistry);
+        projectDir = givenApp.projectDir;
+        nukeProject = givenApp.nukeProject;
+        nukeApp = givenApp.nukeApp;
       }
       let frontOptions;
       if (this.givenFront) {
@@ -131,12 +138,17 @@ class Given {
 
       const zetarc = projectDir ? await readZetarc(projectDir) : this.sharedCredentials;
       const context = {
+        [initialized]: true,
         zetarc,
         projectDir,
         ...runnerAndDeps,
         localNpmRegistry,
         processLocalRegistry,
-        logLevel: getLogLevelsFromEnv()
+        logLevel: getLogLevelsFromEnv(),
+        clean: {
+          nukeProject,
+          nukeApp
+        }
       };
 
       if (objToFill) {
@@ -450,6 +462,7 @@ class GivenApp extends Parent<Given> {
   private givenNewApp?: GivenNewApp;
   private givenTestingApp?: GivenTestingApp;
   private givenTemplate?: GivenTemplatedApp;
+  private givenCurrentApp?: GivenCurrentApp;
 
   constructor(parent: Given, private sharedCredentials: any) {
     super(parent);
@@ -465,6 +478,21 @@ class GivenApp extends Parent<Given> {
   newProject() {
     this.givenNewApp = new GivenNewApp(this, this.sharedCredentials);
     return this.givenNewApp;
+  }
+
+  /**
+   * Use the code defined in the current project.
+   *
+   * You can indicate a target to copy the files into a temporary directory
+   * if you want to avoid conflicts between development and tests.
+   * In this case, the generated project will be located in `.generated-projects` folder.
+   * You then must choose the name of the sub-directory for the new project (using targetDir).
+   *
+   * You can also choose the appName to set into the `.zetarc` file (by default, a new application is created).
+   */
+  currentProject() {
+    this.givenCurrentApp = new GivenCurrentApp(this, this.sharedCredentials);
+    return this.givenCurrentApp;
   }
 
   // /**
@@ -484,19 +512,33 @@ class GivenApp extends Parent<Given> {
     return this.givenTemplate;
   }
 
-  async execute(localNpmRegistry?: string): Promise<string | undefined> {
+  async execute(
+    localNpmRegistry?: string
+  ): Promise<{ projectDir: string | undefined; nukeProject: boolean; nukeApp: boolean }> {
     try {
       let projectDir;
+      let nukeApp = false;
+      let nukeProject = false;
+      if (this.givenCurrentApp) {
+        const conf = await this.givenCurrentApp.execute(localNpmRegistry);
+        projectDir = conf.projectDir;
+        nukeApp = conf.nukeApp;
+      }
       if (this.givenNewApp) {
-        projectDir = await this.givenNewApp.execute(localNpmRegistry);
+        const conf = await this.givenNewApp.execute(localNpmRegistry);
+        projectDir = conf.projectDir;
+        nukeApp = conf.nukeApp;
+        nukeProject = true;
       }
       if (this.givenTestingApp) {
         projectDir = await this.givenTestingApp.execute(localNpmRegistry);
       }
       if (this.givenTemplate) {
-        projectDir = await this.givenTemplate.execute(localNpmRegistry);
+        const conf = await this.givenTemplate.execute(localNpmRegistry);
+        nukeApp = conf.nukeApp;
+        nukeProject = true;
       }
-      return projectDir;
+      return { projectDir, nukeProject, nukeApp };
     } catch (e) {
       throw e;
     }
@@ -509,6 +551,7 @@ class GivenCredentials extends Parent<Given> {
   private developerPassword?: string;
   private appName?: string;
   private createApp = false;
+  private zetarc = false;
 
   constructor(parent: Given) {
     super(parent);
@@ -521,6 +564,11 @@ class GivenCredentials extends Parent<Given> {
     this.developerPassword = process.env.ZETAPUSH_DEVELOPER_PASSWORD;
     this.url = process.env.ZETAPUSH_PLATFORM_URL || DEFAULTS.PLATFORM_URL;
     this.appName = process.env.ZETAPUSH_PLATFORM_APP_NAME;
+    return this;
+  }
+
+  fromZetarc() {
+    this.zetarc = true;
     return this;
   }
 
@@ -550,6 +598,13 @@ class GivenCredentials extends Parent<Given> {
   }
 
   async execute() {
+    if (this.zetarc) {
+      const zetarc = await readZetarc('.');
+      this.developerLogin = zetarc.developerLogin;
+      this.developerPassword = zetarc.developerPassword;
+      this.url = zetarc.platformUrl;
+      this.appName = zetarc.appName;
+    }
     if (this.createApp) {
       const { appName } = await createApplication({
         developerLogin: this.developerLogin,
@@ -571,7 +626,7 @@ class GivenNewApp extends Parent<GivenApp> {
   private dirName = 'new-project';
   private setNewAppName = false;
   private newAppName?: string;
-  private projectDir = `.generated-projects/${this.dirName}`;
+  private projectDir?: string;
 
   constructor(parent: GivenApp, private credentials: any) {
     super(parent);
@@ -590,6 +645,7 @@ class GivenNewApp extends Parent<GivenApp> {
 
   async execute(localNpmRegistry?: string) {
     try {
+      this.projectDir = `.generated-projects/${this.dirName}`;
       givenLogger.info(`>>> Given new application: ${this.projectDir}`);
 
       givenLogger.silly(`GivenNewApp:execute -> rm(${this.projectDir})`);
@@ -610,11 +666,111 @@ class GivenNewApp extends Parent<GivenApp> {
         givenLogger.silly(`GivenNewApp:execute -> setAppNameToZetarc(${this.projectDir}, ${this.newAppName})`);
         await setAppNameToZetarc(this.projectDir, this.newAppName);
       }
-      return this.projectDir;
+      return { projectDir: this.projectDir, nukeApp: this.setNewAppName && !!this.newAppName };
     } catch (e) {
       givenLogger.error(`>>> Given new application FAILED: ${this.projectDir}`, e);
       throw e;
     }
+  }
+}
+
+class GivenCurrentApp extends Parent<GivenApp> {
+  private sourceDirectory = '';
+  private setNewAppName = false;
+  private newAppName?: string;
+  private projectDir?: string;
+  private targetName = '';
+
+  constructor(parent: GivenApp, private credentials: any) {
+    super(parent);
+  }
+
+  /**
+   * Change the path to the directory that contains the source code
+   * of the application. By default, it is set to the root of your
+   * application.
+   *
+   * @param directory The path to the directory that contains
+   * the source code of the application
+   */
+  sourceDir(directory: string) {
+    this.sourceDirectory = directory;
+    return this;
+  }
+
+  targetDir(dirName: string) {
+    this.targetName = dirName;
+    return this;
+  }
+
+  setAppName(newAppName: string) {
+    this.setNewAppName = true;
+    this.newAppName = newAppName;
+    return this;
+  }
+
+  async execute(localNpmRegistry?: string) {
+    try {
+      let sourceDirectory = this.sourceDirectory;
+      if (!sourceDirectory) {
+        sourceDirectory = this.getApplicationRootDirectory();
+      }
+      this.projectDir = sourceDirectory;
+
+      if (this.targetName) {
+        this.projectDir = `.generated-projects/${this.targetName}`;
+        givenLogger.info(`>>> Given current application: ${this.projectDir}`);
+
+        givenLogger.silly(`GivenCurrentApp:execute -> rm(${this.projectDir})`);
+        await rm(`${this.projectDir}`);
+
+        givenLogger.silly(`GivenCurrentApp:execute -> copy(${sourceDirectory}, ${this.projectDir})`);
+        copydir.sync(sourceDirectory, this.projectDir, (stat: string, filepath: string, filename: string) => {
+          if (filename === '.git' || filename === '.generated-projects') {
+            return false;
+          }
+          return true;
+        });
+      }
+
+      if (this.setNewAppName && this.newAppName) {
+        givenLogger.silly(`GivenNewApp:execute -> setAppNameToZetarc(${this.projectDir}, ${this.newAppName})`);
+        await setAppNameToZetarc(this.projectDir, this.newAppName);
+      }
+      return { projectDir: this.projectDir, nukeApp: this.setNewAppName && !!this.newAppName };
+    } catch (e) {
+      givenLogger.error(`>>> Given new application FAILED: ${this.projectDir}`, e);
+      throw e;
+    }
+  }
+
+  private getApplicationRootDirectory(): string {
+    const cwd = process.cwd();
+    // 1) current execution directory is root folder
+    if (this.isApplicationRootDirectory(cwd)) {
+      return cwd;
+    }
+    // 2) search for a package.json in children
+    const found = findInFiles.findSync('@zetapush/cli', cwd, 'package\\.json$');
+    const foundFiles = Object.keys(found);
+    if (foundFiles.length) {
+      return path.resolve(foundFiles[0], '..');
+    }
+    // 3) search for a package.json in parent folders
+    const file = findUp.sync('package.json', { cwd });
+    const dir = path.resolve(file, '..');
+    if (this.isApplicationRootDirectory(dir)) {
+      return dir;
+    }
+    return cwd;
+  }
+
+  private isApplicationRootDirectory(dir: string): boolean {
+    if (fs.existsSync(path.join(dir, 'package.json'))) {
+      const content = JSON.parse(fs.readFileSync(path.join(dir, 'package.json')).toString());
+      return content.dependencies && !!content.dependencies['@zetapush/cli'];
+    }
+    return false;
   }
 }
 
@@ -711,7 +867,7 @@ class GivenTemplatedApp extends Parent<GivenApp> {
           );
         }
       }
-      return this.projectDir;
+      return { projectDir: this.projectDir, nukeApp: true };
     } catch (e) {
       givenLogger.error(`>>> Given templated application FAILED: templates/${this.templateApp}`, e);
       throw e;

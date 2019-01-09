@@ -10,7 +10,7 @@ import { FactoryProvider } from '@zetapush/core';
 import { WorkerRunner, WorkerRunnerEvents } from '@zetapush/worker';
 
 import { userActionLogger, frontActionLogger, runInWorkerLogger } from '../utils/logger';
-import { Context, ContextWrapper } from '../utils/types';
+import { Context, ContextWrapper, TestContext, initialized } from '../utils/types';
 import {
   Wrapper,
   TestWorkerInstanceFactory,
@@ -48,6 +48,13 @@ export const runInWorker = (testOrContext: Context, workerDeclaration: (...insta
   return new Promise(async (resolve, reject) => {
     // TODO: everything should be in given (except runner.run())
     const context = new ContextWrapper(testOrContext).getContext();
+    try {
+      checkContext(context);
+    } catch (e) {
+      reject(e);
+      return;
+    }
+
     const { zetarc, dependencies, logLevel, moduleDeclaration, projectDir } = context;
 
     try {
@@ -206,7 +213,10 @@ class UserAction {
       let api;
       let client;
       try {
-        const zetarc = new ContextWrapper(this.testOrContext).getContext().zetarc;
+        const context = new ContextWrapper(this.testOrContext).getContext();
+        checkContext(context);
+
+        const zetarc = context.zetarc;
         client = new SmartClient({
           ...(<any>zetarc),
           transports
@@ -261,3 +271,10 @@ class Api extends Parent<UserAction> {
     return client.createProxyTaskService({ timeout: this.apiCallTimeout, namespace: this.apiNamespace });
   }
 }
+
+const checkContext = (context: TestContext) => {
+  if (!context || !context[initialized]) {
+    throw new Error(`No context initialized by given() call.
+    You either forgot to use given() or you just forgot the await keyword before given().apply(this)`);
+  }
+};

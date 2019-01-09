@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/zetapush/zetapush/compare/v0.38.0...v1.0.0) (2019-01-09)
+
+
+
+
+**Note:** Version bump only for package zetapush
+
+<a name="0.38.0"></a>
+# [0.38.0](https://github.com/zetapush/zetapush/compare/v0.37.7...v0.38.0) (2019-01-09)
+
+
+### Bug Fixes
+
+* **createServices:** increase the timeout of the createServices call ([b27a263](https://github.com/zetapush/zetapush/commit/b27a263))
+* **StandardUserWorkflow:** fix email templating for reset password ([943dc30](https://github.com/zetapush/zetapush/commit/943dc30))
+* **testing:** Make node-ipc dependency only available in tests ([e03d704](https://github.com/zetapush/zetapush/commit/e03d704))
+* **testing:** testing tools were not adapted for our clients ([7425e0e](https://github.com/zetapush/zetapush/commit/7425e0e))
+* **user-management:** improve relative URL management and add error messages ([b32b643](https://github.com/zetapush/zetapush/commit/b32b643))
+
+
+### BREAKING CHANGES
+
+* **user-management:** 'registration.confirmation.base-url' and 'reset-password.ask.base-url' have been removed. Please use
+'registration.confirmation.confirm-url' and 'registration.confirmation.confirm-url' instead
+
+
+
+
 <a name="0.37.7"></a>
 ## [0.37.7](https://github.com/zetapush/zetapush/compare/v0.37.6...v0.37.7) (2018-12-21)
 

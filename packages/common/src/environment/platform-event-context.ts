@@ -46,7 +46,7 @@ export class PlatformEventContext implements ZetaPushContext, Loadable {
   }
 
   getFrontUrl(name?: string): string | null {
-    console.log('==> get front url : ', this.context);
+    trace(`getFrontUrl(${name || ''})`, this.context);
     this.checkLoaded();
     return this.getUrl(ServerType.FRONT, this.context!.fronts, name);
   }
@@ -55,13 +55,17 @@ export class PlatformEventContext implements ZetaPushContext, Loadable {
     this.checkLoaded();
     const url = this.getUrl(ServerType.WORKER, this.context!.workers, name);
     if (!url) {
+      trace(`getWorkerUrl(${name || ''}, ${zetapushInternalServer})`, this.context, 'empty url');
       return url;
     }
     // when run in cloud, the base URL is the same
     // to distinguish between HTTP servers, we use routing paths
     if (zetapushInternalServer) {
-      return this.zetapushInternalUrlProvider(url);
+      const internalServerUrl = this.zetapushInternalUrlProvider(url);
+      trace(`getWorkerUrl(${name || ''}, ${zetapushInternalServer})`, this.context, internalServerUrl);
+      return internalServerUrl;
     }
+    trace(`getWorkerUrl(${name || ''}, ${zetapushInternalServer})`, this.context, url);
     return url;
   }
 

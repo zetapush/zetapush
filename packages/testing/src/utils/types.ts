@@ -5,7 +5,11 @@ import { WorkerRunner } from '@zetapush/worker';
 
 // export type ConfigurationFunction = (...dependencies: any[]) => Promise<Provider[] | null>;
 export type Dependencies = Array<Function | InjectionToken<any>> | (() => Array<Function | InjectionToken<any>>);
+
+export const initialized = Symbol('initialized');
+
 export interface TestContext {
+  [initialized]: boolean;
   zetarc: Config;
   projectDir?: string;
   processLocalRegistry?: string;
@@ -18,6 +22,10 @@ export interface TestContext {
     cometd: 'info' | 'debug' | 'warn';
     winston: 'silly' | 'verbose' | 'debug' | 'info' | 'warn' | 'error';
     cli: number;
+  };
+  clean: {
+    nukeProject: boolean;
+    nukeApp: boolean;
   };
   // configurationFunction?: ConfigurationFunction;
 }

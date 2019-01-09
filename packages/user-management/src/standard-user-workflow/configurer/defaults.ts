@@ -1,5 +1,5 @@
 import { ConfigurationProperties, ZetaPushContext } from '@zetapush/core';
-import { trace, CURRENT_WORKER_NAME } from '@zetapush/common';
+import { trace, CURRENT_WORKER_NAME, ServerType } from '@zetapush/common';
 import {
   RegistrationConfirmationPropertyKeys,
   ResetPasswordPropertiesKeys,
@@ -8,12 +8,11 @@ import {
   MailjetPropertyKey,
   SmtpPropertyKey
 } from './properties';
-import { Token } from '../../common/api';
 import { Account, AccountConfirmationTemplateVariables, AccountResetPasswordTemplateVariables } from '../api';
 import { AccountConfirmationContext } from '../api/Confirmation';
 import { ResetPasswordContext } from '../api/LostPassword';
-import path from 'path';
-import { URL } from 'url';
+import { absolutize } from '../../common/utils/url';
+import { VariableEvaluator, EvaluatorMissingKeyHandlerBuilder } from '../../common/utils/evaluate';
 
 export const DEFAULT_APPLICATION_NAME = (properties: ConfigurationProperties) => {
   return properties.get(ProductPropertyKeys.ProductName);
@@ -42,11 +41,25 @@ export const DEFAULT_CONFIRMATION_URL = async ({
   account,
   token
 }: AccountConfirmationContext) => {
-  let url = properties.get<string>(RegistrationConfirmationPropertyKeys.BaseUrl);
+  let url = properties.get<string>(RegistrationConfirmationPropertyKeys.AccountConfirmationUrl);
+  // the configured URL may contain variables
+  if (url) {
+    const evaluator = new VariableEvaluator(
+      new EvaluatorMissingKeyHandlerBuilder()
+        /**/ .error(
+          (key) =>
+            `Failed to evaluate ${key} variable in ${RegistrationConfirmationPropertyKeys.AccountConfirmationUrl} URL`
+        )
+        /**/ .build()
+    );
+    url = evaluator.evaluate(url, { properties, zetapushContext, account, token });
+  }
   url = absolutize(
-    `${url || ''}/users/${account.accountId}/confirm/${token.value}`,
+    url,
     zetapushContext.getWorkerUrl(CURRENT_WORKER_NAME, true),
-    ''
+    `/users/${account.accountId}/confirm/${token.value}`,
+    ServerType.defaultName(ServerType.WORKER),
+    RegistrationConfirmationPropertyKeys.AccountConfirmationUrl
   );
   trace('confirmation url', url);
   return url;
@@ -127,7 +140,13 @@ export const DEFAULT_CONFIRMATION_SUCCESS_REDIRECTION = (
 ): string => {
   let url = properties.get<string>(RegistrationConfirmationPropertyKeys.AccountConfirmedRedirectionUrl);
   // TODO: may need to add context (which user for example ?)
-  url = absolutize(url, zetapushContext.getFrontUrl(), '#login');
+  url = absolutize(
+    url,
+    zetapushContext.getFrontUrl(),
+    '#login',
+    ServerType.defaultName(ServerType.FRONT),
+    RegistrationConfirmationPropertyKeys.AccountConfirmedRedirectionUrl
+  );
   trace('confirmation success url', url);
   return url;
 };
@@ -138,7 +157,13 @@ export const DEFAULT_CONFIRMATION_FAILURE_REDIRECTION = (
 ): string => {
   let url = properties.get<string>(RegistrationConfirmationPropertyKeys.AccountConfirmationFailedRedirectionUrl);
   // TODO: may need to add context (which user for example ?)
-  url = absolutize(url, zetapushContext.getFrontUrl(), '#account-confirmation-error');
+  url = absolutize(
+    url,
+    zetapushContext.getFrontUrl(),
+    '#account-confirmation-error',
+    ServerType.defaultName(ServerType.FRONT),
+    RegistrationConfirmationPropertyKeys.AccountConfirmationFailedRedirectionUrl
+  );
   trace('confirmation failure url', url);
   return url;
 };
@@ -201,20 +226,22 @@ export const DEFAULT_ASK_RESET_PASSWORD_URL = async ({
   properties,
   zetapushContext
 }: ResetPasswordContext) => {
-  let url = `${properties.get(ResetPasswordPropertiesKeys.BaseUrl, zetapushContext.getFrontUrl())}#ask-reset-password/${
-    token.value
-  }`;
-  url = absolutize(url, zetapushContext.getFrontUrl(), `#ask-reset-password/${token.value}`);
+  let url = properties.get<string>(ResetPasswordPropertiesKeys.AskUrl);
+  if (url) {
+    const evaluator = new VariableEvaluator(
+      new EvaluatorMissingKeyHandlerBuilder()
+        /**/ .error((key) => `Failed to evaluate ${key} variable in ${ResetPasswordPropertiesKeys.AskUrl} URL`)
+        /**/ .build()
+    );
+    url = evaluator.evaluate(url, { properties, zetapushContext, account, token });
+  }
+  url = absolutize(
+    url,
+    zetapushContext.getFrontUrl(),
+    `#ask-reset-password/${token.value}`,
+    ServerType.defaultName(ServerType.FRONT),
+    ResetPasswordPropertiesKeys.AskUrl
+  );
   trace('reset password url', url);
   return url;
-};
-
-const absolutize = (url: string | null, baseUrl: string | null, defaultPath: string): string => {
-  let relativeUrl = url;
-  if (relativeUrl === null) {
-    relativeUrl = defaultPath;
-  }
-  // TODO: what to do if relative URL and baseUrl is null ?
-  let absoluteUrl = new URL(relativeUrl, baseUrl || '');
-  return absoluteUrl.toString();
 };

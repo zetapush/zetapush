@@ -40,6 +40,11 @@ const run = async (command, config, declaration) => {
     undefined,
     getCometdLogLevel()
   );
+
+  if (command.ipc) {
+    registerIpc(runner, command.ipc);
+  }
+
   const spinner = ora('Starting worker... \n');
 
   runner.on(WorkerRunnerEvents.BOOTSTRAPING, ({ client }) => {
@@ -151,6 +156,28 @@ const findAndRegisterLocalPorts = async (command) => {
   // this is required to explicitly force port used by ZetaPush HTTP server
   serverRegistry.register(ZETAPUSH_HTTP_SERVER, { port: workerZetaPushHttpPort, type: ServerType.WORKER });
   return serverRegistry;
+};
+
+const registerIpc = (runner, name) => {
+  let ipc;
+  try {
+    ipc = require('node-ipc');
+  } catch (e) {
+    error(`node-ipc not installed so testing module can't communicate with tested application`);
+    displayHelp(e);
+  }
+
+  ipc.config.id = 'zetapush-worker';
+  ipc.config.retry = 1500;
+  ipc.config.logger = trace;
+
+  runner.on(WorkerRunnerEvents.STARTED, () => {
+    ipc.connectTo(name, () => {
+      ipc.of[name].on('connect', () => {
+        ipc.of[name].emit('worker-started');
+      });
+    });
+  });
 };
 
 module.exports = run;

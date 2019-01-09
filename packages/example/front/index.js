@@ -1,11 +1,13 @@
 client = new ZetaPushClient.SmartClient();
 api = client.createProxyTaskService({
-  namespace: 'user'
+  namespace: "user"
 });
 
-const messageNode = document.getElementById('message');
-const messageTitle = document.getElementById('message-title');
-const messageBody = document.getElementById('message-body');
+let currentToken = null;
+
+const messageNode = document.getElementById("message");
+const messageTitle = document.getElementById("message-title");
+const messageBody = document.getElementById("message-body");
 let currentPage;
 
 function goTo(page) {
@@ -16,21 +18,26 @@ function goTo(page) {
 }
 
 function displayMessage(title, body, type) {
-  messageNode.classList.remove('hidden');
-  messageNode.classList.add(type || 'is-dark');
+  messageNode.classList.remove("hidden");
+  messageNode.classList.add(type || "is-dark");
   messageTitle.innerHTML = title;
   messageBody.innerHTML = body;
   setTimeout(() => {
-    messageNode.classList.add('hidden');
-    messageNode.classList.remove(type || 'is-dark');
+    messageNode.classList.add("hidden");
+    messageNode.classList.remove(type || "is-dark");
   }, 3000);
 }
 
 window.onload = function() {
   const page = window.location.hash;
-  if (page) {
-    goTo(page.substr(1));
+  const cleanedPage = page.split("/")[0];
+  if (page.split("/")[1]) {
+    sessionStorage.setItem("token", page.split("/")[1]);
+  }
+
+  if (cleanedPage) {
+    goTo(cleanedPage.substr(1));
   } else {
-    goTo('home');
+    goTo("home");
   }
 };
