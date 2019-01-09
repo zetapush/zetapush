@@ -100,8 +100,7 @@ describe(`As developer with
             .execute(async (api) => {
               try {
                 const pendingAskResetPassword = await api.askResetPassword({ login: 'login' });
-
-                const resultConfirmResetPassword = await api.confirmResetPassword({
+                await api.confirmResetPassword({
                   token: pendingAskResetPassword.token,
                   firstPassword: 'pwd',
                   secondPassword: 'pwd'
@@ -111,10 +110,14 @@ describe(`As developer with
               }
             });
 
-          await frontAction(this)
-            .name(`Connection of the user on the application`)
-            .loggedAs('login', 'pwd')
-            .execute();
+          try {
+            await frontAction(`The user connects himself on the application`, this, async (api, client) => {}, {
+              login: 'login',
+              password: 'pwd'
+            });
+          } catch (e) {
+            fail(`connection failed with ${e}`);
+          }
         },
         60 * 1000 * 10
       );

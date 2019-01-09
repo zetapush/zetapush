@@ -1,6 +1,7 @@
 import { URL } from 'url';
 
 import { BaseError } from '@zetapush/common';
+const path = require('path');
 
 export abstract class UrlError extends BaseError {
   constructor(
@@ -84,7 +85,7 @@ export const join = (url: string, baseUrl?: string) => {
   if (isAbsolute(url)) {
     return new URL(url).toString();
   }
-  return new URL((baseUrl || '') + url).toString();
+  return new URL(path.join(baseUrl || '', url)).toString();
 };
 
 export const isAbsolute = (url: string) => {
