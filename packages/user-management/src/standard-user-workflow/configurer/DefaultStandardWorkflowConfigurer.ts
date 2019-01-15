@@ -26,6 +26,7 @@ import {
   DEFAULT_CONFIRMATION_HTML_TEMPLATE,
   DEFAULT_CONFIRMATION_TEXT_TEMPLATE,
   DEFAULT_CONFIRMATION_TOKEN_VALIDITY,
+  DEFAULT_RESET_PASSWORD_TOKEN_VALIDITY,
   DEFAULT_CONFIRMATION_URL,
   DEFAULT_CONFIRMATION_SUCCESS_REDIRECTION,
   DEFAULT_CONFIRMATION_FAILURE_REDIRECTION,
@@ -169,7 +170,7 @@ export class DefaultUserWorkflowConfigurer implements Configurer {
         .token()
             .storage(GdaTokenRepository)
             .generator(Base36RandomTokenGenerator)
-            .validity(DEFAULT_CONFIRMATION_TOKEN_VALIDITY)
+            .validity(DEFAULT_RESET_PASSWORD_TOKEN_VALIDITY)
             .and()
         .ask()
           .url(DEFAULT_ASK_RESET_PASSWORD_URL)

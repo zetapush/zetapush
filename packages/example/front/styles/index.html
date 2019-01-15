@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T///////8JWPfcAAAACXBIWXMAAABIAAAASABGyWs+AAAAF0lEQVRIx2NgGAWjYBSMglEwCkbBSAcACBAAAeaR9cIAAAAASUVORK5CYII="
+      rel="icon"
+      type="image/x-icon"
+    />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link href="./styles/common.css" rel="stylesheet" type="text/css" />
+    <link href="./styles/home.css" rel="stylesheet" type="text/css" />
+    <link href="./styles/login.css" rel="stylesheet" type="text/css" />
+    <link href="./styles/signup.css" rel="stylesheet" type="text/css" />
+    <title>Default Standard User Workflow</title>
+  </head>
+
+  <body>
+    <div class="main-content">
+      <nav class="navbar has-shadow">
+        <div class="container">
+          <div class="navbar-brand">
+            <a class="navbar-item" href="../"
+              ><img
+                src="http://bulma.io/images/bulma-logo.png"
+                alt="Bulma: a modern CSS framework based on Flexbox"
+            /></a>
+            <div class="navbar-burger burger" data-target="navMenu">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="navbar-menu" id="navMenu">
+            <div class="navbar-end">
+              <a class="navbar-item" onclick="goTo('home')">Home</a>
+              <a class="navbar-item" onclick="goTo('login')">Login</a>
+              <a class="navbar-item" onclick="goTo('signup')">Signup</a>
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="page-container">
+        <div id="home">
+          <section class="hero is-success">
+            <div class="hero-body">
+              <div class="container has-text-centered">
+                <h1 class="title">
+                  The new standard in &lt;insert industry here&gt;
+                </h1>
+                <h2 class="subtitle">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                  Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                  laboris nisi ut aliquip ex ea commodo consequat.
+                </h2>
+              </div>
+            </div>
+          </section>
+          <div class="box cta">
+            <p class="has-text-centered">
+              <span class="tag is-primary">New</span> Ut enim ad minim veniam,
+              quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+              commodo consequat.
+            </p>
+          </div>
+          <section class="container">
+            <div class="columns features">
+              <div class="column is-4">
+                <div class="card is-shady">
+                  <div class="card-image has-text-centered">
+                    <i class="fa fa-paw"></i>
+                  </div>
+                  <div class="card-content">
+                    <div class="content">
+                      <h4>Tristique senectus et netus et.</h4>
+                      <p>
+                        Purus semper eget duis at tellus at urna condimentum
+                        mattis. Non blandit massa enim nec. Integer enim neque
+                        volutpat ac tincidunt vitae semper quis. Accumsan tortor
+                        posuere ac ut consequat semper viverra nam.
+                      </p>
+                      <p><a href="#">Learn more</a></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-4">
+                <div class="card is-shady">
+                  <div class="card-image has-text-centered">
+                    <i class="fa fa-empire"></i>
+                  </div>
+                  <div class="card-content">
+                    <div class="content">
+                      <h4>Tempor orci dapibus ultrices in.</h4>
+                      <p>
+                        Ut venenatis tellus in metus vulputate. Amet consectetur
+                        adipiscing elit pellentesque. Sed arcu non odio euismod
+                        lacinia at quis risus. Faucibus turpis in eu mi bibendum
+                        neque egestas cmonsu songue. Phasellus vestibulum lorem
+                        sed risus.
+                      </p>
+                      <p><a href="#">Learn more</a></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-4">
+                <div class="card is-shady">
+                  <div class="card-image has-text-centered">
+                    <i class="fa fa-apple"></i>
+                  </div>
+                  <div class="card-content">
+                    <div class="content">
+                      <h4>Leo integer malesuada nunc vel risus.</h4>
+                      <p>
+                        Imperdiet dui accumsan sit amet nulla facilisi morbi.
+                        Fusce ut placerat orci nulla pellentesque dignissim
+                        enim. Libero id faucibus nisl tincidunt eget nullam.
+                        Commodo viverra maecenas accumsan lacus vel facilisis.
+                      </p>
+                      <p><a href="#">Learn more</a></p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div id="login">
+          <section class="hero is-success is-fullheight">
+            <div class="hero-body">
+              <div class="container has-text-centered">
+                <div class="column is-4 is-offset-4">
+                  <h3 class="title has-text-grey">Login</h3>
+                  <p class="subtitle has-text-grey">Please login to proceed.</p>
+                  <div class="box">
+                    <figure class="avatar">
+                      <img src="https://placehold.it/128x128" />
+                    </figure>
+                    <form
+                      onsubmit="event.preventDefault(); connectUser(this.elements)"
+                    >
+                      <div class="field">
+                        <div class="control">
+                          <input
+                            class="input is-large"
+                            type="text"
+                            placeholder="Your Login"
+                            autofocus=""
+                            name="login"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="field">
+                        <div class="control">
+                          <input
+                            class="input is-large"
+                            type="password"
+                            placeholder="Your Password"
+                            name="password"
+                          />
+                        </div>
+                      </div>
+                      <div class="field">
+                        <label class="checkbox">
+                          <!-- <input type="checkbox"> Remember me -->
+                        </label>
+                      </div>
+                      <button
+                        class="button is-block is-info is-large is-fullwidth"
+                        type="submit"
+                      >
+                        Login
+                      </button>
+                      <p id="login-errors"></p>
+                    </form>
+                  </div>
+                  <p class="has-text-grey">
+                    <a onclick="goTo('signup')">Sign Up</a> &nbsp;·&nbsp;
+                    <a onclick="goTo('reset-password')">Forgot Password</a> &nbsp;·&nbsp;
+                    <a href="../">Need Help?</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div id="signup">
+          <section class="hero is-success is-fullheight">
+            <div class="hero-body">
+              <div class="container has-text-centered">
+                <div class="column is-4 is-offset-4">
+                  <h3 class="title has-text-grey">Signup</h3>
+                  <p class="subtitle has-text-grey">
+                    Please create your account.
+                  </p>
+                  <div class="box">
+                    <figure class="avatar">
+                      <img src="https://placehold.it/128x128" />
+                    </figure>
+                    <form
+                      onsubmit="event.preventDefault(); signupUser(this.elements)"
+                    >
+                      <div class="field">
+                        <div class="control">
+                          <input
+                            class="input is-large"
+                            type="text"
+                            placeholder="Your Login"
+                            autofocus=""
+                            name="login"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="field">
+                        <div class="control">
+                          <input
+                            class="input is-large"
+                            type="password"
+                            placeholder="Your Password"
+                            name="password"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="field">
+                        <div class="control">
+                          <input
+                            class="input is-large"
+                            type="password"
+                            placeholder="Confirm your Password"
+                            name="confirm-password"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="field">
+                        <div class="control">
+                          <input
+                            class="input is-large"
+                            type="email"
+                            placeholder="Your Email"
+                            name="email"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="field">
+                        <label class="checkbox">
+                          <!-- <input type="checkbox"> Remember me -->
+                        </label>
+                      </div>
+
+                      <button
+                        class="button is-block is-info is-large is-fullwidth"
+                        type="submit"
+                      >
+                        Signup
+                      </button>
+                    </form>
+                  </div>
+                  <p class="has-text-grey">
+                    <a onclick="goTo('login')">Login</a> &nbsp;·&nbsp;
+                    <a onclick="goTo('reset-password')">Forgot Password</a>
+                    &nbsp;·&nbsp; <a href="../">Need Help?</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div id="reset-password">
+          <section class="hero is-success is-fullheight">
+            <div class="hero-body">
+              <div class="container has-text-centered">
+                <div class="column is-4 is-offset-4">
+                  <h3 class="title has-text-grey">Ask Reset password</h3>
+                  <p class="subtitle has-text-grey">
+                    Please type your login.
+                  </p>
+                  <div class="box">
+                    <figure class="avatar">
+                      <img src="https://placehold.it/128x128" />
+                    </figure>
+                    <form
+                      onsubmit="event.preventDefault(); askResetPassword(this.elements)"
+                    >
+                      <div class="field">
+                        <div class="control">
+                          <input
+                            class="input is-large"
+                            type="text"
+                            placeholder="Your login"
+                            name="login"
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        class="button is-block is-info is-large is-fullwidth"
+                        type="submit"
+                      >
+                        Valid
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div id="confirmation-failed">TODO: display message to end-user</div>
+      </div>
+        <div id="ask-reset-password">
+          <section class="hero is-success is-fullheight">
+            <div class="hero-body">
+              <div class="container has-text-centered">
+                <div class="column is-4 is-offset-4">
+                  <h3 class="title has-text-grey">Reset password</h3>
+                  <p class="subtitle has-text-grey">
+                    Please choose a new password.
+                  </p>
+                  <div class="box">
+                    <figure class="avatar">
+                      <img src="https://placehold.it/128x128" />
+                    </figure>
+                    <form
+                      onsubmit="event.preventDefault(); confirmResetPassword(this.elements)"
+                    >
+                      <div class="field">
+                        <div class="control">
+                          <input
+                            class="input is-large"
+                            type="password"
+                            placeholder="Your Password"
+                            name="firstPassword"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="field">
+                        <div class="control">
+                          <input
+                            class="input is-large"
+                            type="password"
+                            placeholder="Confirm your Password"
+                            name="secondPassword"
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        class="button is-block is-info is-large is-fullwidth"
+                        type="submit"
+                      >
+                        Valid
+                      </button>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+        <div id="confirmation-failed">TODO: display message to end-user</div>
+      </div>
+
+      <article class="message hidden" id="message">
+        <div class="message-header">
+          <p id="message-title"></p>
+          <button class="delete" aria-label="delete"></button>
+        </div>
+        <div id="message-body" class="message-body"></div>
+      </article>
+    </div>
+
+    <script src="https://unpkg.com/@zetapush/client"></script>
+    <script src="https://unpkg.com/@zetapush/platform-legacy"></script>
+    <script src="./index.js"></script>
+    <script src="./js/login.js"></script>
+    <script src="./js/signup.js"></script>
+    <script src="./js/reset-password.js"></script>
+  </body>
+</html>
