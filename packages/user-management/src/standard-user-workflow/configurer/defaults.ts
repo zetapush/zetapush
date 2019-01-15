@@ -118,7 +118,9 @@ export const DEFAULT_CONFIRMATION_SENDER = (properties: ConfigurationProperties)
     )
   );
 
-export const DEFAULT_CONFIRMATION_TOKEN_VALIDITY = 60 * 60 * 1000;
+export const DEFAULT_CONFIRMATION_TOKEN_VALIDITY = 24 * 60 * 60 * 1000; // 24h
+
+export const DEFAULT_RESET_PASSWORD_TOKEN_VALIDITY = 24 * 60 * 60 * 1000; // 24h
 
 export const DEFAULT_MAILJET_ENABLE = (properties: ConfigurationProperties) =>
   properties.get(MailjetPropertyKey.Enable, true) &&
